@@ -1,0 +1,81 @@
+/* Terminal-Musing/src/components/Navbar/Navbar.module.css */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* A slightly more pronounced shadow */
+    position: sticky; /* Keeps the navbar at the top when scrolling */
+    top: 0;
+    z-index: 1000; /* Ensure it's above other content */
+  }
+  
+  .brand {
+    font-family: 'Playfair Display', serif; /* Use your heading font for the brand */
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #222;
+  }
+  
+  .navLinks {
+    display: flex;
+    gap: 30px; /* More space between links */
+  }
+  
+  .navLink {
+    font-size: 1.05em;
+    color: #555;
+    transition: color 0.3s ease, transform 0.2s ease;
+    padding: 5px 0; /* Add padding for better hit area */
+    position: relative; /* For underline effect */
+  }
+  
+  .navLink:hover {
+    color: #000;
+    transform: translateY(-2px); /* Subtle lift effect */
+  }
+  
+  /* Optional: Underline effect on hover */
+  .navLink::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .navLink:hover::after {
+    width: 100%;
+  }
+  
+  .hamburger {
+    font-size: 1.8em;
+    cursor: pointer;
+    display: none; /* Hidden on desktop, will be shown via media query for mobile */
+  }
+  
+  /* Responsive adjustments for Navbar */
+  @media (max-width: 992px) {
+    .navLinks {
+      gap: 15px;
+    }
+    .brand {
+      font-size: 1.5em;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .navLinks {
+      display: none; /* Hide nav links on mobile; you'd add JS to toggle a mobile menu */
+    }
+    .hamburger {
+      display: block; /* Show hamburger icon on mobile */
+    }
+    .navbar {
+      padding: 15px 5%;
+    }
+  }

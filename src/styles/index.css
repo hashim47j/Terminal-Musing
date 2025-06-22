@@ -1,9 +1,16 @@
 /* Terminal-Musing/src/styles/index.css */
 /* Import external fonts (if any) */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Average&display=swap');
+
 
 /* --- Custom Fonts --- */
 @font-face {
+  font-family: 'Average';
+  src: url('../assets/Average-Regular.ttf');
+  font-weight: normal; /* Or specify if your font has different weights */
+  font-style: normal;
+  font-display: swap; 
   font-family: 'Lugrasimo'; /* Give your font a recognizable name */
   src: url('../assets/Lugrasimo-Regular.ttf') format('truetype'); /* Path relative to this CSS file */
   font-weight: normal; /* Or specify if your font has different weights */

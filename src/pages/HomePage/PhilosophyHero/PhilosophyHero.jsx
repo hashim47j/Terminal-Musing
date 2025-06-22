@@ -1,47 +1,33 @@
 // Terminal-Musing/src/pages/HomePage/PhilosophyHero/PhilosophyHero.jsx
-import React, { useRef } from 'react'; // <<-- NEW: Import useRef
-import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion'; // <<-- NEW: Import useScroll, useTransform
-import styles from './PhilosophyHero.module.css';
-import sisyphusImage from '../../../assets/sisyphus-sketch.jpg'; // Adjust path if needed
+import React from 'react';
+import { Link } from 'react-router-dom'; // Important for linking the "Philosophy" tag
+import styles from './PhilosophyHero.module.css'; // Link to its specific CSS module
+
+// Import your image - make sure you've placed it in the assets folder
+// Or you can place it directly in the public folder and use a public path
+import sisyphusSketch from '../../../assets/sisyphus-sketch.jpg';
+// If you put it in `public` folder, you would use:
+// const sisyphusSketch = '/sisyphus-sketch.jpg';
 
 const PhilosophyHero = () => {
-  const ref = useRef(null); // <<-- NEW: Create a ref for this section
-
-  // <<-- NEW: Use useScroll to track scroll progress of THIS section -->>
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"] // Tracks progress as element enters/leaves viewport
-  });
-
-  // <<-- NEW: Use useTransform to map scroll progress to opacity -->>
-  const opacity = useTransform(scrollYProgress,
-    [0, 0.1, 0.9, 1], // Input range (scrollYProgress from 0 to 1)
-    [0, 1, 1, 0]     // Output range (opacity from 0 to 1 and back to 0)
-  );
-
   return (
-    <motion.section
-      ref={ref} // <<-- NEW: Assign the ref to the motion.section
-      className={styles.philosophyHero}
-      style={{ opacity }} // <<-- NEW: Apply the dynamically calculated opacity
-    >
+    <section className={styles.philosophyHero}>
       <div className={styles.contentWrapper}>
-        <h1 className={styles.mainHeading}>
-          The unexamined life <br /> is not worth living.
-        </h1>
+        <h1 className={styles.mainHeading}>With a thought it all began</h1>
         <p className={styles.description}>
-          Dive into the profound questions that have shaped human thought, explore the ideas of great thinkers, and find new perspectives on existence, knowledge, values, and reason.
+          Philosophy challenges everything whether it is politics, love, morality, popular truth, culture, art or the god you believe in.
         </p>
-        <Link to="/philosophy" className={styles.categoryTag}>Explore Philosophy</Link>
+        {/* The clickable "Philosophy" tag linking to its future page */}
+        <Link to="/philosophy" className={styles.categoryTag}>Philosophy</Link>
       </div>
       <div className={styles.imageWrapper}>
-        <img src={sisyphusImage} alt="Sisyphus" className={styles.sisyphusImage} />
+        <img src={sisyphusSketch} alt="Sisyphus pushing a boulder - one must imagine sisyphus happy" className={styles.sisyphusImage} />
         <p className={styles.camusQuote}>
-          "The struggle itself toward the heights is enough to fill a man's heart. One must imagine Sisyphus happy." <br /> — Albert Camus
+          "One must imagine sisyphus happy"<br />
+          - Albert Camus
         </p>
       </div>
-    </motion.section>
+    </section>
   );
 };
 

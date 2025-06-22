@@ -7,7 +7,7 @@
   color: #f0f0f0;
 }
 
-/* Full-width background image */
+/* Full-width background image with smooth zoom transition */
 .silkRoadImage {
   width: 100%;
   max-width: 1341px;
@@ -15,17 +15,17 @@
   object-fit: cover;
   display: block;
   transition: transform 0.5s ease;
+  transform-origin: top center;
 }
 
-/* Zoom in from top on small screens */
+/* Zoom + crop effect for mobile view */
 @media (max-width: 768px) {
   .silkRoadImage {
     transform: scale(1.8);
-    transform-origin: top center; /* ← this zooms upward */
   }
 }
 
-/* Dark overlay for mobile */
+/* Dark overlay for better text contrast on mobile */
 .overlay {
   display: none;
   position: absolute;
@@ -35,10 +35,17 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.4);
   z-index: 1;
-  backdrop-filter: blur(5x);
+  backdrop-filter: blur(5px); /* Fixed '5x' typo to '5px' */
 }
 
-/* Heading */
+/* Display overlay on small screens */
+@media (max-width: 768px) {
+  .overlay {
+    display: block;
+  }
+}
+
+/* Headline */
 .mainHeading {
   position: absolute;
   top: 20%;
@@ -49,6 +56,10 @@
   color: #fff;
   text-align: right;
   z-index: 2;
+  max-width: 90vw;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* Description */
@@ -62,6 +73,7 @@
   color: #ccc;
   text-align: right;
   z-index: 2;
+  max-width: 90vw;
 }
 
 /* Button */
@@ -90,14 +102,10 @@
   transform: translateY(-3px);
 }
 
-/* Responsive */
+/* Mobile responsive layout */
 @media (max-width: 768px) {
-  .overlay {
-    display: block;
-  }
-
   .mainHeading {
-    top: 20%;
+    top: 15%;
     right: 50%;
     transform: translateX(50%);
     font-size: 2.6em;

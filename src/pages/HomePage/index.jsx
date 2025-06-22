@@ -1,22 +1,15 @@
 // Terminal-Musing/src/pages/HomePage/index.jsx
 import React from 'react';
-import PhilosophyHero from './PhilosophyHero/PhilosophyHero'; // Your first hero section
-import HistoryHero from './HistoryHero/HistoryHero'; // Import the new History Hero section
+import PhilosophyHero from './PhilosophyHero/PhilosophyHero';
+import HistoryHero from './HistoryHero/HistoryHero';
+import styles from './HomePage.module.css'; // Ensure this import is present
 
 const HomePage = () => {
   return (
-    <div>
-      {/* Your Philosophy Hero section */}
+    <div className={styles.fullPageContainer}>
       <PhilosophyHero />
-
-      {/* Your new History Hero section with scroll animation */}
       <HistoryHero />
-
-      {/* You'll add other sections to your homepage here as you build them out */}
-      {/* <section style={{ padding: '50px 5%', backgroundColor: '#f0f0f0', textAlign: 'center' }}>
-        <h2>Latest Musings & Articles</h2>
-        // You'll eventually have components here to display recent blog posts
-      </section> */}
+      {/* Add any other full-page sections here */}
     </div>
   );
 };

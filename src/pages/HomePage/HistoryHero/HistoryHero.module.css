@@ -1,3 +1,5 @@
+/* Terminal-Musing/src/pages/HomePage/HistoryHero/HistoryHero.module.css */
+
 .historyHero {
   position: relative;
   width: 100%;
@@ -5,7 +7,11 @@
   background-color: #000;
   overflow: hidden;
   color: #f0f0f0;
+  scroll-snap-align: start; /* KEEP THIS */
+  flex-shrink: 0; /* KEEP THIS */
 }
+
+/* ... rest of your HistoryHero CSS ... */
 .silkRoadImage {
   position: absolute;
   top: 0;

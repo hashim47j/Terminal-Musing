@@ -7,24 +7,38 @@
   color: #f0f0f0;
 }
 
-.imageWrapper {
-  width: 100%;
-}
+/* Full-width background image */
 .silkRoadImage {
   width: 100%;
   max-width: 1341px;
   height: auto;
   object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
 }
 
-.silkRoadImage {
+/* Zoom in from top on small screens */
+@media (max-width: 768px) {
+  .silkRoadImage {
+    transform: scale(1.8);
+    transform-origin: top center; /* ← this zooms upward */
+  }
+}
+
+/* Dark overlay for mobile */
+.overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  display: block;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+  backdrop-filter: blur(5x);
 }
 
-/* Headline */
+/* Heading */
 .mainHeading {
   position: absolute;
   top: 20%;
@@ -55,7 +69,6 @@
   position: absolute;
   top: 80%;
   right: 10%;
-  size: 100px ;
   background-color: transparent;
   border: 2px solid #ccc;
   color: #ccc;
@@ -77,8 +90,12 @@
   transform: translateY(-3px);
 }
 
-/* Responsive for mobile */
+/* Responsive */
 @media (max-width: 768px) {
+  .overlay {
+    display: block;
+  }
+
   .mainHeading {
     top: 20%;
     right: 50%;

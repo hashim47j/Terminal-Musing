@@ -1,16 +1,35 @@
-// Terminal-Musing/src/components/Navbar/Navbar.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Navbar.module.css';
 
 const Navbar = () => {
+  const [hide, setHide] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        setHide(true); // Scrolling down
+      } else {
+        setHide(false); // Scrolling up
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
-    <nav className={styles.navbar}>
+    <nav className={`${styles.navbar} ${hide ? styles.hide : ''}`}>
       <Link to="/" className={styles.brand}>
         Terminal Musing
       </Link>
       <div className={styles.navLinks}>
-        {/* Your topic links go here. Make sure these match your future routes. */}
         <Link to="/law" className={styles.navLink}>Law</Link>
         <Link to="/social-issues" className={styles.navLink}>Social Issues</Link>
         <Link to="/poems" className={styles.navLink}>Poems</Link>
@@ -20,7 +39,6 @@ const Navbar = () => {
         <Link to="/short-stories" className={styles.navLink}>Short Stories</Link>
         <Link to="/android-linux" className={styles.navLink}>Android & Linux</Link>
       </div>
-      {/* This is a placeholder for a responsive hamburger menu icon */}
       <div className={styles.hamburger}>☰</div>
     </nav>
   );

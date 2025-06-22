@@ -1,11 +1,26 @@
 .fullPageContainer {
-    scroll-behavior: smooth;
+    height: 100vh;
+    overflow-y: auto;
     overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  
+    /* Hide scrollbars */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .fullPageContainer::-webkit-scrollbar {
+    display: none;
   }
   
   .pageSection {
     height: 100vh;
     width: 100%;
-    position: relative;
+    scroll-snap-align: start;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
   }
+  
   

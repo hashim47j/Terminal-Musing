@@ -1,31 +1,26 @@
 .historyHero {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100vh; /* Full viewport height */
   background-color: #000;
   overflow: hidden;
   color: #f0f0f0;
 }
-
-/* Full-width background image with smooth zoom transition */
 .silkRoadImage {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 1341px;
-  height: auto;
+  height: 100vh;
+  background-image: url('../../../assets/silk-road-map.png');
+  background-repeat: no-repeat;
   object-fit: cover;
-  display: block;
+  object-position: 50% -300%; /* ← slight upward zoom */
   transition: transform 0.5s ease;
-  transform-origin: top center;
+  z-index: 0;
 }
 
-/* Zoom + crop effect for mobile view */
-@media (max-width: 768px) {
-  .silkRoadImage {
-    transform: scale(1.8);
-  }
-}
-
-/* Dark overlay for better text contrast on mobile */
+/* Dark overlay only on mobile */
 .overlay {
   display: none;
   position: absolute;
@@ -33,19 +28,41 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 1;
-  backdrop-filter: blur(5px); /* Fixed '5x' typo to '5px' */
 }
 
-/* Display overlay on small screens */
+/* Dynamically zoom based on screen width */
+@media (max-width: 1024px) {
+  .silkRoadImage {
+    transform: scale(1.05);
+  }
+}
+@media (max-width: 900px) {
+  .silkRoadImage {
+    transform: scale(1.1);
+  }
+}
 @media (max-width: 768px) {
+  .silkRoadImage {
+    transform: scale(1.2);
+  }
   .overlay {
     display: block;
   }
 }
+@media (max-width: 600px) {
+  .silkRoadImage {
+    transform: scale(1.4);
+  }
+}
+@media (max-width: 480px) {
+  .silkRoadImage {
+    transform: scale(1.6);
+  }
+}
 
-/* Headline */
+/* Text & Button Positioned Absolutely */
 .mainHeading {
   position: absolute;
   top: 20%;
@@ -58,11 +75,8 @@
   z-index: 2;
   max-width: 90vw;
   line-height: 1.2;
-  white-space: normal;
-  word-break: break-word;
 }
 
-/* Description */
 .description {
   position: absolute;
   top: 45%;
@@ -76,7 +90,6 @@
   max-width: 90vw;
 }
 
-/* Button */
 .categoryTag {
   position: absolute;
   top: 80%;
@@ -102,7 +115,7 @@
   transform: translateY(-3px);
 }
 
-/* Mobile responsive layout */
+/* Responsive positioning tweaks */
 @media (max-width: 768px) {
   .mainHeading {
     top: 15%;

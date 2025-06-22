@@ -1,9 +1,11 @@
-/* Terminal-Musing/src/pages/HomePage/HomePage.module.css */
-
 .fullPageContainer {
-    height: 100vh; /* Makes the container fill the entire viewport height */
-    overflow-y: scroll; /* Enables vertical scrolling within this container */
-    scroll-snap-type: y mandatory; /* This enables snapping on the Y-axis, mandatory for full snaps */
-    -webkit-overflow-scrolling: touch; /* Improves scrolling performance on iOS devices */
-    scroll-behavior: smooth; /* Ensures a smooth transition when snapping */
+    scroll-behavior: smooth;
+    overflow-x: hidden;
   }
+  
+  .pageSection {
+    height: 100vh;
+    width: 100%;
+    position: relative;
+  }
+  

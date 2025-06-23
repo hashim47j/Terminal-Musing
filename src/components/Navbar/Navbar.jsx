@@ -5,30 +5,33 @@ import styles from './Navbar.module.css';
 const Navbar = () => {
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
       if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        setHide(true); // Scrolling down
+        setHide(true);
       } else {
-        setHide(false); // Scrolling up
+        setHide(false);
       }
-
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll);
-
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
+
   return (
-    <nav className={`${styles.navbar} ${hide ? styles.hide : ''}`}>
+    <nav className={`${styles.navbar} ${hide ? styles.hide : ''} ${darkMode ? styles.dark : ''}`}>
       <Link to="/" className={styles.brand}>
         Terminal Musing
       </Link>
+
       <div className={styles.navLinks}>
         <Link to="/law" className={styles.navLink}>Law</Link>
         <Link to="/social-issues" className={styles.navLink}>Social Issues</Link>
@@ -39,7 +42,13 @@ const Navbar = () => {
         <Link to="/short-stories" className={styles.navLink}>Short Stories</Link>
         <Link to="/android-linux" className={styles.navLink}>Android & Linux</Link>
       </div>
-      <div className={styles.hamburger}>☰</div>
+
+      <div className={styles.controls}>
+        <div className={styles.hamburger}>☰</div>
+        <button onClick={toggleDarkMode} className={styles.toggleDarkBtn}>
+          {darkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
     </nav>
   );
 };

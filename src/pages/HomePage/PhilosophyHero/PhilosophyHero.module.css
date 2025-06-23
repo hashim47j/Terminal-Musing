@@ -1,164 +1,178 @@
-/* Terminal-Musing/src/pages/HomePage/PhilosophyHero/PhilosophyHero.module.css */
-
 .philosophyHero {
   display: flex;
   align-items: center;
-  padding: 100px 5%;
+  justify-content: space-between;
+  padding: 40px 5% 80px; /* Reduced top + bottom padding */
   background-color: #fff;
-  height: 100vh; /* KEEP THIS */
-  scroll-snap-align: start; /* KEEP THIS */
-  flex-shrink: 0; /* KEEP THIS */
-  overflow: hidden;
+  height: 100vh;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  overflow-x: hidden;
   position: relative;
+  box-sizing: border-box;
+  gap: 40px;
+  width: 100vw;
+  max-width: 100%;
 }
+
 .contentWrapper {
   flex: 1;
-  padding-right: 60px;
   max-width: 55%;
+  padding: 0 40px 0 20px; /* ⬅️ Left padding ensures no left clipping */
+  box-sizing: border-box;
+  word-break: break-word;
 }
 
 .mainHeading {
-  font-family: 'Lugrasimo', 'Playfair Display', serif; 
-  font-size: 4.2em; /* Slightly larger for impact */
+  font-family: 'Lugrasimo', 'Playfair Display', serif;
+  font-size: 4.2em;
   line-height: 1.15;
   margin-bottom: 25px;
   color: #222;
-  font-weight: 700; /* Make it bold */
+  font-weight: 700;
 }
 
 .description {
   font-family: 'Roboto', sans-serif;
-  font-size: 1.35em; /* Slightly larger for readability */
+  font-size: 1.35em;
   line-height: 1.7;
   margin-bottom: 40px;
   color: #555;
-  max-width: 650px; /* A bit wider for the description */
 }
 
 .categoryTag {
   background-color: transparent;
   border: 2px solid #333;
   color: #333;
-  padding: 14px 30px; /* More padding for a bolder button */
+  padding: 14px 30px;
   font-size: 1.05em;
   font-weight: bold;
-  border-radius: 50px; /* Pill shape for the tag */
+  border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: inline-block;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle initial shadow */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: inline-block;
 }
 
 .categoryTag:hover {
   background-color: #333;
   color: #fff;
-  box-shadow: 0 8px 15px rgba(0,0,0,0.2); /* More prominent shadow on hover */
-  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
 }
 
 .imageWrapper {
   flex: 1;
-  text-align: center;
-  position: relative;
   max-width: 45%;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .sisyphusImage {
+  width: 100%;
   max-width: 100%;
   height: auto;
+  border-radius: 10px;
   display: block;
   margin: 0 auto;
-  border-radius: 10px; /* Nicer rounded corners */
- /* box-shadow: 0 15px 40px rgba(0,0,0,0.15); /* More depth */
 }
 
 .camusQuote {
   font-family: 'Playfair Display', serif;
-  font-size: 1.15em; /* Slightly larger quote */
+  font-size: 1.15em;
   font-style: italic;
   color: #666;
-  margin-top: 30px; /* More space below image */
+  margin-top: 30px;
   text-align: right;
   padding-right: 20px;
   line-height: 1.5;
   font-weight: 500;
 }
 
-/* --- Responsive Adjustments --- */
-@media (max-width: 1200px) {
-  .mainHeading 
-  {
-    font-size: 3.8em;
-  }
-  .description {
-    font-size: 1.2em;
-  }
-  .contentWrapper {
-    padding-right: 40px;
-  }
-}
+/* ---------- Responsive Breakpoints ---------- */
 
 @media (max-width: 992px) {
   .philosophyHero {
     flex-direction: column;
-    padding: 80px 5%;
-    min-height: unset; /* Revert min-height for mobile if needed, but height: 100vh might override it */
+    align-items: center;
+    justify-content: flex-start;
+    height: auto;
+    padding: 40px 5% 40px; /* ⬅️ top padding reduced more */
   }
 
-  .contentWrapper,
+  .contentWrapper {
+    max-width: 100%;
+    padding: 0 25px;
+    text-align: center;
+  }
+
   .imageWrapper {
     max-width: 100%;
-    padding-right: 0;
-    margin-bottom: 50px;
-  }
-
-  .imageWrapper {
-    order: -1; /* Image appears above text on mobile */
-    margin-bottom: 40px;
+    order: -1;
+    margin-bottom: 30px;
   }
 
   .mainHeading {
-    font-size: 3.2em;
-    text-align: center;
+    font-size: 2.4em;
   }
 
   .description {
-    text-align: center;
-    font-size: 1.1em;
+    font-size: 1em;
   }
 
   .categoryTag {
-    display: block;
     margin: 0 auto;
-    width: fit-content;
   }
 
   .camusQuote {
     text-align: center;
     padding-right: 0;
   }
+
+  .sisyphusImage {
+    max-width: 60%;
+  }
 }
 
 @media (max-width: 768px) {
   .mainHeading {
-    font-size: 2.8em;
+    font-size: 2em;
   }
-  .philosophyHero {
-    padding: 60px 5%;
+
+  .description {
+    font-size: 0.95em;
+  }
+
+  .sisyphusImage {
+    max-width: 55%;
+  }
+
+  .contentWrapper {
+    padding: 0 15px;
   }
 }
 
 @media (max-width: 480px) {
   .mainHeading {
-    font-size: 2.2em;
+    font-size: 1.75em;
   }
+
   .description {
-    font-size: 1em;
-  }
-  .categoryTag {
     font-size: 0.9em;
-    padding: 12px 25px;
+  }
+
+  .categoryTag {
+    font-size: 0.85em;
+    padding: 10px 20px;
+  }
+
+  .sisyphusImage {
+    max-width: 50%;
+  }
+
+  .contentWrapper {
+    padding: 0 10px;
   }
 }

@@ -1,0 +1,149 @@
+/* Terminal-Musing/src/pages/HomePage/HistoryHero/HistoryHero.module.css */
+
+.historyHero {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  background-color: #000;
+  overflow: hidden;
+  color: #f0f0f0;
+  scroll-snap-align: start; /* KEEP THIS */
+  flex-shrink: 0; /* KEEP THIS */
+}
+
+/* ... rest of your HistoryHero CSS ... */
+.silkRoadImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-image: url('../../../assets/silk-road-map.png');
+  background-repeat: no-repeat;
+  object-fit: cover;
+  object-position: 50% -300%; /* ← slight upward zoom */
+  transition: transform 0.5s ease;
+  z-index: 0;
+}
+
+/* Dark overlay only on mobile */
+.overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+/* Dynamically zoom based on screen width */
+@media (max-width: 1024px) {
+  .silkRoadImage {
+    transform: scale(1.05);
+  }
+}
+@media (max-width: 900px) {
+  .silkRoadImage {
+    transform: scale(1.1);
+  }
+}
+@media (max-width: 768px) {
+  .silkRoadImage {
+    transform: scale(1.2);
+  }
+  .overlay {
+    display: block;
+  }
+}
+@media (max-width: 600px) {
+  .silkRoadImage {
+    transform: scale(1.4);
+  }
+}
+@media (max-width: 480px) {
+  .silkRoadImage {
+    transform: scale(1.6);
+  }
+}
+
+/* Text & Button Positioned Absolutely */
+.mainHeading {
+  position: absolute;
+  top: 20%;
+  right: 5%;
+  font-family: 'Average', 'Playfair Display', serif;
+  font-size: 4.2em;
+  font-weight: 500;
+  color: #fff;
+  text-align: right;
+  z-index: 2;
+  max-width: 90vw;
+  line-height: 1.2;
+}
+
+.description {
+  position: absolute;
+  top: 45%;
+  right: 5%;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5em;
+  line-height: 1.6;
+  color: #ccc;
+  text-align: right;
+  z-index: 2;
+  max-width: 90vw;
+}
+
+.categoryTag {
+  position: absolute;
+  top: 80%;
+  right: 10%;
+  background-color: transparent;
+  border: 2px solid #ccc;
+  color: #ccc;
+  padding: 14px 30px;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 0px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  z-index: 2;
+}
+
+.categoryTag:hover {
+  background-color: #ccc;
+  color: #000;
+  box-shadow: 0 8px 15px rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+/* Responsive positioning tweaks */
+@media (max-width: 768px) {
+  .mainHeading {
+    top: 15%;
+    right: 50%;
+    transform: translateX(50%);
+    font-size: 2.6em;
+    text-align: center;
+  }
+
+  .description {
+    top: 38%;
+    right: 50%;
+    transform: translateX(50%);
+    font-size: 1.1em;
+    text-align: center;
+  }
+
+  .categoryTag {
+    top: 55%;
+    right: 50%;
+    transform: translateX(50%);
+    font-size: 0.95em;
+    padding: 12px 24px;
+  }
+}

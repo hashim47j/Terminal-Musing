@@ -1,39 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
+import { useDarkMode } from '../../context/DarkModeContext'; // adjust path
 
 const Navbar = () => {
+  const { darkMode, setDarkMode } = useDarkMode(); // ✅ use context only
+
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // ⬅️ NEW
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        setHide(true);
-      } else {
-        setHide(false);
-      }
+      setHide(currentScrollY > lastScrollY && currentScrollY > 50);
       setLastScrollY(currentScrollY);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-  };
-
-  const toggleMenu = () => {
-    setMenuOpen(prev => !prev); // ⬅️ NEW
+  const getCenterTitle = () => {
+    if (currentPath === '/') return 'Terminal Musing';
+    if (currentPath === '/philosophy') return 'Philosophy';
+    return '';
   };
 
   return (
     <nav className={`${styles.navbar} ${hide ? styles.hide : ''} ${darkMode ? styles.dark : ''}`}>
-      <Link to="/" className={styles.brand}>Terminal Musing</Link>
+      <div className={styles.leftSpacer}></div>
+
+      <div className={styles.centerTitle}>
+        {getCenterTitle() && <Link to={currentPath} className={styles.brand}>{getCenterTitle()}</Link>}
+      </div>
+
+      <div className={styles.rightControls}>
+        <div onClick={() => setMenuOpen(!menuOpen)} className={styles.hamburger}>☰</div>
+        <button onClick={() => setDarkMode(!darkMode)} className={styles.toggleDarkBtn}>
+          {darkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
 
       <div className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ''}`}>
         <Link to="/law" className={styles.navLink}>Law</Link>
@@ -45,13 +54,6 @@ const Navbar = () => {
         <Link to="/short-stories" className={styles.navLink}>Short Stories</Link>
         <Link to="/android-linux" className={styles.navLink}>Android & Linux</Link>
         <Link to="/admin" className={`${styles.navLink} ${styles.adminLink}`}>Admin</Link>
-      </div>
-
-      <div className={styles.controls}>
-        <div onClick={toggleMenu} className={styles.hamburger}>☰</div>
-        <button onClick={toggleDarkMode} className={styles.toggleDarkBtn}>
-          {darkMode ? '☀️' : '🌙'}
-        </button>
       </div>
     </nav>
   );

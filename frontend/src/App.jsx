@@ -7,6 +7,7 @@ import Footer from './components/Footer/Footer';
 
 import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage/AdminPage'; // ✅ Admin Page
+import PhilosophyPage from './pages/PhilosophyPage';
 
 import BlogPage from './pages/BlogPage/BlogPage'; // ✅ Make sure the path matches your file
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<AdminPage />} /> {/* ✅ Admin */}
           <Route path="/blogs/:id" element={<BlogPage />} />
+          <Route path="/philosophy" element={<PhilosophyPage />} />
 
 
           {/* Placeholder routes (uncomment as you implement them) */}

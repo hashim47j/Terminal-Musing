@@ -1,0 +1,26 @@
+{
+  "id": "ec15b0ef-0f73-4717-a390-ebd3ee79ec9f",
+  "title": "akki babu sua hai",
+  "subheading": "bada hatami hai saale marna hai",
+  "category": "philosophy",
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "bada hatami hai saale marna hai"
+    },
+    {
+      "type": "paragraph",
+      "text": "Tanzeel aka Akki \nage 19\noccupation nalla"
+    },
+    {
+      "type": "image",
+      "src": "blob:http://localhost:5173/54c5dd54-5369-48de-a1d4-c2ae99674350",
+      "alt": "Inserted image"
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    }
+  ],
+  "date": "2025-06-28T09:01:31.881Z"
+}

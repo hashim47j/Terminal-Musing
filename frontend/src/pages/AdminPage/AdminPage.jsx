@@ -10,7 +10,7 @@ const categories = [
   'Poems',
   'Photography',
   'Short Stories',
-  'Android & Linux'
+  'Android & Linux',
 ];
 
 const AdminPage = () => {
@@ -54,6 +54,9 @@ const AdminPage = () => {
       ],
       date: new Date().toISOString(),
     };
+
+    // ✅ Debug line to confirm environment variable is loaded
+    console.log('✅ Using API:', import.meta.env.VITE_API_BASE_URL);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/blogs`, {
@@ -126,7 +129,9 @@ const AdminPage = () => {
         <label>Category</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           {categories.map((cat) => (
-            <option value={cat} key={cat}>{cat}</option>
+            <option value={cat} key={cat}>
+              {cat}
+            </option>
           ))}
         </select>
       </div>

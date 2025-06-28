@@ -1,0 +1,26 @@
+{
+  "id": "df71bad5-a2f2-42c1-afab-06a347ec05c1",
+  "title": "blog ",
+  "subheading": "akki babu",
+  "category": "philosophy",
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "akki babu"
+    },
+    {
+      "type": "paragraph",
+      "text": "ayan babu hifxu babu"
+    },
+    {
+      "type": "image",
+      "src": "blob:http://localhost:5173/532a6096-9caa-40b8-8c43-4a2e635c22e4",
+      "alt": "Inserted image"
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    }
+  ],
+  "date": "2025-06-28T08:58:39.661Z"
+}

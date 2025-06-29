@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import commentRoutes from './comments/routes/comments.js'; // ✅ comment API
 
 const app = express();
 const PORT = 5000;
@@ -14,6 +15,15 @@ const __dirname = path.dirname(__filename);
 // === MIDDLEWARE ===
 app.use(cors());
 app.use(bodyParser.json());
+
+// ✅ Serve static blog JSON files
+app.use('/blogs', express.static(path.join(__dirname, 'blogs')));
+
+// ✅ Serve uploaded images (e.g., /uploads/image.jpg)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ✅ Mount Comment API at /api/comments
+app.use('/api/comments', commentRoutes);
 
 // === POST /api/blogs ===
 // Save a blog post under /blogs/:category/:id.json
@@ -39,7 +49,7 @@ app.post('/api/blogs', async (req, res) => {
 });
 
 // === GET /api/blogs?category=philosophy ===
-// Return preview data of all blogs in the given category
+// Return preview data of all blogs in a category
 app.get('/api/blogs', async (req, res) => {
   const category = req.query.category;
 
@@ -74,11 +84,12 @@ app.get('/api/blogs', async (req, res) => {
   }
 });
 
-// === Test Route ===
+// === Root Test Route ===
 app.get('/', (req, res) => {
   res.send('✅ Blog server is running.');
 });
 
+// === Start Server ===
 app.listen(PORT, () => {
   console.log(`✅ Server is running at http://localhost:${PORT}`);
 });

@@ -1,0 +1,26 @@
+{
+  "id": "08047fc9-ca57-4fe6-ac32-0b280f2e1f18",
+  "title": "lhcvlbds",
+  "subheading": "hello hekko",
+  "category": "philosophy",
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "hello hekko"
+    },
+    {
+      "type": "paragraph",
+      "text": "mew mew mew mew mew mew mew mew mew"
+    },
+    {
+      "type": "image",
+      "src": "blob:http://localhost:5178/64f35ed0-ac4a-4c42-a63b-b7430fcebdb4",
+      "alt": "Inserted image"
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    }
+  ],
+  "date": "2025-06-29T06:44:51.411Z"
+}

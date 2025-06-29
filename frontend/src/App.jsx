@@ -6,10 +6,12 @@ import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 
 import HomePage from './pages/HomePage';
-import AdminPage from './pages/AdminPage/AdminPage'; // ✅ Admin Page
+import AdminPage from './pages/AdminPage/AdminPage'; 
 import PhilosophyPage from './pages/PhilosophyPage';
+import PhiloBlog from './pages/PhilosophyPage/PhiloBlog'; 
 
-import BlogPage from './pages/BlogPage/BlogPage'; // ✅ Make sure the path matches your file
+
+import BlogPage from './pages/BlogPage/BlogPage'; 
 
 
 // Placeholder page imports (you can uncomment these as you create them)
@@ -29,22 +31,15 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/admin" element={<AdminPage />} /> {/* ✅ Admin */}
+          <Route path="/admin" element={<AdminPage />} />
+
+          {/* ⚠️ More specific route first */}
+          <Route path="/blogs/philosophy/:id" element={<PhiloBlog />} />
           <Route path="/blogs/:id" element={<BlogPage />} />
+
           <Route path="/philosophy" element={<PhilosophyPage />} />
 
-
-          {/* Placeholder routes (uncomment as you implement them) */}
-          {/* <Route path="/law" element={<LawPage />} /> */}
-          {/* <Route path="/social-issues" element={<SocialIssuesPage />} /> */}
-          {/* <Route path="/poems" element={<PoemsPage />} /> */}
-          {/* <Route path="/photography" element={<PhotographyPage />} /> */}
-          {/* <Route path="/philosophy" element={<PhilosophyPage />} /> */}
-          {/* <Route path="/history" element={<HistoryPage />} /> */}
-          {/* <Route path="/short-stories" element={<ShortStoriesPage />} /> */}
-          {/* <Route path="/android-linux" element={<AndroidLinuxPage />} /> */}
-
-          {/* <Route path="*" element={<NotFoundPage />} /> */}
+          {/* Add more routes as needed */}
         </Routes>
       </main>
       <Footer />

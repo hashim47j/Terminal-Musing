@@ -43,18 +43,29 @@ const PhilosophyPage = () => {
             <div
               key={post.id}
               className={styles.postCard}
-              onClick={() => navigate(`/blogs/${post.id}`)}
+              onClick={() => navigate(`/blogs/philosophy/${post.id}`)}
+
               style={{ cursor: 'pointer' }}
             >
               {post.coverImage ? (
-                <img src={post.coverImage} alt={post.title} className={styles.postImage} />
+                <img
+                  src={post.coverImage}
+                  alt={post.title}
+                  className={styles.postImage}
+                />
               ) : (
-                <div className={styles.postImage} style={{ background: '#ccc' }} />
+                <div className={styles.postImage} style={{ backgroundColor: '#ccc' }} />
               )}
               <div className={styles.postContent}>
                 <h3 className={styles.postTitle}>{post.title}</h3>
                 <p className={styles.postDescription}>{post.subheading}</p>
-                <span className={styles.postTime}>{new Date(post.date).toLocaleDateString()}</span>
+                <span className={styles.postTime}>
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                  })}
+                </span>
               </div>
             </div>
           ))}

@@ -1,0 +1,346 @@
+/* Terminal-Musing/src/pages/PhiloBlog/PhiloBlog.module.css */
+
+/* --- General Page Container --- */
+.blogPageOuterContainer {
+  background-color: #f0f0f0; /* Overall light grey page background */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Main Content Wrapper (The large beige/brown block that contains post and comments) --- */
+.mainContentWrapper {
+  background-color: #f5f0eb; /* Adjusted to a warmer beige/off-white based on image */
+  padding: 40px 5%;
+  margin: 20px 5%;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* --- Post Content Section --- */
+.postContentSection {
+  padding-bottom: 20px;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8em;
+  color: #333333; /* Dark text */
+  margin-bottom: 10px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.date {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9em;
+  color: #888888; /* Lighter grey for meta info */
+  margin-bottom: 30px;
+}
+
+.contentBodyPlaceholder {
+  background-color: #e0e0e0; /* The light grey box from the image */
+  min-height: 400px;
+  padding: 25px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.1em;
+  line-height: 1.8;
+  color: #444444; /* Medium dark text */
+}
+
+.paragraph {
+  margin-bottom: 1em;
+}
+
+.inlineImage {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+  border-radius: 5px;
+}
+
+
+/* --- Comments Section --- */
+.commentSection {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  padding-top: 20px;
+}
+
+.commentList {
+  flex: 2;
+  padding-right: 15px;
+}
+
+.commentBox {
+  background: #f7f7f7; /* Slightly off-white for comment boxes */
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border: 1px solid #dddddd; /* Lighter border */
+  border-radius: 5px;
+}
+
+.commentBox strong {
+  display: block;
+  font-size: 1.05rem;
+  font-family: 'Roboto', sans-serif;
+  color: #333333; /* Dark text */
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.commentMeta {
+  font-size: 0.85rem;
+  color: #888888; /* Lighter grey for meta info */
+  margin-bottom: 10px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.commentBox p {
+  font-size: 0.95rem;
+  color: #444444; /* Medium dark text */
+  line-height: 1.6;
+  font-family: 'Roboto', sans-serif;
+}
+
+.replyBtn {
+  font-size: 0.85rem;
+  background: none;
+  border: none;
+  color: #8c6e5a; /* Adjusted to muted reddish-brown/orange */
+  cursor: pointer;
+  padding-top: 10px;
+  font-family: 'Roboto', sans-serif;
+  transition: color 0.2s ease;
+}
+
+.replyBtn:hover {
+  color: #a3816c; /* Slightly lighter on hover */
+  text-decoration: underline;
+}
+
+/* --- Comment Form --- */
+.commentForm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 15px;
+}
+
+.commentForm h3 {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #333333; /* Dark text */
+  line-height: 1.2;
+}
+
+.commentForm label {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+  font-family: 'Roboto', sans-serif;
+  color: #555555; /* Slightly lighter than main text, but darker than meta */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.commentForm input,
+.commentForm textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  border: 1px solid #cccccc; /* Light grey border */
+  border-radius: 4px;
+  background-color: #ffffff; /* White input background */
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+  color: #333333; /* Input text color */
+}
+
+.commentForm textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.commentForm input:focus,
+.commentForm textarea:focus {
+  border-color: #007bff; /* Focus color can remain standard blue or match a theme accent */
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.postBtn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background-color: #333333; /* Dark button background */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  align-self: flex-end;
+}
+
+.postBtn:hover {
+  background-color: #555555; /* Slightly lighter on hover */
+  transform: translateY(-2px);
+}
+
+/* --- Dark mode adjustments (Ensure these match the dark mode vision if applicable) --- */
+.darkMode {
+  background-color: #1a1a1a;
+}
+
+.darkMode .mainContentWrapper {
+  background-color: #222222;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .title,
+.darkMode .shareThoughtsHeading,
+.darkMode .commentForm h3,
+.darkMode .commentBox strong {
+  color: #f0f0f0;
+}
+
+.darkMode .date,
+.darkMode .commentMeta,
+.darkMode .commentForm label {
+  color: #aaa;
+}
+
+.darkMode .contentBodyPlaceholder,
+.darkMode .commentBox {
+  background: #333333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.darkMode .commentForm input,
+.darkMode .commentForm textarea {
+  background-color: #444444;
+  color: #fff;
+  border-color: #666;
+}
+
+.darkMode .postBtn {
+  background-color: #555;
+}
+
+.darkMode .postBtn:hover {
+  background-color: #777;
+}
+
+.darkMode .replyBtn {
+  color: #88ccff; /* A suitable light blue for dark mode link */
+}
+
+.darkMode .replyBtn:hover {
+  color: #b0e0ff;
+}
+
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 992px) {
+  .mainContentWrapper {
+    padding: 30px 4%;
+    margin: 15px 4%;
+    gap: 30px;
+  }
+  .title {
+    font-size: 2.2em;
+  }
+  .contentBodyPlaceholder {
+    min-height: 350px;
+    padding: 20px;
+  }
+  .commentSection {
+    flex-direction: column;
+    padding-top: 0;
+    gap: 30px;
+  }
+  .commentList,
+  .commentForm {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .commentForm {
+    width: 100%;
+  }
+  .shareThoughtsHeading {
+    font-size: 1.6em;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContentWrapper {
+    padding: 25px 3%;
+    margin: 10px 3%;
+    gap: 25px;
+  }
+  .title {
+    font-size: 1.8em;
+  }
+  .date {
+    font-size: 0.85em;
+  }
+  .contentBodyPlaceholder {
+    min-height: 300px;
+    padding: 15px;
+    font-size: 1em;
+  }
+  .commentBox {
+    padding: 12px 15px;
+  }
+  .commentBox strong {
+    font-size: 0.95rem;
+  }
+  .commentMeta, .commentBox p, .replyBtn {
+    font-size: 0.8rem;
+  }
+  .commentForm h3 {
+    font-size: 1.5em;
+  }
+  .commentForm label, .commentForm input, .commentForm textarea {
+    font-size: 0.9em;
+  }
+  .postBtn {
+    padding: 10px 20px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContentWrapper {
+    padding: 20px 2%;
+    margin: 5px 2%;
+  }
+  .title {
+    font-size: 1.5em;
+  }
+  .contentBodyPlaceholder {
+    min-height: 250px;
+  }
+  .commentBox {
+    padding: 10px 12px;
+  }
+  .commentBox strong, .commentMeta, .commentBox p, .replyBtn {
+    font-size: 0.75rem;
+  }
+  .commentForm h3 {
+    font-size: 1.3em;
+  }
+}

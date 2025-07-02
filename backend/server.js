@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 
 // === MIDDLEWARE ===
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '2mb' })); // Limit to prevent abuse
 
 // === STATIC FILES ===
 app.use('/blogs', express.static(path.join(__dirname, 'blogs')));
@@ -41,17 +41,19 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// === IMAGE UPLOAD ROUTE (POST only) ===
+// === ROUTES ===
+
+// ✅ Upload image
 app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
 
   const imageUrl = `/uploads/${req.file.filename}`;
-  res.status(200).json({ imageUrl }); // e.g., /uploads/myimage-1719456950000.jpg
+  res.status(200).json({ imageUrl });
 });
 
-// === SAVE BLOG POST ===
+// ✅ Save blog post
 app.post('/api/blogs', async (req, res) => {
   try {
     const blogData = req.body;
@@ -73,7 +75,7 @@ app.post('/api/blogs', async (req, res) => {
   }
 });
 
-// === GET BLOG PREVIEWS ===
+// ✅ Get all blog previews by category
 app.get('/api/blogs', async (req, res) => {
   const category = req.query.category;
   if (!category) {
@@ -107,12 +109,17 @@ app.get('/api/blogs', async (req, res) => {
   }
 });
 
-// === TEST ROUTE ===
+// ✅ Root test route
 app.get('/', (req, res) => {
-  res.send('✅ Blog server is running.');
+  res.send('✅ Terminal Musing blog backend is running.');
+});
+
+// ✅ Fallback route (optional)
+app.use((req, res) => {
+  res.status(404).json({ error: '🚫 Route not found' });
 });
 
 // === START SERVER ===
-app.listen(PORT, () => {
-  console.log(`✅ Server is running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server is running at http://0.0.0.0:${PORT}`);
 });

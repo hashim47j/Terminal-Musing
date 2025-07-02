@@ -1,0 +1,27 @@
+{
+  "id": "a19e7552-3e21-4dc8-9b1a-37a90f76c520",
+  "title": "meow meow m",
+  "subheading": "hi",
+  "category": "philosophy",
+  "coverImage": "http://localhost:5000/uploads/Screenshot_From_2024-12-21_11-44-05-1751354706959.png",
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "hi"
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    },
+    {
+      "type": "image",
+      "src": "http://localhost:5000/uploads/Screenshot_From_2024-12-21_11-44-12-1751354703518.png",
+      "alt": "Inserted image"
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    }
+  ],
+  "date": "2025-07-01T07:25:06.966Z"
+}

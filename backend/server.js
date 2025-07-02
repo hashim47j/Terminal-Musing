@@ -3,12 +3,14 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import fs from 'fs-extra';
 import path from 'path';
+import multer from 'multer';
 import { fileURLToPath } from 'url';
-import commentRoutes from './comments/routes/comments.js'; // ✅ comment API
+import commentRoutes from './comments/routes/comments.js';
 
 const app = express();
 const PORT = 5000;
 
+// Convert ES module paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -16,17 +18,40 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(bodyParser.json());
 
-// ✅ Serve static blog JSON files
+// === STATIC FILES ===
 app.use('/blogs', express.static(path.join(__dirname, 'blogs')));
-
-// ✅ Serve uploaded images (e.g., /uploads/image.jpg)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// ✅ Mount Comment API at /api/comments
 app.use('/api/comments', commentRoutes);
 
-// === POST /api/blogs ===
-// Save a blog post under /blogs/:category/:id.json
+// === IMAGE UPLOAD SETUP ===
+const uploadDir = path.join(__dirname, 'uploads');
+fs.ensureDirSync(uploadDir);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+    cb(null, `${baseName}-${timestamp}${ext}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// === IMAGE UPLOAD ROUTE (POST only) ===
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  const imageUrl = `/uploads/${req.file.filename}`;
+  res.status(200).json({ imageUrl }); // e.g., /uploads/myimage-1719456950000.jpg
+});
+
+// === SAVE BLOG POST ===
 app.post('/api/blogs', async (req, res) => {
   try {
     const blogData = req.body;
@@ -48,11 +73,9 @@ app.post('/api/blogs', async (req, res) => {
   }
 });
 
-// === GET /api/blogs?category=philosophy ===
-// Return preview data of all blogs in a category
+// === GET BLOG PREVIEWS ===
 app.get('/api/blogs', async (req, res) => {
   const category = req.query.category;
-
   if (!category) {
     return res.status(400).json({ error: 'Category is required in query.' });
   }
@@ -84,12 +107,12 @@ app.get('/api/blogs', async (req, res) => {
   }
 });
 
-// === Root Test Route ===
+// === TEST ROUTE ===
 app.get('/', (req, res) => {
   res.send('✅ Blog server is running.');
 });
 
-// === Start Server ===
+// === START SERVER ===
 app.listen(PORT, () => {
   console.log(`✅ Server is running at http://localhost:${PORT}`);
 });

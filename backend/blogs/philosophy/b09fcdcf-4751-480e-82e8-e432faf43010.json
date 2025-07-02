@@ -1,8 +1,9 @@
 {
-  "id": "a32c8651-1741-4e4b-9f92-4fe84cc656fd",
-  "title": "",
+  "id": "b09fcdcf-4751-480e-82e8-e432faf43010",
+  "title": "hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
   "subheading": "",
   "category": "philosophy",
+  "coverImage": "/uploads/Screenshot_From_2024-12-21_11-42-50-1751353999073.png",
   "content": [
     {
       "type": "paragraph",
@@ -14,7 +15,7 @@
     },
     {
       "type": "image",
-      "src": "blob:http://localhost:5178/530db0de-b78d-43fe-a491-80d38120eb80",
+      "src": "/uploads/Screenshot_From_2025-06-22_05-11-19-1751353997648.png",
       "alt": "Inserted image"
     },
     {
@@ -22,5 +23,5 @@
       "text": ""
     }
   ],
-  "date": "2025-06-29T09:40:14.785Z"
+  "date": "2025-07-01T07:13:19.088Z"
 }

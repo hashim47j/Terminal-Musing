@@ -1,0 +1,27 @@
+{
+  "id": "4523e352-eb96-492f-9e48-e1d3e163064a",
+  "title": "Hello my name is ayan",
+  "subheading": "This me",
+  "category": "philosophy",
+  "coverImage": "http://localhost:5000/uploads/Screenshot_From_2024-12-29_13-48-46-1751354866624.png",
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "This me"
+    },
+    {
+      "type": "paragraph",
+      "text": "Name Ayan\nclass 12 passed \nschool passed\nresidence miya bazar\nskill skill issue\nanimal fav goat ka bacha "
+    },
+    {
+      "type": "image",
+      "src": "http://localhost:5000/uploads/Screenshot_From_2024-12-21_11-48-59-1751354865040.png",
+      "alt": "Inserted image"
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    }
+  ],
+  "date": "2025-07-01T07:27:46.627Z"
+}

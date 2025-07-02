@@ -20,50 +20,75 @@ const AdminPage = () => {
   const [body, setBody] = useState('');
   const [category, setCategory] = useState(categories[0]);
 
-  const handleCoverImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setCoverImage(file);
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      return `${import.meta.env.VITE_API_BASE_URL}${data.imageUrl}`;
+
+    } catch (err) {
+      console.error('❌ Image upload failed:', err);
+      return null;
+    }
   };
 
-  const handleInsertImageIntoBody = (e) => {
+  const handleInsertImageIntoBody = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setBody((prev) => prev + `\n\n<img src="${imageUrl}" alt="Inserted" />\n\n`);
+      const imageUrl = await uploadImage(file);
+      if (imageUrl) {
+        setBody((prev) => prev + `\n\n<img src="${imageUrl}" alt="Inserted image" class="inlineImage" />\n\n`);
+
+      } else {
+        alert('Image upload failed.');
+      }
     }
   };
 
   const handlePublish = async () => {
     const id = uuidv4();
+
+    let coverImageUrl = '';
+    if (coverImage) {
+      coverImageUrl = await uploadImage(coverImage);
+      if (!coverImageUrl) {
+        alert('Cover image upload failed.');
+        return;
+      }
+    }
+
+    const contentBlocks = body.split('\n\n').map((block) =>
+      block.includes('<img')
+        ? {
+            type: 'image',
+            src: block.match(/src="(.*?)"/)?.[1] || '',
+            alt: 'Inserted image',
+          }
+        : { type: 'paragraph', text: block }
+    );
+
     const blogData = {
       id,
       title,
       subheading,
       category: category.toLowerCase(),
-      content: [
-        { type: 'paragraph', text: subheading },
-        ...body.split('\n\n').map((block) =>
-          block.includes('<img')
-            ? {
-                type: 'image',
-                src: block.match(/src="(.*?)"/)?.[1] || '',
-                alt: 'Inserted image',
-              }
-            : { type: 'paragraph', text: block }
-        ),
-      ],
+      coverImage: coverImageUrl,
+      content: [{ type: 'paragraph', text: subheading }, ...contentBlocks],
       date: new Date().toISOString(),
     };
-
-    // ✅ Debug line to confirm environment variable is loaded
-    console.log('✅ Using API:', import.meta.env.VITE_API_BASE_URL);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/blogs`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(blogData),
       });
 
@@ -100,8 +125,8 @@ const AdminPage = () => {
       </div>
 
       <div className={styles.field}>
-        <label>Cover Image (above subheading)</label>
-        <input type="file" accept="image/*" onChange={handleCoverImageChange} />
+        <label>Cover Image</label>
+        <input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files[0])} />
         {coverImage && <p>{coverImage.name}</p>}
       </div>
 
@@ -120,7 +145,7 @@ const AdminPage = () => {
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Write your content here. Use <a href=''> for hyperlinks or add images."
+          placeholder="Write your content here. Use <a href=''> for hyperlinks or insert images."
         />
         <input type="file" accept="image/*" onChange={handleInsertImageIntoBody} />
       </div>
@@ -129,9 +154,7 @@ const AdminPage = () => {
         <label>Category</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           {categories.map((cat) => (
-            <option value={cat} key={cat}>
-              {cat}
-            </option>
+            <option value={cat} key={cat}>{cat}</option>
           ))}
         </select>
       </div>

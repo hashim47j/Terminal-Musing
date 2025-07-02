@@ -1,0 +1,62 @@
+/* Terminal-Musing/src/styles/index.css */
+/* Import external fonts (if any) */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Average&display=swap');
+
+
+/* --- Custom Fonts --- */
+@font-face {
+  font-family: 'Average';
+  src: url('../assets/Average-Regular.ttf');
+  font-weight: normal; /* Or specify if your font has different weights */
+  font-style: normal;
+  font-display: swap; 
+  font-family: 'Lugrasimo'; /* Give your font a recognizable name */
+  src: url('../assets/Lugrasimo-Regular.ttf') format('truetype'); /* Path relative to this CSS file */
+  font-weight: normal; /* Or specify if your font has different weights */
+  font-style: normal;
+  font-display: swap; /* Best practice for font loading */
+}
+
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f8f8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  /* We will specifically override h1 in PhilosophyHero.module.css */
+  font-family: 'Playfair Display', serif; /* Default heading font */
+  margin-bottom: 0.5em;
+  color: #222;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+main {
+  min-height: calc(100vh - 120px);
+}

@@ -16,7 +16,7 @@ const Navbar = () => {
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);
 
-  // Scroll hide logic
+  // Hide on scroll
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -27,19 +27,18 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  // Detect background for light/dark text
+  // Detect light/dark background
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsLightBackground(entry.isIntersecting),
       { threshold: 0.6 }
     );
-
     const target = document.querySelector('[data-navbar-bg-detect]');
     if (target) observer.observe(target);
     return () => target && observer.unobserve(target);
   }, [location]);
 
-  // Resize observer for left floating heading
+  // Resize brand wrapper
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -47,41 +46,28 @@ const Navbar = () => {
         setLeftWidth(entry.contentRect.width + padding);
       }
     });
-
     if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
-    return () => {
-      if (brandWrapperRef.current) observer.unobserve(brandWrapperRef.current);
-    };
+    return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
   }, [currentPath]);
 
-  // Title based on route
+  // Path-based title
   const getCenterTitle = () => {
     switch (currentPath) {
-      case '/':
-        return 'Terminal Musing';
-      case '/philosophy':
-        return 'Philosophy';
-      case '/history':
-        return 'History';
-      case '/writings':
-        return 'Writings';
-      case '/legal-social':
-        return 'Legal & Social Concerns';
-      case '/tech':
-        return 'Tech';
-      case '/daily-thoughts':
-        return 'Daily Thoughts';
-      case '/admin/login':
-        return 'Author(s)';
-      default:
-        return '';
+      case '/': return 'Terminal Musing';
+      case '/philosophy': return 'Philosophy';
+      case '/history': return 'History';
+      case '/writings': return 'Writings';
+      case '/legal-social': return 'Legal & Social Concerns';
+      case '/tech': return 'Tech';
+      case '/daily-thoughts': return 'Daily Thoughts';
+      case '/admin/login': return 'Author(s)';
+      default: return '';
     }
   };
 
-  // Handle secret 3-tap admin dialog
+  // 3-tap admin upload
   const handleBrandTap = () => {
     if (tapTimeout.current) clearTimeout(tapTimeout.current);
-
     setTapCount((prev) => {
       const next = prev + 1;
       if (next === 3) {
@@ -95,7 +81,7 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Left Floating Heading */}
+      {/* Left Title */}
       <div
         className={`
           ${styles.navbarLeft}
@@ -116,7 +102,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Right Floating Nav */}
+      {/* Right Nav */}
       <div
         className={`
           ${styles.navbarRight}
@@ -127,6 +113,8 @@ const Navbar = () => {
         <div
           onClick={() => setMenuOpen(!menuOpen)}
           className={styles.hamburger}
+          aria-label="Toggle menu"
+          role="button"
         >
           ☰
         </div>
@@ -141,7 +129,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* 🔒 Secret Dialog */}
+      {/* Admin Key Upload */}
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
           <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>

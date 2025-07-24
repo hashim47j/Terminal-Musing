@@ -22,5 +22,32 @@
     align-items: center;
     overflow: hidden;
   }
+  .cursorSquare {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    pointer-events: none;
+    z-index: 1;
+    transform: translate(-9999px, -9999px);
+    transition: transform 0.08s ease-out;
+    border-radius: 12px;
+    overflow: hidden;
+  }
   
+  .cursorSquare::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    backdrop-filter: invert(1) blur(0px);
+    -webkit-backdrop-filter: invert(1) blur(6px);
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    mix-blend-mode: normal;
+  }
   

@@ -1,0 +1,472 @@
+/* Terminal-Musing/src/pages/AdminLogin/AdminLogin.css */
+
+/* Global styles for the blue border around the page */
+html, body {
+    margin: 0;
+    padding: 0;
+   
+    box-sizing: border-box;
+    background-image: url('/images/history-map-bg.jpg'); /* Make sure this file exists in public/images/ */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.login-wrapper {
+    background-image: url('/images/white-texture.jpg'); /* Make sure this file exists in public/images/ */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f2f2f2;
+
+    min-height: calc(100vh - 23px); /* Increased border (20 * 1.15 = 23) */
+    width: calc(100vw - 23px); /* Increased border (20 * 1.15 = 23) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative; /* Essential for absolute positioning of author-footer */
+    padding-top: 57.5px; /* Increased by 15% (50 * 1.15) */
+    padding-bottom: 23px; /* Increased by 15% (20 * 1.15) */
+}
+
+/* --- Main Content Area (Form and Image side-by-side) --- */
+.login-main-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 122.452px;
+    margin-top: -200px; /* PUSHED MUCH FURTHER UP (was -120px) */
+    flex-grow: 1; /* Allows content to take up available space, pushing footer down */
+}
+
+/* --- Login Form (Left Side) --- */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 345px; /* Increased by 15% (300 * 1.15) */
+    padding: 23px; /* Increased by 15% (20 * 1.15) */
+    /* Keep position: relative; if you have other absolute children that are direct children of the form */
+}
+
+.login-form h2 {
+    margin-bottom: 23px; /* Increased by 15% (20 * 1.15) */
+    font-size: 1.4375rem; /* Increased by 15% (1.25 * 1.15) */
+    font-weight: normal;
+    color: #333;
+    font-family: 'Times New Roman', serif;
+}
+
+.login-form input {
+    margin-bottom: 11.5px; /* Increased by 15% (10 * 1.15) */
+    width: 100%;
+    padding: 13.8px 11.5px; /* Increased by 15% (12 * 1.15, 10 * 1.15) */
+    border-radius: 4.6px; /* Increased by 15% (4 * 1.15) */
+    border: 1px solid black;
+    font-size: 1.15rem; /* Increased by 15% (1 * 1.15) */
+    color: #333;
+    background-color: transparent; /* Made transparent */
+    box-sizing: border-box;
+}
+
+.login-links {
+    width: 100%;
+    text-align: left;
+    font-size: 0.9775rem; /* Increased by 15% (0.85 * 1.15) */
+    margin-bottom: 23px; /* Increased by 15% (20 * 1.15) */
+    padding-left: 2.3px; /* Increased by 15% (2 * 1.15) */
+    position: relative; /* IMPORTANT: This needs to be relative for the comic-message-box's absolute positioning */
+    min-height: 25px; /* Ensures enough space for positioning base */
+    display: flex; /* Ensures 'a' tag behaves predictably */
+    align-items: center; /* Vertically center 'a' tag within this div */
+    justify-content: flex-start; /* Align 'a' tag to the left */
+}
+
+.login-links a {
+    color: black;
+    text-decoration: none;
+    transition: text-decoration 0.2s ease;
+}
+
+.login-links a:hover {
+    text-decoration: underline;
+}
+
+.login-form button {
+    align-self: flex-start;
+    background: black;
+    color: white;
+    border: none;
+    padding: 11.5px 34.5px; /* Increased by 15% (10 * 1.15, 30 * 1.15) */
+    border-radius: 4.6px; /* Increased by 15% (4 * 1.15) */
+    cursor: pointer;
+    font-size: 1.15rem; /* Increased by 15% (1 * 1.15) */
+    font-weight: bold;
+    transition: background 0.2s ease;
+}
+
+.login-form button:hover {
+    background: #333;
+}
+
+/* --- Main Image (Right Side) --- */
+.login-image-container {
+    width: 435.5px; /* Increased by 15% (350 * 1.15) */
+    height: 435.5px; /* Increased by 15% (350 * 1.15) */
+    max-width: 46vw; /* Adjusted max-width for 15% increase */
+    max-height: 46vw; /* Adjusted max-height for 15% increase */
+    overflow: hidden;
+    border: 1.15px solid #ddd; /* Increased by 15% (1 * 1.15) */
+    box-sizing: border-box;
+}
+
+.login-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* --- Author Footer (Bottom Right) --- */
+.author-footer {
+    position: absolute;
+    bottom: 46px; /* Increased by 15% (40 * 1.15) */
+    right: 0%;
+    text-align: center;
+    font-size: 0.92rem; /* Increased by 15% (0.8 * 1.15) */
+    color: black;
+    font-family: Arial, sans-serif;
+}
+
+.author-footer img {
+    width: 180px; /* Increased by 15% (80 * 1.15) */
+    height: 180px; /* Increased by 15% (80 * 1.15) */
+    object-fit: contain;
+    margin-bottom: 5.75px; /* Increased by 15% (5 * 1.15) */
+}
+
+/* --- Comic Style Message Box --- */
+.comic-message-box {
+    position: absolute;
+    top: 100%;
+    margin-top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 3px solid #333;
+    border-radius: 15px;
+    padding: 15px 25px;
+    box-shadow: 5px 5px 0px 0px rgba(51, 51, 51, 0.5);
+    z-index: 1000;
+    max-width: 384px;
+    text-align: center;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 1.1rem;
+    color: #333;
+    line-height: 1.4;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 18px solid transparent;
+        border-right: 18px solid transparent;
+        border-bottom: 18px solid rgba(255, 255, 255, 0.8);
+        border-top: none;
+        z-index: 1001;
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        bottom: calc(100% + 3px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-bottom: 22px solid #333;
+        border-top: none;
+        z-index: 999;
+    }
+}
+
+.comic-message-box p {
+    margin: 0;
+}
+
+
+/* --- Responsive Adjustments (also scaled by 15%) --- */
+@media (max-width: 1140.8px) {
+    .login-main-content {
+        gap: 76.5325px;
+        margin-top: -200px;
+    }
+    .login-image-container {
+        width: 360px;
+        height: 360px;
+    }
+    .author-footer {
+        right: 5.75%;
+        bottom: 23px;
+    }
+}
+
+@media (max-width: 883.2px) {
+    .login-wrapper {
+        padding-top: 46px;
+    }
+    .login-main-content {
+        flex-direction: column;
+        gap: 61.226px;
+        margin-top: -200px;
+    }
+
+    .login-image-container {
+        order: -1;
+        width: 92vw;
+        height: 92vw;
+        max-width: 402.5px;
+        max-height: 402.5px;
+    }
+
+    .login-form {
+        width: 97.75%;
+        max-width: 402.5px;
+        padding: 17.25px;
+        order: 0;
+    }
+
+    .author-footer {
+        position: absolute;
+        bottom: 46px;
+        right: 10%;
+        margin-top: auto;
+        margin-left: auto;
+        margin-right: auto;
+        width: auto;
+    }
+}
+
+@media (max-width: 552px) {
+    .login-wrapper {
+        padding-top: 23px;
+    }
+    .login-main-content {
+        gap: 45.9195px;
+        margin-top: -200px;
+    }
+    .login-form {
+        width: 103.5%;
+    }
+    .login-form h2 {
+        font-size: 1.265rem;
+    }
+    .login-form input {
+        padding: 11.5px;
+        font-size: 1.035rem;
+    }
+    .login-form button {
+        padding: 9.2px 28.75px;
+        font-size: 1.035rem;
+    }
+    .author-footer img {
+        width: 80.5px;
+        height: 80.5px;
+    }
+}
+
+/* --- START KEY VERIFICATION CASSETTE UI CSS --- */
+.key-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+  
+.cassette-ui {
+    position: relative;
+    width: 320px;
+    height: 180px;
+    background: #1c1c1c;
+    border: 6px solid #333;
+    border-radius: 12px;
+    box-shadow: 5px 5px 0 #000;
+    overflow: hidden;
+
+    transition: box-shadow 0.3s ease-out, border-color 0.3s ease-out;
+}
+
+.cassette-ui.key-inserted {
+    /* Removed box-shadow and border-color to remove green glow */
+}
+
+/* Image overlay for the exact cassette look */
+.cassette-outline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 2;
+}
+
+/* Reel containers - positioned absolutely over the image */
+.reel-container {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reel-left {
+    top: 52px;
+    left: 45px;
+    width: 40px;
+    height: 40px;
+}
+
+.reel-right {
+    top: 52px;
+    right: 45px;
+    width: 40px;
+    height: 40px;
+}
+  
+.reel {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #222;
+    border-radius: 50%;
+    background: 
+        radial-gradient(circle at center, 
+            #555 10%,
+            #222 15%, #333 18%, #222 22%,
+            #444 25%, #222 28%, 
+            #333 30%, #555 33%, #222 36%, #444 39%,
+            transparent 40%
+        );
+    animation: none;
+}
+  
+.reel.playing {
+    animation: spin 1s linear infinite;
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Insert Key Button Container - CENTERED */
+.insert-key-container {
+    position: absolute;
+    top: 75px; /* Vertically centered between reels */
+    left: 50%;
+    transform: translateX(-50%); /* Horizontally centered */
+    z-index: 3;
+    display: flex; /* To center the button within its container */
+    justify-content: center;
+    align-items: center;
+}
+
+.insert-key-button {
+    background-color: black;
+    color: white;
+    font-size: 0.85rem;
+    padding: 6px 12px; /* Slightly adjusted padding */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 90px; /* Ensure enough width for text */
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.insert-key-button:hover {
+    background-color: #333;
+}
+
+/* Play/Pause & Rewind Controls - BELOW Insert Key */
+.playback-controls {
+    position: absolute;
+    bottom: 25px; /* Below the insert key container */
+    left: 50%;
+    transform: translateX(-50%); /* Horizontally centered */
+    z-index: 3;
+    display: flex;
+    gap: 15px; /* Space between buttons */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Common styles for play/pause/rewind buttons */
+.play-button, .rewind-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+
+.play-button svg, .rewind-button svg {
+    width: 28px; /* Slightly larger icons for better tap targets */
+    height: 28px;
+    fill: black;
+}
+
+.play-button:hover, .rewind-button:hover {
+    opacity: 0.7;
+}
+
+/* Dismiss Button - TOP RIGHT */
+.dismiss-button {
+    position: absolute;
+    top: 10px; /* Distance from top edge */
+    right: 10px; /* Distance from right edge */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px; /* Small padding for the close button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4; /* Ensure it's above all other elements */
+    transition: opacity 0.2s ease;
+}
+
+.dismiss-button svg {
+    width: 20px;
+    height: 20px;
+    stroke: black;
+    stroke-width: 2; /* Make the 'X' thicker */
+}
+
+.dismiss-button:hover {
+    opacity: 0.7;
+}
+  
+.hidden-input {
+    display: none;
+}
+/* --- END KEY VERIFICATION CASSETTE UI CSS --- */

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './PhilosophyPage.module.css';
 import kantLight from '../../assets/kant-sapere-aude.png';
@@ -9,6 +9,28 @@ const PhilosophyPage = () => {
   const { darkMode } = useDarkMode();
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
+
+  const navbarBgRef = useRef(null);
+
+  // Optional: force IntersectionObserver to mount early for navbar
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // If needed, extra logic can go here for detection
+        // But the Navbar already observes this element globally
+      },
+      {
+        root: null,
+        threshold: 0.6,
+      }
+    );
+
+    if (navbarBgRef.current) observer.observe(navbarBgRef.current);
+
+    return () => {
+      if (navbarBgRef.current) observer.unobserve(navbarBgRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -26,6 +48,18 @@ const PhilosophyPage = () => {
 
   return (
     <div className={`${styles.philosophyPageContainer} ${darkMode ? styles.darkMode : ''}`}>
+      {/* ⬇️ This div allows the navbar to detect background brightness */}
+      <div
+        ref={navbarBgRef}
+        data-navbar-bg-detect
+        style={{
+          position: 'absolute',
+          top: 0,
+          height: '80px',
+          width: '100%',
+        }}
+      />
+
       <section className={styles.headerSection}>
         <div className={styles.kantSapereAudeImageWrapper}>
           <img
@@ -44,7 +78,6 @@ const PhilosophyPage = () => {
               key={post.id}
               className={styles.postCard}
               onClick={() => navigate(`/blogs/philosophy/${post.id}`)}
-
               style={{ cursor: 'pointer' }}
             >
               {post.coverImage ? (
@@ -63,7 +96,7 @@ const PhilosophyPage = () => {
                   {new Date(post.date).toLocaleDateString('en-US', {
                     day: 'numeric',
                     month: 'short',
-                    year: 'numeric'
+                    year: 'numeric',
                   })}
                 </span>
               </div>

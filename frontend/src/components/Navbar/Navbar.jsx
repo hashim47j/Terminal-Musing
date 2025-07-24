@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
-import { useDarkMode } from '../../context/DarkModeContext'; // adjust path
 
 const Navbar = () => {
-  const { darkMode, setDarkMode } = useDarkMode(); // ✅ use context only
-
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLightBackground, setIsLightBackground] = useState(true);
+  const [leftWidth, setLeftWidth] = useState(null);
+  const [tapCount, setTapCount] = useState(0);
+  const [showSecretDialog, setShowSecretDialog] = useState(false);
 
   const location = useLocation();
   const currentPath = location.pathname;
+  const brandWrapperRef = useRef(null);
+  const tapTimeout = useRef(null);
 
+  // Scroll hide logic
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -23,39 +27,131 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
+  // Detect background for light/dark text
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsLightBackground(entry.isIntersecting),
+      { threshold: 0.6 }
+    );
+
+    const target = document.querySelector('[data-navbar-bg-detect]');
+    if (target) observer.observe(target);
+    return () => target && observer.unobserve(target);
+  }, [location]);
+
+  // Resize observer for left floating heading
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const padding = 40;
+        setLeftWidth(entry.contentRect.width + padding);
+      }
+    });
+
+    if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
+    return () => {
+      if (brandWrapperRef.current) observer.unobserve(brandWrapperRef.current);
+    };
+  }, [currentPath]);
+
+  // Title based on route
   const getCenterTitle = () => {
-    if (currentPath === '/') return 'Terminal Musing';
-    if (currentPath === '/philosophy') return 'Philosophy';
-    return '';
+    switch (currentPath) {
+      case '/':
+        return 'Terminal Musing';
+      case '/philosophy':
+        return 'Philosophy';
+      case '/history':
+        return 'History';
+      case '/writings':
+        return 'Writings';
+      case '/legal-social':
+        return 'Legal & Social Concerns';
+      case '/tech':
+        return 'Tech';
+      case '/daily-thoughts':
+        return 'Daily Thoughts';
+      case '/admin/login':
+        return 'Author(s)';
+      default:
+        return '';
+    }
+  };
+
+  // Handle secret 3-tap admin dialog
+  const handleBrandTap = () => {
+    if (tapTimeout.current) clearTimeout(tapTimeout.current);
+
+    setTapCount((prev) => {
+      const next = prev + 1;
+      if (next === 3) {
+        setShowSecretDialog(true);
+        return 0;
+      }
+      tapTimeout.current = setTimeout(() => setTapCount(0), 1500);
+      return next;
+    });
   };
 
   return (
-    <nav className={`${styles.navbar} ${hide ? styles.hide : ''} ${darkMode ? styles.dark : ''}`}>
-      <div className={styles.leftSpacer}></div>
-
-      <div className={styles.centerTitle}>
-        {getCenterTitle() && <Link to={currentPath} className={styles.brand}>{getCenterTitle()}</Link>}
+    <>
+      {/* Left Floating Heading */}
+      <div
+        className={`
+          ${styles.navbarLeft}
+          ${hide ? styles.hide : ''}
+          ${isLightBackground ? styles.darkText : styles.lightText}
+        `}
+        style={{ width: leftWidth ? `${leftWidth}px` : 'auto' }}
+      >
+        <div
+          ref={brandWrapperRef}
+          className={styles.brandWrapper}
+          onClick={handleBrandTap}
+          style={{ cursor: 'pointer' }}
+        >
+          <Link to={currentPath} className={styles.brand}>
+            {getCenterTitle()}
+          </Link>
+        </div>
       </div>
 
-      <div className={styles.rightControls}>
-        <div onClick={() => setMenuOpen(!menuOpen)} className={styles.hamburger}>☰</div>
-        <button onClick={() => setDarkMode(!darkMode)} className={styles.toggleDarkBtn}>
-          {darkMode ? '☀️' : '🌙'}
-        </button>
+      {/* Right Floating Nav */}
+      <div
+        className={`
+          ${styles.navbarRight}
+          ${hide ? styles.hide : ''}
+          ${isLightBackground ? styles.darkText : styles.lightText}
+        `}
+      >
+        <div
+          onClick={() => setMenuOpen(!menuOpen)}
+          className={styles.hamburger}
+        >
+          ☰
+        </div>
+        <div className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ''}`}>
+          <Link to="/philosophy" className={styles.navLink}>Philosophy</Link>
+          <Link to="/history" className={styles.navLink}>History</Link>
+          <Link to="/writings" className={styles.navLink}>Writings</Link>
+          <Link to="/legal-social" className={styles.navLink}>Legal & Social Issues</Link>
+          <Link to="/tech" className={styles.navLink}>Tech</Link>
+          <Link to="/daily-thoughts" className={styles.navLink}>Daily Thoughts</Link>
+          <Link to="/admin/login" className={`${styles.navLink} ${styles.adminLink}`}>Author(s)</Link>
+        </div>
       </div>
 
-      <div className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ''}`}>
-        <Link to="/law" className={styles.navLink}>Law</Link>
-        <Link to="/social-issues" className={styles.navLink}>Social Issues</Link>
-        <Link to="/poems" className={styles.navLink}>Poems</Link>
-        <Link to="/photography" className={styles.navLink}>Photography</Link>
-        <Link to="/philosophy" className={styles.navLink}>Philosophy</Link>
-        <Link to="/history" className={styles.navLink}>History</Link>
-        <Link to="/short-stories" className={styles.navLink}>Short Stories</Link>
-        <Link to="/android-linux" className={styles.navLink}>Android & Linux</Link>
-        <Link to="/admin" className={`${styles.navLink} ${styles.adminLink}`}>Admin</Link>
-      </div>
-    </nav>
+      {/* 🔒 Secret Dialog */}
+      {showSecretDialog && (
+        <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
+          <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>
+            <h3>Upload Admin Key</h3>
+            <input type="file" />
+            <button onClick={() => setShowSecretDialog(false)}>Close</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

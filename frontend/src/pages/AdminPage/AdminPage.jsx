@@ -54,8 +54,16 @@ const AdminPage = () => {
   };
 
   const handlePublish = async () => {
-    const id = uuidv4();
-
+    const now = new Date();
+  
+    const formattedDate = now
+      .toISOString()
+      .replace(/[-:T]/g, '')
+      .slice(0, 12); // e.g., 202507181400
+  
+    const readableTitle = title.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
+    const blogId = `${readableTitle}${formattedDate}`; // SuperHeroHistory202507181400
+  
     let coverImageUrl = '';
     if (coverImage) {
       coverImageUrl = await uploadImage(coverImage);
@@ -64,7 +72,7 @@ const AdminPage = () => {
         return;
       }
     }
-
+  
     const contentBlocks = body.split('\n\n').map((block) =>
       block.includes('<img')
         ? {
@@ -74,24 +82,24 @@ const AdminPage = () => {
           }
         : { type: 'paragraph', text: block }
     );
-
+  
     const blogData = {
-      id,
+      id: blogId,
       title,
       subheading,
       category: category.toLowerCase(),
       coverImage: coverImageUrl,
       content: [{ type: 'paragraph', text: subheading }, ...contentBlocks],
-      date: new Date().toISOString(),
+      date: now.toISOString(),
     };
-
+  
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/blogs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(blogData),
       });
-
+  
       if (response.ok) {
         alert('✅ Blog published successfully!');
         setTitle('');

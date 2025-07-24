@@ -1,0 +1,408 @@
+.daily-thoughts-wrapper {
+  display: flex;
+  background: #fff;
+  font-family: Georgia, serif;
+  height: 100vh;
+  padding-top: 4rem; /* Navbar height */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Scrollable middle content */
+.thoughts-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE 10+ */
+}
+
+.thoughts-scroll-area::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari */
+}
+
+/* Inner column for the actual thoughts */
+.thoughts-column {
+  flex: 3;
+  padding-right: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Fixed panel on the right */
+.submission-panel {
+  width: 20rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-left: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: sticky;
+  top: 4rem;
+  height: fit-content;
+  align-self: flex-start;
+}
+
+/* Thought content styling */
+.thought-block {
+  margin-bottom: 3rem;
+}
+
+.thought-meta-wrapper {
+  position: relative;
+  /* Use flexbox to align the button and date nicely on the same line */
+  display: flex; 
+  align-items: center; /* Vertically align items */
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Hyperlink-like author name */
+.thought-meta-link {
+  color: black; /* Black text */
+  font-weight: 600;
+  text-decoration: underline; /* Underlined */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0;
+  display: inline;
+  transition: color 0.2s ease;
+}
+.thought-meta-link:hover {
+  color: #333; /* Slightly darker grey on hover */
+}
+
+.thought-meta-date {
+  color: #666;
+  margin-left: 0.5rem; /* Space between name and date */
+  font-style: italic;
+}
+
+.thought-title {
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.thought-text {
+  white-space: pre-wrap;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.thought-attribution {
+  font-style: italic;
+  font-size: 1rem;
+}
+
+.thought-divider {
+  margin-top: 1rem;
+  border: none;
+  border-top: 2px solid black;
+  width: 90%;
+}
+
+/* Submission section */
+.submission-invite {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.submit-button {
+  background: black;
+  color: white;
+  font-size: 1rem;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.font-large {
+  font-size: 1.8rem;
+  line-height: 2.4rem;
+}
+.font-medium {
+  font-size: 1.35rem;
+  line-height: 2.1rem;
+}
+.font-small {
+  font-size: 1.1rem;
+  line-height: 1.8rem;
+}
+
+/* Author popup */
+.author-popup {
+  position: fixed;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  animation: fadeSlideIn 0.2s ease-out;
+  min-width: 220px;
+  max-width: 300px;
+  pointer-events: auto;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  color: white; /* Text color inside popup */
+  border: 1px solid rgba(255,255,255,0.2);
+  /* Ensure transform-origin is set for the slide animation if it were to grow upwards */
+  transform-origin: bottom center; 
+}
+
+.author-popup p {
+  margin: 0.2rem 0;
+  font-size: 0.85rem;
+}
+
+.author-name {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: white;
+}
+
+.author-contact {
+  font-style: italic;
+  color: #ddd;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.thought-attribution-like {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.like-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.like-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.like-button:hover .heart-icon {
+  transform: scale(1.1);
+}
+
+.heart-icon {
+  width: 20px;
+  height: 20px;
+  transition: fill 0.3s ease, transform 0.2s ease;
+  color: #666;
+}
+
+.like-button.liked .heart-icon {
+  fill: crimson;
+  stroke: crimson;
+}
+
+.like-count {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #444;
+}
+
+/* ... (Your existing CSS above timeline-container, unchanged) ... */
+
+/* Timeline Layout */
+.timeline-container {
+  position: relative;
+  /* Removed padding-left here. We'll manage spacing with margins/left props */
+  /* This ensures absolute children position relative to its true left edge. */
+  padding-top: 10px;
+}
+
+/* Vertical Timeline Line */
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  /* This is the ABSOLUTE X-coordinate for the center of your vertical line.
+     Let's put the line at 130px from the left edge of timeline-container. */
+  left: 130px;
+  top: 0;
+  bottom: 0;
+  width: 2px; /* Line thickness */
+  background-color: #ddd; /* Visible line color */
+  z-index: 1; /* Behind dots and content */
+}
+
+.timeline-label-group {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.timeline-label {
+  position: absolute;
+  /* Position the label starting from the LEFT edge of timeline-container */
+  left: 0;
+  top: 12px; /* Vertically aligns with the first dot in the group */
+  width: 120px; /* Give it enough width for your date text */
+  text-align: right; /* Keeps date text aligned right within its 120px box */
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  opacity: 0.8;
+  /* Ensure a gap between the end of the date label and the line (120px to 130px) */
+  padding-right: 5px; /* Creates a small buffer before the line */
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  padding-bottom: 0;
+}
+
+.timeline-dot {
+  position: absolute;
+  /* Crucial: Center the dot on the 130px line.
+     Dot width is 14px, so half width is 7px.
+     Left edge of dot = (Line's left position) - (Half dot width)
+     130px - 7px = 123px */
+  left: 123px; /* This makes the dot's center align with the 130px line */
+  top: 14px; /* Vertically aligns */
+  width: 14px;
+  height: 14px;
+  background-color: #888; /* Dot color */
+  border-radius: 50%;
+  border: 2px solid white; /* Helps dot stand out on the line */
+  z-index: 2; /* Above the line */
+}
+
+.timeline-content {
+  margin-left: 155px; /* Starts content well after the line and dot */
+  padding: 15px 20px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  position: relative;
+
+  /* --- MODIFIED --- */
+  box-shadow: none; /* Removed default shadow */
+  transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+}
+.timeline-content:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2); /* Elevated shadow on hover */
+  transform: translateY(-5px); /* Slight lift effect on hover */
+  background: rgba(255,255,255,0.25); /* Slightly more opaque background on hover */
+}
+/* ... (rest of your existing CSS, unchanged) ... */
+/* Blur invite panel */
+.blur-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  text-align: center;
+  color: var(--text-color);
+  margin-top: 60px;
+}
+/* ... (Your existing CSS above like-container, unchanged) ... */
+
+.like-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  /* ADD THIS: To position the popup relative to this container */
+  position: relative;
+}
+
+.like-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.like-button:hover .heart-icon {
+  transform: scale(1.1);
+}
+
+.heart-icon {
+  width: 20px;
+  height: 20px;
+  transition: fill 0.3s ease, transform 0.2s ease;
+  color: #666;
+}
+
+.like-button.liked .heart-icon {
+  fill: crimson;
+  stroke: crimson;
+}
+
+.like-count {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #444;
+}
+
+/* --- NEW CSS FOR THE LIKE POPUP MESSAGE --- */
+/* ... (Your existing CSS above .like-popup-message) ... */
+
+/* MODIFIED CSS FOR THE LIKE POPUP MESSAGE */
+.like-popup-message {
+  position: absolute;
+  /* MODIFIED: Position below the like button/container */
+  top: calc(100% + 10px); /* 100% of parent height + 10px spacing */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust to truly center it */
+  white-space: nowrap; /* Keep text on one line */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  color: #000000;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  opacity: 0; /* Start hidden for animation */
+  pointer-events: none; /* Allows clicks to pass through when not visible */
+  z-index: 1001; /* Ensure it's above other elements */
+
+  /* MODIFIED: Use a new animation for sliding down */
+  animation: fadeSlideDown 0.3s ease-out forwards;
+}
+
+/* NEW KEYFRAMES FOR SLIDING DOWN */
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px); /* Start slightly above and hidden */
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0); /* End at its normal position, fully visible */
+  }
+}
+
+/* ... (Rest of your existing CSS, including the old @keyframes fadeSlideIn,
+   which is now unused for this popup, but can remain if other elements use it) ... */

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './PhiloBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
@@ -11,11 +11,14 @@ const PhiloBlog = () => {
   const [form, setForm] = useState({ name: '', email: '', comment: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navbarBgRef = useRef(null);
 
-  const blogApiUrl = `${import.meta.env.VITE_API_BASE_URL}/blogs/philosophy/${id}.json`;
-  const commentsApiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/comments/philosophy/${id}`;
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+  const blogApiUrl = `${API_BASE}/blogs/philosophy/${id}.json`;
+  const commentsApiUrl = `${API_BASE}/api/comments/philosophy/${id}`;
+  const viewsApiUrl = `${API_BASE}/api/views/philosophy/${id}`;
 
-  // Fetch blog
+  // Fetch blog + count view
   useEffect(() => {
     const fetchBlog = async () => {
       try {
@@ -23,14 +26,16 @@ const PhiloBlog = () => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setBlog(data);
+
+        // Register view
+        await fetch(viewsApiUrl, { method: 'POST' });
       } catch (err) {
-        console.error('❌ Failed to load blog:', err);
-        setError('Failed to load blog. It may not exist or an API error occurred.');
+        console.error('❌ Blog fetch error:', err);
+        setError('Blog not found or an error occurred.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchBlog();
   }, [id]);
 
@@ -42,14 +47,11 @@ const PhiloBlog = () => {
         if (res.ok) {
           const data = await res.json();
           setComments(data);
-        } else {
-          console.warn('⚠️ No comments found or API error');
         }
       } catch (err) {
-        console.error('❌ Failed to fetch comments:', err);
+        console.error('❌ Comment fetch error:', err);
       }
     };
-
     fetchComments();
   }, [id]);
 
@@ -57,14 +59,11 @@ const PhiloBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.comment) {
-      alert('Please fill in all fields.');
+      alert('Please fill all fields.');
       return;
     }
 
-    const newComment = {
-      ...form,
-      timestamp: new Date().toISOString(),
-    };
+    const newComment = { ...form, timestamp: new Date().toISOString() };
 
     try {
       const res = await fetch(commentsApiUrl, {
@@ -74,16 +73,16 @@ const PhiloBlog = () => {
       });
 
       if (res.ok) {
-        const savedComment = await res.json();
-        setComments([...comments, savedComment]);
+        const saved = await res.json();
+        setComments([...comments, saved]);
         setForm({ name: '', email: '', comment: '' });
       } else {
-        const errorData = await res.json();
-        alert(`Failed to post comment: ${errorData.message || res.statusText}`);
+        const errData = await res.json();
+        alert(`Failed to post comment: ${errData.message || res.statusText}`);
       }
     } catch (err) {
-      console.error('❌ Failed to post comment:', err);
-      alert('An error occurred while posting your comment.');
+      console.error('❌ Comment post error:', err);
+      alert('Failed to post comment.');
     }
   };
 
@@ -91,18 +90,30 @@ const PhiloBlog = () => {
   if (error) return <div className={styles.error}>❌ {error}</div>;
   if (!blog) return <div className={styles.error}>❌ Blog not found.</div>;
 
-  const formattedDate = new Date(blog.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+  const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+  });
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
     <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div
+        ref={navbarBgRef}
+        data-navbar-bg-detect
+        style={{
+          position: 'absolute',
+          top: 0,
+          height: '80px',
+          width: '100%',
+        }}
+      />
+
       <div className={styles.mainContentWrapper}>
-        {/* Blog Content */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>
           <p className={styles.date}>{metaText}</p>
 
-          {/* ✅ Cover Image */}
           {blog.coverImage && (
             <img
               src={blog.coverImage}
@@ -116,7 +127,11 @@ const PhiloBlog = () => {
           <div className={styles.contentBodyPlaceholder}>
             {blog.content.map((block, index) => {
               if (block.type === 'paragraph') {
-                return <p key={index} className={styles.paragraph}>{block.text}</p>;
+                return (
+                  <p key={index} className={styles.paragraph}>
+                    {block.text}
+                  </p>
+                );
               } else if (block.type === 'image') {
                 return (
                   <img
@@ -125,7 +140,7 @@ const PhiloBlog = () => {
                     alt={block.alt || 'Blog image'}
                     className={styles.inlineImage}
                     onError={(e) => {
-                      console.warn('Image failed to load:', block.src);
+                      console.warn('Image load failed:', block.src);
                       e.target.replaceWith(document.createTextNode('[Image not found]'));
                     }}
                   />
@@ -136,11 +151,12 @@ const PhiloBlog = () => {
           </div>
         </section>
 
-        {/* Comments Section */}
         <section className={styles.commentSection}>
           <div className={styles.commentList}>
             {comments.length === 0 ? (
-              <p style={{ color: '#666', fontStyle: 'italic' }}>No comments yet. Be the first!</p>
+              <p style={{ color: '#666', fontStyle: 'italic' }}>
+                No comments yet. Be the first!
+              </p>
             ) : (
               comments.map((c, i) => (
                 <div key={i} className={styles.commentBox}>
@@ -181,7 +197,9 @@ const PhiloBlog = () => {
               onChange={(e) => setForm({ ...form, comment: e.target.value })}
               required
             />
-            <button type="submit" className={styles.postBtn}>Post</button>
+            <button type="submit" className={styles.postBtn}>
+              Post
+            </button>
           </form>
         </section>
       </div>

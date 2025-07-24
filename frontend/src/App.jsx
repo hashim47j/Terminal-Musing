@@ -9,20 +9,15 @@ import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage/AdminPage'; 
 import PhilosophyPage from './pages/PhilosophyPage';
 import PhiloBlog from './pages/PhilosophyPage/PhiloBlog'; 
-
-
+import HistoryPage from './pages/HistoryPage/HistoryPage';
+import AdminLogin from './pages/AdminPage/AdminLogin';
 import BlogPage from './pages/BlogPage/BlogPage'; 
+import LsconcernPage from './pages/LsconcernPage/LsconcernPage';
+import WritingsPage from './pages/WritingsPage/WritingsPage';
+import AdminDashboard from './pages/AdminPage/AdminDashboard';
+import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
+import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
 
-
-// Placeholder page imports (you can uncomment these as you create them)
-// import LawPage from './pages/LawPage';
-// import SocialIssuesPage from './pages/SocialIssuesPage';
-// import PoemsPage from './pages/PoemsPage';
-// import PhotographyPage from './pages/PhotographyPage';
-// import PhilosophyPage from './pages/PhilosophyPage';
-// import HistoryPage from './pages/HistoryPage';
-// import ShortStoriesPage from './pages/ShortStoriesPage';
-// import AndroidLinuxPage from './pages/AndroidLinuxPage';
 
 function App() {
   return (
@@ -32,14 +27,17 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<AdminPage />} />
-
-          {/* ⚠️ More specific route first */}
           <Route path="/blogs/philosophy/:id" element={<PhiloBlog />} />
           <Route path="/blogs/:id" element={<BlogPage />} />
-
           <Route path="/philosophy" element={<PhilosophyPage />} />
-
-          {/* Add more routes as needed */}
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/writings" element={<WritingsPage />} />
+          <Route path="/legal-social" element={<LsconcernPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/daily-thoughts" element={<DailythoughtsReader />} />
+          <Route path="/dailythoughts/submit" element={<DailythoughtsUI />} />
+          <Route path="/admin/dailythoughts/edit" element={<DailythoughtsUI />} />
         </Routes>
       </main>
       <Footer />

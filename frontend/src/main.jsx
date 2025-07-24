@@ -7,11 +7,11 @@ import './styles/index.css'; // Your global stylesheet
 import { DarkModeProvider } from './context/DarkModeContext.jsx'; // ⬅️ Import context
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  //<React.StrictMode>
     <DarkModeProvider> {/* ⬅️ Wrap app in DarkMode context */}
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </DarkModeProvider>
-  </React.StrictMode>,
+ // </React.StrictMode>,
 );

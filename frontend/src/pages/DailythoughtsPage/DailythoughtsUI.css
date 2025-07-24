@@ -1,0 +1,150 @@
+.dailythoughts-wrapper {
+  background-color: #f6f6f6;
+  padding: 2rem;
+  font-family: 'Georgia', serif;
+  color: #111;
+  /* --- NEW/MODIFIED LINE --- */
+  padding-top: 6rem; /* Adjust this value based on your navbar's actual height + desired gap */
+  /* If your navbar is exactly 4rem tall, 6rem gives a 2rem gap below it. */
+}
+/* ... (Your existing CSS for .dailythoughts-wrapper and .thoughts-scroll-area, etc., unchanged) ... */
+
+/* Main container for the toggle switch */
+.thought-toggle {
+  display: flex;
+  position: relative; /* Essential for positioning the absolute slider */
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content; /* Make the container only as wide as its content */
+  border: 1px solid #000; /* Border for the entire switch */
+  border-radius: 5px; /* Rounded corners for the entire switch */
+  overflow: hidden; /* Ensures the sliding background doesn't go outside corners */
+}
+
+/* The sliding black tile (::before pseudo-element) */
+.thought-toggle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%; /* Make it fill the height of the parent */
+  width: 50%; /* Each button takes up 50% of the width */
+  background-color: #000; /* The black color of the active tile */
+  border-radius: 5px; /* Match parent's border-radius for smooth edges */
+  transition: transform 0.3s ease-in-out; /* Smooth slide animation */
+  z-index: 0; /* Ensure it stays behind the text of the options */
+  transform: translateX(0%); /* Default position for the first option */
+}
+
+/* When 'long-thought-active' class is present on the parent, slide the tile */
+.thought-toggle.long-thought-active::before {
+  transform: translateX(100%); /* Slide to cover the second option */
+}
+
+/* Individual toggle options (the clickable areas) */
+.toggle-option {
+  padding: 1rem 2rem;
+  cursor: pointer;
+  color: #111; /* Default text color (non-active) */
+  flex-grow: 1; /* Make options share space equally within the flex container */
+  text-align: center; /* Center the text within each option */
+  white-space: nowrap; /* Prevent text from wrapping if too long */
+  z-index: 1; /* Ensure text is above the sliding black tile */
+
+  /* Remove individual borders/backgrounds as the parent handles it now */
+  border: none;
+  background-color: transparent; /* Options are transparent by default */
+  /* Only animate text color for a subtle effect */
+  transition: color 0.3s ease;
+
+  /* Remove any hover effects for individual options that conflict with the slider */
+  transform: none;
+  box-shadow: none;
+}
+
+/* Style for the active option's text color */
+.toggle-option.active {
+  color: #fff; /* Active text color should be white on the black tile */
+  /* Remove background-color here, the ::before pseudo-element handles it */
+  background-color: transparent;
+}
+
+/* You can remove or adjust this if you don't want any hover effect on the text */
+.toggle-option:hover {
+  /* color: #555; */ /* Example: slightly darker text on hover */
+}
+
+/* ... (Rest of your CSS for thought-title, thought-textarea, etc., unchanged) ... */
+  
+/* Only the active option's text color changes */
+.toggle-option.active {
+  color: #fff; /* Active text color */
+  /* Remove background-color here, the ::before pseudo-element handles it */
+  background-color: transparent;
+}
+  .thought-title {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    background-color: #e0e0e0;
+    border: none;
+  }
+  
+  .thought-textarea {
+    width: 100%;
+    height: 200px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    background-color: #d6d6d6;
+    border: none;
+    resize: vertical;
+  }
+  
+  .author-name {
+    width: 30%;
+    padding: 0.6rem;
+    background-color: #d6d6d6;
+    border: none;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+  
+  .submission-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 2rem;
+  }
+  
+  .contact-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .contact-fields input {
+    padding: 0.6rem;
+    background-color: #d6d6d6;
+    border: none;
+    font-size: 1rem;
+    width: 150px;
+  }
+  
+  .post-message {
+    flex-grow: 1;
+    margin-left: 2rem;
+    font-size: 0.95rem;
+  }
+  
+  .post-btn {
+    background-color: black;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    align-self: flex-start;
+  }

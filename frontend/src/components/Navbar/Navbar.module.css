@@ -1,3 +1,4 @@
+/* Shared styles for both floating nav islands */
 .navbarLeft,
 .navbarRight {
   position: fixed;
@@ -6,24 +7,31 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   background-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
   border-radius: 14px;
   transition: all 0.3s ease-in-out;
 }
 
+/* Animated Left Nav - Dynamic Width */
 .navbarLeft {
-  left: 40px;
+  left: 105px;
   overflow: hidden;
   white-space: nowrap;
-  transition: width 0.4s ease, transform 0.3s ease;
+  transition: width 0.4s ease, transform 0.3s ease, left 0.3s ease;
+  position: fixed;
+  display: flex;
+  align-items: center;
 }
 
+/* Title wrapper for measuring width */
 .brandWrapper {
+  padding: 13px 20px;
   display: inline-block;
-  padding: 14px 20px;
   transition: all 0.4s ease;
+  vertical-align: middle;
 }
 
+/* Brand text (title) */
 .brand {
   font-family: 'Playfair Display', serif;
   font-size: 1.8em;
@@ -33,18 +41,25 @@
   display: inline-block;
 }
 
+/* Hide on scroll */
 .hide {
   transform: translateY(-120%);
 }
 
+/* Right nav island styling (Desktop) */
 .navbarRight {
-  right: 40px;
-  padding: 14px 30px;
+  right: 30px;
+  padding: 13px 30px;
+  position: fixed;
+  display: flex;
+  align-items: center;
 }
 
+/* Navigation links container (Desktop) */
 .navLinks {
   display: flex;
-  gap: 24px;
+  gap: 22px;
+  position: relative;
 }
 
 .navLink {
@@ -52,24 +67,28 @@
   color: inherit;
   text-decoration: none;
   position: relative;
+  padding: 7px 12px;
+  border-radius: 8px;
+  z-index: 1;
   transition: color 0.3s ease;
+  cursor: pointer;
 }
 
-.navLink::after {
-  content: '';
+/* Highlight bar for active/hovered link */
+.highlightBar {
   position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -4px;
+  top: 0;
   left: 0;
-  background-color: currentColor;
-  transition: width 0.3s ease-in-out;
+  height: 100%;
+  width: 0;
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  z-index: 0;
+  transition: all 0.3s ease-in-out;
+  pointer-events: none;
 }
 
-.navLink:hover::after {
-  width: 100%;
-}
-
+/* Admin link accent */
 .adminLink {
   font-weight: bold;
   color: #d00000;
@@ -78,59 +97,24 @@
   color: #ff0000;
 }
 
+/* Hamburger menu - hidden on desktop */
 .hamburger {
   font-size: 1.6em;
   cursor: pointer;
-  display: none;
+  display: none; /* Hidden by default on desktop */
 }
 
-/* Mobile Styles */
-@media (max-width: 768px) {
-  .navbarRight {
-    right: 20px;
-    padding: 12px 20px;
-  }
-
-  .navLinks {
-    display: none;
-    flex-direction: column;
-    position: fixed;
-    top: 70px;
-    right: 10px;
-    width: 80vw;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    padding: 20px;
-    gap: 14px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 999;
-  }
-
-  .navLinks.mobileOpen {
-    display: flex;
-  }
-
-  .navLink {
-    font-size: 1.1em;
-    padding: 8px 0;
-  }
-
-  .hamburger {
-    display: block;
-    z-index: 1001;
-  }
-}
-
-/* Text color modes */
+/* Dynamic Text Color Logic */
 .darkText {
   color: #111;
 }
 .darkText .navLink {
   color: #111;
 }
-.darkText .navLink::after {
-  background-color: #111;
+.darkText .highlightBar {
+  background-color: rgba(0, 0, 0, 0.08);
 }
+
 
 .lightText {
   color: #fff;
@@ -138,24 +122,217 @@
 .lightText .navLink {
   color: #fff;
 }
-.lightText .navLink::after {
-  background-color: #fff;
+.lightText .highlightBar {
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Admin dialog */
-.secretOverlay {
+/* Special highlight for Daily Thoughts when active */
+.highlightBar.dailyThoughtsActive {
+  background-color: #000;
+}
+
+/* Special text color for Daily Thoughts when active */
+.navLink.dailyThoughtsActive {
+  color: #fff !important;
+}
+
+/* Specific highlight colors for other links */
+.highlightBar.philosophyActive {
+  background-color: #bea586;
+}
+.highlightBar.historyActive {
+  background-color: #4c4c4c;
+}
+.highlightBar.writingsActive {
+  background-color: #5e5034;
+}
+.highlightBar.legalSocialActive {
+  background-color: #c6b8b2;
+}
+
+
+/* Floating Home Button */
+.homeButton {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 9999;
+  top: 28px;
+  left: 30px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
+  z-index: 1002;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
-.secretBox {
-  background: white;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+/* Bridge Connector */
+.bridgeConnector {
+  position: fixed;
+  top: 51px;
+  height: 9px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  transition: all 0.3s ease-in-out;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+/* Hide bridge with navbars */
+.hide.bridgeConnector {
+  transform: translateY(-120%);
+}
+
+/* Dynamic Text Color Logic for Bridge (mainly for shadow/blur consistency) */
+.darkText.bridgeConnector {
+  /* Inherits backdrop-filter and background-color from base class */
+}
+
+.lightText.bridgeConnector {
+  /* Inherits backdrop-filter and background-color from base class */
+}
+
+
+/* --- MOBILE UI CHANGES (max-width: 768px) --- */
+@media (max-width: 768px) {
+  /* Hide desktop-specific floating islands and bridge */
+  .navbarLeft {
+    display: none;
+  }
+  .bridgeConnector {
+    display: none;
+  }
+
+  /* Adjust Home button position for consistency with new mobile top alignment */
+  .homeButton {
+    top: 20px;
+    left: 20px;
+    z-index: 1002;
+  }
+
+  /* Make navbarRight adapt for mobile: it becomes a simple container for hamburger & menu */
+  .navbarRight {
+    position: fixed; /* Keep it fixed in viewport */
+    top: 20px;
+    right: 20px;
+    padding: 0; /* Remove desktop padding */
+    background-color: transparent; /* Remove desktop background */
+    box-shadow: none; /* Remove desktop shadow */
+    backdrop-filter: none; /* Remove desktop blur */
+    -webkit-backdrop-filter: none;
+    border-radius: 0; /* Remove desktop border-radius */
+    width: auto; /* Let content dictate width initially */
+    height: auto;
+    z-index: 1000;
+    /* IMPORTANT: Override desktop scroll-hide transformation */
+    transform: translateY(0) !important; /* Ensure it stays visible on mobile */
+    transition: none !important; /* Disable desktop transition on mobile */
+  }
+
+  /* Hamburger menu - visible on mobile */
+  .hamburger {
+    display: block; /* Show hamburger icon (overrides desktop display: none) */
+    font-size: 2em; /* Make it larger for touch */
+    padding: 5px; /* Add some padding around it for easier tapping */
+    cursor: pointer;
+    /* Position relative to .navbarRight for flow */
+    position: relative;
+    z-index: 1001; /* Ensure it's above the mobile menu */
+    margin-left: auto; /* Pushes hamburger to the right within navbarRight */
+  }
+
+  /* NEW: Overlay for mobile menu */
+  .mobileOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 1004; /* Below the menu but above other content */
+    transition: opacity 0.3s ease-in-out;
+    /* This will only be rendered when menuOpen is true, so no need for initial opacity: 0 */
+  }
+
+  /* Mobile Navigation Menu (the sliding sidebar) - this is the SAME .navLinks element */
+  /* This rule defines the HIDDEN state of the mobile menu */
+  .navLinks {
+    flex-direction: column; /* Stack links vertically */
+    position: fixed; /* Changed from absolute to fixed for viewport centering */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(calc(100% + 10px), -50%); /* Start off-screen right, vertically centered */
+    width: 280px; /* Fixed width for the sidebar menu */
+    max-height: calc(100vh - 80px); /* Max height to fit within viewport with margins */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+
+    /* Apply the blur theme for the container */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15); /* Same subtle shadow */
+    border-radius: 14px; /* Consistent border radius */
+    padding: 15px; /* Internal padding for menu content */
+    gap: 10px; /* Space between nav links */
+
+    z-index: 1005; /* Higher z-index to be on top of the overlay */
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out; /* Slide-in/out transition */
+    opacity: 0;
+    pointer-events: none; /* Prevent clicks when hidden */
+    display: flex; /* Ensure it's flex even when hidden, for transitions */
+  }
+
+  /* This rule defines the VISIBLE state of the mobile menu.
+     IT MUST COME AFTER THE GENERAL .navLinks RULE IN THE CSS. */
+  .navLinks.mobileOpen {
+    transform: translate(-50%, -50%); /* Slide to center of screen */
+    opacity: 1;
+    pointer-events: auto; /* Enable clicks when visible */
+  }
+
+  /* Adjustments for individual nav links within the mobile menu to make them "islands" */
+  .navLinks .navLink {
+    width: 100%; /* Make links take full width of the menu container */
+    text-align: left; /* Align text to the left */
+    padding: 10px 15px; /* Adjust padding for mobile links to create island spacing */
+    box-sizing: border-box; /* Ensure padding is included in width */
+    font-size: 1.1em; /* Slightly larger font size for readability */
+
+    /* Styles for the "island" appearance */
+    background-color: rgba(255, 255, 255, 0.8); /* Lighter, semi-transparent background for each island */
+    border-radius: 10px; /* Rounded corners for the island look */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    color: #111 !important; /* Force dark text on the light island background for readability */
+  }
+
+  /* Hover effect for mobile links (optional, for devices that simulate hover) */
+  .navLinks .navLink:hover {
+    background-color: rgba(255, 255, 255, 0.95); /* Slightly brighter on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* More prominent shadow on hover */
+  }
+
+  /* Hide the highlight bar on mobile as individual islands replace its function */
+  .navLinks .highlightBar {
+      display: none;
+  }
+
+  /* Override specific text colors for mobile links if needed, usually dark text on light islands */
+  .navLinks.darkText .navLink {
+    color: #111;
+  }
+  .navLinks.lightText .navLink {
+    color: #111; /* Mobile links always dark text on light island background */
+  }
 }

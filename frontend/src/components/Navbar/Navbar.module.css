@@ -267,14 +267,14 @@
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
     color: #111 !important;
     transition: all 0.3s ease;
-    animation: slideInRight 0.4s ease forwards;
     opacity: 0;
+    transform: translateX(20px);
   }
-
+  
   .navLinks.mobileOpen .navLink {
-    opacity: 1;
+    animation: slideInRight 0.4s ease forwards;
   }
-
+  
   .navLinks .navLink:nth-child(1) {
     animation-delay: 0.05s;
   }
@@ -290,18 +290,18 @@
   .navLinks .navLink:nth-child(5) {
     animation-delay: 0.25s;
   }
-
+  
   @keyframes slideInRight {
-    0% {
-      transform: translateX(50%);
+    from {
+      transform: translateX(20px);
       opacity: 0;
     }
-    100% {
+    to {
       transform: translateX(0);
       opacity: 1;
     }
   }
-
+  
   .navLinks .navLink:hover {
     background-color: rgba(255, 255, 255, 0.4);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);

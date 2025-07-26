@@ -17,12 +17,8 @@ const Navbar = () => {
   const [tapCount, setTapCount] = useState(0);
   const [showSecretDialog, setShowSecretDialog] = useState(false);
 
-  // highlightStyle state for the active link bar
   const [highlightStyle, setHighlightStyle] = useState({});
-
-  // navLinksRef now points to the SINGLE .navLinks element
   const navLinksRef = useRef(null);
-
   const location = useLocation();
   const currentPath = location.pathname;
   const brandWrapperRef = useRef(null);
@@ -32,23 +28,19 @@ const Navbar = () => {
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
 
-  // Function to update highlight bar position and width
-  // It now correctly always uses navLinksRef for its parent calculations
   const updateHighlight = (element) => {
     if (element && navLinksRef.current) {
       const parentRect = navLinksRef.current.getBoundingClientRect();
       const linkRect = element.getBoundingClientRect();
 
-      // Only set highlightStyle if the parent is visible (e.g., desktop, or mobile when menu is open)
-      // This helps prevent highlight from showing up oddly if mobile menu is hidden but highlight calculation runs
-      if (window.innerWidth > 768 && parentRect.width > 0 && parentRect.height > 0) { // Only show highlight on desktop
+      if (window.innerWidth > 768 && parentRect.width > 0 && parentRect.height > 0) {
         setHighlightStyle({
           width: linkRect.width,
           transform: `translateX(${linkRect.left - parentRect.left}px)`,
           opacity: 1
         });
       } else {
-        setHighlightStyle({ // Hide highlight on mobile or if parent is not visible
+        setHighlightStyle({
           width: 0,
           transform: `translateX(0px)`,
           opacity: 0
@@ -63,26 +55,19 @@ const Navbar = () => {
     }
   };
 
-  // Set initial highlight based on current path on mount/path change
+  // ✅ FIXED: Only run highlight logic when path changes, not on menuOpen toggle
   useEffect(() => {
-    // Always use navLinksRef as it's the single source of truth for navigation links
     const activeLink = navLinksRef.current?.querySelector(`[href="${currentPath}"]`);
     updateHighlight(activeLink);
-
-    // If menu is open and path changes (e.g., direct URL change or back/forward), close it
-    if (menuOpen) {
-      setMenuOpen(false);
-    }
-  }, [currentPath, menuOpen]); // Added menuOpen to dependency array to re-evaluate on menu state change
+  }, [currentPath]);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      // Only apply hide/show logic for desktop
       if (window.innerWidth > 768) {
         setHide(currentScrollY > lastScrollY && currentScrollY > 50);
       } else {
-        setHide(false); // Navbar elements should not hide on scroll in mobile view
+        setHide(false);
       }
       setLastScrollY(currentScrollY);
     };
@@ -157,9 +142,7 @@ const Navbar = () => {
 
   return (
     <>
-      {console.log("Is menu open in render? ", menuOpen)}
-
-      {/* Floating Home Button (visible on both desktop and mobile) */}
+      {/* Floating Home Button */}
       <Link
         to="/"
         className={`${styles.homeButton} ${hide ? styles.hide : ''}`}
@@ -172,7 +155,7 @@ const Navbar = () => {
         />
       </Link>
 
-      {/* Bridge Connector (desktop-only, hidden by CSS on mobile) */}
+      {/* Bridge Connector (desktop only) */}
       <div
         className={`${styles.bridgeConnector} ${hide ? styles.hide : ''} ${isLightBackground ? styles.darkText : styles.lightText}`}
         style={{
@@ -181,7 +164,7 @@ const Navbar = () => {
         }}
       ></div>
 
-      {/* Left Title Island (desktop-only, hidden by CSS on mobile) */}
+      {/* Left Navbar (Title Island) */}
       <div
         className={`
           ${styles.navbarLeft}
@@ -202,8 +185,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Right Navbar Island - Contains Hamburger and Nav Links */}
-      {/* This element adapts for mobile/desktop purely through CSS */}
+      {/* Right Navbar (Hamburger & Links) */}
       <div
         className={`
           ${styles.navbarRight}
@@ -211,12 +193,9 @@ const Navbar = () => {
           ${isLightBackground ? styles.darkText : styles.lightText}
         `}
       >
-        {/* Hamburger Menu - hidden on desktop by CSS, visible on mobile */}
+        {/* Hamburger Button */}
         <div
-          onClick={() => {
-            console.log("Hamburger clicked! Current menuOpen state:", menuOpen);
-            setMenuOpen(!menuOpen);
-          }}
+          onClick={() => setMenuOpen(!menuOpen)}
           className={styles.hamburger}
           aria-label="Toggle menu"
           role="button"
@@ -224,20 +203,22 @@ const Navbar = () => {
           ☰
         </div>
 
-        {/* This is the overlay that appears when the mobile menu is open */}
+        {/* Mobile Overlay */}
         {menuOpen && (
-            <div className={styles.mobileOverlay} onClick={() => setMenuOpen(false)}></div>
+          <div
+            className={styles.mobileOverlay}
+            onClick={() => setMenuOpen(false)}
+          ></div>
         )}
 
-        {/* Navigation Links - This is the SINGLE .navLinks element.
-            Its display (row/column, inline/fixed) is controlled by CSS media queries.
-            mobileOpen class is added for mobile-specific slide animation.
-        */}
-        <div ref={navLinksRef} className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ''}`}>
-          {/* Highlight bar inside the navLinks container */}
+        {/* Navigation Links */}
+        <div
+          ref={navLinksRef}
+          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ''}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
 
-          {/* Navigation Links - clicking a link will now also close the menu */}
           <Link to="/philosophy" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>Philosophy</Link>
           <Link to="/history" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>History</Link>
           <Link to="/writings" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>Writings</Link>
@@ -254,7 +235,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Admin Key Upload */}
+      {/* Secret Admin Dialog */}
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
           <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>

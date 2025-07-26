@@ -266,39 +266,40 @@
   }
 
   /* Mobile Navigation Menu (the sliding sidebar) - this is the SAME .navLinks element */
-  /* This rule defines the HIDDEN state of the mobile menu */
+  /* HIDDEN state */
   .navLinks {
     flex-direction: column; /* Stack links vertically */
-    position: fixed; /* Changed from absolute to fixed for viewport centering */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(calc(100% + 10px), -50%); /* Start off-screen right, vertically centered */
-    width: 280px; /* Fixed width for the sidebar menu */
-    max-height: calc(100vh - 80px); /* Max height to fit within viewport with margins */
-    overflow-y: auto; /* Enable scrolling if content overflows */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centered position for display */
+    width: 280px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
 
-    /* Apply the blur theme for the container */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    background-color: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15); /* Same subtle shadow */
-    border-radius: 14px; /* Consistent border radius */
-    padding: 15px; /* Internal padding for menu content */
-    gap: 10px; /* Space between nav links */
+    background-color: rgba(255, 255, 255, 0.95); /* Make it more opaque for clarity */
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 14px;
+    padding: 15px;
+    gap: 10px;
+    z-index: 1005;
 
-    z-index: 1005; /* Higher z-index to be on top of the overlay */
-    transition: transform 0.4s ease-out, opacity 0.4s ease-out; /* Slide-in/out transition */
-    opacity: 0;
-    pointer-events: none; /* Prevent clicks when hidden */
-    display: flex; /* Ensure it's flex even when hidden, for transitions */
+    /* KEY CHANGE FOR VISIBILITY: Hide by default */
+    display: none; /* Hidden by default */
+    opacity: 0; /* Still keep opacity for consistency, though display:none prevents transition */
+    pointer-events: none; /* Not clickable when hidden */
+    transition: opacity 0.2s ease-in-out; /* Only opacity transition will work with display */
   }
 
-  /* This rule defines the VISIBLE state of the mobile menu.
-     IT MUST COME AFTER THE GENERAL .navLinks RULE IN THE CSS. */
+  /* VISIBLE state when mobileOpen class is applied */
   .navLinks.mobileOpen {
-    transform: translate(-50%, -50%); /* Slide to center of screen */
-    opacity: 1;
-    pointer-events: auto; /* Enable clicks when visible */
+    /* KEY CHANGE FOR VISIBILITY: Show it */
+    display: flex; /* Override display: none to show the menu */
+    opacity: 1; /* Make it fully visible */
+    pointer-events: auto; /* Make it clickable */
+    /* No need to set transform again if it's already centered in the default .navLinks rule for mobile */
   }
 
   /* Adjustments for individual nav links within the mobile menu to make them "islands" */

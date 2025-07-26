@@ -157,7 +157,7 @@ const Navbar = () => {
 
   return (
     <>
-      {console.log("Is menu open in render? ", menuOpen)} {/* ADDED THIS DIAGNOSTIC LOG */}
+      {console.log("Is menu open in render? ", menuOpen)}
 
       {/* Floating Home Button (visible on both desktop and mobile) */}
       <Link

@@ -1,177 +1,4 @@
-/* Shared styles for both floating nav islands */
-.navbarLeft,
-.navbarRight {
-  position: fixed;
-  top: 20px;
-  z-index: 1000;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
-  border-radius: 14px;
-  transition: all 0.3s ease-in-out;
-}
-
-.navbarLeft {
-  left: 105px;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: width 0.4s ease, transform 0.3s ease, left 0.3s ease;
-  display: flex;
-  align-items: center;
-}
-
-.brandWrapper {
-  padding: 13px 20px;
-  display: inline-block;
-  transition: all 0.4s ease;
-  vertical-align: middle;
-}
-
-.brand {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8em;
-  font-weight: bold;
-  color: inherit;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.hide {
-  transform: translateY(-120%);
-}
-
-.navbarRight {
-  right: 30px;
-  padding: 13px 30px;
-  display: flex;
-  align-items: center;
-}
-
-.navLinks {
-  display: flex;
-  gap: 22px;
-  position: relative;
-}
-
-.navLink {
-  font-size: 1em;
-  color: inherit;
-  text-decoration: none;
-  position: relative;
-  padding: 7px 12px;
-  border-radius: 8px;
-  z-index: 1;
-  transition: color 0.3s ease;
-  cursor: pointer;
-}
-
-.highlightBar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0;
-  background-color: rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-  z-index: 0;
-  transition: all 0.3s ease-in-out;
-  pointer-events: none;
-}
-
-.adminLink {
-  font-weight: bold;
-  color: #d00000;
-}
-.adminLink:hover {
-  color: #ff0000;
-}
-
-.hamburger {
-  font-size: 1.6em;
-  cursor: pointer;
-  display: none;
-}
-
-.darkText {
-  color: #111;
-}
-.darkText .navLink {
-  color: #111;
-}
-.darkText .highlightBar {
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-.lightText {
-  color: #fff;
-}
-.lightText .navLink {
-  color: #fff;
-}
-.lightText .highlightBar {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-.highlightBar.dailyThoughtsActive {
-  background-color: #000;
-}
-.navLink.dailyThoughtsActive {
-  color: #fff !important;
-}
-.highlightBar.philosophyActive {
-  background-color: #bea586;
-}
-.highlightBar.historyActive {
-  background-color: #4c4c4c;
-}
-.highlightBar.writingsActive {
-  background-color: #5e5034;
-}
-.highlightBar.legalSocialActive {
-  background-color: #c6b8b2;
-}
-
-.homeButton {
-  position: fixed;
-  top: 28px;
-  left: 30px;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
-  z-index: 1002;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  box-sizing: border-box;
-}
-
-.bridgeConnector {
-  position: fixed;
-  top: 51px;
-  height: 9px;
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
-  z-index: 999;
-  transition: all 0.3s ease-in-out;
-  border-radius: 0;
-}
-.hide.bridgeConnector {
-  transform: translateY(-120%);
-}
-
-.darkText.bridgeConnector {}
-.lightText.bridgeConnector {}
-
-
+/* --- MOBILE UI CHANGES (max-width: 768px) --- */
 /* --- MOBILE UI CHANGES (max-width: 768px) --- */
 @media (max-width: 768px) {
   .navbarLeft {
@@ -222,22 +49,26 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1004;
-    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  }
+
+  .mobileOverlay.active {
+    opacity: 1;
+    visibility: visible;
   }
 
   .navLinks {
     position: fixed;
     top: 80px;
     left: 50%;
-    transform: translateX(-100%);
+    transform: translateX(-50%) translateY(20px); /* Initial animation position */
     width: 270px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
-    display: none;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease-in-out;
-
+    overflow-x: hidden;
+    display: flex;
     flex-direction: column;
     gap: 12px;
     padding: 0;
@@ -247,12 +78,22 @@
     box-shadow: none !important;
     border-radius: 0;
     z-index: 1005;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
   }
 
   .navLinks.mobileOpen {
-    display: flex;
     opacity: 1;
     pointer-events: auto;
+    transform: translateX(-50%) translateY(0); /* Slide up into position */
+  }
+
+  .navLinks.mobileClosing {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(20px); /* Slide down out */
   }
 
   .navLinks .navLink {
@@ -270,30 +111,26 @@
     opacity: 0;
     transform: translateX(20px);
   }
-  
+
   .navLinks.mobileOpen .navLink {
-    animation: slideInRight 0.4s ease forwards;
+    animation: slideInRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
   }
-  
-  .navLinks .navLink:nth-child(1) {
-    animation-delay: 0.05s;
+
+  .navLinks.mobileClosing .navLink {
+    animation: slideOutRight 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
   }
-  .navLinks .navLink:nth-child(2) {
-    animation-delay: 0.1s;
-  }
-  .navLinks .navLink:nth-child(3) {
-    animation-delay: 0.15s;
-  }
-  .navLinks .navLink:nth-child(4) {
-    animation-delay: 0.2s;
-  }
-  .navLinks .navLink:nth-child(5) {
-    animation-delay: 0.25s;
-  }
-  
+
+  .navLinks .navLink:nth-child(1) { animation-delay: 0.05s; }
+  .navLinks .navLink:nth-child(2) { animation-delay: 0.1s; }
+  .navLinks .navLink:nth-child(3) { animation-delay: 0.15s; }
+  .navLinks .navLink:nth-child(4) { animation-delay: 0.2s; }
+  .navLinks .navLink:nth-child(5) { animation-delay: 0.25s; }
+  .navLinks .navLink:nth-child(6) { animation-delay: 0.3s; }
+  .navLinks .navLink:nth-child(7) { animation-delay: 0.35s; }
+
   @keyframes slideInRight {
     from {
-      transform: translateX(20px);
+      transform: translateX(50px);
       opacity: 0;
     }
     to {
@@ -301,7 +138,18 @@
       opacity: 1;
     }
   }
-  
+
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(50px);
+      opacity: 0;
+    }
+  }
+
   .navLinks .navLink:hover {
     background-color: rgba(255, 255, 255, 0.4);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);

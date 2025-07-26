@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
 
-// Import your PNG images
 import jerusalemHomeLight from '../../assets/jerusalemhomelight.png';
 import jerusalemHomeDark from '../../assets/jerusalemhomedark.png';
 
@@ -10,6 +9,7 @@ const Navbar = () => {
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuClosing, setMenuClosing] = useState(false);
   const [isLightBackground, setIsLightBackground] = useState(true);
   const [leftNavbarWidth, setLeftNavbarWidth] = useState(null);
   const [bridgeWidth, setBridgeWidth] = useState(0);
@@ -40,22 +40,13 @@ const Navbar = () => {
           opacity: 1
         });
       } else {
-        setHighlightStyle({
-          width: 0,
-          transform: `translateX(0px)`,
-          opacity: 0
-        });
+        setHighlightStyle({ width: 0, transform: `translateX(0px)`, opacity: 0 });
       }
     } else {
-      setHighlightStyle({
-        width: 0,
-        transform: `translateX(0px)`,
-        opacity: 0
-      });
+      setHighlightStyle({ width: 0, transform: `translateX(0px)`, opacity: 0 });
     }
   };
 
-  // ✅ FIXED: Only run highlight logic when path changes, not on menuOpen toggle
   useEffect(() => {
     const activeLink = navLinksRef.current?.querySelector(`[href="${currentPath}"]`);
     updateHighlight(activeLink);
@@ -140,14 +131,21 @@ const Navbar = () => {
     }
   };
 
+  const toggleMenu = () => {
+    if (menuOpen) {
+      setMenuClosing(true);
+      setTimeout(() => {
+        setMenuOpen(false);
+        setMenuClosing(false);
+      }, 300); // This should ideally match the overall closing transition duration
+    } else {
+      setMenuOpen(true);
+    }
+  };
+
   return (
     <>
-      {/* Floating Home Button */}
-      <Link
-        to="/"
-        className={`${styles.homeButton} ${hide ? styles.hide : ''}`}
-        aria-label="Home"
-      >
+      <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ''}`} aria-label="Home">
         <img
           src={isLightBackground ? jerusalemHomeDark : jerusalemHomeLight}
           alt="Home"
@@ -155,7 +153,6 @@ const Navbar = () => {
         />
       </Link>
 
-      {/* Bridge Connector (desktop only) */}
       <div
         className={`${styles.bridgeConnector} ${hide ? styles.hide : ''} ${isLightBackground ? styles.darkText : styles.lightText}`}
         style={{
@@ -164,7 +161,6 @@ const Navbar = () => {
         }}
       ></div>
 
-      {/* Left Navbar (Title Island) */}
       <div
         className={`
           ${styles.navbarLeft}
@@ -185,7 +181,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Right Navbar (Hamburger & Links) */}
       <div
         className={`
           ${styles.navbarRight}
@@ -193,9 +188,8 @@ const Navbar = () => {
           ${isLightBackground ? styles.darkText : styles.lightText}
         `}
       >
-        {/* Hamburger Button */}
         <div
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={toggleMenu}
           className={styles.hamburger}
           aria-label="Toggle menu"
           role="button"
@@ -204,38 +198,34 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Overlay */}
-        {menuOpen && (
-          <div
-            className={styles.mobileOverlay}
-            onClick={() => setMenuOpen(false)}
-          ></div>
-        )}
+        <div
+          className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ''}`}
+          onClick={toggleMenu}
+        ></div>
 
-        {/* Navigation Links */}
         <div
           ref={navLinksRef}
-          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ''}`}
+          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ''} ${menuClosing ? styles.mobileClosing : ''}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
 
-          <Link to="/philosophy" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>Philosophy</Link>
-          <Link to="/history" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>History</Link>
-          <Link to="/writings" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>Writings</Link>
-          <Link to="/legal-social" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>Legal & Social Issues</Link>
-          <Link to="/tech" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>Tech</Link>
+          <Link to="/philosophy" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Philosophy</Link>
+          <Link to="/history" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>History</Link>
+          <Link to="/writings" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Writings</Link>
+          <Link to="/legal-social" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Legal & Social Issues</Link>
+          <Link to="/tech" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Tech</Link>
           <Link
             to="/daily-thoughts"
             className={`${styles.navLink} ${currentPath === '/daily-thoughts' ? styles.dailyThoughtsActive : ''}`}
-            onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}
+            onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}
           >
             Daily Thoughts
           </Link>
-          <Link to="/admin/login" className={`${styles.navLink} ${styles.adminLink}`} onClick={(e) => { updateHighlight(e.currentTarget); setMenuOpen(false); }}>Author(s)</Link>
+          <Link to="/admin/login" className={`${styles.navLink} ${styles.adminLink}`} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Author(s)</Link>
         </div>
       </div>
 
-      {/* Secret Admin Dialog */}
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
           <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>

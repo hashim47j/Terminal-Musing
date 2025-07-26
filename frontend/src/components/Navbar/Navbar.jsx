@@ -16,6 +16,7 @@ const Navbar = () => {
   const [bridgeLeft, setBridgeLeft] = useState(0);
   const [tapCount, setTapCount] = useState(0);
   const [showSecretDialog, setShowSecretDialog] = useState(false);
+  const [clickedPath, setClickedPath] = useState(null);
 
   const [highlightStyle, setHighlightStyle] = useState({});
   const navLinksRef = useRef(null);
@@ -131,13 +132,25 @@ const Navbar = () => {
     }
   };
 
+  const handleNavLinkClick = (e, path) => {
+    updateHighlight(e.currentTarget);
+    setClickedPath(path); // Set the clicked path immediately
+    // Only close the menu if it's currently open
+    if (menuOpen) {
+      toggleMenu(); // Trigger menu close
+    }
+  };
+
   const toggleMenu = () => {
     if (menuOpen) {
       setMenuClosing(true);
+      // Determine the longest animation duration for the links (clickedLink is 0.3s + 0.15s = 0.45s)
+      // Add a small buffer for smoothness, e.g., 50ms
       setTimeout(() => {
         setMenuOpen(false);
         setMenuClosing(false);
-      }, 300); // This should ideally match the overall closing transition duration
+        setClickedPath(null); // Clear clickedPath after closing animation
+      }, 450 + 50); // Timeout based on the longest animation duration + buffer
     } else {
       setMenuOpen(true);
     }
@@ -210,19 +223,55 @@ const Navbar = () => {
         >
           <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
 
-          <Link to="/philosophy" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Philosophy</Link>
-          <Link to="/history" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>History</Link>
-          <Link to="/writings" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Writings</Link>
-          <Link to="/legal-social" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Legal & Social Issues</Link>
-          <Link to="/tech" className={styles.navLink} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Tech</Link>
+          <Link
+            to="/philosophy"
+            className={`${styles.navLink} ${menuClosing && clickedPath === '/philosophy' ? styles.clickedLink : ''}`}
+            onClick={(e) => handleNavLinkClick(e, '/philosophy')}
+          >
+            Philosophy
+          </Link>
+          <Link
+            to="/history"
+            className={`${styles.navLink} ${menuClosing && clickedPath === '/history' ? styles.clickedLink : ''}`}
+            onClick={(e) => handleNavLinkClick(e, '/history')}
+          >
+            History
+          </Link>
+          <Link
+            to="/writings"
+            className={`${styles.navLink} ${menuClosing && clickedPath === '/writings' ? styles.clickedLink : ''}`}
+            onClick={(e) => handleNavLinkClick(e, '/writings')}
+          >
+            Writings
+          </Link>
+          <Link
+            to="/legal-social"
+            className={`${styles.navLink} ${menuClosing && clickedPath === '/legal-social' ? styles.clickedLink : ''}`}
+            onClick={(e) => handleNavLinkClick(e, '/legal-social')}
+          >
+            Legal & Social Issues
+          </Link>
+          <Link
+            to="/tech"
+            className={`${styles.navLink} ${menuClosing && clickedPath === '/tech' ? styles.clickedLink : ''}`}
+            onClick={(e) => handleNavLinkClick(e, '/tech')}
+          >
+            Tech
+          </Link>
           <Link
             to="/daily-thoughts"
-            className={`${styles.navLink} ${currentPath === '/daily-thoughts' ? styles.dailyThoughtsActive : ''}`}
-            onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}
+            className={`${styles.navLink} ${currentPath === '/daily-thoughts' ? styles.dailyThoughtsActive : ''} ${menuClosing && clickedPath === '/daily-thoughts' ? styles.clickedLink : ''}`}
+            onClick={(e) => handleNavLinkClick(e, '/daily-thoughts')}
           >
             Daily Thoughts
           </Link>
-          <Link to="/admin/login" className={`${styles.navLink} ${styles.adminLink}`} onClick={(e) => { updateHighlight(e.currentTarget); toggleMenu(); }}>Author(s)</Link>
+          <Link
+            to="/admin/login"
+            className={`${styles.navLink} ${styles.adminLink} ${menuClosing && clickedPath === '/admin/login' ? styles.clickedLink : ''}`}
+            onClick={(e) => handleNavLinkClick(e, '/admin/login')}
+          >
+            Author(s)
+          </Link>
         </div>
       </div>
 

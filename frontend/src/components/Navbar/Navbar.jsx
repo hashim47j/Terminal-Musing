@@ -163,7 +163,7 @@ const Navbar = () => {
     <>
       <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ''}`} aria-label="Home">
         <img
-          src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+          src={isLightBackground ? jerusalemHomeDark : jerusalemHomeLight}
           alt="Home"
           style={{ width: '27px', height: '27px', objectFit: 'contain' }}
         />
@@ -180,6 +180,7 @@ const Navbar = () => {
       <div
         className={`
           ${styles.navbarLeft}
+          ${currentPath === '/legal-social' ? styles.legalSocialPage : ''}
           ${hide ? styles.hide : ''}
           ${isLightBackground ? styles.darkText : styles.lightText}
         `}

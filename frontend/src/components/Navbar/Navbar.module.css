@@ -220,6 +220,11 @@
     font-size: 1.4em;
   }
 
+  /* Special case for Legal & Social Concerns page */
+  .navbarLeft.legalSocialPage .brand {
+    font-size: 1.0em;
+  }
+
   .homeButton {
     top: 25px;
     left: 20px;

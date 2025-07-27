@@ -216,6 +216,10 @@
     padding: 8px 10px;
   }
 
+  .navbarLeft .brand {
+    font-size: 1.4em;
+  }
+
   .homeButton {
     top: 25px;
     left: 20px;

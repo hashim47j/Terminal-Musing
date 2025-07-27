@@ -89,8 +89,16 @@
 
 .hamburger {
   font-size: 1.6em;
+  padding: 5px;
   cursor: pointer;
-  display: none;
+  position: relative;
+  z-index: 1001;
+  margin-left: auto;
+  display: block; /* Ensure hamburger is always visible for mobile */
+}
+
+/* Modern hamburger menu styles for mobile */
+@media (max-width: 768px) {
 }
 
 .darkText {
@@ -194,20 +202,29 @@
 
 /* --- MOBILE UI CHANGES (max-width: 768px) --- */
 @media (max-width: 768px) {
-  .navbarLeft,
   .bridgeConnector {
-    display: none;
+    top: 45px;
+    z-index: 1000;
+  }
+
+  .navbarLeft {
+    left: 85px;
+    z-index: 1001;
+  }
+
+  .navbarLeft .brandWrapper {
+    padding: 8px 20px;
   }
 
   .homeButton {
-    top: 20px;
+    top: 25px;
     left: 20px;
     z-index: 1002;
   }
 
   .navbarRight {
     position: fixed;
-    top: 20px;
+    top: 25px;
     right: 20px;
     padding: 0;
     background-color: transparent;
@@ -223,27 +240,69 @@
   }
 
   .hamburger {
-    display: block;
-    font-size: 2em;
-    padding: 5px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.4em;
     cursor: pointer;
-    position: relative;
-    z-index: 1001;
-    margin-left: auto;
+    transition: border-radius 0.3s ease, transform 0.2s ease;
+    color: inherit;
+    border: none;
   }
 
+  /* When menu is open - transforms to square */
+  .navbarRight.menuOpen .hamburger {
+    border-radius: 14px;
+  }
+
+  /* When menu is closing - back to circle */
+  .navbarRight.menuClosing .hamburger {
+    border-radius: 50%;
+  }
+
+  .hamburger:active {
+    transform: scale(0.95);
+  }
   .mobileOverlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1004;
+    background-color: rgba(0, 0, 0, 0.3); /* Slight dimming */
+    backdrop-filter: blur(0px); /* Initial blur */
+    -webkit-backdrop-filter: blur(0px);
+    z-index: 999;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    transition:
+      opacity 0.3s ease-in-out,
+      visibility 0.3s ease-in-out,
+      backdrop-filter 0.4s ease-in-out,
+      -webkit-backdrop-filter 0.4s ease-in-out;
   }
+  
+  .mobileOverlay.active {
+    opacity: 1;
+    visibility: visible;
+    backdrop-filter: blur(8px); /* Animate to 8px blur */
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  
+  .mobileOverlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
 
   .mobileOverlay.active {
     opacity: 1;
@@ -254,7 +313,7 @@
     position: fixed;
     top: 80px;
     left: 50%;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateX(-28%) translateY(20px);
     width: 270px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
@@ -268,24 +327,24 @@
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
     border-radius: 0;
-    z-index: 1005;
-    opacity: 0; /* Default hidden state */
+    z-index: 1005; /* Menu must be above the overlay, but overlay is now higher for testing */
+    opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* For menu container fade */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
   }
 
   .navLinks.mobileOpen {
-    opacity: 1; /* Make visible for opening */
+    opacity: 1;
     pointer-events: auto;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-28%) translateY(0);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
   }
 
   .navLinks.mobileClosing {
-    /* We still want the container to eventually fade out, AFTER children animate */
-    opacity: 0;
+    opacity: 1; /* Keep visible during child animations */
     pointer-events: none;
-    transform: translateX(-50%) translateY(20px); /* Keeps the container consistent with opening */
-    transition: opacity 0.3s ease-out 0.4s, transform 0.3s ease-out 0.4s; /* Add delay so links can finish animating */
+    transform: translateX(-28%) translateY(20px);
+    transition: opacity 0.3s ease-out 0.45s, transform 0.3s ease-out;
   }
 
   .navLinks .navLink {
@@ -299,9 +358,9 @@
     border-radius: 14px;
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
     color: #111 !important;
-    opacity: 0; /* Start hidden for individual links */
-    transform: translateX(60px); /* Initial state for slideInRight */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease; /* Ensure hover and color changes are smooth */
+    opacity: 0;
+    transform: translateX(60px);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
   }
 
   /* Opening animations - normal staggered timing */
@@ -333,7 +392,7 @@
 
   /* Closing animations - all non-clicked links go first, clicked link goes last */
   .navLinks.mobileClosing .navLink {
-    animation: slideOutRight 0.3s ease-in forwards; /* Re-introducing slideOutRight */
+    animation: slideOutRight 0.3s ease-in forwards;
     animation-delay: 0s; /* Default: all go immediately */
   }
 
@@ -353,7 +412,6 @@
     }
   }
 
-  /* Re-introducing and ensuring slideOutRight controls opacity */
   @keyframes slideOutRight {
     from {
       opacity: 1;

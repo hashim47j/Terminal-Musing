@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Navbar.module.css';
 
 import jerusalemHomeLight from '../../assets/jerusalemhomelight.png';
@@ -24,6 +24,7 @@ const Navbar = () => {
   const currentPath = location.pathname;
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);
+  const navigate = useNavigate();
 
   const HOME_BUTTON_LEFT = 30;
   const HOME_BUTTON_WIDTH = 54;
@@ -132,28 +133,30 @@ const Navbar = () => {
     }
   };
 
-  const handleNavLinkClick = (e, path) => {
-    updateHighlight(e.currentTarget);
-    setClickedPath(path); // Set the clicked path immediately
-    // Only close the menu if it's currently open
-    if (menuOpen) {
-      toggleMenu(); // Trigger menu close
-    }
-  };
-
   const toggleMenu = () => {
     if (menuOpen) {
       setMenuClosing(true);
-      // Determine the longest animation duration for the links (clickedLink is 0.3s + 0.15s = 0.45s)
-      // Add a small buffer for smoothness, e.g., 50ms
       setTimeout(() => {
         setMenuOpen(false);
         setMenuClosing(false);
-        setClickedPath(null); // Clear clickedPath after closing animation
-      }, 450 + 50); // Timeout based on the longest animation duration + buffer
+        setClickedPath(null);
+      }, 500);
     } else {
       setMenuOpen(true);
     }
+  };
+
+  const handleNavLinkClick = (e, path) => {
+    updateHighlight(e.currentTarget);
+    setClickedPath(path);
+
+    if (menuOpen) {
+      toggleMenu();
+    }
+
+    setTimeout(() => {
+      navigate(path);
+    }, 100);
   };
 
   return (
@@ -199,6 +202,8 @@ const Navbar = () => {
           ${styles.navbarRight}
           ${hide ? styles.hide : ''}
           ${isLightBackground ? styles.darkText : styles.lightText}
+          ${menuOpen ? styles.menuOpen : ''}
+          ${menuClosing ? styles.menuClosing : ''}
         `}
       >
         <div
@@ -209,12 +214,6 @@ const Navbar = () => {
         >
           ☰
         </div>
-
-        {/* Mobile Overlay */}
-        <div
-          className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ''}`}
-          onClick={toggleMenu}
-        ></div>
 
         <div
           ref={navLinksRef}
@@ -274,6 +273,11 @@ const Navbar = () => {
           </Link>
         </div>
       </div>
+
+      <div
+        className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ''}`}
+        onClick={toggleMenu}
+      ></div>
 
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>

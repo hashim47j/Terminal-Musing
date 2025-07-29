@@ -36,7 +36,7 @@
     margin-bottom: 25px;
     color: #2c2c2c;
     font-weight: 700;
-    text-align: center;
+    text-align: left;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-display: swap;
@@ -313,7 +313,7 @@
     .writingsHero {
       padding: 50px 5% 0;
       /* Move content down by 30% on mobile */
-      padding-top: calc(40px + 25vh);
+      padding-top: calc(30px + 20vh);
     }
   
     .contentWrapper {
@@ -324,6 +324,7 @@
     .mainHeading {
       font-size: 2.2em;
       font-family: 'Average', serif, Times, "Times New Roman", serif !important;
+      text-align: left;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-display: swap;
@@ -385,10 +386,11 @@
   
     .mainHeading {
       font-size: 1.8em;
-      font-family: 'Charm', cursive, Georgia, serif !important;
+      font-family: 'Average', serif, Times, "Times New Roman", serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-display: swap;
+      
     }
   
     .haikuLine {

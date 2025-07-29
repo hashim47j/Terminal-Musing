@@ -313,7 +313,7 @@
     .writingsHero {
       padding: 50px 5% 0;
       /* Move content down by 30% on mobile */
-      padding-top: calc(50px + 30vh);
+      padding-top: calc(40px + 25vh);
     }
   
     .contentWrapper {
@@ -323,7 +323,7 @@
   
     .mainHeading {
       font-size: 2.2em;
-      font-family: 'Charm', cursive, Georgia, serif !important;
+      font-family: 'Average', serif, Times, "Times New Roman", serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-display: swap;

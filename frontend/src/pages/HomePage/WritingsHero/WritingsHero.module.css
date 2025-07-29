@@ -313,7 +313,7 @@
     .writingsHero {
       padding: 50px 5% 0;
       /* Move content down by 30% on mobile */
-      padding-top: calc(10px + 5vh);
+      padding-top: calc(50px + 15vh);
     }
   
     .contentWrapper {
@@ -381,7 +381,7 @@
     .writingsHero {
       padding: 40px 3% 0;
       /* Move content down by 30% on small mobile */
-      padding-top: calc(40px + 30vh);
+      padding-top: calc(40px + 15vh);
     }
   
     .mainHeading {
@@ -443,7 +443,7 @@
   @media (max-width: 360px) {
     .writingsHero {
       /* Move content down by 30% on very small mobile */
-      padding-top: calc(30px + 30vh);
+      padding-top: calc(30px + 15vh);
     }
   
     .sculpturesContainer {

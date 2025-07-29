@@ -1,0 +1,146 @@
+.lsiHero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 60px 5% 180px;
+    background-color: #f8f8f8;
+    height: 100vh;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    overflow-x: hidden;
+    position: relative;
+    box-sizing: border-box;
+    width: 100vw;
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .contentWrapper {
+    max-width: 800px;
+    margin-bottom: 50px;
+    box-sizing: border-box;
+    word-break: break-word;
+    z-index: 2;
+    position: relative;
+  }
+  
+  .mainHeading {
+    font-family: 'Average', serif;
+    font-size: 3.5em;
+    line-height: 1.15;
+    margin-bottom: 40px;
+    margin-top: 30px;
+    color: #222;
+    font-weight: 700;
+  }
+  
+  .description {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin-bottom: -50px;
+    color: #555;
+  }
+  
+  .categoryTag {
+    background-color: transparent;
+    border: 2px solid #333;
+    color: #333;
+    padding: 5px 10px;
+    font-size: 0.7em;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: inline-block;
+    text-decoration: none;
+    
+    margin-top: 150px;
+  }
+  
+  .categoryTag:hover {
+    background-color: #333;
+    color: #fff;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .imageWrapper {
+    position: absolute;
+    bottom: 0px;
+    left: 52%;
+    transform: translateX(-50%);
+    max-width: 600px;
+    width: 90%;
+  }
+  
+  .magnaCartaImage {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0;
+    display: block;
+    margin: 0 auto;
+    background: transparent;
+  }
+  
+  /* ---------- Responsive Breakpoints ---------- */
+  
+  @media (max-width: 992px) {
+    .mainHeading {
+      font-size: 2.8em;
+    }
+  
+    .description {
+      font-size: 1.1em;
+    }
+  
+    .imageWrapper {
+      max-width: 80%;
+      bottom: 40px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .mainHeading {
+      font-size: 2.2em;
+    }
+  
+    .description {
+      font-size: 1em;
+    }
+  
+    .categoryTag {
+      font-size: 0.85em;
+      padding: 7px 18px;
+    }
+  
+    .imageWrapper {
+      max-width: 85%;
+      bottom: 30px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mainHeading {
+      font-size: 1.8em;
+    }
+  
+    .description {
+      font-size: 0.9em;
+    }
+  
+    .categoryTag {
+      font-size: 0.8em;
+      padding: 6px 15px;
+    }
+  
+    .imageWrapper {
+      max-width: 90%;
+      bottom: 20px;
+    }
+  }

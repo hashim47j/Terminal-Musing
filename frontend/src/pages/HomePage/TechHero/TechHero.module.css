@@ -1,0 +1,154 @@
+/* /home/hash/Documents/Terminal-Musing/frontend/src/pages/HomePage/TechHero/TechHero.module.css */
+
+.techHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 5% 60px;
+  height: 100vh;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+  width: 100vw;
+  max-width: 100%;
+  text-align: center;
+}
+
+.backgroundWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center; /* This will show the top part with terminal */
+  display: block;
+}
+
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.contentWrapper {
+  max-width: 800px;
+  box-sizing: border-box;
+  word-break: break-word;
+  z-index: 3;
+  position: relative;
+  padding: 0 20px;
+}
+
+.mainHeading {
+  font-family: 'Average', serif;
+  font-size: 3.5em;
+  line-height: 1.15;
+  margin-bottom: 25px;
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.description {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2em;
+  line-height: 1.6;
+  margin-bottom: 50px;
+  color: #f0f0f0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.categoryTag {
+  background-color: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  padding: 10px 15px;
+  font-size: 0.8em;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 60px;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+.categoryTag:hover {
+  background-color: #00ff41;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+  transform: translateY(-2px);
+  text-shadow: none;
+}
+
+/* ---------- Responsive Breakpoints ---------- */
+
+@media (max-width: 992px) {
+  .mainHeading {
+    font-size: 2.8em;
+  }
+
+  .description {
+    font-size: 1.1em;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainHeading {
+    font-size: 2.2em;
+  }
+
+  .description {
+    font-size: 1em;
+    margin-bottom: 40px;
+  }
+
+  .categoryTag {
+    font-size: 0.75em;
+    padding: 8px 12px;
+  }
+
+  .contentWrapper {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainHeading {
+    font-size: 1.8em;
+  }
+
+  .description {
+    font-size: 0.9em;
+    margin-bottom: 35px;
+  }
+
+  .categoryTag {
+    font-size: 0.7em;
+    padding: 7px 10px;
+    margin-bottom: 40px;
+  }
+
+  .contentWrapper {
+    padding: 0 10px;
+  }
+}

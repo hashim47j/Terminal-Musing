@@ -1,0 +1,448 @@
+/* /home/hash/Documents/Terminal-Musing/frontend/src/pages/HomePage/WritingsHero/WritingsHero.module.css */
+
+.writingsHero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 80px 5% 0;
+    background-color: #f5f5f5;
+    height: 100vh;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+    width: 100vw;
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .contentWrapper {
+    max-width: 800px;
+    box-sizing: border-box;
+    word-break: break-word;
+    z-index: 2;
+    position: relative;
+    padding: 0 20px;
+    margin-bottom: 0;
+  }
+  
+  .mainHeading {
+    font-family: 'Charm', cursive;
+    font-size: 3.5em;
+    line-height: 1.15;
+    margin-bottom: 25px;
+    color: #2c2c2c;
+    font-weight: 700;
+  }
+  
+  /* Haiku styling - replaces the old description */
+ /* Haiku styling - left aligned and positioned below main heading start */
+.haiku {
+    margin-bottom: 30px;
+    max-width: 600px;
+    text-align: left; /* Changed from center to left */
+    margin-left: 0; /* Remove auto centering */
+    margin-right: auto;
+  }
+  
+  .haikuLine {
+    font-family: 'Average', serif;
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #000000;
+    margin: 0;
+    text-align: left; /* Changed from center to left */
+  }
+  
+  /* Update contentWrapper to ensure proper alignment */
+  .contentWrapper {
+    max-width: 800px;
+    box-sizing: border-box;
+    word-break: break-word;
+    z-index: 2;
+    position: relative;
+    padding: 0 20px;
+    margin-bottom: 0;
+    text-align: center; /* Keep center for main heading */
+  }
+  
+  /* Keep main heading centered but allow haiku to align left */
+  .mainHeading {
+    font-family: 'Charm', cursive;
+    font-size: 3.5em;
+    line-height: 1.15;
+    margin-bottom: 25px;
+    color: #2c2c2c;
+    font-weight: 700;
+    text-align: center; /* Explicitly center the heading */
+  }
+  
+  /* Keep category tag centered */
+  .categoryTag {
+    background-color: transparent;
+    border: 2px solid #000000;
+    color: #000000;
+    padding: 5px 13px;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 5px rgba(139, 69, 19, 0.1);
+    display: inline-block;
+    text-decoration: none;
+    margin-bottom: 0;
+    /* Positioning changes */
+    display: block; /* Changed from inline-block to block */
+    width: fit-content; /* Only take up necessary width */
+    margin-left: 0; /* Align to left edge like haiku */
+    margin-top: 20px; /* Add some space above the button */
+  }
+  
+  .categoryTag:hover {
+    background-color: #000000;
+    color: #fff;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-Haiku2px);
+  }
+  
+  .sculpturesContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    max-width: 1820px;
+    padding: 0 20px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 19px;
+  }
+  
+  .sculptureWrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    min-width: 0;
+    height: 600px;
+    position: relative;
+  }
+  
+  .sculptureImage {
+    width: auto;
+    height: 550px;
+    max-width: 280px;
+    object-fit: contain;
+    object-position: bottom;
+    filter: grayscale(100%) contrast(1.2);
+    transition: all 0.3s ease;
+    opacity: 0.8;
+    cursor: pointer;
+  }
+  
+  /* Name tooltip styling */
+  .sculptureName {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Average', serif;
+    font-size: 0.9em;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 10;
+    margin-bottom: 10px;
+  }
+  
+  /* Show name on hover */
+  .sculptureWrapper:hover .sculptureName {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* Individual adjustments - move Shakespeare and Twain higher */
+  .sculptureWrapper:nth-child(1) .sculptureImage {
+    /* Pushkin - reference, no adjustment needed */
+    height: 550px;
+    transform: scale(1.0);
+  }
+  
+  .sculptureWrapper:nth-child(2) .sculptureImage {
+    /* Ghalib - further enlarged */
+    height: 550px;
+    transform: scale(1.32);
+  }
+  
+  .sculptureWrapper:nth-child(3) .sculptureImage {
+    /* Twain - further enlarged and positioned higher */
+    height: 550px;
+    transform: scale(1.27) translateY(-20px);
+  }
+  
+  .sculptureWrapper:nth-child(4) .sculptureImage {
+    /* Shakespeare - further enlarged and positioned higher */
+    height: 550px;
+    transform: scale(1.29) translateY(-40px);
+  }
+  
+  .sculptureWrapper:nth-child(5) .sculptureImage {
+    /* Sappho - further enlarged */
+    height: 600px;
+    transform: scale(1.36);
+  }
+  
+  .sculptureWrapper:nth-child(6) .sculptureImage {
+    /* Dante - reference, no adjustment needed */
+    height: 550px;
+    transform: scale(1.0);
+  }
+  
+  /* Update hover states for all sculptures */
+  .sculptureWrapper:nth-child(1) .sculptureImage:hover {
+    filter: grayscale(0%) contrast(1);
+    opacity: 1;
+    transform: translateY(-5px) scale(1.0);
+  }
+  
+  .sculptureWrapper:nth-child(2) .sculptureImage:hover {
+    filter: grayscale(0%) contrast(1);
+    opacity: 1;
+    transform: translateY(-5px) scale(1.32);
+  }
+  
+  .sculptureWrapper:nth-child(3) .sculptureImage:hover {
+    filter: grayscale(0%) contrast(1);
+    opacity: 1;
+    transform: translateY(-25px) scale(1.27);
+  }
+  
+  .sculptureWrapper:nth-child(4) .sculptureImage:hover {
+    filter: grayscale(0%) contrast(1);
+    opacity: 1;
+    transform: translateY(-45px) scale(1.29);
+  }
+  
+  .sculptureWrapper:nth-child(5) .sculptureImage:hover {
+    filter: grayscale(0%) contrast(1);
+    opacity: 1;
+    transform: translateY(-5px) scale(1.36);
+  }
+  
+  .sculptureWrapper:nth-child(6) .sculptureImage:hover {
+    filter: grayscale(0%) contrast(1);
+    opacity: 1;
+    transform: translateY(-5px) scale(1.0);
+  }
+  
+  /* Update CSS custom properties for hover state scaling */
+  .sculptureWrapper:nth-child(1) {
+    --scale-factor: 1.0;
+  }
+  
+  .sculptureWrapper:nth-child(2) {
+    --scale-factor: 1.32;
+  }
+  
+  .sculptureWrapper:nth-child(3) {
+    --scale-factor: 1.27;
+  }
+  
+  .sculptureWrapper:nth-child(4) {
+    --scale-factor: 1.29;
+  }
+  
+  .sculptureWrapper:nth-child(5) {
+    --scale-factor: 1.36;
+  }
+  
+  .sculptureWrapper:nth-child(6) {
+    --scale-factor: 1.0;
+  }
+  
+  /* ---------- Responsive Breakpoints ---------- */
+  
+  @media (max-width: 992px) {
+    .writingsHero {
+      padding: 60px 5% 0;
+    }
+  
+    .mainHeading {
+      font-size: 2.8em;
+    }
+  
+    .haikuLine {
+      font-size: 1.1em;
+    }
+    
+    .categoryTag {
+      font-size: 0.75em;
+      padding: 7px 10px;
+    }
+  
+    .sculptureWrapper {
+      height: 480px;
+    }
+  
+    .sculptureImage {
+      height: 430px;
+      max-width: 230px;
+    }
+  
+    .sculptureName {
+      font-size: 0.8em;
+      padding: 6px 10px;
+    }
+  
+    /* Updated responsive scaling with positioning */
+    .sculptureWrapper:nth-child(1) .sculptureImage { height: 430px; transform: scale(1.0); }
+    .sculptureWrapper:nth-child(2) .sculptureImage { height: 430px; transform: scale(1.32); }
+    .sculptureWrapper:nth-child(3) .sculptureImage { height: 430px; transform: scale(1.27) translateY(-15px); }
+    .sculptureWrapper:nth-child(4) .sculptureImage { height: 430px; transform: scale(1.29) translateY(-30px); }
+    .sculptureWrapper:nth-child(5) .sculptureImage { height: 480px; transform: scale(1.36); }
+    .sculptureWrapper:nth-child(6) .sculptureImage { height: 430px; transform: scale(1.0); }
+  
+    .sculpturesContainer {
+      gap: 15px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .writingsHero {
+      padding: 50px 5% 0;
+    }
+  
+    .mainHeading {
+      font-size: 2.2em;
+    }
+  
+    .haikuLine {
+      font-size: 1em;
+    }
+    
+    .categoryTag {
+      font-size: 0.7em;
+      padding: 6px 9px;
+    }
+  
+    .sculpturesContainer {
+      gap: 10px;
+      padding: 0 10px;
+    }
+  
+    .sculptureWrapper {
+      height: 380px;
+    }
+  
+    .sculptureImage {
+      height: 330px;
+      max-width: 180px;
+    }
+  
+    .sculptureName {
+      font-size: 0.75em;
+      padding: 5px 8px;
+    }
+  
+    /* Updated responsive scaling with positioning */
+    .sculptureWrapper:nth-child(1) .sculptureImage { height: 330px; transform: scale(1.0); }
+    .sculptureWrapper:nth-child(2) .sculptureImage { height: 330px; transform: scale(1.32); }
+    .sculptureWrapper:nth-child(3) .sculptureImage { height: 330px; transform: scale(1.27) translateY(-10px); }
+    .sculptureWrapper:nth-child(4) .sculptureImage { height: 330px; transform: scale(1.29) translateY(-20px); }
+    .sculptureWrapper:nth-child(5) .sculptureImage { height: 380px; transform: scale(1.36); }
+    .sculptureWrapper:nth-child(6) .sculptureImage { height: 330px; transform: scale(1.0); }
+  }
+  
+  @media (max-width: 480px) {
+    .writingsHero {
+      padding: 40px 3% 0;
+    }
+  
+    .mainHeading {
+      font-size: 1.8em;
+    }
+  
+    .haikuLine {
+      font-size: 0.9em;
+    }
+    
+    .categoryTag {
+      font-size: 0.65em;
+      padding: 5px 8px;
+    }
+  
+    .sculpturesContainer {
+      gap: 6px;
+      padding: 0 5px;
+    }
+  
+    .sculptureWrapper {
+      height: 280px;
+    }
+  
+    .sculptureImage {
+      height: 230px;
+      max-width: 120px;
+    }
+  
+    .sculptureName {
+      font-size: 0.7em;
+      padding: 4px 6px;
+    }
+  
+    /* Updated responsive scaling with positioning */
+    .sculptureWrapper:nth-child(1) .sculptureImage { height: 230px; transform: scale(1.0); }
+    .sculptureWrapper:nth-child(2) .sculptureImage { height: 230px; transform: scale(1.32); }
+    .sculptureWrapper:nth-child(3) .sculptureImage { height: 230px; transform: scale(1.27) translateY(-5px); }
+    .sculptureWrapper:nth-child(4) .sculptureImage { height: 230px; transform: scale(1.29) translateY(-10px); }
+    .sculptureWrapper:nth-child(5) .sculptureImage { height: 280px; transform: scale(1.36); }
+    .sculptureWrapper:nth-child(6) .sculptureImage { height: 230px; transform: scale(1.0); }
+  }
+  
+  @media (max-width: 360px) {
+    .sculpturesContainer {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      position: absolute;
+      bottom: 10px;
+    }
+  
+    .sculptureWrapper {
+      flex: 0 0 30%;
+      max-width: 100px;
+      height: 200px;
+    }
+  
+    .sculptureImage {
+      height: 170px;
+    }
+  
+    .sculptureName {
+      font-size: 0.65em;
+      padding: 3px 5px;
+    }
+  
+    /* Reset scaling for very small screens to avoid complexity */
+    .sculptureWrapper:nth-child(1) .sculptureImage,
+    .sculptureWrapper:nth-child(2) .sculptureImage,
+    .sculptureWrapper:nth-child(3) .sculptureImage,
+    .sculptureWrapper:nth-child(4) .sculptureImage,
+    .sculptureWrapper:nth-child(5) .sculptureImage,
+    .sculptureWrapper:nth-child(6) .sculptureImage {
+      height: 170px;
+      transform: none;
+    }
+  }
+  

@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import PhilosophyHero from './PhilosophyHero/PhilosophyHero';
 import HistoryHero from './HistoryHero/HistoryHero';
+import LsiHero from './LsiHero/LsiHero';
+import TechHero from './TechHero/TechHero';
+import WritingsHero from './WritingsHero/WritingsHero';
 import styles from './HomePage.module.css';
 
 const HomePage = () => {
@@ -29,6 +32,16 @@ const HomePage = () => {
       <div className={styles.pageSection}>
         <HistoryHero />
       </div>
+      <div className={styles.pageSection}>
+        <LsiHero />
+      </div>
+      <div className={styles.pageSection}>
+        <TechHero />
+      </div>
+      <div className={styles.pageSection}>
+        <WritingsHero />
+      </div>
+      
     </div>
   );
 };

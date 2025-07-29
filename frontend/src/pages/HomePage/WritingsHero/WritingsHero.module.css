@@ -313,7 +313,7 @@
     .writingsHero {
       padding: 50px 5% 0;
       /* Move content down by 30% on mobile */
-      padding-top: calc(30px + 20vh);
+      padding-top: calc(10px + 5vh);
     }
   
     .contentWrapper {

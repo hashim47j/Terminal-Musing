@@ -30,7 +30,7 @@
   }
   
   .mainHeading {
-    font-family: 'Charm', cursive;
+    font-family: 'Charm', cursive, Georgia, serif;
     font-size: 3.5em;
     line-height: 1.15;
     margin-bottom: 25px;
@@ -39,6 +39,7 @@
     text-align: center;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
   }
   
   /* Haiku styling - left aligned and positioned below main heading start */
@@ -51,7 +52,7 @@
   }
   
   .haikuLine {
-    font-family: 'Average', serif;
+    font-family: 'Average', serif, Times, "Times New Roman", serif;
     font-size: 1.2em;
     line-height: 1.6;
     color: #555;
@@ -59,6 +60,7 @@
     text-align: left;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
   }
   
   /* Category tag styling - now left aligned below haiku */
@@ -81,9 +83,10 @@
     width: fit-content;
     margin-left: 0;
     margin-top: 20px;
-    font-family: 'Average', serif;
+    font-family: 'Average', serif, Times, "Times New Roman", serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
   }
   
   .categoryTag:hover {
@@ -139,7 +142,7 @@
     color: white;
     padding: 8px 12px;
     border-radius: 4px;
-    font-family: 'Average', serif;
+    font-family: 'Average', serif, Times, "Times New Roman", serif;
     font-size: 0.9em;
     white-space: nowrap;
     opacity: 0;
@@ -263,16 +266,19 @@
   
     .mainHeading {
       font-size: 2.8em;
+      font-family: 'Charm', cursive, Georgia, serif;
     }
   
     .haikuLine {
       font-size: 1.1em;
+      font-family: 'Average', serif, Times, "Times New Roman", serif;
     }
     
     .categoryTag {
       font-size: 0.75em;
       padding: 7px 10px;
       margin-top: 18px;
+      font-family: 'Average', serif, Times, "Times New Roman", serif;
     }
   
     .sculptureWrapper {
@@ -287,6 +293,7 @@
     .sculptureName {
       font-size: 0.8em;
       padding: 6px 10px;
+      font-family: 'Average', serif, Times, "Times New Roman", serif;
     }
   
     /* Updated responsive scaling with positioning */
@@ -316,25 +323,28 @@
   
     .mainHeading {
       font-size: 2.2em;
-      font-family: 'Charm', cursive; /* Explicitly set font for mobile */
+      font-family: 'Charm', cursive, Georgia, serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      font-display: swap;
     }
   
     .haikuLine {
       font-size: 1em;
-      font-family: 'Average', serif; /* Explicitly set font for mobile */
+      font-family: 'Average', serif, Times, "Times New Roman", serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      font-display: swap;
     }
     
     .categoryTag {
       font-size: 0.7em;
       padding: 6px 9px;
       margin-top: 15px;
-      font-family: 'Average', serif; /* Explicitly set font for mobile */
+      font-family: 'Average', serif, Times, "Times New Roman", serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      font-display: swap;
     }
   
     .sculpturesContainer {
@@ -354,6 +364,7 @@
     .sculptureName {
       font-size: 0.75em;
       padding: 5px 8px;
+      font-family: 'Average', serif, Times, "Times New Roman", serif;
     }
   
     /* Updated responsive scaling with positioning */
@@ -374,25 +385,28 @@
   
     .mainHeading {
       font-size: 1.8em;
-      font-family: 'Charm', cursive; /* Explicitly set font for mobile */
+      font-family: 'Charm', cursive, Georgia, serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      font-display: swap;
     }
   
     .haikuLine {
       font-size: 0.9em;
-      font-family: 'Average', serif; /* Explicitly set font for mobile */
+      font-family: 'Average', serif, Times, "Times New Roman", serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      font-display: swap;
     }
     
     .categoryTag {
       font-size: 0.65em;
       padding: 5px 8px;
       margin-top: 12px;
-      font-family: 'Average', serif; /* Explicitly set font for mobile */
+      font-family: 'Average', serif, Times, "Times New Roman", serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      font-display: swap;
     }
   
     .sculpturesContainer {
@@ -412,6 +426,7 @@
     .sculptureName {
       font-size: 0.7em;
       padding: 4px 6px;
+      font-family: 'Average', serif, Times, "Times New Roman", serif;
     }
   
     /* Updated responsive scaling with positioning */
@@ -450,6 +465,7 @@
     .sculptureName {
       font-size: 0.65em;
       padding: 3px 5px;
+      font-family: 'Average', serif, Times, "Times New Roman", serif;
     }
   
     /* Reset scaling for very small screens to avoid complexity */

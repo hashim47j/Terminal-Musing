@@ -6,8 +6,7 @@
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
     position: relative;
 }
-    
-    
+
 .headerSection {
     background-image: url('../../assets/techbg.png');
     background-size: auto;
@@ -17,29 +16,25 @@
     padding: 60px 20px 100px;
     position: relative;
 }
-    
-    
+
 .heroImage {
-    position: relative;                 /* enables offset but keeps image in flow */
-    left: var(--hero-x, 90px);           /* horizontal offset: positive = right, negative = left */
-    top: var(--hero-y, 10px);            /* vertical offset: positive = down, negative = up */
+    position: relative;                   /* enables offset but keeps image in flow */
+    left: var(--hero-x, 90px);            /* horizontal offset: positive = right, negative = left */
+    top: var(--hero-y, 10px);             /* vertical offset: positive = down, negative = up */
     width: 340px;
     max-width: 90vw;
     height: auto;
     display: block;
     margin: 0 auto;
     z-index: 2;
-    
     transition: left 0.25s, top 0.25s;
-  }
-    
-    
+}
+
 .postsSection {
     background-color: #eef2f3;
     padding: 60px 5% 80px;
 }
-    
-    
+
 .postsHeading {
     font-size: 2.3em;
     color: #153d4c;
@@ -49,8 +44,7 @@
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
     letter-spacing: 0.01em;
 }
-    
-    
+
 .blogGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -58,8 +52,7 @@
     max-width: 1300px;
     margin: 0 auto;
 }
-    
-    
+
 .blogCard {
     background-color: #fff;
     display: flex;
@@ -71,14 +64,12 @@
     text-decoration: none;
     border: 1px solid #d8e0ec;
 }
-    
-    
+
 .blogCard:hover {
     transform: translateY(-4px) scale(1.016);
     box-shadow: 0 10px 25px rgba(12, 100, 200, 0.11);
 }
-    
-    
+
 .coverImage {
     width: 50%;
     object-fit: cover;
@@ -86,8 +77,7 @@
     min-height: 170px;
     background: #e2eafd;
 }
-    
-    
+
 .blogContent {
     padding: 20px 18px;
     display: flex;
@@ -95,8 +85,7 @@
     justify-content: space-between;
     width: 50%;
 }
-    
-    
+
 .blogTitle {
     font-size: 1.32em;
     font-weight: 700;
@@ -104,8 +93,7 @@
     color: #143b46;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
 }
-    
-    
+
 .blogSubheading {
     font-size: 0.99em;
     color: #425467;
@@ -113,8 +101,7 @@
     margin-bottom: 13px;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
 }
-    
-    
+
 .blogTime {
     font-size: 0.88em;
     color: #8cb3c8;
@@ -123,80 +110,49 @@
     padding-top: 6px;
     margin-top: auto;
 }
-    
-    
-/* Responsive */
+
+/* ----------------- Responsive ----------------- */
 @media (max-width: 900px) {
     .heroImage {
-    width: 220px;
-    max-width: 90vw;
+        width: 220px;
+        max-width: 90vw;
     }
     .postsHeading {
-    font-size: 2em;
+        font-size: 2em;
     }
 }
-    
-    
+
 @media (max-width: 768px) {
     .blogCard {
-    flex-direction: column;
-    min-height: 250px;
+        flex-direction: column;
+        min-height: 250px;
     }
-    
-    
     .coverImage,
     .blogContent {
-    width: 100%;
+        width: 100%;
     }
 }
-    
-    
+
 @media (max-width: 540px) {
     .headerSection {
-    padding: 36px 8px 60px;
+        padding: 30px 7px 50px;
+        /* --- Adjust background image size (zoom/crop) for mobile here --- */
+        background-size: 100%;    /* You can adjust this value to zoom in/out for mobile */
     }
     .postsSection {
-    padding: 24px 2% 42px;
+        padding: 24px 2% 42px;
     }
     .postsHeading {
-    font-size: 1.5em;
+        font-size: 1.5em;
     }
     .blogTitle {
-    font-size: 1.11em;
+        font-size: 1.11em;
     }
     .blogSubheading {
-    font-size: 0.93em;
+        font-size: 0.93em;
     }
-}
-
-/* ----------------- ADDITIONAL CUSTOMIZATIONS ----------------- */
-
-/* Optional: default CSS variables for hero position (can be overridden inline or globally) */
-:root {
-  --hero-x-default: 90px;
-  --hero-y-default: 10px;
-}
-
-.heroImage {
-  /* Use CSS variables with fallbacks */
-  left: var(--hero-x, var(--hero-x-default));
-  top: var(--hero-y, var(--hero-y-default));
-}
-
-/* Mobile optimizations: reduce background height and hero image size */
-
-@media (max-width: 540px) {
-  .headerSection {
-    /* Adjust height or padding to reduce visual height */
-    padding: 36px 8px 60px;
-  }
-  .heroImage {
-    width: 306px; /* 10% smaller than 340px */
-    /* max-width remains same for responsiveness */
-    max-width: 90vw;
-  }
-  /* If you want the background image to zoom/crop more for mobiles,
-     you can add these properties here (optional): */
-  /* background-size: 130% !important;
-     background-position: 40% center !important; */
+    .heroImage {
+        width: 306px;            /* 10% smaller than 340px */
+        /* max-width remains same for responsiveness */
+    }
 }

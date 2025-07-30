@@ -14,6 +14,7 @@ import AdminLogin from './pages/AdminPage/AdminLogin';
 import BlogPage from './pages/BlogPage/BlogPage'; 
 import LsconcernPage from './pages/LsconcernPage/LsconcernPage';
 import WritingsPage from './pages/WritingsPage/WritingsPage';
+import TechPage from './pages/TechPage/TechPage';
 import AdminDashboard from './pages/AdminPage/AdminDashboard';
 import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
 import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
@@ -38,6 +39,8 @@ function App() {
           <Route path="/daily-thoughts" element={<DailythoughtsReader />} />
           <Route path="/dailythoughts/submit" element={<DailythoughtsUI />} />
           <Route path="/admin/dailythoughts/edit" element={<DailythoughtsUI />} />
+          <Route path="/tech" element={<TechPage />} />
+        
         </Routes>
       </main>
       <Footer />

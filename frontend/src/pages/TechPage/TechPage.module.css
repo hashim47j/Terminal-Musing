@@ -1,15 +1,14 @@
 /* /home/hash/Documents/Terminal-Musing/frontend/src/pages/TechPage/TechPage.module.css */
 
-
 .pageContainer {
     background-color: #e4e4e4;
     min-height: 100vh;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
     position: relative;
-    }
+}
     
     
-    .headerSection {
+.headerSection {
     background-image: url('../../assets/techbg.png');
     background-size: auto;
     background-position: center;
@@ -17,32 +16,31 @@
     text-align: center;
     padding: 60px 20px 100px;
     position: relative;
-    }
+}
     
     
-    .heroImage {
-        position: relative;                 /* enables offset but keeps image in flow */
-        left: var(--hero-x, 90px);           /* horizontal offset: positive = right, negative = left */
-        top: var(--hero-y, 10px);            /* vertical offset: positive = down, negative = up */
-        width: 340px;
-        max-width: 90vw;
-        height: auto;
-        display: block;
-        margin: 0 auto;
-        z-index: 2;
-        
-        transition: left 0.25s, top 0.25s;
-      }
-      
+.heroImage {
+    position: relative;                 /* enables offset but keeps image in flow */
+    left: var(--hero-x, 90px);           /* horizontal offset: positive = right, negative = left */
+    top: var(--hero-y, 10px);            /* vertical offset: positive = down, negative = up */
+    width: 340px;
+    max-width: 90vw;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    z-index: 2;
+    
+    transition: left 0.25s, top 0.25s;
+  }
     
     
-    .postsSection {
+.postsSection {
     background-color: #eef2f3;
     padding: 60px 5% 80px;
-    }
+}
     
     
-    .postsHeading {
+.postsHeading {
     font-size: 2.3em;
     color: #153d4c;
     font-weight: 700;
@@ -50,19 +48,19 @@
     margin-bottom: 50px;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
     letter-spacing: 0.01em;
-    }
+}
     
     
-    .blogGrid {
+.blogGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 40px 30px;
     max-width: 1300px;
     margin: 0 auto;
-    }
+}
     
     
-    .blogCard {
+.blogCard {
     background-color: #fff;
     display: flex;
     flex-direction: row;
@@ -72,63 +70,63 @@
     transition: transform 0.3s, box-shadow 0.3s;
     text-decoration: none;
     border: 1px solid #d8e0ec;
-    }
+}
     
     
-    .blogCard:hover {
+.blogCard:hover {
     transform: translateY(-4px) scale(1.016);
     box-shadow: 0 10px 25px rgba(12, 100, 200, 0.11);
-    }
+}
     
     
-    .coverImage {
+.coverImage {
     width: 50%;
     object-fit: cover;
     height: auto;
     min-height: 170px;
     background: #e2eafd;
-    }
+}
     
     
-    .blogContent {
+.blogContent {
     padding: 20px 18px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 50%;
-    }
+}
     
     
-    .blogTitle {
+.blogTitle {
     font-size: 1.32em;
     font-weight: 700;
     margin-bottom: 8px;
     color: #143b46;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
-    }
+}
     
     
-    .blogSubheading {
+.blogSubheading {
     font-size: 0.99em;
     color: #425467;
     line-height: 1.5;
     margin-bottom: 13px;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
-    }
+}
     
     
-    .blogTime {
+.blogTime {
     font-size: 0.88em;
     color: #8cb3c8;
     text-align: left;
     border-top: 1px solid #e0e8ee;
     padding-top: 6px;
     margin-top: auto;
-    }
+}
     
     
-    /* Responsive */
-    @media (max-width: 900px) {
+/* Responsive */
+@media (max-width: 900px) {
     .heroImage {
     width: 220px;
     max-width: 90vw;
@@ -136,10 +134,10 @@
     .postsHeading {
     font-size: 2em;
     }
-    }
+}
     
     
-    @media (max-width: 768px) {
+@media (max-width: 768px) {
     .blogCard {
     flex-direction: column;
     min-height: 250px;
@@ -150,10 +148,10 @@
     .blogContent {
     width: 100%;
     }
-    }
+}
     
     
-    @media (max-width: 540px) {
+@media (max-width: 540px) {
     .headerSection {
     padding: 36px 8px 60px;
     }
@@ -169,4 +167,36 @@
     .blogSubheading {
     font-size: 0.93em;
     }
-    }
+}
+
+/* ----------------- ADDITIONAL CUSTOMIZATIONS ----------------- */
+
+/* Optional: default CSS variables for hero position (can be overridden inline or globally) */
+:root {
+  --hero-x-default: 90px;
+  --hero-y-default: 10px;
+}
+
+.heroImage {
+  /* Use CSS variables with fallbacks */
+  left: var(--hero-x, var(--hero-x-default));
+  top: var(--hero-y, var(--hero-y-default));
+}
+
+/* Mobile optimizations: reduce background height and hero image size */
+
+@media (max-width: 540px) {
+  .headerSection {
+    /* Adjust height or padding to reduce visual height */
+    padding: 36px 8px 60px;
+  }
+  .heroImage {
+    width: 306px; /* 10% smaller than 340px */
+    /* max-width remains same for responsiveness */
+    max-width: 90vw;
+  }
+  /* If you want the background image to zoom/crop more for mobiles,
+     you can add these properties here (optional): */
+  /* background-size: 130% !important;
+     background-position: 40% center !important; */
+}

@@ -132,3 +132,48 @@
     font-size: 0.9em;
   }
 }
+@media (max-width: 480px) {
+  .headerSection {
+    /* Tighter vertical padding, and zoom/pan the background image for clarity. */
+    padding: 36px 8px 48px;
+    background-size: 200%;     /* Zoom in background image on mobile */
+    background-position: 45% center; /* Pan/crop as needed. Adjust 60% for best fit. */
+    min-height: 120px;         /* Add if you'd like guaranteed visibility */
+  }
+
+  .heroImage {
+    width: 120px;              /* Smaller hero image for mobile */
+    left: var(--hero-x, 0px);/* Adjust offset for best position */
+    top: var(--hero-y, 0px);
+    margin-bottom: 10px;       /* Add a bit of space below */
+  }
+
+  .postsHeading {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+  }
+
+  .blogTitle {
+    font-size: 1.09em;
+  }
+
+  .blogSubheading {
+    font-size: 0.86em;
+    margin-bottom: 10px;
+  }
+
+  .blogGrid {
+    gap: 25px 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .blogCard {
+    min-height: 180px;
+    border-radius: 5px;
+  }
+
+  .blogContent {
+    padding: 14px 11px;
+  }
+}

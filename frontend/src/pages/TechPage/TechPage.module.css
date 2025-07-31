@@ -18,9 +18,9 @@
 }
 
 .heroImage {
-    position: relative;                   /* enables offset but keeps image in flow */
-    left: var(--hero-x, 90px);            /* horizontal offset: positive = right, negative = left */
-    top: var(--hero-y, 10px);             /* vertical offset: positive = down, negative = up */
+    position: relative;
+    left: var(--hero-x, 90px);
+    top: var(--hero-y, 10px);
     width: 340px;
     max-width: 90vw;
     height: auto;
@@ -136,8 +136,8 @@
 @media (max-width: 540px) {
     .headerSection {
         padding: 30px 7px 50px;
-        /* --- Adjust background image size (zoom/crop) for mobile here --- */
-        background-size: 100%;    /* You can adjust this value to zoom in/out for mobile */
+        background-size: 120% !important; /* Zoom in BG only on mobile */
+        min-height: 240px !important;
     }
     .postsSection {
         padding: 24px 2% 42px;
@@ -152,7 +152,6 @@
         font-size: 0.93em;
     }
     .heroImage {
-        width: 306px;            /* 10% smaller than 340px */
-        /* max-width remains same for responsiveness */
+        width: 306px !important; /* 10% smaller than 340px */
     }
 }

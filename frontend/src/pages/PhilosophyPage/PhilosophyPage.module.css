@@ -1,30 +1,32 @@
-/* Terminal-Musing/src/pages/PhilosophyPage/PhilosophyPage.module.css */
-
 .philosophyPageContainer {
   background-color: #f4f0e8;
   min-height: 100vh;
   font-family: 'Playfair Display', serif;
+  position: relative;
 }
 
 .headerSection {
   background-image: url('../../assets/philosophy-background.png');
-  background-size: cover;
+  background-size: auto;
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
   padding: 60px 20px 100px;
   position: relative;
+  overflow: visible;
+  position: relative;
 }
 
-.kantSapereAudeImageWrapper {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
+/* Kant image: positioned relative and adjustable */
 .kantSapereAudeImage {
-  width: 100%;
+  width: 240px;
   height: auto;
   display: block;
+  margin: 0 auto;
+  position: relative;
+  transition: left 0.25s ease, top 0.25s ease;
+  left: var(--kant-x, 0px)!important;
+  top: var(--kant-y, 25px) !important;
 }
 
 /* --- Posts Section --- */
@@ -102,6 +104,7 @@
   margin-top: auto;
 }
 
+/* Responsive tweaks */
 @media (max-width: 768px) {
   .postCard {
     flex-direction: column;
@@ -118,16 +121,58 @@
 }
 
 @media (max-width: 480px) {
+  .headerSection {
+    padding: 34px 6px 34px;
+    background-size: 220%;
+    background-position: 55% 25%;
+    min-height: 200px;
+  }
+
+  .kantSapereAudeImage {
+    width: 180px; /* Smaller Kant image */
+    left: var(--kant-x-mobile, 30px)!important;
+    top: var(--kant-y-mobile, 30px)!important;
+  }
+
   .postsHeading {
-    font-size: 1.8em;
+    font-size: 1.5em;
+    margin-bottom: 28px;
+  }
+
+  .postsGrid {
+    gap: 18px 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .postCard {
+    min-height: 160px;
+    border-radius: 5px;
+  }
+
+  .postImage {
+    min-height: 100px;
+    max-height: 110px;
+    object-fit: cover;
+  }
+
+  .postContent {
+    padding: 13px 8px;
   }
 
   .postTitle {
-    font-size: 1.2em;
+    font-size: 1.05em;
+    margin-bottom: 5px;
   }
 
   .postDescription {
-    font-size: 0.9em;
+    font-size: 0.85em;
+    margin-bottom: 7px;
+  }
+
+  .postTime {
+    font-size: 0.8em;
+    padding-top: 3px;
   }
 }
 

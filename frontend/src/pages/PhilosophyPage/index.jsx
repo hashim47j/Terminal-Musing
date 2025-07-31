@@ -12,12 +12,10 @@ const PhilosophyPage = () => {
 
   const navbarBgRef = useRef(null);
 
-  // Optional: force IntersectionObserver to mount early for navbar
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // If needed, extra logic can go here for detection
-        // But the Navbar already observes this element globally
+        // Navbar detection logic can be handled here or globally
       },
       {
         root: null,
@@ -48,7 +46,7 @@ const PhilosophyPage = () => {
 
   return (
     <div className={`${styles.philosophyPageContainer} ${darkMode ? styles.darkMode : ''}`}>
-      {/* ⬇️ This div allows the navbar to detect background brightness */}
+      {/* Navbar background detection */}
       <div
         ref={navbarBgRef}
         data-navbar-bg-detect
@@ -61,13 +59,17 @@ const PhilosophyPage = () => {
       />
 
       <section className={styles.headerSection}>
-        <div className={styles.kantSapereAudeImageWrapper}>
-          <img
-            src={darkMode ? kantDark : kantLight}
-            alt="Immanuel Kant and Sapere Aude"
-            className={styles.kantSapereAudeImage}
-          />
-        </div>
+        <img
+          src={darkMode ? kantDark : kantLight}
+          alt="Immanuel Kant and Sapere Aude"
+          className={styles.kantSapereAudeImage}
+          style={{
+            left: 'var(--kant-x, 0px)',
+            top: 'var(--kant-y, 0px)',
+            position: 'relative',
+            maxWidth: '100%',
+          }}
+        />
       </section>
 
       <section className={styles.postsSection}>
@@ -81,11 +83,7 @@ const PhilosophyPage = () => {
               style={{ cursor: 'pointer' }}
             >
               {post.coverImage ? (
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  className={styles.postImage}
-                />
+                <img src={post.coverImage} alt={post.title} className={styles.postImage} />
               ) : (
                 <div className={styles.postImage} style={{ backgroundColor: '#ccc' }} />
               )}

@@ -19,8 +19,8 @@
 
 .heroImage {
   position: relative;
-  left: var(--hero-x, -48px);         
-  top: var(--hero-y, 10px); 
+  left: var(--hero-x, -45px);         
+  top: var(--hero-y, 8px); 
   width: 160px;
   height: auto;
   display: block;

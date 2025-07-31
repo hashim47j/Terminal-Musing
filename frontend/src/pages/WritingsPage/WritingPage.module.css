@@ -1,5 +1,3 @@
-/* Terminal-Musing/src/pages/WritingsPage/WritingsPage.module.css */
-
 .writingsPageContainer {
   background-color: #FAF7F0; /* Warm white */
   min-height: 100vh;
@@ -7,20 +5,26 @@
 }
 
 .headerSection {
-    background-image: url('../../assets/Wrting-background.png');
-    background-size: auto;
-    background-position: center;
-    background-repeat: no-repeat;
-    text-align: center;
-    padding: 60px 20px 100px;
-    position: relative;
-  }
-  
+  background-image: url('../../assets/Wrting-background.png');
+  background-size: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: center;
+  padding: 60px 20px 100px;
+  position: relative;
+  overflow: visible;
+
+  height: 33vh;       /* fixed height */
+  min-height: 220px;  /* optional fallback */
+}
+/* Hero image with relative positioning and customizable offsets */
 .heroImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 220px;
   height: auto;
-  display: block;
-  margin: 0 auto;
   z-index: 2;
 }
 
@@ -54,6 +58,7 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .blogCard:hover {
@@ -99,7 +104,7 @@
   margin-top: auto;
 }
 
-/* Responsive */
+/* --- Responsive: Mobile optimizations --- */
 @media (max-width: 768px) {
   .blogCard {
     flex-direction: column;
@@ -116,8 +121,24 @@
 }
 
 @media (max-width: 480px) {
+  .headerSection {
+    /* Zoom in the background image slightly for mobile clarity */
+    background-size: 220%;
+    background-position: 50% top;
+    padding: 36px 6px 48px;
+    min-height: 120px;
+  }
+
+  .heroImage {
+    width: 160px; /* 10% smaller than 220px */
+    /* Adjust horizontal and vertical offset vars if needed */
+    left: var(--hero-x-mobile, 250px)!important;
+    top: var(--hero-y-mobile, 100px)!important;
+  }
+
   .postsHeading {
     font-size: 1.8em;
+    margin-bottom: 28px;
   }
 
   .blogTitle {
@@ -126,5 +147,32 @@
 
   .blogSubheading {
     font-size: 0.9em;
+    margin-bottom: 12px;
+  }
+
+  .blogGrid {
+    gap: 25px 0;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .blogCard {
+    min-height: 180px;
+    border-radius: 5px;
+  }
+
+  .coverImage {
+    min-height: 120px;
+    max-height: 140px;
+    object-fit: cover;
+  }
+
+  .blogContent {
+    padding: 14px 10px;
+  }
+
+  .blogTime {
+    font-size: 0.8em;
+    padding-top: 4px;
   }
 }

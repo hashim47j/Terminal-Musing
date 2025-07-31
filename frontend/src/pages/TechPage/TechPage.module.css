@@ -1,13 +1,11 @@
 /* /home/hash/Documents/Terminal-Musing/frontend/src/pages/TechPage/TechPage.module.css */
 
 .pageContainer {
-    background-color: #e4e4e4;
+    background-color: #E4E4E4;
     min-height: 100vh;
-    font-family: 'Roboto', 'Segoe UI', 'sans-serif';
-    position: relative;
-}
-
-.headerSection {
+    font-family: 'Playfair Display', serif;
+  }
+  .headerSection {
     background-image: url('../../assets/techbg.png');
     background-size: auto;
     background-position: center;
@@ -15,20 +13,21 @@
     text-align: center;
     padding: 60px 20px 100px;
     position: relative;
-}
-
-.heroImage {
-    position: relative;
-    left: var(--hero-x, 90px);
-    top: var(--hero-y, 10px);
-    width: 340px;
-    max-width: 90vw;
+    overflow: visible;
+  
+    height: 33vh;       /* fixed height */
+    min-height: 220px;  /* optional fallback */
+  }
+  /* Hero image with relative positioning and customizable offsets */
+  .heroImage {
+    position: absolute;
+    top: 50%;
+    left: 51.5%;
+    transform: translate(-50%, -50%);
+    width: 300px;
     height: auto;
-    display: block;
-    margin: 0 auto;
     z-index: 2;
-    transition: left 0.25s, top 0.25s;
-}
+  }
 
 .postsSection {
     background-color: #eef2f3;
@@ -115,7 +114,7 @@
 @media (max-width: 900px) {
     .heroImage {
         width: 220px;
-        left: 11%;
+        left: 51.5%;
         max-width: 90vw;
     }
     .postsHeading {
@@ -140,7 +139,7 @@
         padding: 50px 0px 34px;
         right: 0%;
         background-size: 290% !important; /* Zoom in BG only on mobile */
-        min-height: 120px !important;
+        min-height: 200px !important;
         background-position: 52% center;
     }
     .postsSection {

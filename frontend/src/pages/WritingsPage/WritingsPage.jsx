@@ -1,9 +1,7 @@
-// Terminal-Musing/src/pages/WritingsPage/WritingPage.jsx
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './WritingPage.module.css';
-import writingHero from '../../assets/writing-hero.png'; // Add your hero image here
+import styles from './WritingPage.module.css'; // Adjusted filename to match CSS
+import writingHero from '../../assets/writing-hero.png';
 
 const WritingPage = () => {
   const navigate = useNavigate();
@@ -15,32 +13,38 @@ const WritingPage = () => {
       title: 'Existential Notes',
       subheading: 'Reflecting on the absurd and the beauty of being.',
       coverImage: '/uploads/existential-writing.jpg',
-      date: '2025-07-10'
+      date: '2025-07-10',
     },
     {
       id: 'letters-to-a-stranger',
       title: 'Letters to a Stranger',
       subheading: 'Fragments of thoughts left unsent.',
       coverImage: '/uploads/letters-writing.jpg',
-      date: '2025-06-30'
-    }
+      date: '2025-06-30',
+    },
   ];
 
   return (
-    <div className={styles.writingPageContainer}>
+    <div className={styles.writingsPageContainer}>
       <div
         data-navbar-bg-detect
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
+      {/* Hero Section with background via CSS */}
       <section className={styles.headerSection}>
         <img
           src={writingHero}
           alt="Writing Hero"
           className={styles.heroImage}
+          style={{
+            '--hero-x': '0px', /* Adjust horizontal offset if needed */
+            '--hero-y': '0px', /* Adjust vertical offset if needed */
+          }}
         />
       </section>
 
+      {/* Posts Section */}
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>Writing Posts</h2>
         <div className={styles.blogGrid}>
@@ -58,7 +62,10 @@ const WritingPage = () => {
                   className={styles.coverImage}
                 />
               ) : (
-                <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
+                <div
+                  className={styles.coverImage}
+                  style={{ backgroundColor: '#ccc' }}
+                />
               )}
               <div className={styles.blogContent}>
                 <h3 className={styles.blogTitle}>{post.title}</h3>
@@ -67,7 +74,7 @@ const WritingPage = () => {
                   {new Date(post.date).toLocaleDateString('en-US', {
                     day: 'numeric',
                     month: 'short',
-                    year: 'numeric'
+                    year: 'numeric',
                   })}
                 </span>
               </div>

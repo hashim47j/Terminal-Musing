@@ -383,29 +383,18 @@
   }
 
   /* Opening animations - normal staggered timing */
-  .navLinks.mobileOpen .navLink {
-    /* Key for smooth entry: stagger links and ease in position/opacity */
-    animation: slideInRightSmoother 0.6s cubic-bezier(0.17, 0.67, 0.52, 1.17) forwards;
-  }
 
-  .navLinks.mobileOpen .navLink:nth-child(1) { animation-delay: 0.06s; }
-  .navLinks.mobileOpen .navLink:nth-child(2) { animation-delay: 0.12s; }
-  .navLinks.mobileOpen .navLink:nth-child(3) { animation-delay: 0.18s; }
-  .navLinks.mobileOpen .navLink:nth-child(4) { animation-delay: 0.24s; }
-  .navLinks.mobileOpen .navLink:nth-child(5) { animation-delay: 0.30s; }
-  .navLinks.mobileOpen .navLink:nth-child(6) { animation-delay: 0.36s; }
-  .navLinks.mobileOpen .navLink:nth-child(7) { animation-delay: 0.42s; }
-  @keyframes bouncySlideInSoft {
+  @keyframes bouncySlideInSoftest {
     0% {
       opacity: 0;
-      transform: translateX(36px) scale(0.92);
+      transform: translateX(20px) scale(0.98);
     }
     60% {
       opacity: 1;
-      transform: translateX(-5px) scale(1.06);
+      transform: translateX(-2px) scale(1.025);
     }
     80% {
-      transform: translateX(2px) scale(0.98);
+      transform: translateX(1px) scale(0.99);
     }
     100% {
       opacity: 1;
@@ -414,18 +403,17 @@
   }
   
   .navLinks.mobileOpen .navLink {
-    animation: bouncySlideInSoft 0.73s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: bouncySlideInSoftest 0.6s cubic-bezier(0.25, 0.75, 0.4, 1.05) forwards;
   }
   
-  .navLinks.mobileOpen .navLink:nth-child(1) { animation-delay: 0.04s; }
-  .navLinks.mobileOpen .navLink:nth-child(2) { animation-delay: 0.09s; }
-  .navLinks.mobileOpen .navLink:nth-child(3) { animation-delay: 0.13s; }
-  .navLinks.mobileOpen .navLink:nth-child(4) { animation-delay: 0.17s; }
-  .navLinks.mobileOpen .navLink:nth-child(5) { animation-delay: 0.21s; }
-  .navLinks.mobileOpen .navLink:nth-child(6) { animation-delay: 0.25s; }
-  .navLinks.mobileOpen .navLink:nth-child(7) { animation-delay: 0.29s; }
+  .navLinks.mobileOpen .navLink:nth-child(1) { animation-delay: 0.03s; }
+  .navLinks.mobileOpen .navLink:nth-child(2) { animation-delay: 0.06s; }
+  .navLinks.mobileOpen .navLink:nth-child(3) { animation-delay: 0.10s; }
+  .navLinks.mobileOpen .navLink:nth-child(4) { animation-delay: 0.13s; }
+  .navLinks.mobileOpen .navLink:nth-child(5) { animation-delay: 0.16s; }
+  .navLinks.mobileOpen .navLink:nth-child(6) { animation-delay: 0.19s; }
+  .navLinks.mobileOpen .navLink:nth-child(7) { animation-delay: 0.22s; }
   
-
 
 
   /* The clicked link gets a longer delay so it goes last */
@@ -455,8 +443,7 @@
     animation: bouncySlideIn 0.62s cubic-bezier(0.23, 1.26, 0.32, 1) forwards;
   }
   
-
-  @keyframes slideOutRight {
+  @keyframes slideOutAll {
     from {
       opacity: 1;
       transform: translateX(0);
@@ -466,7 +453,26 @@
       transform: translateX(60px);
     }
   }
-
+  
+/* All links slide out together */
+.navLinks.mobileClosing .navLink {
+  animation: slideOutAll 0.33s cubic-bezier(0.6, 0.03, 0.7, 0.92) forwards;
+  animation-delay: 0s !important;
+  transition: none !important;
+  opacity: 1;
+  transform: translateX(0);
+}
+  
+  .navLinks.mobileClosing .navLink.clickedLink {
+    opacity: 1;
+    transform: translateX(0);
+    /* Stay visible during delay */
+    animation: slideOutAll 0.33s cubic-bezier(0.6, 0.03, 0.7, 0.92) forwards;
+    animation-delay: 1.5s !important;
+    transition: none !important;
+  }
+  
+  
   .navLinks .navLink:hover {
     background-color: rgba(255, 255, 255, 0.4);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);

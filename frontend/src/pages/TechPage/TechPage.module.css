@@ -135,12 +135,11 @@
 
 @media (max-width: 540px) {
     .headerSection {
-        
         padding: 50px 0px 34px;
         right: 0%;
         background-size: 290% !important; /* Zoom in BG only on mobile */
         min-height: 200px !important;
-        background-position: 52% center;
+        background-position: 52% top;
     }
     .postsSection {
         padding: 24px 2% 42px;

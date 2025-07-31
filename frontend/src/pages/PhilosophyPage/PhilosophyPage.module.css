@@ -130,7 +130,7 @@
 
   .kantSapereAudeImage {
     width: 180px; /* Smaller Kant image */
-    left: var(--kant-x-mobile, 30px)!important;
+    left: var(--kant-x-mobile, 20px)!important;
     top: var(--kant-y-mobile, 30px)!important;
   }
 

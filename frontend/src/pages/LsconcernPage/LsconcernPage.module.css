@@ -119,7 +119,7 @@
 @media (max-width: 480px) {
   .headerSection {
     padding: 36px 8px 60px;
-    background-size: 220%;
+    background-size: 250%;
     background-position: top;
     min-height: auto;
   }
@@ -128,7 +128,7 @@
     width: 200px;
     max-width: 90vw;
     position: relative;
-    left: var(--hero-x-mobile, 40px);
+    left: var(--hero-x-mobile, 30px);
     top: var(--hero-y-mobile,  20px);
     transition: left 0.2s, top 0.2s;
   }

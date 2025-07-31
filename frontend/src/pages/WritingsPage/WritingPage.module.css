@@ -132,7 +132,7 @@
   .heroImage {
     width: 160px; /* 10% smaller than 220px */
     /* Adjust horizontal and vertical offset vars if needed */
-    left: var(--hero-x-mobile, 250px)!important;
+    left: var(--hero-x-mobile, 225px)!important;
     top: var(--hero-y-mobile, 100px)!important;
   }
 

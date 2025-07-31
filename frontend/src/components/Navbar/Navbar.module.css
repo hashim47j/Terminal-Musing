@@ -341,14 +341,17 @@
     z-index: 1005; /* Menu must be above the overlay, but overlay is now higher for testing */
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), 
+    transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   .navLinks.mobileOpen {
     opacity: 1;
     pointer-events: auto;
     transform: translateX(-28%) translateY(0);
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    /* Optional: smooth the opening a bit more */
+    transition: opacity 0.45s cubic-bezier(0.17, 0.67, 0.52, 1.17),
+                transform 0.5s cubic-bezier(0.17, 0.67, 0.52, 1.17);
   }
 
   .navLinks.mobileClosing {
@@ -371,41 +374,40 @@
     color: #111 !important;
     opacity: 0;
     transform: translateX(60px);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+    transition: 
+      background-color 0.35s cubic-bezier(0.17, 0.67, 0.52, 1.17),
+      box-shadow 0.35s,
+      color 0.28s,
+      opacity 0.42s cubic-bezier(0.17, 0.67, 0.52, 1.17),
+      transform 0.48s cubic-bezier(0.17, 0.67, 0.52, 1.17);
   }
 
   /* Opening animations - normal staggered timing */
   .navLinks.mobileOpen .navLink {
-    animation: slideInRight 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    /* Key for smooth entry: stagger links and ease in position/opacity */
+    animation: slideInRightSmoother 0.6s cubic-bezier(0.17, 0.67, 0.52, 1.17) forwards;
   }
 
-  .navLinks.mobileOpen .navLink:nth-child(1) {
-    animation-delay: 0.05s;
-  }
-  .navLinks.mobileOpen .navLink:nth-child(2) {
-    animation-delay: 0.1s;
-  }
-  .navLinks.mobileOpen .navLink:nth-child(3) {
-    animation-delay: 0.15s;
-  }
-  .navLinks.mobileOpen .navLink:nth-child(4) {
-    animation-delay: 0.2s;
-  }
-  .navLinks.mobileOpen .navLink:nth-child(5) {
-    animation-delay: 0.25s;
-  }
-  .navLinks.mobileOpen .navLink:nth-child(6) {
-    animation-delay: 0.3s;
-  }
-  .navLinks.mobileOpen .navLink:nth-child(7) {
-    animation-delay: 0.35s;
+  .navLinks.mobileOpen .navLink:nth-child(1) { animation-delay: 0.06s; }
+  .navLinks.mobileOpen .navLink:nth-child(2) { animation-delay: 0.12s; }
+  .navLinks.mobileOpen .navLink:nth-child(3) { animation-delay: 0.18s; }
+  .navLinks.mobileOpen .navLink:nth-child(4) { animation-delay: 0.24s; }
+  .navLinks.mobileOpen .navLink:nth-child(5) { animation-delay: 0.30s; }
+  .navLinks.mobileOpen .navLink:nth-child(6) { animation-delay: 0.36s; }
+  .navLinks.mobileOpen .navLink:nth-child(7) { animation-delay: 0.42s; }
+
+  @keyframes slideInRightSmoother {
+    from {
+      opacity: 0;
+      transform: translateX(60px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
-  /* Closing animations - all non-clicked links go first, clicked link goes last */
-  .navLinks.mobileClosing .navLink {
-    animation: slideOutRight 0.3s ease-in forwards;
-    animation-delay: 0s; /* Default: all go immediately */
-  }
+
 
   /* The clicked link gets a longer delay so it goes last */
   .navLinks.mobileClosing .navLink.clickedLink {

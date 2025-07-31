@@ -26,6 +26,9 @@ const Navbar = () => {
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
 
+  // New state to track mobile view
+  const [isMobileView, setIsMobileView] = useState(false);
+
   const HOME_BUTTON_LEFT = 30;
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
@@ -94,6 +97,18 @@ const Navbar = () => {
     if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
     return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
   }, [currentPath]);
+
+  // New effect for window resize tracking of mobile view
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 768);
+    };
+
+    handleResize(); // initialize on mount
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const getCenterTitle = () => {
     switch (currentPath) {
@@ -184,7 +199,7 @@ const Navbar = () => {
           ${hide ? styles.hide : ''}
           ${isLightBackground ? styles.darkText : styles.lightText}
         `}
-        style={{ width: leftNavbarWidth ? `${leftNavbarWidth}px` : 'auto' }}
+        style={{ width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : 'auto' }}
       >
         <div
           ref={brandWrapperRef}

@@ -395,17 +395,36 @@
   .navLinks.mobileOpen .navLink:nth-child(5) { animation-delay: 0.30s; }
   .navLinks.mobileOpen .navLink:nth-child(6) { animation-delay: 0.36s; }
   .navLinks.mobileOpen .navLink:nth-child(7) { animation-delay: 0.42s; }
-
-  @keyframes slideInRightSmoother {
-    from {
+  @keyframes bouncySlideInSoft {
+    0% {
       opacity: 0;
-      transform: translateX(60px);
+      transform: translateX(36px) scale(0.92);
     }
-    to {
+    60% {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateX(-5px) scale(1.06);
+    }
+    80% {
+      transform: translateX(2px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
     }
   }
+  
+  .navLinks.mobileOpen .navLink {
+    animation: bouncySlideInSoft 0.73s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  
+  .navLinks.mobileOpen .navLink:nth-child(1) { animation-delay: 0.04s; }
+  .navLinks.mobileOpen .navLink:nth-child(2) { animation-delay: 0.09s; }
+  .navLinks.mobileOpen .navLink:nth-child(3) { animation-delay: 0.13s; }
+  .navLinks.mobileOpen .navLink:nth-child(4) { animation-delay: 0.17s; }
+  .navLinks.mobileOpen .navLink:nth-child(5) { animation-delay: 0.21s; }
+  .navLinks.mobileOpen .navLink:nth-child(6) { animation-delay: 0.25s; }
+  .navLinks.mobileOpen .navLink:nth-child(7) { animation-delay: 0.29s; }
+  
 
 
 

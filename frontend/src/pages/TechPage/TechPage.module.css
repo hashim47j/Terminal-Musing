@@ -136,7 +136,7 @@
 @media (max-width: 540px) {
     .headerSection {
         padding: 30px 7px 50px;
-        background-size: 120% !important; /* Zoom in BG only on mobile */
+        background-size: 290% !important; /* Zoom in BG only on mobile */
         min-height: 240px !important;
     }
     .postsSection {

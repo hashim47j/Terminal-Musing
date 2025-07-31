@@ -115,7 +115,7 @@
 @media (max-width: 900px) {
     .heroImage {
         width: 220px;
-        left: 18%;
+        left: 11%;
         max-width: 90vw;
     }
     .postsHeading {
@@ -136,9 +136,12 @@
 
 @media (max-width: 540px) {
     .headerSection {
+        
         padding: 50px 0px 34px;
+        right: 0%;
         background-size: 290% !important; /* Zoom in BG only on mobile */
         min-height: 120px !important;
+        background-position: 52% center;
     }
     .postsSection {
         padding: 24px 2% 42px;

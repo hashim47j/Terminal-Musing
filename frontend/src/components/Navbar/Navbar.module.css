@@ -325,10 +325,10 @@
     top: 80px;
     left: 50%;
     transform: translateX(-28%) translateY(20px);
-    width: 270px;
+    width: 320px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible !important;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -374,12 +374,12 @@
     color: #111 !important;
     opacity: 0;
     transform: translateX(60px);
-    transition: 
-      background-color 0.35s cubic-bezier(0.17, 0.67, 0.52, 1.17),
-      box-shadow 0.35s,
-      color 0.28s,
-      opacity 0.42s cubic-bezier(0.17, 0.67, 0.52, 1.17),
-      transform 0.48s cubic-bezier(0.17, 0.67, 0.52, 1.17);
+    transition:
+    background-color 0.35s cubic-bezier(0.17, 0.67, 0.52, 1.17),
+    box-shadow 0.35s,
+    color 0.28s,
+    opacity 0.42s cubic-bezier(0.17, 0.67, 0.52, 1.17),
+    transform 0.48s cubic-bezier(0.17, 0.67, 0.52, 1.17);
   }
 
   /* Opening animations - normal staggered timing */
@@ -414,16 +414,28 @@
     animation-delay: 0.15s !important; /* Make it disappear last */
   }
 
-  @keyframes slideInRight {
-    from {
+  @keyframes bouncySlideIn {
+    0% {
       opacity: 0;
-      transform: translateX(60px);
+      transform: translateX(60px) scale(0.88);
     }
-    to {
+    60% {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateX(-8px) scale(1.09);
+    }
+    80% {
+      transform: translateX(2px) scale(0.97);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
     }
   }
+  
+  .navLinks.mobileOpen .navLink {
+    animation: bouncySlideIn 0.62s cubic-bezier(0.23, 1.26, 0.32, 1) forwards;
+  }
+  
 
   @keyframes slideOutRight {
     from {

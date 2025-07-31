@@ -136,15 +136,15 @@
   .headerSection {
     /* Tighter vertical padding, and zoom/pan the background image for clarity. */
     padding: 36px 8px 48px;
-    background-size: 200%;     /* Zoom in background image on mobile */
+    background-size: 220%;     /* Zoom in background image on mobile */
     background-position: 45% center; /* Pan/crop as needed. Adjust 60% for best fit. */
-    min-height: 120px;         /* Add if you'd like guaranteed visibility */
+    min-height: 200px;         /* Add if you'd like guaranteed visibility */
   }
 
   .heroImage {
     width: 120px;              /* Smaller hero image for mobile */
-    left: var(--hero-x, 0px);/* Adjust offset for best position */
-    top: var(--hero-y, 0px);
+    left: var(--hero-x, 8px);/* Adjust offset for best position */
+    top: var(--hero-y, 15px);
     margin-bottom: 10px;       /* Add a bit of space below */
   }
 

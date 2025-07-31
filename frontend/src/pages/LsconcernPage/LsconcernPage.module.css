@@ -119,8 +119,8 @@
 @media (max-width: 480px) {
   .headerSection {
     padding: 36px 8px 60px;
-    background-size: 220%;
-    background-position: auto;
+    background-size: 230%;
+    background-position: top;
     min-height: auto;
   }
 

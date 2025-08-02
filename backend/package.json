@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "express-useragent": "^1.0.15",
-    "fs-extra": "^11.2.0"
+    "fs-extra": "^11.2.0",
+    "multer": "^2.0.2"
   }
 }

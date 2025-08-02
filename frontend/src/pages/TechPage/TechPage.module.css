@@ -1,10 +1,9 @@
-/* /home/hash/Documents/Terminal-Musing/frontend/src/pages/TechPage/TechPage.module.css */
-
 .pageContainer {
     background-color: #E4E4E4;
     min-height: 100vh;
     font-family: 'Playfair Display', serif;
   }
+  
   .headerSection {
     background-image: url('../../assets/techbg.png');
     background-size: auto;
@@ -18,6 +17,7 @@
     height: 33vh;       /* fixed height */
     min-height: 220px;  /* optional fallback */
   }
+  
   /* Hero image with relative positioning and customizable offsets */
   .heroImage {
     position: absolute;
@@ -28,13 +28,13 @@
     height: auto;
     z-index: 2;
   }
-
-.postsSection {
+  
+  .postsSection {
     background-color: #eef2f3;
     padding: 60px 5% 80px;
-}
-
-.postsHeading {
+  }
+  
+  .postsHeading {
     font-size: 2.3em;
     color: #153d4c;
     font-weight: 700;
@@ -42,17 +42,17 @@
     margin-bottom: 50px;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
     letter-spacing: 0.01em;
-}
-
-.blogGrid {
+  }
+  
+  .blogGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 40px 30px;
     max-width: 1300px;
     margin: 0 auto;
-}
-
-.blogCard {
+  }
+  
+  .blogCard {
     background-color: #fff;
     display: flex;
     flex-direction: row;
@@ -62,98 +62,99 @@
     transition: transform 0.3s, box-shadow 0.3s;
     text-decoration: none;
     border: 1px solid #d8e0ec;
-}
-
-.blogCard:hover {
+  }
+  
+  .blogCard:hover {
     transform: translateY(-4px) scale(1.016);
     box-shadow: 0 10px 25px rgba(12, 100, 200, 0.11);
-}
-
-.coverImage {
+  }
+  
+  .coverImage {
     width: 50%;
     object-fit: cover;
     height: auto;
     min-height: 170px;
     background: #e2eafd;
-}
-
-.blogContent {
+  }
+  
+  .blogContent {
     padding: 20px 18px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 50%;
-}
-
-.blogTitle {
+  }
+  
+  .blogTitle {
     font-size: 1.32em;
     font-weight: 700;
     margin-bottom: 8px;
     color: #143b46;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
-}
-
-.blogSubheading {
+  }
+  
+  .blogSubheading {
     font-size: 0.99em;
     color: #425467;
     line-height: 1.5;
     margin-bottom: 13px;
     font-family: 'Roboto', 'Segoe UI', 'sans-serif';
-}
-
-.blogTime {
+  }
+  
+  .blogTime {
     font-size: 0.88em;
     color: #8cb3c8;
     text-align: left;
     border-top: 1px solid #e0e8ee;
     padding-top: 6px;
     margin-top: auto;
-}
-
-/* ----------------- Responsive ----------------- */
-@media (max-width: 900px) {
+  }
+  
+  /* ----------------- Responsive ----------------- */
+  @media (max-width: 900px) {
     .heroImage {
-        width: 220px;
-        left: 51.5%;
-        max-width: 90vw;
+      width: 220px;
+      left: 51.5%;
+      max-width: 90vw;
     }
     .postsHeading {
-        font-size: 2em;
+      font-size: 2em;
     }
-}
-
-@media (max-width: 768px) {
+  }
+  
+  @media (max-width: 768px) {
     .blogCard {
-        flex-direction: column;
-        min-height: 250px;
+      flex-direction: column;
+      min-height: 250px;
     }
     .coverImage,
     .blogContent {
-        width: 100%;
+      width: 100%;
     }
-}
-
-@media (max-width: 540px) {
+  }
+  
+  @media (max-width: 540px) {
     .headerSection {
-        padding: 50px 0px 34px;
-        right: 0%;
-        background-size: 290% !important; /* Zoom in BG only on mobile */
-        min-height: 200px !important;
-        background-position: 52% top;
+      padding: 50px 0px 34px;
+      right: 0%;
+      background-size: 290% !important; /* Zoom in BG only on mobile */
+      min-height: 200px !important;
+      background-position: 52% top;
     }
     .postsSection {
-        padding: 24px 2% 42px;
+      padding: 24px 2% 42px;
     }
     .postsHeading {
-        font-size: 1.5em;
+      font-size: 1.5em;
     }
     .blogTitle {
-        font-size: 1.11em;
+      font-size: 1.11em;
     }
     .blogSubheading {
-        font-size: 0.93em;
+      font-size: 0.93em;
     }
     .heroImage {
-        width: 230px !important; /* 10% smaller than 340px */
+      width: 230px !important; /* 10% smaller than 340px */
     }
-}
+  }
+  

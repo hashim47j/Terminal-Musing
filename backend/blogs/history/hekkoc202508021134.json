@@ -1,0 +1,99 @@
+{
+  "id": "hekkoc202508021134",
+  "title": "hekko c",
+  "subheading": "histoy",
+  "category": "history",
+  "coverImage": "",
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "histoy"
+    },
+    {
+      "type": "paragraph",
+      "text": "// src/pages/HistoryPage/HistoryBlog.jsx\nimport React, { useEffect, useState } from 'react';\nimport { useParams } from 'react-router-dom';\nimport styles from './HistoryBlog.module.css';\nimport { useDarkMode } from '../../context/DarkModeContext'; // adjust path if needed\nimport BlogRenderer from '../../components/BlogRenderer';"
+    },
+    {
+      "type": "paragraph",
+      "text": "const HistoryBlog = () => {\n  const { id } = useParams();\n  const { darkMode } = useDarkMode();\n  const [blog, setBlog] = useState(null);\n  const [comments, setComments] = useState([]);\n  const [form, setForm] = useState({ name: '', email: '', comment: '' });\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState('');"
+    },
+    {
+      "type": "paragraph",
+      "text": "  // API endpoints\n  const API_BASE = import.meta.env.VITE_API_BASE_URL;\n  const blogApiUrl = `${API_BASE}/blogs/history/${id}.json`;\n  const commentsApiUrl = `${API_BASE}/api/comments/history/${id}`;\n  const viewsApiUrl = `${API_BASE}/api/views/history/${id}`;"
+    },
+    {
+      "type": "paragraph",
+      "text": "  // Fetch blog and trigger view increment\n  useEffect(() => {\n    const fetchAndTrackBlog = async () => {\n      setLoading(true);\n      setError('');\n      try {\n        const res = await fetch(blogApiUrl);\n        if (!res.ok) throw new Error(`Blog fetch failed: HTTP status ${res.status}`);\n        const data = await res.json();\n        setBlog(data);"
+    },
+    {
+      "type": "paragraph",
+      "text": "        // Count a view (fire and forget)\n        fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});\n      } catch (err) {\n        setError(err.message || 'Failed to load blog');\n        setBlog(null);\n      } finally {\n        setLoading(false);\n      }\n    };\n    fetchAndTrackBlog();\n  }, [id]);"
+    },
+    {
+      "type": "paragraph",
+      "text": "  // Fetch comments\n  useEffect(() => {\n    const fetchComments = async () => {\n      try {\n        const res = await fetch(commentsApiUrl);\n        if (res.ok) {\n          const data = await res.json();\n          setComments(data);\n        } else {\n          setComments([]);\n        }\n      } catch {\n        setComments([]);\n      }\n    };\n    fetchComments();\n  }, [id]);"
+    },
+    {
+      "type": "paragraph",
+      "text": "  // Submit comment handler\n  const handleSubmit = async (e) => {\n    e.preventDefault();\n    if (!form.name || !form.email || !form.comment) {\n      alert('Please fill in all fields.');\n      return;\n    }\n    const newComment = { ...form, timestamp: new Date().toISOString() };\n    try {\n      const res = await fetch(commentsApiUrl, {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify(newComment),\n      });\n      if (res.ok) {\n        const saved = await res.json();\n        setComments((prev) => [...prev, saved]);\n        setForm({ name: '', email: '', comment: '' });\n      } else {\n        alert('Failed to post comment.');\n      }\n    } catch {\n      alert('Failed to post comment.');\n    }\n  };"
+    },
+    {
+      "type": "paragraph",
+      "text": "  if (loading) {\n    return (\n      <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>\n        <div className={styles.mainContentWrapper}>\n          <p>Loading blog post...</p>\n        </div>\n      </div>\n    );\n  }"
+    },
+    {
+      "type": "paragraph",
+      "text": "  if (error) {\n    return (\n      <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>\n        <div className={styles.mainContentWrapper}>\n          <p style={{ color: 'red' }}>Error: {error}</p>\n        </div>\n      </div>\n    );\n  }"
+    },
+    {
+      "type": "paragraph",
+      "text": "  if (!blog) {\n    return (\n      <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>\n        <div className={styles.mainContentWrapper}>\n          <p>Blog post not found.</p>\n        </div>\n      </div>\n    );\n  }"
+    },
+    {
+      "type": "paragraph",
+      "text": "  const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {\n    day: 'numeric',\n    month: 'short',\n    year: 'numeric',\n  });\n  const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;"
+    },
+    {
+      "type": "paragraph",
+      "text": "  return (\n    <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>\n      <div className={styles.mainContentWrapper}>\n        {/* Blog content */}\n        <section className={styles.postContentSection}>\n          <h1 className={styles.title}>{blog.title}</h1>\n          <p className={styles.date}>{metaText}</p>"
+    },
+    {
+      "type": "image",
+      "src": "",
+      "alt": "Inserted image"
+    },
+    {
+      "type": "paragraph",
+      "text": "          <div className={styles.contentBodyPlaceholder}>\n            <BlogRenderer content={blog.content} />\n          </div>\n        </section>"
+    },
+    {
+      "type": "paragraph",
+      "text": "        {/* Comments */}\n        <section className={styles.commentSection}>\n          <div className={styles.commentList}>\n            {comments.length === 0 ? (\n              <p style={{ color: '#666', fontStyle: 'italic' }}>No comments yet. Be the first!</p>\n            ) : (\n              comments.map((c, i) => (\n                <div key={i} className={styles.commentBox}>\n                  <strong>{c.name} says:</strong>\n                  <div className={styles.commentMeta}>\n                    {new Date(c.timestamp).toLocaleString()}\n                  </div>\n                  <p>{c.comment}</p>\n                  <button className={styles.replyBtn}>Reply</button>\n                </div>\n              ))\n            )}\n          </div>"
+    },
+    {
+      "type": "paragraph",
+      "text": "          <form className={styles.commentForm} onSubmit={handleSubmit}>\n            <h3>Share your thoughts</h3>"
+    },
+    {
+      "type": "paragraph",
+      "text": "            <label htmlFor=\"nameInput\">Name</label>\n            <input\n              id=\"nameInput\"\n              type=\"text\"\n              value={form.name}\n              onChange={(e) => setForm({ ...form, name: e.target.value })}\n              required\n            />"
+    },
+    {
+      "type": "paragraph",
+      "text": "            <label htmlFor=\"emailInput\">Email</label>\n            <input\n              id=\"emailInput\"\n              type=\"email\"\n              value={form.email}\n              onChange={(e) => setForm({ ...form, email: e.target.value })}\n              required\n            />"
+    },
+    {
+      "type": "paragraph",
+      "text": "            <label htmlFor=\"commentTextarea\">Comment</label>\n            <textarea\n              id=\"commentTextarea\"\n              rows={5}\n              value={form.comment}\n              onChange={(e) => setForm({ ...form, comment: e.target.value })}\n              required\n            />"
+    },
+    {
+      "type": "paragraph",
+      "text": "            <button type=\"submit\" className={styles.postBtn}>Post</button>\n          </form>\n        </section>\n      </div>\n    </div>\n  );\n};"
+    },
+    {
+      "type": "paragraph",
+      "text": "export default HistoryBlog;\n"
+    }
+  ],
+  "date": "2025-08-02T11:34:49.491Z"
+}

@@ -3,7 +3,7 @@
 .navbarRight {
   position: fixed;
   top: 20px;
-  z-index: 1000;
+  z-index: 4500;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   background-color: rgba(255, 255, 255, 0.25);
@@ -87,25 +87,87 @@
   color: #ff0000;
 }
 
-.hamburger {
-  font-size: 1.6em;
-  padding: 5px;
-  cursor: pointer;
-  position: relative;
-  z-index: 1001;
-  margin-left: auto;
-  display: none; /* Hide by default on desktop */
+.navLink {
+  background-color: transparent;
+  transition: background 0.18s cubic-bezier(0.4,0,0.2,1);
 }
+.navLink:hover {
+  background: rgba(186,133,134,0.10); /* Subtle accent or darker color for dark mode */
+  /* border-radius, etc., as needed */
+}
+/* ---- Hamburger/Cross Icon Styles (Mobile) ---- */
+
+/* The hamburger area (32x22 pixels) is flex-centered inside the button */
+.hamburger {
+  z-index: 4600;
+  position: relative;
+  width: 32px;
+  height: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Spaces out the lines */
+  padding: 0cm;
+  margin: 0%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* The shape morph is handled by the parent (circle to square) */
+}
+
+.line {
+  width: 35%;
+  height: 2px;
+  background: currentColor;      /* Matches your theme/text */
+  border-radius: 2px;
+  display: block;
+  transition: all 0.32s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+  margin: 3.6%;
+}
+
+/* Animate hamburger to cross (×) when menuOpen=true */
+.hamburgerActive .line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.hamburgerActive .line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-16px); /* hides middle line left */
+}
+.hamburgerActive .line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* --- For the circular button itself (your existing .homeButton or .hamburger container) --- */
+.homeButton, .navbarRight .hamburger {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  /* other existing styles for blur, backdrop, background, box-shadow */
+}
+
+/* When menu is open, keep your existing circle-to-square transitions here */
+.navbarRight.menuOpen .hamburger {
+  border-radius: 14px;
+  transition: border-radius 0.3s;
+}
+.navbarRight.menuClosing .hamburger {
+  border-radius: 50%;
+  transition: border-radius 0.3s;
+}
+
 
 /* Modern hamburger menu styles for mobile */
 @media (max-width: 768px) {
 }
 
 .darkText {
-  color: #111;
+  color: #111 !important;
 }
 .darkText .navLink {
-  color: #111;
+  color: #111 !important;
 }
 .darkText .highlightBar {
   background-color: rgba(0, 0, 0, 0.08);
@@ -485,5 +547,12 @@
   .navLinks.darkText .navLink,
   .navLinks.lightText .navLink {
     color: #111;
+  }
+}
+
+/* Hide hamburger outside mobile view */
+@media (min-width: 769px) {
+  .hamburger {
+    display: none !important;
   }
 }

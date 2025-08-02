@@ -1,30 +1,51 @@
-// Terminal-Musing/src/pages/HistoryPage/HistoryPage.jsx
-
-import React from 'react';
+// src/pages/HistoryPage/HistoryPage.jsx
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
 
 const HistoryPage = () => {
   const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Dummy posts for development
-  const posts = [
-    {
-      id: 'world-war-ii',
-      title: 'The Impact of World War II',
-      subheading: 'How the global conflict reshaped the 20th century.',
-      coverImage: '/uploads/history-ww2.jpg',
-      date: '1945-09-02'
-    },
-    {
-      id: 'french-revolution',
-      title: 'The French Revolution',
-      subheading: 'Liberty, equality, and the reign of terror.',
-      coverImage: '/uploads/history-french-revolution.jpg',
-      date: '1789-07-14'
-    }
-  ];
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/blogs?category=history`);
+        if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
+        const data = await res.json();
+
+        // Sort descending by date so newest posts appear first
+        const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setPosts(sortedData);
+      } catch (err) {
+        console.error('❌ Error fetching history blogs:', err);
+        setError('Failed to load history posts.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className={styles.historyPageContainer} style={{ padding: '2rem', textAlign: 'center' }}>
+        Loading posts...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.historyPageContainer} style={{ padding: '2rem', textAlign: 'center', color: 'red' }}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className={styles.historyPageContainer}>
@@ -45,35 +66,44 @@ const HistoryPage = () => {
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>History Posts</h2>
         <div className={styles.blogGrid}>
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className={styles.blogCard}
-              onClick={() => navigate(`/blogs/history/${post.id}`)}
-              style={{ cursor: 'pointer' }}
-            >
-              {post.coverImage ? (
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  className={styles.coverImage}
-                />
-              ) : (
-                <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
-              )}
-              <div className={styles.blogContent}>
-                <h3 className={styles.blogTitle}>{post.title}</h3>
-                <p className={styles.blogSubheading}>{post.subheading}</p>
-                <span className={styles.blogTime}>
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                  })}
-                </span>
+          {posts.length === 0 ? (
+            <p style={{ textAlign: 'center', color: '#666' }}>No history posts available.</p>
+          ) : (
+            posts.map((post) => (
+              <div
+                key={post.id}
+                className={styles.blogCard}
+                onClick={() => navigate(`/blogs/history/${post.id}`)}
+                style={{ cursor: 'pointer' }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') navigate(`/blogs/history/${post.id}`);
+                }}
+              >
+                {post.coverImage ? (
+                  <img
+                    src={post.coverImage}
+                    alt={post.title}
+                    className={styles.coverImage}
+                  />
+                ) : (
+                  <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
+                )}
+                <div className={styles.blogContent}>
+                  <h3 className={styles.blogTitle}>{post.title}</h3>
+                  <p className={styles.blogSubheading}>{post.subheading}</p>
+                  <span className={styles.blogTime}>
+                    {new Date(post.date).toLocaleDateString('en-US', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </section>
     </div>

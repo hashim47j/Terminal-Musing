@@ -1,52 +1,68 @@
-// src/pages/HistoryPage/HistoryBlog.jsx
+// src/pages/WritingsPage/WritingsBlog.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import styles from './HistoryBlog.module.css';
-import { useDarkMode } from '../../context/DarkModeContext'; // adjust path if needed
+import styles from './WritingsBlog.module.css';
+import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
 
-const HistoryBlog = () => {
+const WritingsBlog = () => {
   const { id } = useParams();
   const { darkMode } = useDarkMode();
+
   const [blog, setBlog] = useState(null);
+  const [blogCategory, setBlogCategory] = useState(null);
   const [comments, setComments] = useState([]);
   const [form, setForm] = useState({ name: '', email: '', comment: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // API endpoints
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
-  const blogApiUrl = `${API_BASE}/blogs/history/${id}.json`;
-  const commentsApiUrl = `${API_BASE}/api/comments/history/${id}`;
-  const viewsApiUrl = `${API_BASE}/api/views/history/${id}`;
 
-  // Fetch blog and trigger view increment
+  // Try poems folder first, then short stories
+  const fetchBlogByCategory = async (category) => {
+    const blogApiUrl = `${API_BASE}/blogs/${category}/${id}.json`;
+    const res = await fetch(blogApiUrl);
+    if (!res.ok) throw new Error(`Blog not found in category ${category}`);
+    const data = await res.json();
+    return { data, category };
+  };
+
   useEffect(() => {
-    const fetchAndTrackBlog = async () => {
+    const loadBlog = async () => {
       setLoading(true);
       setError('');
-      try {
-        const res = await fetch(blogApiUrl);
-        if (!res.ok) throw new Error(`Blog fetch failed: HTTP status ${res.status}`);
-        const data = await res.json();
-        setBlog(data);
+      setBlog(null);
+      setBlogCategory(null);
 
-        // Count a view (fire and forget)
-        fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});
-      } catch (err) {
-        setError(err.message || 'Failed to load blog');
-        setBlog(null);
+      try {
+        const resultPoems = await fetchBlogByCategory('poems');
+        setBlog(resultPoems.data);
+        setBlogCategory('poems');
+        fetch(`${API_BASE}/api/views/poems/${id}`, { method: 'POST' }).catch(() => {});
+      } catch {
+        try {
+          const resultShortStories = await fetchBlogByCategory('short stories');
+          setBlog(resultShortStories.data);
+          setBlogCategory('short stories');
+          fetch(`${API_BASE}/api/views/short stories/${id}`, { method: 'POST' }).catch(() => {});
+        } catch (err) {
+          setError('Blog not found.');
+        }
       } finally {
         setLoading(false);
       }
     };
-    fetchAndTrackBlog();
+    loadBlog();
   }, [id]);
 
-  // Fetch comments
   useEffect(() => {
     const fetchComments = async () => {
+      if (!blogCategory) {
+        setComments([]);
+        return;
+      }
       try {
+        const commentsApiUrl = `${API_BASE}/api/comments/${blogCategory}/${id}`;
         const res = await fetch(commentsApiUrl);
         if (res.ok) {
           const data = await res.json();
@@ -59,17 +75,21 @@ const HistoryBlog = () => {
       }
     };
     fetchComments();
-  }, [id]);
+  }, [blogCategory, id]);
 
-  // Submit comment handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.comment) {
       alert('Please fill in all fields.');
       return;
     }
+    if (!blogCategory) {
+      alert('Category not found for this blog.');
+      return;
+    }
     const newComment = { ...form, timestamp: new Date().toISOString() };
     try {
+      const commentsApiUrl = `${API_BASE}/api/comments/${blogCategory}/${id}`;
       const res = await fetch(commentsApiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,7 +121,7 @@ const HistoryBlog = () => {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
         <div className={styles.mainContentWrapper}>
-          <p style={{ color: 'red' }}>Error: {error}</p>
+          <p style={{ color: 'red' }}>{error}</p>
         </div>
       </div>
     );
@@ -111,7 +131,7 @@ const HistoryBlog = () => {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
         <div className={styles.mainContentWrapper}>
-          <p>Blog post not found.</p>
+          <p>Blog not found.</p>
         </div>
       </div>
     );
@@ -127,7 +147,6 @@ const HistoryBlog = () => {
   return (
     <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.mainContentWrapper}>
-        {/* Blog content */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>
           <p className={styles.date}>{metaText}</p>
@@ -138,9 +157,7 @@ const HistoryBlog = () => {
               alt="Cover"
               className={styles.inlineImage}
               style={{ marginBottom: '20px' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
+              onError={(e) => (e.target.style.display = 'none')}
             />
           )}
 
@@ -149,7 +166,6 @@ const HistoryBlog = () => {
           </div>
         </section>
 
-        {/* Comments */}
         <section className={styles.commentSection}>
           <div className={styles.commentList}>
             {comments.length === 0 ? (
@@ -158,9 +174,7 @@ const HistoryBlog = () => {
               comments.map((c, i) => (
                 <div key={i} className={styles.commentBox}>
                   <strong>{c.name} says:</strong>
-                  <div className={styles.commentMeta}>
-                    {new Date(c.timestamp).toLocaleString()}
-                  </div>
+                  <div className={styles.commentMeta}>{new Date(c.timestamp).toLocaleString()}</div>
                   <p>{c.comment}</p>
                   <button className={styles.replyBtn}>Reply</button>
                 </div>
@@ -170,7 +184,6 @@ const HistoryBlog = () => {
 
           <form className={styles.commentForm} onSubmit={handleSubmit}>
             <h3>Share your thoughts</h3>
-
             <label htmlFor="nameInput">Name</label>
             <input
               id="nameInput"
@@ -198,7 +211,9 @@ const HistoryBlog = () => {
               required
             />
 
-            <button type="submit" className={styles.postBtn}>Post</button>
+            <button type="submit" className={styles.postBtn}>
+              Post
+            </button>
           </form>
         </section>
       </div>
@@ -206,4 +221,4 @@ const HistoryBlog = () => {
   );
 };
 
-export default HistoryBlog;
+export default WritingsBlog;

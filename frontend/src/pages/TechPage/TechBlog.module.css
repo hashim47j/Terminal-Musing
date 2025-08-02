@@ -1,4 +1,4 @@
-/* src/pages/LsconcernPage/LsconcernBlog.module.css */
+/* src/pages/TechPage/TechBlog.module.css */
 
 .blogPageOuterContainer {
     background-color: #f0f0f0;
@@ -250,6 +250,7 @@
   
   /* Responsive */
   
+  /* Tablet and small desktops */
   @media (max-width: 992px) {
     .mainContentWrapper {
       padding: 30px 4%;

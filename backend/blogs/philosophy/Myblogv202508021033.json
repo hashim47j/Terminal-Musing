@@ -1,0 +1,202 @@
+{
+  "id": "Myblogv202508021033",
+  "title": "My blog v",
+  "subheading": "very good blog ",
+  "category": "philosophy",
+  "coverImage": "",
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "very good blog "
+    },
+    {
+      "type": "paragraph",
+      "text": "Music theory is the study of theoretical frameworks for understanding the practices and possibilities of music. The Oxford Companion to Music describes three interrelated uses of the term \"music theory\": The first is the \"rudiments\", that are needed to understand music notation (key signatures, time signatures, and rhythmic notation); the second is learning scholars' views on music from antiquity to the present; the third is a sub-topic of musicology that \"seeks to define processes and general principles in music\". The musicological approach to theory differs from music analysis \"in that it takes as its starting-point not the individual work or performance but the fundamental materials from which it is built.\"[1]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Music theory is frequently concerned with describing how musicians and composers make music, including tuning systems and composition methods among other topics. Because of the ever-expanding conception of what constitutes music, a more inclusive definition could be the consideration of any sonic phenomena, including silence. This is not an absolute guideline, however; for example, the study of \"music\" in the Quadrivium liberal arts university curriculum, that was common in medieval Europe, was an abstract system of proportions that was carefully studied at a distance from actual musical practice.[n 1] But this medieval discipline became the basis for tuning systems in later centuries and is generally included in modern scholarship on the history of music theory.[n 2]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Music theory as a practical discipline encompasses the methods and concepts that composers and other musicians use in creating and performing music. The development, preservation, and transmission of music theory in this sense may be found in oral and written music-making traditions, musical instruments, and other artifacts. For example, ancient instruments from prehistoric sites around the world reveal details about the music they produced and potentially something of the musical theory that might have been used by their makers. In ancient and living cultures around the world, the deep and long roots of music theory are visible in instruments, oral traditions, and current music-making. Many cultures have also considered music theory in more formal ways such as written treatises and music notation. Practical and scholarly traditions overlap, as many practical treatises about music place themselves within a tradition of other treatises, which are cited regularly just as scholarly writing cites earlier research."
+    },
+    {
+      "type": "paragraph",
+      "text": "In modern academia, music theory is a subfield of musicology, the wider study of musical cultures and history. Guido Adler, however, in one of the texts that founded musicology in the late 19th century, wrote that \"the science of music originated at the same time as the art of sounds\",[3] where \"the science of music\" (Musikwissenschaft) obviously meant \"music theory\". Adler added that music only could exist when one began measuring pitches and comparing them to each other. He concluded that \"all people for which one can speak of an art of sounds also have a science of sounds\".[4] One must deduce that music theory exists in all musical cultures of the world."
+    },
+    {
+      "type": "paragraph",
+      "text": "Music theory is often concerned with abstract musical aspects such as tuning and tonal systems, scales, consonance and dissonance, and rhythmic relationships. There is also a body of theory concerning practical aspects, such as the creation or the performance of music, orchestration, ornamentation, improvisation, and electronic sound production.[5] A person who researches or teaches music theory is a music theorist. University study, typically to the MA or PhD level, is required to teach as a tenure-track music theorist in a US or Canadian university. Methods of analysis include mathematics, graphic analysis, and especially analysis enabled by western music notation. Comparative, descriptive, statistical, and other methods are also used. Music theory textbooks, especially in the United States of America, often include elements of musical acoustics, considerations of musical notation, and techniques of tonal composition (harmony and counterpoint), among other topics."
+    },
+    {
+      "type": "paragraph",
+      "text": "History\nFurther information: History of music\nAntiquity\nFurther information: Ancient music\nMesopotamia\nSee also: Music of Mesopotamia\nSeveral surviving Sumerian and Akkadian clay tablets include musical information of a theoretical nature, mainly lists of intervals and tunings.[6] The scholar Sam Mirelman reports that the earliest of these texts dates from before 1500 BCE, a millennium earlier than surviving evidence from any other culture of comparable musical thought. Further, \"All the Mesopotamian texts [about music] are united by the use of a terminology for music that, according to the approximate dating of the texts, was in use for over 1,000 years.\"[7]"
+    },
+    {
+      "type": "paragraph",
+      "text": "China\nSee also: Music of China and Chinese musicology\nMuch of Chinese music history and theory remains unclear.[8]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Chinese theory starts from numbers, the main musical numbers being twelve, five and eight. Twelve refers to the number of pitches on which the scales can be constructed, Five refers to the Pentatonic Scale (primarily uses a 5-note scale), And Eight refers to the eight categories of Chinese Music Instruments; classified by the material they are made from: (Metal, Stone, Silk, Bamboo, Gourd, Clay, Leather, and Wood). The Lüshi chunqiu from about 238 BCE recalls the legend of Ling Lun. On order of the Yellow Emperor, Ling Lun collected twelve bamboo lengths with thick and even nodes. Blowing on one of these like a pipe, he found its sound agreeable and named it huangzhong, the \"Yellow Bell.\" He then heard phoenixes singing. The male and female phoenix each sang six tones. Ling Lun cut his bamboo pipes to match the pitches of the phoenixes, producing twelve pitch pipes in two sets: six from the male phoenix and six from the female: these were called the lülü or later the shierlü.[9]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Apart from technical and structural aspects, ancient Chinese music theory also discusses topics such as the nature and functions of music. The Yueji (\"Record of music\", c1st and 2nd centuries BCE), for example, manifests Confucian moral theories of understanding music in its social context. Studied and implemented by Confucian scholar-officials [...], these theories helped form a musical Confucianism that overshadowed but did not erase rival approaches. These include the assertion of Mozi (c. 468 – c. 376 BCE) that music wasted human and material resources, and Laozi's claim that the greatest music had no sounds. [...] Even the music of the qin zither, a genre closely affiliated with Confucian scholar-officials, includes many works with Daoist references, such as Tianfeng huanpei (\"Heavenly Breeze and Sounds of Jade Pendants\").[8]"
+    },
+    {
+      "type": "paragraph",
+      "text": "India\nSee also: Music of India\nThe Samaveda and Yajurveda (c. 1200 – 1000 BCE) are among the earliest testimonies of Indian music, but properly speaking, they contain no theory. The Natya Shastra, written between 200 BCE to 200 CE, discusses intervals (Śrutis), scales (Grāmas), consonances and dissonances, classes of melodic structure (Mūrchanās, modes?), melodic types (Jātis), instruments, etc.[10]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Greece\nSee also: Musical system of ancient Greece and List of music theorists § Antiquity\nEarly preserved Greek writings on music theory include two types of works:[11]"
+    },
+    {
+      "type": "paragraph",
+      "text": "technical manuals describing the Greek musical system including notation, scales, consonance and dissonance, rhythm, and types of musical compositions;\ntreatises on the way in which music reveals universal patterns of order leading to the highest levels of knowledge and understanding.\nSeveral names of theorists are known before these works, including Pythagoras (c. 570 ~ c. 495 BCE), Philolaus (c. 470 ~ (c. 385 BCE), Archytas (428–347 BCE), and others."
+    },
+    {
+      "type": "paragraph",
+      "text": "Works of the first type (technical manuals) include"
+    },
+    {
+      "type": "paragraph",
+      "text": "Anonymous (erroneously attributed to Euclid) (1989) [4th–3rd century BCE]. Barker, Andrew (ed.). Κατατομή κανόνος [Division of the Canon]. Greek Musical Writings. Vol. 2: Harmonic and Acoustic Theory. Cambridge, UK: Cambridge University Press. pp. 191–208. English trans.\nTheon of Smyrna. Τωv κατά τό μαθηματικόν χρησίμων είς τήν Πλάτωνος άνάγνωσις [On the Mathematics Useful for Understanding Plato] (in Greek). 115–140 CE.\nNicomachus of Gerasa. Άρμονικόν έγχειρίδιον [Manual of Harmonics]. 100–150 CE.\nCleonides. Είσαγωγή άρμονική [Introduction to Harmonics] (in Greek). 2nd century CE.\nGaudentius. Άρμονική είσαγωγή [Harmonic Introduction] (in Greek). 3rd or 4th century CE.\nBacchius Geron. Είσαγωγή τέχνης μουσικής [Introduction to the Art of Music]. 4th century CE or later.\nAlypius of Alexandria. Είσαγωγή μουσική [Introduction to Music] (in Greek). 4th–5th century CE.\nMore philosophical treatises of the second type include"
+    },
+    {
+      "type": "paragraph",
+      "text": "Aristoxenus. Άρμονικά στοιχεία [Harmonic Elements] (in Greek). 375~360 BCE, before 320 BCE.\nAristoxenus. Ρυθμικά στοιχεία [Rhythmic Elements] (in Greek).\nPtolemaios (Πτολεμαίος), Claudius. Άρμονικά [Harmonics] (in Greek). 127–148 CE.\nPorphyrius. Είς τά άρμονικά Πτολεμαίον ύπόμνημα [On Ptolemy's Harmonics] (in Greek). c. 232~233 – c. 305 CE.\nPost-classical or Medieval Period\nSee also: List of music theorists § Post-classical, and List of medieval music theorists\nChina\nThe pipa instrument carried with it a theory of musical modes that subsequently led to the Sui and Tang theory of 84 musical modes.[8]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Arabic countries / Persian countries\nMedieval Arabic music theorists include:[n 3]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Abū Yūsuf Ya'qūb al-Kindi (Bagdad, 873 CE), who uses the first twelve letters of the alphabet to describe the twelve frets on five strings of the oud, producing a chromatic scale of 25 degrees.[12]\n[Yaḥyā ibn] al-Munajjim (Baghdad, 856–912), author of Risāla fī al-mūsīqī (\"Treatise on music\", MS GB-Lbl Oriental 2361) which describes a Pythagorean tuning of the oud and a system of eight modes perhaps inspired by Ishaq al-Mawsili (767–850).[13]\nAbū n-Nașr Muḥammad al-Fārābi (Persia, 872? – Damas, 950 or 951 CE), author of Kitab al-Musiqa al-Kabir (\"The Great Book of Music\").[14]\n'Ali ibn al-Husayn ul-Isfahānī (897–967), known as Abu al-Faraj al-Isfahani, author of Kitāb al-Aghānī (\"The Book of Songs\").\nAbū 'Alī al-Ḥusayn ibn ʿAbd-Allāh ibn Sīnā, known as Avicenna (c. 980 – 1037), whose contribution to music theory consists mainly in Chapter 12 of the section on mathematics of his Kitab Al-Shifa (\"The Book of Healing\").[15]\nal-Ḥasan ibn Aḥmad ibn 'Ali al-Kātib, author of Kamāl adab al Ghinā' (\"The Perfection of Musical Knowledge\"), copied in 1225 (Istanbul, Topkapi Museum, Ms 1727).[16]\nSafi al-Din al-Urmawi (1216–1294 CE), author of the Kitabu al-Adwār (\"Treatise of musical cycles\") and ar-Risālah aš-Šarafiyyah (\"Epistle to Šaraf\").[17]\nMubārak Šāh, commentator of Safi al-Din's Kitāb al-Adwār (British Museum, Ms 823).[18]\nAnon. LXI, Anonymous commentary on Safi al-Din's Kitāb al-Adwār.[19]\nShams al-dῑn al-Saydᾱwῑ Al-Dhahabῑ (14th century CE (?)), music theorist. Author of Urjῡza fi'l-mῡsῑqᾱ (\"A Didactic Poem on Music\").[20]\nEurope\nThe Latin treatise De institutione musica by the Roman philosopher Boethius (written c. 500, translated as Fundamentals of Music[2]) was a touchstone for other writings on music in medieval Europe. Boethius represented Classical authority on music during the Middle Ages, as the Greek writings on which he based his work were not read or translated by later Europeans until the 15th century.[21] This treatise carefully maintains distance from the actual practice of music, focusing mostly on the mathematical proportions involved in tuning systems and on the moral character of particular modes. Several centuries later, treatises began to appear which dealt with the actual composition of pieces of music in the plainchant tradition.[22] At the end of the ninth century, Hucbald worked towards more precise pitch notation for the neumes used to record plainchant."
+    },
+    {
+      "type": "paragraph",
+      "text": "Guido d'Arezzo wrote a letter to Michael of Pomposa in 1028, entitled Epistola de ignoto cantu,[23] in which he introduced the practice of using syllables to describe notes and intervals. This was the source of the hexachordal solmization that was to be used until the end of the Middle Ages. Guido also wrote about emotional qualities of the modes, the phrase structure of plainchant, the temporal meaning of the neumes, etc.; his chapters on polyphony \"come closer to describing and illustrating real music than any previous account\" in the Western tradition.[21]"
+    },
+    {
+      "type": "paragraph",
+      "text": "During the thirteenth century, a new rhythm system called mensural notation grew out of an earlier, more limited method of notating rhythms in terms of fixed repetitive patterns, the so-called rhythmic modes, which were developed in France around 1200. An early form of mensural notation was first described and codified in the treatise Ars cantus mensurabilis (\"The art of measured chant\") by Franco of Cologne (c. 1280). Mensural notation used different note shapes to specify different durations, allowing scribes to capture rhythms which varied instead of repeating the same fixed pattern; it is a proportional notation, in the sense that each note value is equal to two or three times the shorter value, or half or a third of the longer value. This same notation, transformed through various extensions and improvements during the Renaissance, forms the basis for rhythmic notation in European classical music today."
+    },
+    {
+      "type": "paragraph",
+      "text": "Modern\nMiddle Eastern and Central Asian countries\nBāqiyā Nāyinῑ (Uzbekistan, 17th century CE), Uzbek author and music theorist. Author of Zamzama e wahdat-i-mῡsῑqῑ [\"The Chanting of Unity in Music\"].[20]\nBaron Francois Rodolphe d'Erlanger (Tunis, Tunisia, 1910–1932 CE), French musicologist. Author of La musique arabe and Ta'rῑkh al-mῡsῑqᾱ al-arabiyya wa-usῡluha wa-tatawwurᾱtuha [\"A History of Arabian Music, its principles and its Development\"]\nD'Erlanger divulges that the Arabic music scale is derived from the Greek music scale, and that Arabic music is connected to certain features of Arabic culture, such as astrology.[20]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Europe\nRenaissance\nFurther information: List of music theorists § 15th and 16th centuries\nBaroque\nFurther information: List of music theorists § 17th century\nFurther information: List of music theorists § 18th century\n1750–1900\nAs Western musical influence spread throughout the world in the 1800s, musicians adopted Western theory as an international standard—but other theoretical traditions in both textual and oral traditions remain in use. For example, the long and rich musical traditions unique to ancient and current cultures of Africa are primarily oral, but describe specific forms, genres, performance practices, tunings, and other aspects of music theory.[24][25]\nSacred harp music uses a different kind of scale and theory in practice. The music focuses on the solfege \"fa, sol, la\" on the music scale. Sacred Harp also employs a different notation involving \"shape notes\", or notes that are shaped to correspond to a certain solfege syllable on the music scale. Sacred Harp music and its music theory originated with Reverend Thomas Symmes in 1720, where he developed a system for \"singing by note\" to help his church members with note accuracy.[26]\nFurther information: List of music theorists § 19th century\nContemporary\nSee also: List of music theorists § 20th century, and List of music theorists § 21st century\nFundamentals of music\nMain article: Aspect of music\nMusic is composed of aural phenomena; \"music theory\" considers how those phenomena apply in music. Music theory considers melody, rhythm, counterpoint, harmony, form, tonal systems, scales, tuning, intervals, consonance, dissonance, durational proportions, the acoustics of pitch systems, composition, performance, orchestration, ornamentation, improvisation, electronic sound production, etc.[27]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Pitch\nMain article: Pitch (music)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Middle C (261.626 Hz)\nDuration: 0 seconds.0:00\nPitch is the lowness or highness of a tone, for example the difference between middle C and a higher C. The frequency of the sound waves producing a pitch can be measured precisely, but the perception of pitch is more complex because single notes from natural sources are usually a complex mix of many frequencies. Accordingly, theorists often describe pitch as a subjective sensation rather than an objective measurement of sound.[28]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Specific frequencies are often assigned letter names. Today most orchestras assign concert A (the A above middle C on the piano) to the frequency of 440 Hz. This assignment is somewhat arbitrary; for example, in 1859 France, the same A was tuned to 435 Hz. Such differences can have a noticeable effect on the timbre of instruments and other phenomena. Thus, in historically informed performance of older music, tuning is often set to match the tuning used in the period when it was written. Additionally, many cultures do not attempt to standardize pitch, often considering that it should be allowed to vary depending on genre, style, mood, etc."
+    },
+    {
+      "type": "paragraph",
+      "text": "The difference in pitch between two notes is called an interval. The most basic interval is the unison, which is simply two notes of the same pitch. The octave interval is two pitches that are either double or half the frequency of one another. The unique characteristics of octaves gave rise to the concept of pitch class: pitches of the same letter name that occur in different octaves may be grouped into a single \"class\" by ignoring the difference in octave. For example, a high C and a low C are members of the same pitch class—the class that contains all C's.[29]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Musical tuning systems, or temperaments, determine the precise size of intervals. Tuning systems vary widely within and between world cultures. In Western culture, there have long been several competing tuning systems, all with different qualities. Internationally, the system known as equal temperament is most commonly used today because it is considered the most satisfactory compromise that allows instruments of fixed tuning (e.g. the piano) to sound acceptably in tune in all keys."
+    },
+    {
+      "type": "paragraph",
+      "text": "Scales and modes\nMain articles: Musical scale and Musical mode"
+    },
+    {
+      "type": "paragraph",
+      "text": "A pattern of whole and half steps in the Ionian mode or major scale on C\nDuration: 0 seconds.0:00\nNotes can be arranged in a variety of scales and modes. Western music theory generally divides the octave into a series of twelve pitches, called a chromatic scale, within which the interval between adjacent tones is called a semitone, or half step. Selecting tones from this set of 12 and arranging them in patterns of semitones and whole tones creates other scales.[30]"
+    },
+    {
+      "type": "paragraph",
+      "text": "The most commonly encountered scales are the seven-toned major, the harmonic minor, the melodic minor, and the natural minor. Other examples of scales are the octatonic scale and the pentatonic or five-tone scale, which is common in folk music and blues. Non-Western cultures often use scales that do not correspond with an equally divided twelve-tone division of the octave. For example, classical Ottoman, Persian, Indian and Arabic musical systems often make use of multiples of quarter tones (half the size of a semitone, as the name indicates), for instance in 'neutral' seconds (three quarter tones) or 'neutral' thirds (seven quarter tones)—they do not normally use the quarter tone itself as a direct interval.[30]"
+    },
+    {
+      "type": "paragraph",
+      "text": "In traditional Western notation, the scale used for a composition is usually indicated by a key signature at the beginning to designate the pitches that make up that scale. As the music progresses, the pitches used may change and introduce a different scale. Music can be transposed from one scale to another for various purposes, often to accommodate the range of a vocalist. Such transposition raises or lowers the overall pitch range, but preserves the intervallic relationships of the original scale. For example, transposition from the key of C major to D major raises all pitches of the scale of C major equally by a whole tone. Since the interval relationships remain unchanged, transposition may be unnoticed by a listener, however other qualities may change noticeably because transposition changes the relationship of the overall pitch range compared to the range of the instruments or voices that perform the music. This often affects the music's overall sound, as well as having technical implications for the performers.[31]"
+    },
+    {
+      "type": "paragraph",
+      "text": "The interrelationship of the keys most commonly used in Western tonal music is conveniently shown by the circle of fifths. Unique key signatures are also sometimes devised for a particular composition. During the Baroque period, emotional associations with specific keys, known as the doctrine of the affections, were an important topic in music theory, but the unique tonal colorings of keys that gave rise to that doctrine were largely erased with the adoption of equal temperament. However, many musicians continue to feel that certain keys are more appropriate to certain emotions than others. Indian classical music theory continues to strongly associate keys with emotional states, times of day, and other extra-musical concepts and notably, does not employ equal temperament."
+    },
+    {
+      "type": "paragraph",
+      "text": "Consonance and dissonance\nMain article: Consonance and dissonance\nA consonance\nPerfect octave, a consonant interval\nDuration: 7 seconds.0:07\nA dissonance\nMinor second, a dissonant interval\nDuration: 0 seconds.0:00\nConsonance and dissonance are subjective qualities of the sonority of intervals that vary widely in different cultures and over the ages. Consonance (or concord) is the quality of an interval or chord that seems stable and complete in itself. Dissonance (or discord) is the opposite in that it feels incomplete and \"wants to\" resolve to a consonant interval. Dissonant intervals seem to clash. Consonant intervals seem to sound comfortable together. Commonly, perfect fourths, fifths, and octaves and all major and minor thirds and sixths are considered consonant. All others are dissonant to a greater or lesser degree.[32]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Context and many other aspects can affect apparent dissonance and consonance. For example, in a Debussy prelude, a major second may sound stable and consonant, while the same interval may sound dissonant in a Bach fugue. In the Common practice era, the perfect fourth is considered dissonant when not supported by a lower third or fifth. Since the early 20th century, Arnold Schoenberg's concept of \"emancipated\" dissonance, in which traditionally dissonant intervals can be treated as \"higher,\" more remote consonances, has become more widely accepted.[32]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Rhythm\nMain article: Rhythm"
+    },
+    {
+      "type": "paragraph",
+      "text": "Metric levels: beat level shown in middle with division levels above and multiple levels below\nRhythm is produced by the sequential arrangement of sounds and silences in time. Meter measures music in regular pulse groupings, called measures or bars. The time signature or meter signature specifies how many beats are in a measure, and which value of written note is counted or felt as a single beat."
+    },
+    {
+      "type": "paragraph",
+      "text": "Through increased stress, or variations in duration or articulation, particular tones may be accented. There are conventions in most musical traditions for regular and hierarchical accentuation of beats to reinforce a given meter. Syncopated rhythms contradict those conventions by accenting unexpected parts of the beat.[33] Playing simultaneous rhythms in more than one time signature is called polyrhythm.[34]"
+    },
+    {
+      "type": "paragraph",
+      "text": "In recent years, rhythm and meter have become an important area of research among music scholars. The most highly cited of these recent scholars are Maury Yeston,[35] Fred Lerdahl and Ray Jackendoff,[36] Jonathan Kramer,[37] and Justin London.[38]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Melody\nMain article: Melody"
+    },
+    {
+      "type": "paragraph",
+      "text": "\"Pop Goes the Weasel\" melody[39]\nDuration: 12 seconds.0:12\nA melody is a group of musical sounds in agreeable succession or arrangement.[40] Because melody is such a prominent aspect in so much music, its construction and other qualities are a primary interest of music theory."
+    },
+    {
+      "type": "paragraph",
+      "text": "The basic elements of melody are pitch, duration, rhythm, and tempo. The tones of a melody are usually drawn from pitch systems such as scales or modes. Melody may consist, to increasing degree, of the figure, motive, semi-phrase, antecedent and consequent phrase, and period or sentence. The period may be considered the complete melody, however some examples combine two periods, or use other combinations of constituents to create larger form melodies.[41]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Chord\nMain article: Chord (music)"
+    },
+    {
+      "type": "paragraph",
+      "text": "C major triad represented in staff notation.\nPlayⓘ in just intonation\nPlayⓘ in Equal temperament\nPlayⓘ in 1/4-comma meantone\nPlayⓘ in Young temperament\nPlayⓘ in Pythagorean tuning\nA chord, in music, is any harmonic set of three or more notes that is heard as if sounding simultaneously.[42]: pp. 67, 359 [43]: p. 63  These need not actually be played together: arpeggios and broken chords may, for many practical and theoretical purposes, constitute chords. Chords and sequences of chords are frequently used in modern Western, West African,[44] and Oceanian[45] music, whereas they are absent from the music of many other parts of the world.[46]: p. 15 "
+    },
+    {
+      "type": "paragraph",
+      "text": "The most frequently encountered chords are triads, so called because they consist of three distinct notes: further notes may be added to give seventh chords, extended chords, or added tone chords. The most common chords are the major and minor triads and then the augmented and diminished triads. The descriptions major, minor, augmented, and diminished are sometimes referred to collectively as chordal quality. Chords are also commonly classed by their root note—so, for instance, the chord C major may be described as a triad of major quality built on the note C. Chords may also be classified by inversion, the order in which the notes are stacked."
+    },
+    {
+      "type": "paragraph",
+      "text": "A series of chords is called a chord progression. Although any chord may in principle be followed by any other chord, certain patterns of chords have been accepted as establishing key in common-practice harmony. To describe this, chords are numbered, using Roman numerals (upward from the key-note),[47] per their diatonic function. Common ways of notating or representing chords[48] in western music other than conventional staff notation include Roman numerals, figured bass (much used in the Baroque era), chord letters (sometimes used in modern musicology), and various systems of chord charts typically found in the lead sheets used in popular music to lay out the sequence of chords so that the musician may play accompaniment chords or improvise a solo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Harmony\nMain article: Harmony"
+    },
+    {
+      "type": "paragraph",
+      "text": "Barbershop quartets, such as this US Navy group, sing 4-part pieces, made up of a melody line (normally the second-highest voice, called the \"lead\") and 3 harmony parts.\nIn music, harmony is the use of simultaneous pitches (tones, notes), or chords.[46]: p. 15  The study of harmony involves chords and their construction and chord progressions and the principles of connection that govern them.[49] Harmony is often said to refer to the \"vertical\" aspect of music, as distinguished from melodic line, or the \"horizontal\" aspect.[50] Counterpoint, which refers to the interweaving of melodic lines, and polyphony, which refers to the relationship of separate independent voices, is thus sometimes distinguished from harmony.[51]"
+    },
+    {
+      "type": "paragraph",
+      "text": "In popular and jazz harmony, chords are named by their root plus various te"
+    }
+  ],
+  "date": "2025-08-02T10:33:52.807Z"
+}

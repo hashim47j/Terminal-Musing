@@ -8,10 +8,8 @@
     "dev": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
     "dev:client": "vite",
     "dev:server": "nodemon backend/server.js",
-
     "build": "vite build",
     "start": "node backend/server.js",
-
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -23,7 +21,7 @@
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.1",
     "express": "^4.19.2",
-    "express-useragent": "^1.0.20",
+    "express-useragent": "^1.0.15",
     "fs-extra": "^11.2.0",
     "framer-motion": "^12.18.1",
     "multer": "^2.0.2",

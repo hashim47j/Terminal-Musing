@@ -5,101 +5,82 @@ import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
 
 const LsconcernBlog = () => {
-  const { id } = useParams();
-  const { darkMode } = useDarkMode();
+  const { id }        = useParams();
+  const { darkMode }  = useDarkMode();
 
-  const [blog, setBlog] = useState(null);
-  const [blogCategory, setBlogCategory] = useState(null); // track backend category folder
-  const [comments, setComments] = useState([]);
-  const [form, setForm] = useState({ name: '', email: '', comment: '' });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [blog, setBlog]             = useState(null);
+  const [blogCategory, setCategory] = useState(null);   // 'legal' or 'social issues'
+  const [comments, setComments]     = useState([]);
+  const [form, setForm]             = useState({ name: '', email: '', comment: '' });
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState('');
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
-  // Helper to fetch blog from given category
-  const fetchBlogByCategory = async (category) => {
-    const blogApiUrl = `${API_BASE}/blogs/${category}/${id}.json`;
-    const res = await fetch(blogApiUrl);
-    if (!res.ok) throw new Error(`Blog not found in category ${category}`);
-    const data = await res.json();
-    return { data, category };
+  // --- helper to try a category ---
+  const fetchBlogByCategory = async (cat) => {
+    const url = `/api/blogs/${encodeURIComponent(cat)}/${id}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Not found');
+    return { data: await res.json(), cat };
   };
 
-  // On mount & whenever `id` changes, try both categories until blog found
+  // --- load blog ---
   useEffect(() => {
-    const loadBlog = async () => {
+    const load = async () => {
       setLoading(true);
       setError('');
       setBlog(null);
-      setBlogCategory(null);
+      setCategory(null);
 
       try {
-        // Try legal first
-        const resultLegal = await fetchBlogByCategory('legal');
-        setBlog(resultLegal.data);
-        setBlogCategory('legal');
-
-        // Increment views (fire and forget)
-        fetch(`${API_BASE}/api/views/legal/${id}`, { method: 'POST' }).catch(() => {});
+        // 1) legal
+        const { data } = await fetchBlogByCategory('legal');
+        setBlog(data);
+        setCategory('legal');
+        fetch(`/api/views/legal/${id}`, { method: 'POST' }).catch(() => {});
       } catch {
         try {
-          // If not found in legal, try social issues
-          const resultSocial = await fetchBlogByCategory('social issues');
-          setBlog(resultSocial.data);
-          setBlogCategory('social issues');
-
-          // Increment views
-          fetch(`${API_BASE}/api/views/social issues/${id}`, { method: 'POST' }).catch(() => {});
-        } catch (err) {
+          // 2) social issues
+          const { data } = await fetchBlogByCategory('social issues');
+          setBlog(data);
+          setCategory('social issues');
+          fetch(`/api/views/${encodeURIComponent('social issues')}/${id}`, { method: 'POST' }).catch(() => {});
+        } catch {
           setError('Blog not found.');
         }
       } finally {
         setLoading(false);
       }
     };
-
-    loadBlog();
+    load();
   }, [id]);
 
-  // Fetch comments for whichever category found
+  // --- load comments whenever category known ---
   useEffect(() => {
-    const fetchComments = async () => {
-      if (!blogCategory) {
-        setComments([]);
-        return;
-      }
+    const loadComments = async () => {
+      if (!blogCategory) { setComments([]); return; }
       try {
-        const commentsApiUrl = `${API_BASE}/api/comments/${blogCategory}/${id}`;
-        const res = await fetch(commentsApiUrl);
-        if (res.ok) {
-          const data = await res.json();
-          setComments(data);
-        } else {
-          setComments([]);
-        }
+        const url = `/api/comments/${encodeURIComponent(blogCategory)}/${id}`;
+        const res = await fetch(url);
+        setComments(res.ok ? await res.json() : []);
       } catch {
         setComments([]);
       }
     };
-    fetchComments();
+    loadComments();
   }, [blogCategory, id]);
 
-  // Comment submit handler
+  // --- submit comment ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.comment) {
-      alert('Please fill in all fields.');
-      return;
+      alert('Please fill in all fields.'); return;
     }
-    if (!blogCategory) {
-      alert('Category not found for this blog.');
-      return;
-    }
+    if (!blogCategory) { alert('Unknown category for this blog.'); return; }
+
     const newComment = { ...form, timestamp: new Date().toISOString() };
     try {
-      const commentsApiUrl = `${API_BASE}/api/comments/${blogCategory}/${id}`;
-      const res = await fetch(commentsApiUrl, {
+      const url = `/api/comments/${encodeURIComponent(blogCategory)}/${id}`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newComment),
@@ -116,66 +97,58 @@ const LsconcernBlog = () => {
     }
   };
 
-  // UI for loading, error, no blog
+  // --- conditional renders ---
   if (loading) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Loading blog post...</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p>Loading blog post...</p></div>
       </div>
     );
   }
-
   if (error) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p style={{ color: 'red' }}>{error}</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p style={{ color: 'red' }}>{error}</p></div>
       </div>
     );
   }
-
   if (!blog) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Blog not found.</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p>Blog not found.</p></div>
       </div>
     );
   }
 
+  // --- meta ---
   const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+    day: 'numeric', month: 'short', year: 'numeric',
   });
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
+  // --- render ---
   return (
     <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.mainContentWrapper}>
+        {/* post */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>
           <p className={styles.date}>{metaText}</p>
-
           {blog.coverImage && (
             <img
               src={blog.coverImage}
               alt="Cover"
               className={styles.inlineImage}
-              style={{ marginBottom: '20px' }}
+              style={{ marginBottom: 20 }}
               onError={(e) => (e.target.style.display = 'none')}
             />
           )}
-
           <div className={styles.contentBodyPlaceholder}>
             <BlogRenderer content={blog.content} />
           </div>
         </section>
 
+        {/* comments */}
         <section className={styles.commentSection}>
           <div className={styles.commentList}>
             {comments.length === 0 ? (
@@ -186,7 +159,6 @@ const LsconcernBlog = () => {
                   <strong>{c.name} says:</strong>
                   <div className={styles.commentMeta}>{new Date(c.timestamp).toLocaleString()}</div>
                   <p>{c.comment}</p>
-                  <button className={styles.replyBtn}>Reply</button>
                 </div>
               ))
             )}
@@ -194,36 +166,28 @@ const LsconcernBlog = () => {
 
           <form className={styles.commentForm} onSubmit={handleSubmit}>
             <h3>Share your thoughts</h3>
-            <label htmlFor="nameInput">Name</label>
+            <label>Name</label>
             <input
-              id="nameInput"
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
             />
-
-            <label htmlFor="emailInput">Email</label>
+            <label>Email</label>
             <input
-              id="emailInput"
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
             />
-
-            <label htmlFor="commentTextarea">Comment</label>
+            <label>Comment</label>
             <textarea
-              id="commentTextarea"
               rows={5}
               value={form.comment}
               onChange={(e) => setForm({ ...form, comment: e.target.value })}
               required
             />
-
-            <button type="submit" className={styles.postBtn}>
-              Post
-            </button>
+            <button type="submit" className={styles.postBtn}>Post</button>
           </form>
         </section>
       </div>

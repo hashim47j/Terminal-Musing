@@ -1,4 +1,4 @@
-// ─── Core & Third-party ────────────────────────────────────────────
+// ─────────────── CORE & THIRD-PARTY ───────────────
 import express           from 'express';
 import cors              from 'cors';
 import bodyParser        from 'body-parser';
@@ -10,13 +10,13 @@ import { fileURLToPath } from 'url';
 import dotenv            from 'dotenv';
 dotenv.config();
 
-// ─── API Routers ──────────────────────────────────────────────────
+// ─────────────── API ROUTERS (OTHER MODULES) ─────
 import commentRoutes    from './comments/routes/comments.js';
 import dashboardRoutes  from './DashboardApi/dashboard.js';
 import viewRoutes       from './DashboardApi/views.js';
-import blogRoutes       from './blogapi/blog.js';
 import visitorStatsApi  from './ipapi/visitorStats.js';
 
+// ✅ Daily-Thoughts routes (folder really is “dailythougthsapi”)
 import dtapiRoutes      from './dailythougthsapi/dtapi.js';
 import processRoutes    from './dailythougthsapi/processapi.js';
 import manageRoutes     from './dailythougthsapi/thoughtmanageapi.js';
@@ -25,56 +25,62 @@ import likeRoutes       from './dailythougthsapi/getlikes.js';
 import userviewAPI      from './ipapi/userviewapi.js';
 import ipLogger         from './ipapi/motherapi.js';
 
-// ─── Init ─────────────────────────────────────────────────────────
-const app      = express();
-const PORT     = process.env.PORT || 5000;
+// ─────────────── INIT ───────────────
+const app  = express();
+const PORT = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
-const rootDir    = path.resolve(__dirname, '..');      // project root
+const rootDir    = path.resolve(__dirname, '..');   // repo root
 
-// ─── Middleware ───────────────────────────────────────────────────
+// ─────────────── MIDDLEWARE ───────────────
 app.use(cors());
 app.use(bodyParser.json({ limit: '2mb' }));
 
-// ─── Static folders (served by Express) ───────────────────────────
-app.use('/blogs',   express.static(path.join(__dirname, 'blogs')));
+// ─────────────── STATIC FOLDERS ───────────────
+app.use('/blogs',   express.static(path.join(__dirname, 'blogs')));   // raw JSON (legacy links)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Ensure uploads folder exists
+// ensure uploads/ exists
 const uploadDir = path.join(__dirname, 'uploads');
 fs.ensureDirSync(uploadDir);
 
-// ─── Multer (file uploads) ────────────────────────────────────────
+// ─────────────── MULTER FOR IMAGES ───────────────
 const storage = multer.diskStorage({
-  destination:  (req, file, cb) => cb(null, uploadDir),
-  filename:     (req, file, cb) => {
-    const ts       = Date.now();
-    const ext      = path.extname(file.originalname);
-    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, '_');
-    cb(null, `${baseName}-${ts}${ext}`);
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const ts   = Date.now();
+    const ext  = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+    cb(null, `${base}-${ts}${ext}`);
   }
 });
 const upload = multer({ storage });
 
-// ─── Simple Upload Route ──────────────────────────────────────────
+// ─────────────── /api/upload ───────────────
 app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-  res.status(200).json({ imageUrl: `/uploads/${req.file.filename}` });
+  res.status(200).json({ imageUrl: `/uploads/${req.file.filename}` });  // relative path
 });
 
-// ─── Blog CRUD (file-based) ───────────────────────────────────────
+// ─────────────── BLOG HELPERS ───────────────
+const blogDir = (cat) => path.join(__dirname, 'blogs', cat);
+
+// ─────────────── POST /api/blogs  (create) ───
 app.post('/api/blogs', async (req, res) => {
-  const blog = req.body;
-
-  if (!blog.id || !blog.category) {
-    return res.status(400).json({ message: 'Missing blog ID or category.' });
-  }
-
   try {
-    const dir  = path.join(__dirname, 'blogs', blog.category);
+    const blog = req.body;
+    if (!blog.id || !blog.category) {
+      return res.status(400).json({ message: 'Missing blog ID or category.' });
+    }
+    if (blog.coverImage) {
+      blog.coverImage = blog.coverImage.replace(/^https?:\/\/[^/]+/i, ''); // ensure relative
+    }
+
+    const dir = blogDir(blog.category);
     await fs.ensureDir(dir);
     await fs.writeJson(path.join(dir, `${blog.id}.json`), blog, { spaces: 2 });
+
     res.status(200).json({ message: '✅ Blog saved successfully.' });
   } catch (err) {
     console.error('❌ Error saving blog:', err);
@@ -82,43 +88,55 @@ app.post('/api/blogs', async (req, res) => {
   }
 });
 
+// ─────────────── GET /api/blogs  (list) ──────
 app.get('/api/blogs', async (req, res) => {
   const { category } = req.query;
-  if (!category) return res.status(400).json({ error: 'Category required.' });
+  if (!category) return res.status(400).json([]);         // always array
 
   try {
-    const dir      = path.join(__dirname, 'blogs', category);
-    const files    = await fs.readdir(dir);
-    const previews = await Promise.all(files.map(async f => {
+    const dir   = blogDir(category);
+    const files = await fs.readdir(dir);
+    const list  = await Promise.all(files.map(async f => {
       const data = await fs.readJson(path.join(dir, f));
       return {
-        id: data.id,
-        title: data.title,
+        id:         data.id,
+        title:      data.title,
         subheading: data.subheading,
-        date: data.date,
+        date:       data.date,
         coverImage: data.coverImage || null
       };
     }));
-    res.json(previews);
+    res.json(list);
   } catch (err) {
     console.error('❌ Failed to load blogs:', err);
-    res.status(500).json({ error: '❌ Failed to load blog previews.' });
+    res.json([]);                                        // never break React .map
   }
 });
 
-// ─── Admin Login ──────────────────────────────────────────────────
-const adminHashFile = path.join(__dirname, 'admin', 'adminKey.hash');
+// ─────────────── GET /api/blogs/:cat/:id  (single) ───
+app.get('/api/blogs/:category/:id', async (req, res) => {
+  const { category, id } = req.params;
+  try {
+    const file = path.join(blogDir(category), `${id}.json`);
+    const data = await fs.readJson(file);
+    res.json(data);
+  } catch (err) {
+    console.error('❌ Blog not found:', err);
+    res.status(404).json({ message: 'Blog not found' });
+  }
+});
 
+// ─────────────── ADMIN LOGIN ───────────────
+const adminHashPath = path.join(__dirname, 'admin', 'adminKey.hash');
 app.post('/api/admin/login', async (req, res) => {
   const { key } = req.body;
   if (!key) return res.status(400).json({ message: 'Key is required' });
-
   try {
-    const hashed = await fs.readFile(adminHashFile, 'utf8');
-    const ok     = await bcrypt.compare(key, hashed);
-    res.status(ok ? 200 : 401).json({
-      success: ok,
-      message: ok ? 'Authentication successful' : 'Invalid key'
+    const hash  = await fs.readFile(adminHashPath, 'utf8');
+    const match = await bcrypt.compare(key, hash);
+    res.status(match ? 200 : 401).json({
+      success: match,
+      message: match ? 'Authentication successful' : 'Invalid key'
     });
   } catch (err) {
     console.error('❌ Admin login error:', err);
@@ -126,35 +144,30 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
-// ─── Global / Analytics Middlewares ───────────────────────────────
-app.use('/',          userviewAPI);      // logs each visit
-app.use(ipLogger);                       // extra IP logic
-app.use('/api',       visitorStatsApi);  // stats JSON
+// ─────────────── GLOBAL / OTHER ROUTES ───────
+app.use('/',    userviewAPI);
+app.use(ipLogger);
+app.use('/api', visitorStatsApi);
 
-// ─── Mount Modular Routers ────────────────────────────────────────
 app.use('/api/comments',          commentRoutes);
 app.use('/api/dashboard',         dashboardRoutes);
 app.use('/api/views',             viewRoutes);
-app.use('/api/blogs',             blogRoutes);
-
-// Daily Thoughts suite
 app.use('/api/dailythoughts',           dtapiRoutes);
 app.use('/api/dailythoughts/process',   processRoutes);
 app.use('/api/dailythoughts/manage',    manageRoutes);
 app.use('/api/dailythoughts/likes',     likeRoutes);
 
-// ─── Serve built React frontend ───────────────────────────────────
-const distDir = path.join(rootDir, 'dist');
-app.use(express.static(distDir));
+// ─────────────── FRONTEND ───────────────
+app.use(express.static(path.join(rootDir, 'dist')));      // SPA assets
 
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: '🚫 Route not found' });
   }
-  res.sendFile(path.join(distDir, 'index.html'));
+  res.sendFile(path.join(rootDir, 'dist', 'index.html'));
 });
 
-// ─── Fire it up ───────────────────────────────────────────────────
+// ─────────────── START SERVER ───────────────
 app.listen(PORT, '0.0.0.0', () =>
-  console.log(`✅ Server running on http://0.0.0.0:${PORT}`)
+  console.log(`✅ Server running at http://0.0.0.0:${PORT}`)
 );

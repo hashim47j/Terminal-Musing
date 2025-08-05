@@ -6,20 +6,21 @@ import historyLight from '../../assets/history-hero.png';
 
 const HistoryPage = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts]     = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/blogs?category=history`);
+        const res = await fetch('/api/blogs?category=history');   // ✅ relative URL
         if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
         const data = await res.json();
 
-        // Sort descending by date so newest posts appear first
-        const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setPosts(sortedData);
+        // Ensure we got an array
+        const list = Array.isArray(data) ? data : [];
+        const sorted = list.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setPosts(sorted);
       } catch (err) {
         console.error('❌ Error fetching history blogs:', err);
         setError('Failed to load history posts.');
@@ -41,7 +42,10 @@ const HistoryPage = () => {
 
   if (error) {
     return (
-      <div className={styles.historyPageContainer} style={{ padding: '2rem', textAlign: 'center', color: 'red' }}>
+      <div
+        className={styles.historyPageContainer}
+        style={{ padding: '2rem', textAlign: 'center', color: 'red' }}
+      >
         {error}
       </div>
     );
@@ -65,6 +69,7 @@ const HistoryPage = () => {
 
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>History Posts</h2>
+
         <div className={styles.blogGrid}>
           {posts.length === 0 ? (
             <p style={{ textAlign: 'center', color: '#666' }}>No history posts available.</p>
@@ -74,22 +79,19 @@ const HistoryPage = () => {
                 key={post.id}
                 className={styles.blogCard}
                 onClick={() => navigate(`/blogs/history/${post.id}`)}
-                style={{ cursor: 'pointer' }}
                 role="button"
                 tabIndex={0}
+                style={{ cursor: 'pointer' }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') navigate(`/blogs/history/${post.id}`);
                 }}
               >
                 {post.coverImage ? (
-                  <img
-                    src={post.coverImage}
-                    alt={post.title}
-                    className={styles.coverImage}
-                  />
+                  <img src={post.coverImage} alt={post.title} className={styles.coverImage} />
                 ) : (
                   <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
                 )}
+
                 <div className={styles.blogContent}>
                   <h3 className={styles.blogTitle}>{post.title}</h3>
                   <p className={styles.blogSubheading}>{post.subheading}</p>

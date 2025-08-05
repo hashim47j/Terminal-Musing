@@ -5,29 +5,25 @@ import socialHero from '../../assets/social-hero.png';
 
 const LsConcernPage = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts]     = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
 
   useEffect(() => {
-    const fetchBothCategories = async () => {
+    const fetchBoth = async () => {
       try {
-        const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
-        // Fetch legal category blogs
-        const resLegal = await fetch(`${API_BASE}/api/blogs?category=legal`);
+        // legal
+        const resLegal   = await fetch('/api/blogs?category=legal');
         const legalBlogs = resLegal.ok ? await resLegal.json() : [];
 
-        // Fetch social issues category blogs
-        const resSocial = await fetch(`${API_BASE}/api/blogs?category=social issues`);
+        // social issues
+        const resSocial  = await fetch('/api/blogs?category=' + encodeURIComponent('social issues'));
         const socialBlogs = resSocial.ok ? await resSocial.json() : [];
 
-        // Combine lists
-        const combined = [...legalBlogs, ...socialBlogs];
+        const combined = [...legalBlogs, ...socialBlogs]
+          .filter(Array.isArray(legalBlogs) ? () => true : () => false);
 
-        // Sort descending by date (newest first)
         combined.sort((a, b) => new Date(b.date) - new Date(a.date));
-
         setPosts(combined);
       } catch (err) {
         console.error('❌ Error fetching blogs:', err);
@@ -36,8 +32,7 @@ const LsConcernPage = () => {
         setLoading(false);
       }
     };
-
-    fetchBothCategories();
+    fetchBoth();
   }, []);
 
   if (loading) {
@@ -50,7 +45,10 @@ const LsConcernPage = () => {
 
   if (error) {
     return (
-      <div className={styles.pageContainer} style={{ padding: '2rem', textAlign: 'center', color: 'red' }}>
+      <div
+        className={styles.pageContainer}
+        style={{ padding: '2rem', textAlign: 'center', color: 'red' }}
+      >
         {error}
       </div>
     );
@@ -58,15 +56,15 @@ const LsConcernPage = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <div
-        data-navbar-bg-detect
-        style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
-      />
+      {/* navbar background detector */}
+      <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, height: 80, width: '100%' }} />
 
+      {/* Hero */}
       <section className={styles.headerSection}>
-        <img src={socialHero} alt="liberté toujours" className={styles.heroImage} />
+        <img src={socialHero} alt="Legal & Social Hero" className={styles.heroImage} />
       </section>
 
+      {/* Posts */}
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>Legal & Social Posts</h2>
         <div className={styles.blogGrid}>
@@ -77,22 +75,16 @@ const LsConcernPage = () => {
               <div
                 key={post.id}
                 className={styles.blogCard}
-                onClick={() => navigate(`/blogs/legal-social/${post.id}`)}
-                style={{ cursor: 'pointer' }}
                 role="button"
                 tabIndex={0}
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/blogs/legal-social/${post.id}`)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    navigate(`/blogs/legal-social/${post.id}`);
-                  }
+                  if (e.key === 'Enter' || e.key === ' ') navigate(`/blogs/legal-social/${post.id}`);
                 }}
               >
                 {post.coverImage ? (
-                  <img
-                    src={post.coverImage}
-                    alt={post.title}
-                    className={styles.coverImage}
-                  />
+                  <img src={post.coverImage} alt={post.title} className={styles.coverImage} />
                 ) : (
                   <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
                 )}

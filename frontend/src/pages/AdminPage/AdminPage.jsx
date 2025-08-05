@@ -25,14 +25,16 @@ const AdminPage = () => {
     formData.append('image', file);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, {
+      const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
 
       if (!res.ok) throw new Error('Upload failed');
       const data = await res.json();
-      return `${import.meta.env.VITE_API_BASE_URL}${data.imageUrl}`;
+      
+      // Return the relative URL directly (no domain prefix needed)
+      return data.imageUrl;  // This will be "/uploads/filename.png"
 
     } catch (err) {
       console.error('❌ Image upload failed:', err);
@@ -45,8 +47,7 @@ const AdminPage = () => {
     if (file) {
       const imageUrl = await uploadImage(file);
       if (imageUrl) {
-        setBody((prev) => prev + `\n\n<img src="${imageUrl}" alt="Inserted image" class="inlineImage" />\n\n`);
-
+        setBody((prev) => prev + `\n\n<img src="${imageUrl}" alt="Inserted image" style="max-width: 100%; height: auto;" />`);
       } else {
         alert('Image upload failed.');
       }
@@ -55,15 +56,15 @@ const AdminPage = () => {
 
   const handlePublish = async () => {
     const now = new Date();
-  
+
     const formattedDate = now
       .toISOString()
       .replace(/[-:T]/g, '')
       .slice(0, 12); // e.g., 202507181400
-  
+
     const readableTitle = title.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
     const blogId = `${readableTitle}${formattedDate}`; // SuperHeroHistory202507181400
-  
+
     let coverImageUrl = '';
     if (coverImage) {
       coverImageUrl = await uploadImage(coverImage);
@@ -72,7 +73,7 @@ const AdminPage = () => {
         return;
       }
     }
-  
+
     const contentBlocks = body.split('\n\n').map((block) =>
       block.includes('<img')
         ? {
@@ -82,7 +83,7 @@ const AdminPage = () => {
           }
         : { type: 'paragraph', text: block }
     );
-  
+
     const blogData = {
       id: blogId,
       title,
@@ -92,14 +93,14 @@ const AdminPage = () => {
       content: [{ type: 'paragraph', text: subheading }, ...contentBlocks],
       date: now.toISOString(),
     };
-  
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/blogs`, {
+      const response = await fetch('/api/blogs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(blogData),
       });
-  
+
       if (response.ok) {
         alert('✅ Blog published successfully!');
         setTitle('');
@@ -134,7 +135,11 @@ const AdminPage = () => {
 
       <div className={styles.field}>
         <label>Cover Image</label>
-        <input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files[0])} />
+        <input 
+          type="file" 
+          accept="image/*" 
+          onChange={(e) => setCoverImage(e.target.files[0])}
+        />
         {coverImage && <p>{coverImage.name}</p>}
       </div>
 
@@ -153,9 +158,13 @@ const AdminPage = () => {
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Write your content here. Use <a href=''> for hyperlinks or insert images."
+          placeholder="Write your content here. Use <a href=''> for hyperlinks."
         />
-        <input type="file" accept="image/*" onChange={handleInsertImageIntoBody} />
+        <input 
+          type="file" 
+          accept="image/*" 
+          onChange={handleInsertImageIntoBody}
+        />
       </div>
 
       <div className={styles.field}>

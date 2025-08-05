@@ -1,4 +1,3 @@
-// src/pages/TechPage/TechPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './TechPage.module.css';
@@ -6,20 +5,16 @@ import techHero from '../../assets/techhero.png';
 
 const TechPage = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts]     = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const API_BASE = import.meta.env.VITE_API_BASE_URL;
-        const categoryName = 'android & linux';
-        const encodedCategory = encodeURIComponent(categoryName);
-  
-        const res = await fetch(`${API_BASE}/api/blogs?category=${encodedCategory}`);
-        if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
-  
+        const cat = encodeURIComponent('android & linux');
+        const res = await fetch(`/api/blogs?category=${cat}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         data.sort((a, b) => new Date(b.date) - new Date(a.date));
         setPosts(data);
@@ -30,10 +25,8 @@ const TechPage = () => {
         setLoading(false);
       }
     };
-  
     fetchPosts();
   }, []);
-  
 
   if (loading) {
     return (
@@ -45,7 +38,10 @@ const TechPage = () => {
 
   if (error) {
     return (
-      <div className={styles.pageContainer} style={{ padding: '2rem', textAlign: 'center', color: 'red' }}>
+      <div
+        className={styles.pageContainer}
+        style={{ padding: '2rem', textAlign: 'center', color: 'red' }}
+      >
         {error}
       </div>
     );
@@ -53,15 +49,12 @@ const TechPage = () => {
 
   return (
     <div className={styles.pageContainer}>
-      {/* Navbar background detection */}
-      <div
-        data-navbar-bg-detect
-        style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
-      />
+      {/* navbar background detector */}
+      <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, height: 80, width: '100%' }} />
 
-      {/* Hero Section with background */}
+      {/* Hero */}
       <section className={styles.headerSection}>
-        <img src={techHero} alt="Tech Hero Visual" className={styles.heroImage} />
+        <img src={techHero} alt="Tech Hero" className={styles.heroImage} />
       </section>
 
       {/* Posts */}
@@ -75,20 +68,16 @@ const TechPage = () => {
               <div
                 key={post.id}
                 className={styles.blogCard}
-                onClick={() => navigate(`/blogs/tech/${post.id}`)}
-                style={{ cursor: 'pointer' }}
                 role="button"
                 tabIndex={0}
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/blogs/tech/${post.id}`)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') navigate(`/blogs/tech/${post.id}`);
                 }}
               >
                 {post.coverImage ? (
-                  <img
-                    src={post.coverImage}
-                    alt={post.title}
-                    className={styles.coverImage}
-                  />
+                  <img src={post.coverImage} alt={post.title} className={styles.coverImage} />
                 ) : (
                   <div className={styles.coverImage} style={{ backgroundColor: '#e4e8eb' }} />
                 )}
@@ -99,7 +88,7 @@ const TechPage = () => {
                     {new Date(post.date).toLocaleDateString('en-US', {
                       day: 'numeric',
                       month: 'short',
-                      year: 'numeric'
+                      year: 'numeric',
                     })}
                   </span>
                 </div>

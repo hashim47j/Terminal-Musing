@@ -3,146 +3,125 @@ import './DailythoughtsReader.css';
 import { useNavigate } from 'react-router-dom';
 
 const DailythoughtsReader = () => {
-  const [thoughts, setThoughts] = useState([]);
-  const [activeAuthor, setActiveAuthor] = useState(null);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-  const [loading, setLoading] = useState(true);
-  const [likingId, setLikingId] = useState(null);
-  const [popupThoughtId, setPopupThoughtId] = useState(null); // Stores the ID of the thought for which the "already liked" popup should be shown
+  const [thoughts, setThoughts]   = useState([]);
+  const [activeAuthor, setActive] = useState(null);
+  const [tooltipPos, setPos]      = useState({ x: 0, y: 0 });
+  const [loading, setLoading]     = useState(true);
+  const [likingId, setLikingId]   = useState(null);
+  const [popupId, setPopupId]     = useState(null);
   const navigate = useNavigate();
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+  const listUrl  = '/api/dailythoughts/process';      // ← remove /approved
+  const likesUrl = '/api/dailythoughts/likes';        // ← remove /getlikes
 
   useEffect(() => {
-    const fetchThoughtsAndLikes = async () => {
+    const fetchAll = async () => {
       try {
-        const [thoughtsRes, likesRes] = await Promise.all([
-          fetch(`${API_BASE}/api/thoughts/approved`),
-          fetch(`${API_BASE}/api/thoughts/likes`)
-        ]);
+        const [tRes, lRes] = await Promise.all([fetch(listUrl), fetch(likesUrl)]);
+        const tData = tRes.ok ? await tRes.json() : [];
+        const lData = lRes.ok ? await lRes.json() : [];
 
-        const approvedThoughts = await thoughtsRes.json();
-        const likesData = await likesRes.json();
+        // defensive
+        const thoughtsArr = Array.isArray(tData) ? tData : [];
+        const likesArr    = Array.isArray(lData) ? lData : [];
 
-        const storedLikes = JSON.parse(localStorage.getItem('likedThoughts') || '[]');
+        const stored = JSON.parse(localStorage.getItem('likedThoughts') || '[]');
 
-        const enrichedThoughts = approvedThoughts.map(thought => {
-          const likeObj = likesData.find(like => like.id === thought.id);
+        const merged = thoughtsArr.map((th) => {
+          const likeObj = likesArr.find((l) => l.id === th.id);
           return {
-            ...thought,
+            ...th,
             likes: likeObj ? likeObj.count : 0,
-            liked: storedLikes.includes(thought.id)
+            liked: stored.includes(th.id),
           };
         });
 
-        setThoughts(enrichedThoughts);
-        setLoading(false);
-      } catch (error) {
-        console.error("❌ Error fetching thoughts and likes:", error);
+        setThoughts(merged);
+      } catch (err) {
+        console.error('❌ Error fetching thoughts and likes:', err);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchThoughtsAndLikes();
+    fetchAll();
 
-    const handleClickOutside = () => setActiveAuthor(null);
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    const closeAuthor = () => setActive(null);
+    document.addEventListener('click', closeAuthor);
+    return () => document.removeEventListener('click', closeAuthor);
   }, []);
+
+  /* ---------------- LIKE HANDLER ---------------- */
+  const likeEndpoint = (id) => `/api/dailythoughts/likes/${id}`;
 
   const toggleLike = async (id) => {
     if (!id || likingId === id) return;
 
-    const likedArray = JSON.parse(localStorage.getItem('likedThoughts') || '[]');
-    if (likedArray.includes(id)) {
-      // Show popup for this specific thought ID
-      setPopupThoughtId(id);
-      // Hide the popup after 5 seconds (MODIFIED DURATION)
-      setTimeout(() => setPopupThoughtId(null), 5000);
+    const stored = JSON.parse(localStorage.getItem('likedThoughts') || '[]');
+    if (stored.includes(id)) {
+      setPopupId(id);
+      setTimeout(() => setPopupId(null), 5_000);
       return;
     }
 
     setLikingId(id);
-
     try {
-      const res = await fetch(`${API_BASE}/api/thoughts/like/${id}`, {
-        method: 'POST'
-      });
-
+      const res = await fetch(likeEndpoint(id), { method: 'POST' });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || '❌ Failed to like');
+      if (!res.ok) throw new Error(data.message || 'error');
 
-      likedArray.push(id);
-      localStorage.setItem('likedThoughts', JSON.stringify(likedArray));
+      stored.push(id);
+      localStorage.setItem('likedThoughts', JSON.stringify(stored));
 
-      setThoughts(prev =>
-        prev.map(thought =>
-          thought.id === id
-            ? { ...thought, likes: data.count, liked: true }
-            : thought
-        )
+      setThoughts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, likes: data.count, liked: true } : t))
       );
-    } catch (error) {
-      console.error('❌ Failed to toggle like:', error);
+    } catch (err) {
+      console.error('❌ Failed to toggle like:', err);
     } finally {
       setTimeout(() => setLikingId(null), 800);
     }
   };
 
+  /* ---------------- RENDER HELPERS ---------------- */
   const groupByDate = () => {
     const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+    const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
 
     const map = {};
-    const sortedThoughts = [...thoughts].sort((a, b) => new Date(b.date) - new Date(a.date));
+    [...thoughts]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .forEach((th) => {
+        const d = new Date(th.date);
+        let label = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        if (d.toDateString() === today.toDateString()) label = 'Today';
+        else if (d.toDateString() === yesterday.toDateString()) label = 'Yesterday';
 
-    sortedThoughts.forEach(thought => {
-      const thoughtDate = new Date(thought.date);
-      let label;
-
-      if (thoughtDate.toDateString() === today.toDateString()) {
-        label = 'Today';
-      } else if (thoughtDate.toDateString() === yesterday.toDateString()) {
-        label = 'Yesterday';
-      } else {
-        label = thoughtDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-      }
-
-      if (!map[label]) map[label] = [];
-      map[label].push(thought);
-    });
-
+        (map[label] = map[label] || []).push(th);
+      });
     return map;
   };
 
-  const getFontSizeClass = (text) => {
-    if (typeof text !== 'string') return 'font-small';
-    const wordCount = text.trim().split(/\s+/).length;
-    if (wordCount < 15) return 'font-large';
-    if (wordCount < 60) return 'font-medium';
+  const fontSizeClass = (text = '') => {
+    const wc = text.trim().split(/\s+/).length;
+    if (wc < 15) return 'font-large';
+    if (wc < 60) return 'font-medium';
     return 'font-small';
   };
 
   const handleAuthorClick = (e, author) => {
     e.stopPropagation();
     const rect = e.target.getBoundingClientRect();
-    const popupHeight = 80;
-    const popupWidth = 220;
+    const popupW = 220, popupH = 80;
 
-    let x = rect.left + rect.width / 2 - popupWidth / 2;
-    x = Math.max(10, x);
-    x = Math.min(x, window.innerWidth - popupWidth - 10);
-    const y = rect.top + window.scrollY - popupHeight - 10;
+    let x = rect.left + rect.width / 2 - popupW / 2;
+    x = Math.max(10, Math.min(x, window.innerWidth - popupW - 10));
+    const y = rect.top + window.scrollY - popupH - 10;
 
-    setTooltipPos({ x, y });
-    setActiveAuthor(author);
+    setPos({ x, y }); setActive(author);
   };
 
+  /* ---------------- UI ---------------- */
   return (
     <div className="daily-thoughts-wrapper">
       <div className="thoughts-scroll-area">
@@ -154,45 +133,46 @@ const DailythoughtsReader = () => {
               Object.entries(groupByDate()).map(([label, group]) => (
                 <div key={label} className="timeline-label-group">
                   <h2 className="timeline-label">{label}</h2>
-                  {group.map(thought => (
-                    <div className="timeline-item" key={thought.id}>
-                      <div className="timeline-dot"></div>
+                  {group.map((th) => (
+                    <div className="timeline-item" key={th.id}>
+                      <div className="timeline-dot" />
                       <div className="timeline-content">
                         <div className="thought-meta-wrapper">
                           <button
                             className="thought-meta-link"
-                            onClick={(e) => handleAuthorClick(e, {
-                              name: thought.name,
-                              email: thought.email
-                            })}
+                            onClick={(e) =>
+                              handleAuthorClick(e, { name: th.name, email: th.email })
+                            }
                           >
-                            {thought.name}
+                            {th.name}
                           </button>
                           <span className="thought-meta-date">
                             {label === 'Today' || label === 'Yesterday'
-                              ? new Date(thought.date).toLocaleDateString('en-US', { weekday: 'long' })
-                              : new Date(thought.date).toLocaleDateString('en-US', {
+                              ? new Date(th.date).toLocaleDateString('en-US', { weekday: 'long' })
+                              : new Date(th.date).toLocaleDateString('en-US', {
                                   month: 'short',
                                   day: 'numeric',
-                                  year: 'numeric'
+                                  year: 'numeric',
                                 })}
                           </span>
                         </div>
-                        <p className={`thought-text ${getFontSizeClass(thought.content || thought.text)}`}>
-                          {(thought.content || thought.text || '').trim() || '[No thought text]'}
+
+                        <p className={`thought-text ${fontSizeClass(th.content || th.text)}`}>
+                          {(th.content || th.text || '').trim() || '[No thought text]'}
                         </p>
+
                         <div className="thought-attribution-like">
-                          <span className="thought-attribution">{thought.attribution || ''}</span>
+                          <span className="thought-attribution">{th.attribution || ''}</span>
                           <div className="like-container">
                             <button
-                              className={`like-button ${thought.liked ? 'liked' : ''}`}
-                              onClick={() => toggleLike(thought.id)}
-                              disabled={likingId === thought.id}
+                              className={`like-button ${th.liked ? 'liked' : ''}`}
+                              onClick={() => toggleLike(th.id)}
+                              disabled={likingId === th.id}
                             >
                               <svg
                                 className="heart-icon"
                                 viewBox="0 0 24 24"
-                                fill={thought.liked ? 'crimson' : 'none'}
+                                fill={th.liked ? 'crimson' : 'none'}
                                 stroke="currentColor"
                                 strokeWidth="2"
                                 strokeLinecap="round"
@@ -201,11 +181,11 @@ const DailythoughtsReader = () => {
                                 <path d="M20.8 4.6c-1.8-1.8-4.7-1.8-6.5 0l-.8.8-.8-.8c-1.8-1.8-4.7-1.8-6.5 0s-1.8 4.7 0 6.5l7.3 7.3 7.3-7.3c1.8-1.8 1.8-4.7 0-6.5z" />
                               </svg>
                             </button>
-                            <span className="like-count">{thought.likes}</span>
-                            {/* Render the popup message only if this thought's ID matches popupThoughtId */}
-                            {popupThoughtId === thought.id && (
+                            <span className="like-count">{th.likes}</span>
+                            {popupId === th.id && (
                               <div className="like-popup-message">
-                                You can't love some-thing/one more than once and forget about trying to unlove them
+                                You can't love some-thing/one more than once and forget about trying
+                                to unlove them
                               </div>
                             )}
                           </div>

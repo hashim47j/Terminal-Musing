@@ -6,77 +6,75 @@ import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
 
 const WritingsBlog = () => {
-  const { id } = useParams();
-  const { darkMode } = useDarkMode();
+  const { id }        = useParams();
+  const { darkMode }  = useDarkMode();
 
-  const [blog, setBlog] = useState(null);
-  const [blogCategory, setBlogCategory] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [form, setForm] = useState({ name: '', email: '', comment: '' });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [blog, setBlog]             = useState(null);
+  const [blogCategory, setCategory] = useState(null);     // “poems” or “short stories”
+  const [comments, setComments]     = useState([]);
+  const [form, setForm]             = useState({ name: '', email: '', comment: '' });
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState('');
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
-  // Try poems folder first, then short stories
-  const fetchBlogByCategory = async (category) => {
-    const blogApiUrl = `${API_BASE}/blogs/${category}/${id}.json`;
-    const res = await fetch(blogApiUrl);
-    if (!res.ok) throw new Error(`Blog not found in category ${category}`);
+  // ---------- helper ----------
+  const fetchBlogByCategory = async (cat) => {
+    const url = `/api/blogs/${encodeURIComponent(cat)}/${id}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Not found');
     const data = await res.json();
-    return { data, category };
+    return { data, cat };
   };
 
+  // ---------- load blog ----------
   useEffect(() => {
-    const loadBlog = async () => {
+    const load = async () => {
       setLoading(true);
       setError('');
       setBlog(null);
-      setBlogCategory(null);
+      setCategory(null);
 
       try {
-        const resultPoems = await fetchBlogByCategory('poems');
-        setBlog(resultPoems.data);
-        setBlogCategory('poems');
-        fetch(`${API_BASE}/api/views/poems/${id}`, { method: 'POST' }).catch(() => {});
+        // try poems first
+        const { data } = await fetchBlogByCategory('poems');
+        setBlog(data);
+        setCategory('poems');
+        fetch(`/api/views/poems/${id}`, { method: 'POST' }).catch(() => {});
       } catch {
         try {
-          const resultShortStories = await fetchBlogByCategory('short stories');
-          setBlog(resultShortStories.data);
-          setBlogCategory('short stories');
-          fetch(`${API_BASE}/api/views/short stories/${id}`, { method: 'POST' }).catch(() => {});
-        } catch (err) {
+          // then short stories
+          const { data } = await fetchBlogByCategory('short stories');
+          setBlog(data);
+          setCategory('short stories');
+          fetch(`/api/views/${encodeURIComponent('short stories')}/${id}`, { method: 'POST' }).catch(() => {});
+        } catch {
           setError('Blog not found.');
         }
       } finally {
         setLoading(false);
       }
     };
-    loadBlog();
+    load();
   }, [id]);
 
+  // ---------- comments ----------
   useEffect(() => {
-    const fetchComments = async () => {
+    const loadComments = async () => {
       if (!blogCategory) {
         setComments([]);
         return;
       }
       try {
-        const commentsApiUrl = `${API_BASE}/api/comments/${blogCategory}/${id}`;
-        const res = await fetch(commentsApiUrl);
-        if (res.ok) {
-          const data = await res.json();
-          setComments(data);
-        } else {
-          setComments([]);
-        }
+        const url = `/api/comments/${encodeURIComponent(blogCategory)}/${id}`;
+        const res = await fetch(url);
+        setComments(res.ok ? await res.json() : []);
       } catch {
         setComments([]);
       }
     };
-    fetchComments();
+    loadComments();
   }, [blogCategory, id]);
 
+  // ---------- submit comment ----------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.comment) {
@@ -84,13 +82,14 @@ const WritingsBlog = () => {
       return;
     }
     if (!blogCategory) {
-      alert('Category not found for this blog.');
+      alert('Unknown category for this blog.');
       return;
     }
+
     const newComment = { ...form, timestamp: new Date().toISOString() };
     try {
-      const commentsApiUrl = `${API_BASE}/api/comments/${blogCategory}/${id}`;
-      const res = await fetch(commentsApiUrl, {
+      const url = `/api/comments/${encodeURIComponent(blogCategory)}/${id}`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newComment),
@@ -107,12 +106,11 @@ const WritingsBlog = () => {
     }
   };
 
+  // ---------- early returns ----------
   if (loading) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Loading blog post...</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p>Loading blog post...</p></div>
       </div>
     );
   }
@@ -120,9 +118,7 @@ const WritingsBlog = () => {
   if (error) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p style={{ color: 'red' }}>{error}</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p style={{ color: 'red' }}>{error}</p></div>
       </div>
     );
   }
@@ -130,13 +126,12 @@ const WritingsBlog = () => {
   if (!blog) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Blog not found.</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p>Blog not found.</p></div>
       </div>
     );
   }
 
+  // ---------- render ----------
   const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
@@ -147,6 +142,8 @@ const WritingsBlog = () => {
   return (
     <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.mainContentWrapper}>
+
+        {/* blog body */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>
           <p className={styles.date}>{metaText}</p>
@@ -156,7 +153,7 @@ const WritingsBlog = () => {
               src={blog.coverImage}
               alt="Cover"
               className={styles.inlineImage}
-              style={{ marginBottom: '20px' }}
+              style={{ marginBottom: 20 }}
               onError={(e) => (e.target.style.display = 'none')}
             />
           )}
@@ -166,6 +163,7 @@ const WritingsBlog = () => {
           </div>
         </section>
 
+        {/* comments */}
         <section className={styles.commentSection}>
           <div className={styles.commentList}>
             {comments.length === 0 ? (
@@ -174,9 +172,10 @@ const WritingsBlog = () => {
               comments.map((c, i) => (
                 <div key={i} className={styles.commentBox}>
                   <strong>{c.name} says:</strong>
-                  <div className={styles.commentMeta}>{new Date(c.timestamp).toLocaleString()}</div>
+                  <div className={styles.commentMeta}>
+                    {new Date(c.timestamp).toLocaleString()}
+                  </div>
                   <p>{c.comment}</p>
-                  <button className={styles.replyBtn}>Reply</button>
                 </div>
               ))
             )}
@@ -184,6 +183,7 @@ const WritingsBlog = () => {
 
           <form className={styles.commentForm} onSubmit={handleSubmit}>
             <h3>Share your thoughts</h3>
+
             <label htmlFor="nameInput">Name</label>
             <input
               id="nameInput"
@@ -211,9 +211,7 @@ const WritingsBlog = () => {
               required
             />
 
-            <button type="submit" className={styles.postBtn}>
-              Post
-            </button>
+            <button type="submit" className={styles.postBtn}>Post</button>
           </form>
         </section>
       </div>

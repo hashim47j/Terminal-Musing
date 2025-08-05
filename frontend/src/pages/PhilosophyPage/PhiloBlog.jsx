@@ -4,21 +4,23 @@ import styles from './PhiloBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
 
 const PhiloBlog = () => {
-  const { id } = useParams();
-  const { darkMode } = useDarkMode();
-  const [blog, setBlog] = useState(null);
+  const { id }           = useParams();
+  const { darkMode }     = useDarkMode();
+
+  const [blog, setBlog]       = useState(null);
   const [comments, setComments] = useState([]);
-  const [form, setForm] = useState({ name: '', email: '', comment: '' });
+  const [form, setForm]       = useState({ name: '', email: '', comment: '' });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
+
   const navbarBgRef = useRef(null);
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
-  const blogApiUrl = `${API_BASE}/blogs/philosophy/${id}.json`;
-  const commentsApiUrl = `${API_BASE}/api/comments/philosophy/${id}`;
-  const viewsApiUrl = `${API_BASE}/api/views/philosophy/${id}`;
+  // ---------------- API ENDPOINTS ----------------
+  const blogApiUrl     = `/api/blogs/philosophy/${id}`;
+  const commentsApiUrl = `/api/comments/philosophy/${id}`;
+  const viewsApiUrl    = `/api/views/philosophy/${id}`;
 
-  // Fetch blog + count view
+  // ---------------- FETCH BLOG (and record view) --------------
   useEffect(() => {
     const fetchBlog = async () => {
       try {
@@ -27,8 +29,8 @@ const PhiloBlog = () => {
         const data = await res.json();
         setBlog(data);
 
-        // Register view
-        await fetch(viewsApiUrl, { method: 'POST' });
+        // register a view but ignore errors
+        fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});
       } catch (err) {
         console.error('❌ Blog fetch error:', err);
         setError('Blog not found or an error occurred.');
@@ -39,14 +41,14 @@ const PhiloBlog = () => {
     fetchBlog();
   }, [id]);
 
-  // Fetch comments
+  // ---------------- FETCH COMMENTS ----------------
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const res = await fetch(commentsApiUrl);
         if (res.ok) {
           const data = await res.json();
-          setComments(data);
+          if (Array.isArray(data)) setComments(data);
         }
       } catch (err) {
         console.error('❌ Comment fetch error:', err);
@@ -55,7 +57,7 @@ const PhiloBlog = () => {
     fetchComments();
   }, [id]);
 
-  // Submit comment
+  // ---------------- SUBMIT COMMENT ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.comment) {
@@ -86,9 +88,10 @@ const PhiloBlog = () => {
     }
   };
 
+  // ---------------- RENDER ----------------
   if (loading) return <div className={styles.loading}>Loading...</div>;
-  if (error) return <div className={styles.error}>❌ {error}</div>;
-  if (!blog) return <div className={styles.error}>❌ Blog not found.</div>;
+  if (error)   return <div className={styles.error}>❌ {error}</div>;
+  if (!blog)   return <div className={styles.error}>❌ Blog not found.</div>;
 
   const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {
     day: 'numeric',
@@ -101,15 +104,11 @@ const PhiloBlog = () => {
       <div
         ref={navbarBgRef}
         data-navbar-bg-detect
-        style={{
-          position: 'absolute',
-          top: 0,
-          height: '80px',
-          width: '100%',
-        }}
+        style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
       <div className={styles.mainContentWrapper}>
+        {/* ---------- POST CONTENT ---------- */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>
           <p className={styles.date}>{metaText}</p>
@@ -119,20 +118,21 @@ const PhiloBlog = () => {
               src={blog.coverImage}
               alt="Cover"
               className={styles.inlineImage}
-              style={{ marginBottom: '20px' }}
+              style={{ marginBottom: 20 }}
               onError={(e) => (e.target.style.display = 'none')}
             />
           )}
 
           <div className={styles.contentBodyPlaceholder}>
-            {blog.content.map((block, index) => {
+            {(blog.content || []).map((block, index) => {
               if (block.type === 'paragraph') {
                 return (
                   <p key={index} className={styles.paragraph}>
                     {block.text}
                   </p>
                 );
-              } else if (block.type === 'image') {
+              }
+              if (block.type === 'image') {
                 return (
                   <img
                     key={index}
@@ -151,12 +151,11 @@ const PhiloBlog = () => {
           </div>
         </section>
 
+        {/* ---------- COMMENTS ---------- */}
         <section className={styles.commentSection}>
           <div className={styles.commentList}>
             {comments.length === 0 ? (
-              <p style={{ color: '#666', fontStyle: 'italic' }}>
-                No comments yet. Be the first!
-              </p>
+              <p className={styles.noComments}>No comments yet. Be the first!</p>
             ) : (
               comments.map((c, i) => (
                 <div key={i} className={styles.commentBox}>
@@ -165,7 +164,6 @@ const PhiloBlog = () => {
                     {new Date(c.timestamp).toLocaleString()}
                   </div>
                   <p>{c.comment}</p>
-                  <button className={styles.replyBtn}>Reply</button>
                 </div>
               ))
             )}

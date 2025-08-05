@@ -6,78 +6,89 @@ import useragent from 'express-useragent';
 const router = express.Router();
 router.use(useragent.express());
 
-const ipLogDir = path.join(process.cwd(), 'data', 'ips');
+/* ─────────────── Paths ─────────────── */
+const ipLogDir  = path.join(process.cwd(), 'backend', 'data', 'iplogs');
 const ipLogPath = path.join(ipLogDir, 'visitors.json');
 
-// Ensure directory and file exist
-await fs.ensureDir(ipLogDir);
-if (!(await fs.pathExists(ipLogPath))) {
-  await fs.writeJson(ipLogPath, [], { spaces: 2 });
-}
+/* ensure dir + file */
+fs.ensureDirSync(ipLogDir);
+if (!fs.existsSync(ipLogPath)) fs.writeJsonSync(ipLogPath, {}, { spaces: 2 });
 
-// List of paths to ignore for logging
-const ignoredPaths = [
+/* paths to skip */
+const ignored = [
   '/api/visitorstats',
   '/api/dashboard/stats',
   '/api/dailythoughts/manage/pending',
 ];
 
-// ──────────────────── Logging Middleware ────────────────────
-router.use(async (req, res, next) => {
+/* ─────────────── Logging middleware ─────────────── */
+router.use(async (req, _res, next) => {
   try {
-    if (ignoredPaths.includes(req.path)) return next();
+    if (ignored.includes(req.path)) return next();
 
     const ip =
-      req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+      req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      req.socket?.remoteAddress ||
+      req.ip ||
+      'unknown';
+
     const { browser, version, os, platform } = req.useragent;
-    const timestamp = new Date().toISOString();
+    const ts = new Date().toISOString();
 
-    const newVisit = { ip, timestamp, url: req.originalUrl, browser, version, os, platform };
-
-    let visits = [];
+    /* load existing log (object) */
+    let log = {};
     try {
-      const raw = await fs.readFile(ipLogPath, 'utf8');
-      visits = JSON.parse(raw);
-      if (!Array.isArray(visits)) throw new Error('Invalid visitors.json format');
-    } catch (err) {
-      console.warn('⚠️ visitors.json unreadable, resetting...');
-      visits = [];
+      log = await fs.readJson(ipLogPath);
+      if (typeof log !== 'object' || Array.isArray(log)) throw new Error();
+    } catch {
+      console.warn('⚠️ visitors.json corrupted – reset');
+      log = {};
     }
 
-    const alreadyLogged = visits.some(v => v.ip === ip);
-    if (!alreadyLogged) {
-      visits.push(newVisit);
-      await fs.writeJson(ipLogPath, visits, { spaces: 2 });
-      console.log(`✅ New visit logged: ${ip}`);
+    if (!log[ip]) {
+      log[ip] = {
+        visits: 1,
+        firstVisit: ts,
+        lastVisit: ts,
+        browser,
+        version,
+        os,
+        platform,
+      };
+      console.log(`✅ New IP logged: ${ip}`);
     } else {
-      console.log(`ℹ️ IP ${ip} already logged, skipping`);
+      log[ip].visits += 1;
+      log[ip].lastVisit = ts;
     }
+
+    await fs.writeJson(ipLogPath, log, { spaces: 2 });
   } catch (err) {
-    console.error('❌ Logging middleware error:', err);
+    console.error('❌ IP logging error:', err);
   }
 
   next();
 });
 
-// ──────────────────── GET Visitor Stats ────────────────────
-router.get('/api/visitorstats', async (req, res) => {
+/* ─────────────── Visitor-stats endpoint ───────────────
+   GET /api/visitorstats
+   ------------------------------------------------------ */
+router.get('/api/visitorstats', async (_req, res) => {
   try {
-    const visits = await fs.readJson(ipLogPath);
-
-    const totalVisits = visits.length;
-    const uniqueIps = new Set(visits.map(v => v.ip)).size;
+    const log = await fs.readJson(ipLogPath);
+    const ips = Object.keys(log);
 
     const osDistribution = {};
     const browserDistribution = {};
 
-    visits.forEach(v => {
-      osDistribution[v.os] = (osDistribution[v.os] || 0) + 1;
+    ips.forEach((ip) => {
+      const v = log[ip];
+      osDistribution[v.os]       = (osDistribution[v.os]       || 0) + 1;
       browserDistribution[v.browser] = (browserDistribution[v.browser] || 0) + 1;
     });
 
-    res.status(200).json({
-      totalVisits,
-      uniqueIps,
+    res.json({
+      totalVisits: ips.reduce((sum, ip) => sum + log[ip].visits, 0),
+      uniqueIps: ips.length,
       osDistribution,
       browserDistribution,
     });

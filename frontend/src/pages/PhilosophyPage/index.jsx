@@ -33,7 +33,7 @@ const PhilosophyPage = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/blogs?category=philosophy`);
+        const res = await fetch('/api/blogs?category=philosophy');
         const data = await res.json();
         setPosts(data);
       } catch (err) {

@@ -35,7 +35,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dashboard/stats`);
+        const res = await fetch('/api/dashboard/stats');
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const data = await res.json();
         setTotalPosts(data.totalPosts ?? 0);
@@ -50,25 +50,26 @@ const AdminDashboard = () => {
 
     const fetchDailyRequests = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dailythoughts/manage/pending`);
+        const res = await fetch('/api/dailythoughts/manage/pending');
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const thoughts = await res.json();
-        setDailyRequests(thoughts);
+        setDailyRequests(Array.isArray(thoughts) ? thoughts : []);
       } catch (err) {
         console.error('❌ Failed to fetch pending thoughts:', err);
+        setDailyRequests([]);
       }
     };
 
     const fetchVisitorStats = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/visitorstats`);
+        const res = await fetch('/api/visitorstats');
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const data = await res.json();
         setVisitorStats({
           totalVisits: data.totalVisits ?? 0,
           uniqueIPs: data.uniqueIPs ?? 0,
-          osCounts: data.osCounts ?? {},
-          browserCounts: data.browserCounts ?? {},
+          osCounts: data.osDistribution ?? {},
+          browserCounts: data.browserDistribution ?? {},
         });
       } catch (err) {
         console.error('❌ Failed to fetch visitor stats:', err);
@@ -84,10 +85,10 @@ const AdminDashboard = () => {
   const handleEdit = () => navigate('/admin/dailythoughts/edit');
 
   const handleApprove = async (id) => {
-    if (!id) return console.error("❌ No ID provided for approval");
+    if (!id) return console.error('❌ No ID provided for approval');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dailythoughts/process/approve/${id}`, {
+      const res = await fetch(`/api/dailythoughts/process/approve/${id}`, {
         method: 'POST',
       });
       const result = await res.json();
@@ -175,7 +176,7 @@ const AdminDashboard = () => {
         {dailyRequests.length > 0 ? (
           dailyRequests.map((req) => (
             <p
-              key={req._id}
+              key={req._id || req.id}
               className={styles.clickableName}
               onClick={() => {
                 setSelectedRequest(req);
@@ -194,7 +195,7 @@ const AdminDashboard = () => {
         <div className={styles.popupOverlay} onClick={() => setShowPopup(false)}>
           <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
             <h2>{selectedRequest.name}</h2>
-            <p><strong>Author:</strong> {selectedRequest.authorName}</p>
+            <p><strong>Author:</strong> {selectedRequest.authorName || selectedRequest.name}</p>
             <p><strong>Thought:</strong><br />{selectedRequest.content}</p>
             <p><strong>Email:</strong> {selectedRequest.contact}</p>
             {selectedRequest.social && (
@@ -211,6 +212,6 @@ const AdminDashboard = () => {
       )}
     </div>
   );
-};
+}
 
 export default AdminDashboard;

@@ -5,69 +5,86 @@ import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
 
 const TechBlog = () => {
-  const { id } = useParams();
-  const { darkMode } = useDarkMode();
+  const { id }        = useParams();
+  const { darkMode }  = useDarkMode();
 
-  const [blog, setBlog] = useState(null);
+  const [blog, setBlog]       = useState(null);
   const [comments, setComments] = useState([]);
-  const [form, setForm] = useState({ name: '', email: '', comment: '' });
+  const [form, setForm]       = useState({ name: '', email: '', comment: '' });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
-  const categoryFolder = 'android & linux'; // exact backend folder
+  const categoryFolder = 'android & linux';
+  const encodedCat     = encodeURIComponent(categoryFolder);
 
-  const blogApiUrl = `${API_BASE}/blogs/${categoryFolder}/${id}.json`;
-  const commentsApiUrl = `${API_BASE}/api/comments/${categoryFolder}/${id}`;
-  const viewsApiUrl = `${API_BASE}/api/views/${categoryFolder}/${id}`;
+  const blogApiUrl     = `/api/blogs/${encodedCat}/${id}`;
+  const commentsApiUrl = `/api/comments/${encodedCat}/${id}`;
+  const viewsApiUrl    = `/api/views/${encodedCat}/${id}`;
 
+  // -------- fetch blog & count view ----------
   useEffect(() => {
-    const fetchAndTrackBlog = async () => {
+    const loadBlog = async () => {
       setLoading(true);
       setError('');
       try {
         const res = await fetch(blogApiUrl);
-        if (!res.ok) throw new Error(`Blog fetch failed with status ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setBlog(data);
-
-        // Increment view count (fire and forget)
         fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});
       } catch (err) {
         setError(err.message || 'Failed to load blog');
-        setBlog(null);
       } finally {
         setLoading(false);
       }
     };
-    fetchAndTrackBlog();
+    loadBlog();
   }, [id]);
 
+  // -------- fetch comments ----------
   useEffect(() => {
-    const fetchComments = async () => {
+    const loadComments = async () => {
       try {
         const res = await fetch(commentsApiUrl);
-        if (res.ok) {
-          const data = await res.json();
-          setComments(data);
-        } else {
-          setComments([]);
-        }
+        setComments(res.ok ? await res.json() : []);
       } catch {
         setComments([]);
       }
     };
-    fetchComments();
+    loadComments();
   }, [id]);
 
-  // Comment submission handler omitted for brevity (same as your existing pattern)
+  // -------- submit comment ----------
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.comment) {
+      alert('Please fill in all fields.');
+      return;
+    }
+    const newComment = { ...form, timestamp: new Date().toISOString() };
+    try {
+      const res = await fetch(commentsApiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newComment),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        setComments((prev) => [...prev, saved]);
+        setForm({ name: '', email: '', comment: '' });
+      } else {
+        alert('Failed to post comment.');
+      }
+    } catch {
+      alert('Failed to post comment.');
+    }
+  };
 
+  // -------- conditional renders ----------
   if (loading) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Loading blog post...</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p>Loading blog post...</p></div>
       </div>
     );
   }
@@ -75,9 +92,7 @@ const TechBlog = () => {
   if (error) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p style={{ color: 'red' }}>Error: {error}</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p style={{ color: 'red' }}>Error: {error}</p></div>
       </div>
     );
   }
@@ -85,9 +100,7 @@ const TechBlog = () => {
   if (!blog) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Blog not found.</p>
-        </div>
+        <div className={styles.mainContentWrapper}><p>Blog not found.</p></div>
       </div>
     );
   }
@@ -102,6 +115,7 @@ const TechBlog = () => {
   return (
     <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.mainContentWrapper}>
+        {/* ---- post ---- */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>
           <p className={styles.date}>{metaText}</p>
@@ -111,8 +125,8 @@ const TechBlog = () => {
               src={blog.coverImage}
               alt="Cover"
               className={styles.inlineImage}
-              style={{ marginBottom: '20px' }}
-              onError={e => (e.target.style.display = 'none')}
+              style={{ marginBottom: 20 }}
+              onError={(e) => (e.target.style.display = 'none')}
             />
           )}
 
@@ -121,7 +135,48 @@ const TechBlog = () => {
           </div>
         </section>
 
-        {/* Comments section and comment form here (unchanged) */}
+        {/* ---- comments ---- */}
+        <section className={styles.commentSection}>
+          <div className={styles.commentList}>
+            {comments.length === 0 ? (
+              <p style={{ color: '#666', fontStyle: 'italic' }}>No comments yet. Be the first!</p>
+            ) : (
+              comments.map((c, i) => (
+                <div key={i} className={styles.commentBox}>
+                  <strong>{c.name} says:</strong>
+                  <div className={styles.commentMeta}>{new Date(c.timestamp).toLocaleString()}</div>
+                  <p>{c.comment}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          <form className={styles.commentForm} onSubmit={handleSubmit}>
+            <h3>Share your thoughts</h3>
+            <label>Name</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              required
+            />
+            <label>Email</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+            />
+            <label>Comment</label>
+            <textarea
+              rows={5}
+              value={form.comment}
+              onChange={(e) => setForm({ ...form, comment: e.target.value })}
+              required
+            />
+            <button type="submit" className={styles.postBtn}>Post</button>
+          </form>
+        </section>
       </div>
     </div>
   );

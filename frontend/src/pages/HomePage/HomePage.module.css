@@ -18,13 +18,11 @@
   height: 100vh;
   width: 100%;
   scroll-snap-align: start;
-  /* Remove the flex properties that might be causing the white background */
-  display: block; /* Changed from flex */
+  display: block;
   overflow: hidden;
-  /* Remove justify-content and align-items */
   margin: 0;
   padding: 0;
-  background: transparent; /* Ensure no background color */
+  background: transparent;
 }
 
 .cursorSquare {
@@ -39,6 +37,13 @@
   transition: transform 0.08s ease-out;
   border-radius: 12px;
   overflow: hidden;
+}
+
+/* Hide cursor square on mobile and touch devices */
+@media (max-width: 768px), (hover: none) {
+  .cursorSquare {
+    display: none !important;
+  }
 }
 
 .cursorSquare::before {

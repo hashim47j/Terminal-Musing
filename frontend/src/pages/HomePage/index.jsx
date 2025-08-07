@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PhilosophyHero from './PhilosophyHero/PhilosophyHero';
 import HistoryHero from './HistoryHero/HistoryHero';
 import LsiHero from './LsiHero/LsiHero';
@@ -8,13 +8,28 @@ import styles from './HomePage.module.css';
 
 const HomePage = () => {
   const squareRef = useRef();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if device is mobile/touch
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleMouseMove = (e) => {
+    if (isMobile) return; // Don't track mouse on mobile
+    
     const square = squareRef.current;
     if (square) {
       const x = e.clientX;
       const y = e.clientY;
-      square.style.transform = `translate(${x - 75}px, ${y - 75}px)`; // center the 150px square
+      square.style.transform = `translate(${x - 75}px, ${y - 75}px)`;
     }
   };
 
@@ -23,8 +38,10 @@ const HomePage = () => {
       className={styles.fullPageContainer}
       onMouseMove={handleMouseMove}
     >
-      {/* Glowing cursor-following square */}
-      <div ref={squareRef} className={styles.cursorSquare} />
+      {/* Conditionally render cursor square only on desktop */}
+      {!isMobile && (
+        <div ref={squareRef} className={styles.cursorSquare} />
+      )}
 
       <div className={styles.pageSection}>
         <PhilosophyHero />
@@ -41,7 +58,6 @@ const HomePage = () => {
       <div className={styles.pageSection}>
         <WritingsHero />
       </div>
-      
     </div>
   );
 };

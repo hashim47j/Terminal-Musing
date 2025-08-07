@@ -8,6 +8,16 @@
   box-sizing: border-box;
 }
 
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .daily-thoughts-wrapper {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding-top: 3rem; /* Reduced navbar spacing for mobile */
+  }
+}
+
 /* Scrollable middle content */
 .thoughts-scroll-area {
   flex: 1;
@@ -20,6 +30,14 @@
   -ms-overflow-style: none;    /* IE 10+ */
 }
 
+@media (max-width: 768px) {
+  .thoughts-scroll-area {
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: visible;
+  }
+}
+
 .thoughts-scroll-area::-webkit-scrollbar {
   display: none;               /* Chrome, Safari */
 }
@@ -30,6 +48,15 @@
   padding-right: 2rem;
   max-width: 900px;
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .thoughts-column {
+    flex: 1;
+    padding-right: 0;
+    max-width: 100%;
+    margin-bottom: 2rem;
+  }
 }
 
 /* Fixed panel on the right */
@@ -48,25 +75,175 @@
   align-self: flex-start;
 }
 
+@media (max-width: 768px) {
+  .submission-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #ccc;
+    position: static;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+}
+
 /* Thought content styling */
 .thought-block {
   margin-bottom: 3rem;
 }
 
+@media (max-width: 768px) {
+  .thought-block {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Timeline Layout */
+.timeline-container {
+  position: relative;
+  padding-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .timeline-container {
+    padding-top: 5px;
+  }
+}
+
+/* Vertical Timeline Line */
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  left: 130px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #ddd;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .timeline-container::before {
+    left: 30px; /* Move line closer to left edge on mobile */
+  }
+}
+
+.timeline-label-group {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .timeline-label-group {
+    margin-bottom: 30px;
+  }
+}
+
+.timeline-label {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 120px;
+  text-align: right;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  opacity: 0.8;
+  padding-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .timeline-label {
+    position: static;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    padding-right: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+  }
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .timeline-item {
+    margin-bottom: 20px;
+  }
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 123px;
+  top: 14px;
+  width: 14px;
+  height: 14px;
+  background-color: #888;
+  border-radius: 50%;
+  border: 2px solid white;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .timeline-dot {
+    left: 23px; /* Adjust for mobile line position */
+    top: 10px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.timeline-content {
+  margin-left: 155px;
+  padding: 15px 20px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  position: relative;
+  box-shadow: none;
+  transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .timeline-content {
+    margin-left: 50px; /* Adjust for mobile dot position */
+    padding: 12px 15px;
+    border-radius: 8px;
+  }
+}
+
+.timeline-content:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.25);
+}
+
+/* Thought meta wrapper */
 .thought-meta-wrapper {
   position: relative;
-  /* Use flexbox to align the button and date nicely on the same line */
   display: flex; 
-  align-items: center; /* Vertically align items */
+  align-items: center;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
 
+@media (max-width: 768px) {
+  .thought-meta-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
+
 /* Hyperlink-like author name */
 .thought-meta-link {
-  color: black; /* Black text */
+  color: black;
   font-weight: 600;
-  text-decoration: underline; /* Underlined */
+  text-decoration: underline;
   background: none;
   border: none;
   cursor: pointer;
@@ -76,20 +253,40 @@
   display: inline;
   transition: color 0.2s ease;
 }
+
+@media (max-width: 768px) {
+  .thought-meta-link {
+    font-size: 0.95rem;
+  }
+}
+
 .thought-meta-link:hover {
-  color: #333; /* Slightly darker grey on hover */
+  color: #333;
 }
 
 .thought-meta-date {
   color: #666;
-  margin-left: 0.5rem; /* Space between name and date */
+  margin-left: 0.5rem;
   font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .thought-meta-date {
+    margin-left: 0;
+    font-size: 0.85rem;
+  }
 }
 
 .thought-title {
   font-size: 1.7rem;
   font-weight: bold;
   margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .thought-title {
+    font-size: 1.4rem;
+  }
 }
 
 .thought-text {
@@ -101,6 +298,12 @@
 .thought-attribution {
   font-style: italic;
   font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .thought-attribution {
+    font-size: 0.9rem;
+  }
 }
 
 .thought-divider {
@@ -116,6 +319,14 @@
   margin-bottom: 2rem;
 }
 
+@media (max-width: 768px) {
+  .submission-invite {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+}
+
 .submit-button {
   background: black;
   color: white;
@@ -126,17 +337,49 @@
   align-self: flex-end;
 }
 
+@media (max-width: 768px) {
+  .submit-button {
+    align-self: center;
+    padding: 0.8rem 2rem;
+    font-size: 1.05rem;
+    border-radius: 4px;
+  }
+}
+
 .font-large {
   font-size: 1.8rem;
   line-height: 2.4rem;
 }
+
+@media (max-width: 768px) {
+  .font-large {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+
 .font-medium {
   font-size: 1.35rem;
   line-height: 2.1rem;
 }
+
+@media (max-width: 768px) {
+  .font-medium {
+    font-size: 1.2rem;
+    line-height: 1.8rem;
+  }
+}
+
 .font-small {
   font-size: 1.1rem;
   line-height: 1.8rem;
+}
+
+@media (max-width: 768px) {
+  .font-small {
+    font-size: 1rem;
+    line-height: 1.6rem;
+  }
 }
 
 /* Author popup */
@@ -152,10 +395,18 @@
   max-width: 300px;
   pointer-events: auto;
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  color: white; /* Text color inside popup */
+  color: white;
   border: 1px solid rgba(255,255,255,0.2);
-  /* Ensure transform-origin is set for the slide animation if it were to grow upwards */
   transform-origin: bottom center; 
+}
+
+@media (max-width: 768px) {
+  .author-popup {
+    min-width: 200px;
+    max-width: 280px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
 }
 
 .author-popup p {
@@ -168,6 +419,12 @@
   font-size: 1rem;
   margin-bottom: 0.3rem;
   color: white;
+}
+
+@media (max-width: 768px) {
+  .author-name {
+    font-size: 0.95rem;
+  }
 }
 
 .author-contact {
@@ -194,10 +451,19 @@
   margin-top: 0.5rem;
 }
 
+@media (max-width: 768px) {
+  .thought-attribution-like {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
 .like-container {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  position: relative;
 }
 
 .like-button {
@@ -230,90 +496,6 @@
   color: #444;
 }
 
-/* ... (Your existing CSS above timeline-container, unchanged) ... */
-
-/* Timeline Layout */
-.timeline-container {
-  position: relative;
-  /* Removed padding-left here. We'll manage spacing with margins/left props */
-  /* This ensures absolute children position relative to its true left edge. */
-  padding-top: 10px;
-}
-
-/* Vertical Timeline Line */
-.timeline-container::before {
-  content: '';
-  position: absolute;
-  /* This is the ABSOLUTE X-coordinate for the center of your vertical line.
-     Let's put the line at 130px from the left edge of timeline-container. */
-  left: 130px;
-  top: 0;
-  bottom: 0;
-  width: 2px; /* Line thickness */
-  background-color: #ddd; /* Visible line color */
-  z-index: 1; /* Behind dots and content */
-}
-
-.timeline-label-group {
-    position: relative;
-    margin-bottom: 40px;
-}
-
-.timeline-label {
-  position: absolute;
-  /* Position the label starting from the LEFT edge of timeline-container */
-  left: 0;
-  top: 12px; /* Vertically aligns with the first dot in the group */
-  width: 120px; /* Give it enough width for your date text */
-  text-align: right; /* Keeps date text aligned right within its 120px box */
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  opacity: 0.8;
-  /* Ensure a gap between the end of the date label and the line (120px to 130px) */
-  padding-right: 5px; /* Creates a small buffer before the line */
-}
-
-.timeline-item {
-  position: relative;
-  margin-bottom: 30px;
-  padding-bottom: 0;
-}
-
-.timeline-dot {
-  position: absolute;
-  /* Crucial: Center the dot on the 130px line.
-     Dot width is 14px, so half width is 7px.
-     Left edge of dot = (Line's left position) - (Half dot width)
-     130px - 7px = 123px */
-  left: 123px; /* This makes the dot's center align with the 130px line */
-  top: 14px; /* Vertically aligns */
-  width: 14px;
-  height: 14px;
-  background-color: #888; /* Dot color */
-  border-radius: 50%;
-  border: 2px solid white; /* Helps dot stand out on the line */
-  z-index: 2; /* Above the line */
-}
-
-.timeline-content {
-  margin-left: 155px; /* Starts content well after the line and dot */
-  padding: 15px 20px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
-  backdrop-filter: blur(6px);
-  position: relative;
-
-  /* --- MODIFIED --- */
-  box-shadow: none; /* Removed default shadow */
-  transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
-}
-.timeline-content:hover {
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2); /* Elevated shadow on hover */
-  transform: translateY(-5px); /* Slight lift effect on hover */
-  background: rgba(255,255,255,0.25); /* Slightly more opaque background on hover */
-}
-/* ... (rest of your existing CSS, unchanged) ... */
 /* Blur invite panel */
 .blur-panel {
   background: rgba(255, 255, 255, 0.05);
@@ -325,57 +507,22 @@
   color: var(--text-color);
   margin-top: 60px;
 }
-/* ... (Your existing CSS above like-container, unchanged) ... */
 
-.like-container {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  /* ADD THIS: To position the popup relative to this container */
-  position: relative;
+@media (max-width: 768px) {
+  .blur-panel {
+    margin-top: 0;
+    padding: 15px;
+    border-radius: 8px;
+  }
 }
 
-.like-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: transform 0.2s ease;
-}
-
-.like-button:hover .heart-icon {
-  transform: scale(1.1);
-}
-
-.heart-icon {
-  width: 20px;
-  height: 20px;
-  transition: fill 0.3s ease, transform 0.2s ease;
-  color: #666;
-}
-
-.like-button.liked .heart-icon {
-  fill: crimson;
-  stroke: crimson;
-}
-
-.like-count {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #444;
-}
-
-/* --- NEW CSS FOR THE LIKE POPUP MESSAGE --- */
-/* ... (Your existing CSS above .like-popup-message) ... */
-
-/* MODIFIED CSS FOR THE LIKE POPUP MESSAGE */
+/* Like popup message */
 .like-popup-message {
   position: absolute;
-  /* MODIFIED: Position below the like button/container */
-  top: calc(100% + 10px); /* 100% of parent height + 10px spacing */
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%); /* Adjust to truly center it */
-  white-space: nowrap; /* Keep text on one line */
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -384,25 +531,44 @@
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
-  opacity: 0; /* Start hidden for animation */
-  pointer-events: none; /* Allows clicks to pass through when not visible */
-  z-index: 1001; /* Ensure it's above other elements */
-
-  /* MODIFIED: Use a new animation for sliding down */
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1001;
   animation: fadeSlideDown 0.3s ease-out forwards;
 }
 
-/* NEW KEYFRAMES FOR SLIDING DOWN */
-@keyframes fadeSlideDown {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-10px); /* Start slightly above and hidden */
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0); /* End at its normal position, fully visible */
+@media (max-width: 768px) {
+  .like-popup-message {
+    white-space: normal;
+    max-width: 250px;
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }
 
-/* ... (Rest of your existing CSS, including the old @keyframes fadeSlideIn,
-   which is now unused for this popup, but can remain if other elements use it) ... */
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Loading message */
+.loading-message {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .loading-message {
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+}

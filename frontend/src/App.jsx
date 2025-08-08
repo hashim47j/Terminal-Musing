@@ -49,7 +49,7 @@ function App() {
           <Route path="/admin/dailythoughts/edit" element={<DailythoughtsUI />} />
           <Route path="/tech" element={<TechPage />} />
           <Route path="/blogs/tech/:id" element={<TechBlog />} />
-          <Route path="/blogs/:slug" element={<BlogPostPage />} />
+        
 
         
         </Routes>

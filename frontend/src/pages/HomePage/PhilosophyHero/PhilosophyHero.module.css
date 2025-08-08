@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 40px 5% 80px; /* Reduced top + bottom padding */
+  padding: 40px 5% 80px;
   background-color: #fff;
   height: 100vh;
   scroll-snap-align: start;
@@ -18,7 +18,7 @@
 .contentWrapper {
   flex: 1;
   max-width: 55%;
-  padding: 0 40px 0 20px; /* ⬅️ Left padding ensures no left clipping */
+  padding: 0 40px 0 20px;
   box-sizing: border-box;
   word-break: break-word;
 }
@@ -99,7 +99,8 @@
     align-items: center;
     justify-content: flex-start;
     height: auto;
-    padding: 40px 5% 40px; /* ⬅️ top padding reduced more */
+    /* --- FIX: Increased top padding to make space for the mobile navbar --- */
+    padding: 90px 5% 40px; 
   }
 
   .contentWrapper {

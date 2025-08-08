@@ -557,3 +557,15 @@
   }
 }
 
+.navbarLeft.blogPostActive .brand {
+  max-width: 300px; /* Adjust as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .navbarLeft.blogPostActive .brand {
+    max-width: 150px; /* Shorter width for mobile */
+  }
+}

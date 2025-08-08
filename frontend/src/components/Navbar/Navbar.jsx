@@ -27,8 +27,6 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const [isMobileView, setIsMobileView] = useState(false);
-
-  // Progressive hover magnification state for desktop links
   const [hoverProgress, setHoverProgress] = useState({});
 
   const HOME_BUTTON_LEFT = 30;
@@ -55,11 +53,15 @@ const Navbar = () => {
   };
 
   const handleNavLinkMouseMove = (e, path) => {
-    // ... (This function remains unchanged)
+    const { left, width } = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - left;
+    let progress = x / width;
+    progress = Math.min(Math.max(progress, 0), 1);
+    setHoverProgress((prev) => ({ ...prev, [path]: progress }));
   };
 
   const handleNavLinkMouseLeave = (path) => {
-    // ... (This function remains unchanged)
+    setHoverProgress((prev) => ({ ...prev, [path]: 0 }));
   };
 
   useEffect(() => {
@@ -69,25 +71,27 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // ... (This function remains unchanged)
+      const currentScrollY = window.scrollY;
+      if (window.innerWidth > 768) {
+        setHide(currentScrollY > lastScrollY && currentScrollY > 50);
+      } else {
+        setHide(false);
+      }
+      setLastScrollY(currentScrollY);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // --- FIX: This is the final, robust color detection logic ---
+  // --- Our new, robust color detection logic ---
   useEffect(() => {
-    // 1. Define the default theme for specific URL paths.
     const lightBackgroundPaths = [
       "/philosophy", "/history", "/writings", "/legal-social",
       "/tech", "/daily-thoughts"
     ];
     const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path));
-
-    // 2. We use a ref to track all currently visible "light" sensors.
     const intersectingSensors = new Set();
 
-    // 3. The observer's job is to update our set of visible sensors.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -97,30 +101,32 @@ const Navbar = () => {
             intersectingSensors.delete(entry.target);
           }
         });
-
-        // 4. After checking all changes, set the theme.
-        // If any light sensor is visible, the background MUST be light.
-        // Otherwise, fall back to our reliable path-based default.
         const isAnyLightSensorVisible = intersectingSensors.size > 0;
         setIsLightBackground(isAnyLightSensorVisible || isPathDefaultLight);
       },
-      { threshold: 0.6 } // When 60% of a sensor is visible
+      { threshold: 0.6 }
     );
 
-    // 5. Find ALL sensors on the page and observe them.
     const targets = document.querySelectorAll("[data-navbar-bg-detect]");
     targets.forEach(target => observer.observe(target));
 
-    // Cleanup: when the component unmounts or path changes, stop observing.
     return () => {
       targets.forEach(target => observer.unobserve(target));
     };
-  }, [currentPath]); // Re-run this entire setup whenever the page URL changes.
-
+  }, [currentPath]);
 
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
-      // ... (This function remains unchanged)
+      for (let entry of entries) {
+        const padding = 40;
+        const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
+        setLeftNavbarWidth(calculatedLeftNavbarWidth);
+
+        const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
+        setBridgeLeft(homeButtonCenter);
+        const calculatedBridgeWidth = NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter;
+        setBridgeWidth(Math.max(0, calculatedBridgeWidth));
+      }
     });
     if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
     return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
@@ -128,25 +134,84 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleResize = () => setIsMobileView(window.innerWidth <= 768);
-    // ... (This function remains unchanged)
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const getCenterTitle = () => { /* ... Unchanged ... */ };
-  const handleBrandTap = () => { /* ... Unchanged ... */ };
-  const getHighlightBarActiveClass = () => { /* ... Unchanged ... */ };
-  const toggleMenu = () => { /* ... Unchanged ... */ };
-  const handleNavLinkClick = (e, path) => { /* ... Unchanged ... */ };
+  const getCenterTitle = () => {
+    switch (currentPath) {
+      case "/": return "Terminal Musing";
+      case "/philosophy": return "Philosophy";
+      case "/history": return "History";
+      case "/writings": return "Writings";
+      case "/legal-social": return "Legal & Social Concerns";
+      case "/tech": return "Tech";
+      case "/daily-thoughts": return "Daily Thoughts";
+      case "/admin/login": return "Author(s)";
+      default: return "";
+    }
+  };
 
+  const handleBrandTap = () => {
+    if (tapTimeout.current) clearTimeout(tapTimeout.current);
+    setTapCount((prev) => {
+      const next = prev + 1;
+      if (next === 3) {
+        setShowSecretDialog(true);
+        return 0;
+      }
+      tapTimeout.current = setTimeout(() => setTapCount(0), 1500);
+      return next;
+    });
+  };
+
+  const getHighlightBarActiveClass = () => {
+    switch (currentPath) {
+      case "/daily-thoughts": return styles.dailyThoughtsActive;
+      case "/philosophy": return styles.philosophyActive;
+      case "/history": return styles.historyActive;
+      case "/writings": return styles.writingsActive;
+      case "/legal-social": return styles.legalSocialActive;
+      default: return "";
+    }
+  };
+
+  const toggleMenu = () => {
+    if (menuOpen) {
+      setMenuClosing(true);
+      setTimeout(() => {
+        setMenuOpen(false);
+        setMenuClosing(false);
+        setClickedPath(null);
+      }, 500);
+    } else {
+      setMenuOpen(true);
+    }
+  };
+
+  const handleNavLinkClick = (e, path) => {
+    e.preventDefault();
+    updateHighlight(e.currentTarget);
+    setClickedPath(path);
+    if (menuOpen) {
+      toggleMenu();
+    }
+    setTimeout(() => {
+      navigate(path);
+    }, 100);
+  };
+
+  // --- FIX: Restored the entire JSX block that was accidentally removed ---
   return (
     <>
       <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ""}`} aria-label="Home">
         <img
-          src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+          src={isLightBackground ? jerusalemHomeDark : jerusalemHomeLight}
           alt="Home"
           style={{ width: "27px", height: "27px", objectFit: "contain" }}
         />
       </Link>
-
 
       <div
         className={`${styles.bridgeConnector} ${hide ? styles.hide : ""} ${isLightBackground ? styles.darkText : styles.lightText}`}
@@ -155,7 +220,6 @@ const Navbar = () => {
           left: `${bridgeLeft}px`,
         }}
       ></div>
-
 
       <div
         className={`
@@ -178,7 +242,6 @@ const Navbar = () => {
         </div>
       </div>
 
-
       <div
         className={`
           ${styles.navbarRight}
@@ -188,7 +251,6 @@ const Navbar = () => {
           ${menuClosing ? styles.menuClosing : ""}
         `}
       >
-        {/* Hamburger icon: animated, morphs into cross on mobile menu open */}
         <div
           onClick={toggleMenu}
           className={`${styles.hamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
@@ -206,15 +268,12 @@ const Navbar = () => {
           <span className={styles.line}></span>
         </div>
 
-
         <div
           ref={navLinksRef}
           className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
-
-
           {[
             { to: "/philosophy", label: "Philosophy" },
             { to: "/history", label: "History" },
@@ -244,9 +303,7 @@ const Navbar = () => {
         </div>
       </div>
 
-
       <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
-
 
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
@@ -261,6 +318,4 @@ const Navbar = () => {
   );
 };
 
-
 export default Navbar;
-

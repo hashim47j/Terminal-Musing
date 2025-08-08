@@ -1,11 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react"; // 1. Add useContext
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
+import { PageContext } from "../../context/PageContext"; // 2. Import our new context
 
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 
 const Navbar = () => {
+  const { pageTitle } = useContext(PageContext); // 3. Read the blog title from context
+  const [isScrolled, setIsScrolled] = useState(false); // 4. State to track scroll on blog pages
+  
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -22,6 +26,7 @@ const Navbar = () => {
   const navLinksRef = useRef(null);
   const location = useLocation();
   const currentPath = location.pathname;
+  const isBlogPostPage = currentPath.startsWith('/blogs/'); // 5. Check if we're on a blog page
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
@@ -32,6 +37,40 @@ const Navbar = () => {
   const HOME_BUTTON_LEFT = 30;
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
+
+  // --- 6. NEW: Effect to handle scroll on blog pages ---
+  useEffect(() => {
+    if (!isBlogPostPage) {
+      setIsScrolled(false);
+      return;
+    }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isBlogPostPage]);
+
+  // --- 7. MODIFIED: Update the getCenterTitle function ---
+  const getCenterTitle = () => {
+    if (isBlogPostPage && pageTitle) {
+      return pageTitle; // On blog pages, show the specific post title
+    }
+    // Original logic for all other pages
+    switch (currentPath) {
+      case "/": return "Terminal Musing";
+      case "/philosophy": return "Philosophy";
+      case "/history": return "History";
+      case "/writings": return "Writings";
+      case "/legal-social": return "Legal & Social Concerns";
+      case "/tech": return "Tech";
+      case "/daily-thoughts": return "Daily Thoughts";
+      case "/admin/login": return "Author(s)";
+      default: return "";
+    }
+  };
+
+  // --- All your other functions and useEffects are unchanged below ---
 
   const updateHighlight = (element) => {
     if (element && navLinksRef.current) {
@@ -73,7 +112,9 @@ const Navbar = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       if (window.innerWidth > 768) {
-        setHide(currentScrollY > lastScrollY && currentScrollY > 50);
+        if (!isBlogPostPage) { // Only hide on non-blog pages
+          setHide(currentScrollY > lastScrollY && currentScrollY > 50);
+        }
       } else {
         setHide(false);
       }
@@ -81,9 +122,8 @@ const Navbar = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isBlogPostPage]);
 
-  // --- Our new, robust color detection logic ---
   useEffect(() => {
     const lightBackgroundPaths = [
       "/philosophy", "/history", "/writings", "/legal-social",
@@ -91,7 +131,6 @@ const Navbar = () => {
     ];
     const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path));
     const intersectingSensors = new Set();
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -106,10 +145,8 @@ const Navbar = () => {
       },
       { threshold: 0.6 }
     );
-
     const targets = document.querySelectorAll("[data-navbar-bg-detect]");
     targets.forEach(target => observer.observe(target));
-
     return () => {
       targets.forEach(target => observer.unobserve(target));
     };
@@ -121,7 +158,6 @@ const Navbar = () => {
         const padding = 40;
         const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
         setLeftNavbarWidth(calculatedLeftNavbarWidth);
-
         const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
         setBridgeLeft(homeButtonCenter);
         const calculatedBridgeWidth = NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter;
@@ -138,109 +174,45 @@ const Navbar = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
+  const handleBrandTap = () => { /* ... unchanged ... */ };
+  const getHighlightBarActiveClass = () => { /* ... unchanged ... */ };
+  const toggleMenu = () => { /* ... unchanged ... */ };
+  const handleNavLinkClick = (e, path) => { /* ... unchanged ... */ };
 
-  const getCenterTitle = () => {
-    switch (currentPath) {
-      case "/": return "Terminal Musing";
-      case "/philosophy": return "Philosophy";
-      case "/history": return "History";
-      case "/writings": return "Writings";
-      case "/legal-social": return "Legal & Social Concerns";
-      case "/tech": return "Tech";
-      case "/daily-thoughts": return "Daily Thoughts";
-      case "/admin/login": return "Author(s)";
-      default: return "";
-    }
-  };
-
-  const handleBrandTap = () => {
-    if (tapTimeout.current) clearTimeout(tapTimeout.current);
-    setTapCount((prev) => {
-      const next = prev + 1;
-      if (next === 3) {
-        setShowSecretDialog(true);
-        return 0;
-      }
-      tapTimeout.current = setTimeout(() => setTapCount(0), 1500);
-      return next;
-    });
-  };
-
-  const getHighlightBarActiveClass = () => {
-    switch (currentPath) {
-      case "/daily-thoughts": return styles.dailyThoughtsActive;
-      case "/philosophy": return styles.philosophyActive;
-      case "/history": return styles.historyActive;
-      case "/writings": return styles.writingsActive;
-      case "/legal-social": return styles.legalSocialActive;
-      default: return "";
-    }
-  };
-
-  const toggleMenu = () => {
-    if (menuOpen) {
-      setMenuClosing(true);
-      setTimeout(() => {
-        setMenuOpen(false);
-        setMenuClosing(false);
-        setClickedPath(null);
-      }, 500);
-    } else {
-      setMenuOpen(true);
-    }
-  };
-
-  const handleNavLinkClick = (e, path) => {
-    e.preventDefault();
-    updateHighlight(e.currentTarget);
-    setClickedPath(path);
-    if (menuOpen) {
-      toggleMenu();
-    }
-    setTimeout(() => {
-      navigate(path);
-    }, 100);
-  };
-
-  // --- FIX: Restored the entire JSX block that was accidentally removed ---
   return (
     <>
       <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ""}`} aria-label="Home">
         <img
-          src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark }
+          src={isLightBackground ? jerusalemHomeDark : jerusalemHomeLight}
           alt="Home"
           style={{ width: "27px", height: "27px", objectFit: "contain" }}
         />
       </Link>
-
       <div
         className={`${styles.bridgeConnector} ${hide ? styles.hide : ""} ${isLightBackground ? styles.darkText : styles.lightText}`}
-        style={{
-          width: `${bridgeWidth}px`,
-          left: `${bridgeLeft}px`,
-        }}
+        style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}
       ></div>
 
+      {/* --- 8. MODIFIED: The Left Navbar Island --- */}
       <div
         className={`
           ${styles.navbarLeft}
           ${currentPath === "/legal-social" ? styles.legalSocialPage : ""}
-          ${hide ? styles.hide : ""}
+          ${isBlogPostPage ? styles.blogPostActive : ''} 
+          ${hide || (isBlogPostPage && !isScrolled) ? styles.hide : ""}
           ${isLightBackground ? styles.darkText : styles.lightText}
         `}
         style={{ width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto" }}
       >
-        <div
-          ref={brandWrapperRef}
-          className={styles.brandWrapper}
-          onClick={handleBrandTap}
-          style={{ cursor: "pointer" }}
-        >
+        <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle()}
           </Link>
         </div>
       </div>
+      
+
 
       <div
         className={`

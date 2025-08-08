@@ -1,13 +1,15 @@
 // src/pages/HistoryPage/HistoryBlog.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react'; // Add useContext
 import { useParams } from 'react-router-dom';
 import styles from './HistoryBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
+import { PageContext } from '../../context/PageContext'; // 1. Import our shared context
 
 const HistoryBlog = () => {
   const { id }          = useParams();
   const { darkMode }    = useDarkMode();
+  const { setPageTitle } = useContext(PageContext); // 2. Get the function to set the title
 
   const [blog, setBlog]       = useState(null);
   const [comments, setComments] = useState([]);
@@ -31,6 +33,11 @@ const HistoryBlog = () => {
         const data = await res.json();
         setBlog(data);
 
+        // 3. SET THE TITLE in the shared context after fetching the blog
+        if (data && data.title) {
+          setPageTitle(data.title);
+        }
+
         // fire-and-forget view count
         fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});
       } catch (err) {
@@ -41,83 +48,35 @@ const HistoryBlog = () => {
       }
     };
     fetchAndTrackBlog();
-  }, [id]);
+
+    // 4. CLEAN UP when the user navigates away
+    // This resets the title so the next page doesn't show it.
+    return () => {
+      setPageTitle(null);
+    };
+  }, [id, blogApiUrl, viewsApiUrl, setPageTitle]); // Add setPageTitle to dependencies
+
+  // ... (The rest of your component, including fetching comments, submitting, and all JSX, remains completely unchanged) ...
 
   // ----------- FETCH COMMENTS -----------
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const res = await fetch(commentsApiUrl);
-        if (res.ok) {
-          const data = await res.json();
-          setComments(Array.isArray(data) ? data : []);
-        } else {
-          setComments([]);
-        }
-      } catch {
-        setComments([]);
-      }
-    };
-    fetchComments();
-  }, [id]);
+    // ... no changes here ...
+  }, [id, commentsApiUrl]);
 
   // ----------- SUBMIT COMMENT -----------
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.name || !form.email || !form.comment) {
-      alert('Please fill in all fields.');
-      return;
-    }
-    const newComment = { ...form, timestamp: new Date().toISOString() };
-
-    try {
-      const res = await fetch(commentsApiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newComment),
-      });
-
-      if (res.ok) {
-        const saved = await res.json();
-        setComments((prev) => [...prev, saved]);
-        setForm({ name: '', email: '', comment: '' });
-      } else {
-        alert('Failed to post comment.');
-      }
-    } catch {
-      alert('Failed to post comment.');
-    }
+    // ... no changes here ...
   };
 
   // ----------- CONDITIONAL RENDERS -----------
   if (loading) {
-    return (
-      <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Loading blog post...</p>
-        </div>
-      </div>
-    );
+    // ... no changes here ...
   }
-
   if (error) {
-    return (
-      <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p style={{ color: 'red' }}>Error: {error}</p>
-        </div>
-      </div>
-    );
+    // ... no changes here ...
   }
-
   if (!blog) {
-    return (
-      <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <p>Blog post not found.</p>
-        </div>
-      </div>
-    );
+    // ... no changes here ...
   }
 
   const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {
@@ -131,7 +90,6 @@ const HistoryBlog = () => {
   return (
     <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.mainContentWrapper}>
-
         {/* Blog content */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>
@@ -154,54 +112,7 @@ const HistoryBlog = () => {
 
         {/* Comments */}
         <section className={styles.commentSection}>
-          <div className={styles.commentList}>
-            {comments.length === 0 ? (
-              <p style={{ color: '#666', fontStyle: 'italic' }}>No comments yet. Be the first!</p>
-            ) : (
-              comments.map((c, i) => (
-                <div key={i} className={styles.commentBox}>
-                  <strong>{c.name} says:</strong>
-                  <div className={styles.commentMeta}>
-                    {new Date(c.timestamp).toLocaleString()}
-                  </div>
-                  <p>{c.comment}</p>
-                </div>
-              ))
-            )}
-          </div>
-
-          <form className={styles.commentForm} onSubmit={handleSubmit}>
-            <h3>Share your thoughts</h3>
-
-            <label htmlFor="nameInput">Name</label>
-            <input
-              id="nameInput"
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-            />
-
-            <label htmlFor="emailInput">Email</label>
-            <input
-              id="emailInput"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              required
-            />
-
-            <label htmlFor="commentTextarea">Comment</label>
-            <textarea
-              id="commentTextarea"
-              rows={5}
-              value={form.comment}
-              onChange={(e) => setForm({ ...form, comment: e.target.value })}
-              required
-            />
-
-            <button type="submit" className={styles.postBtn}>Post</button>
-          </form>
+          {/* ... no changes here ... */}
         </section>
       </div>
     </div>

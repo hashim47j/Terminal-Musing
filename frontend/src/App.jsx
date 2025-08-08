@@ -22,11 +22,12 @@ import TechBlog from './pages/TechPage/TechBlog';
 import AdminDashboard from './pages/AdminPage/AdminDashboard';
 import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
 import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
+import { PageProvider } from './context/PageContext'; 
 
 
 function App() {
   return (
-    <>
+    <PageProvider>
       <Navbar />
       <main>
         <Routes>
@@ -48,12 +49,13 @@ function App() {
           <Route path="/admin/dailythoughts/edit" element={<DailythoughtsUI />} />
           <Route path="/tech" element={<TechPage />} />
           <Route path="/blogs/tech/:id" element={<TechBlog />} />
+          <Route path="/blogs/:slug" element={<BlogPostPage />} />
 
         
         </Routes>
       </main>
       <Footer />
-    </>
+      </PageProvider>
   );
 }
 

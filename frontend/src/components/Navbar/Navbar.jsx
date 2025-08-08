@@ -2,24 +2,21 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 
-
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
-
 
 const Navbar = () => {
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuClosing, setMenuClosing] = useState(false);
-  const [isLightBackground, setIsLightBackground] = useState(true);
+  const [isLightBackground, setIsLightBackground] = useState(false); // --- FIX: Default to false (light text)
   const [leftNavbarWidth, setLeftNavbarWidth] = useState(null);
   const [bridgeWidth, setBridgeWidth] = useState(0);
   const [bridgeLeft, setBridgeLeft] = useState(0);
   const [tapCount, setTapCount] = useState(0);
   const [showSecretDialog, setShowSecretDialog] = useState(false);
   const [clickedPath, setClickedPath] = useState(null);
-
 
   const [highlightStyle, setHighlightStyle] = useState({});
   const navLinksRef = useRef(null);
@@ -29,24 +26,19 @@ const Navbar = () => {
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
 
-
   const [isMobileView, setIsMobileView] = useState(false);
-
 
   // Progressive hover magnification state for desktop links
   const [hoverProgress, setHoverProgress] = useState({});
-
 
   const HOME_BUTTON_LEFT = 30;
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
 
-
   const updateHighlight = (element) => {
     if (element && navLinksRef.current) {
       const parentRect = navLinksRef.current.getBoundingClientRect();
       const linkRect = element.getBoundingClientRect();
-
 
       if (window.innerWidth > 768 && parentRect.width > 0 && parentRect.height > 0) {
         setHighlightStyle({
@@ -62,7 +54,6 @@ const Navbar = () => {
     }
   };
 
-
   // Handle desktop nav link mouse movement for magnify animation
   const handleNavLinkMouseMove = (e, path) => {
     const { left, width } = e.currentTarget.getBoundingClientRect();
@@ -72,17 +63,14 @@ const Navbar = () => {
     setHoverProgress((prev) => ({ ...prev, [path]: progress }));
   };
 
-
   const handleNavLinkMouseLeave = (path) => {
     setHoverProgress((prev) => ({ ...prev, [path]: 0 }));
   };
-
 
   useEffect(() => {
     const activeLink = navLinksRef.current?.querySelector(`[href="${currentPath}"]`);
     updateHighlight(activeLink);
   }, [currentPath]);
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,16 +86,50 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-
+  // --- FIX: This entire useEffect has been updated for robust color detection ---
   useEffect(() => {
+    // 1. Define which paths should have a dark text theme by default.
+    // This runs instantly and sets the correct color without waiting for the observer.
+    const lightBackgroundPaths = [
+      "/philosophy",
+      "/history",
+      "/writings",
+      "/legal-social",
+      "/tech",
+      "/daily-thoughts",
+      // Add any other paths that have a light background
+    ];
+
+    // Check if the current URL starts with any of the defined paths.
+    // This handles sub-routes like '/philosophy/plato' correctly.
+    const isPathInitiallyLight = lightBackgroundPaths.some(path => currentPath.startsWith(path));
+    setIsLightBackground(isPathInitiallyLight);
+
+    // 2. The IntersectionObserver now acts as a dynamic override for special cases (like the homepage).
     const observer = new IntersectionObserver(
-      ([entry]) => setIsLightBackground(entry.isIntersecting),
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // If the sensor is visible, it ALWAYS means the background is light.
+          setIsLightBackground(true);
+        } else {
+          // If the sensor is NOT visible, we fall back to our reliable path-based default.
+          setIsLightBackground(isPathInitiallyLight);
+        }
+      },
       { threshold: 0.6 }
     );
+
     const target = document.querySelector("[data-navbar-bg-detect]");
-    if (target) observer.observe(target);
-    return () => target && observer.unobserve(target);
-  }, [location]);
+    if (target) {
+      observer.observe(target);
+    }
+
+    return () => {
+      if (target) {
+        observer.unobserve(target);
+      }
+    };
+  }, [currentPath]); // This logic re-runs every time the page URL changes.
 
 
   useEffect(() => {
@@ -116,7 +138,6 @@ const Navbar = () => {
         const padding = 40;
         const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
         setLeftNavbarWidth(calculatedLeftNavbarWidth);
-
 
         const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
         setBridgeLeft(homeButtonCenter);
@@ -128,22 +149,19 @@ const Navbar = () => {
     return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
   }, [currentPath]);
 
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobileView(window.innerWidth <= 768);
     };
 
-
     handleResize();
-
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-
   const getCenterTitle = () => {
+    // ... (This function remains unchanged)
     switch (currentPath) {
       case "/":
         return "Terminal Musing";
@@ -166,8 +184,8 @@ const Navbar = () => {
     }
   };
 
-
   const handleBrandTap = () => {
+    // ... (This function remains unchanged)
     if (tapTimeout.current) clearTimeout(tapTimeout.current);
     setTapCount((prev) => {
       const next = prev + 1;
@@ -180,8 +198,8 @@ const Navbar = () => {
     });
   };
 
-
   const getHighlightBarActiveClass = () => {
+    // ... (This function remains unchanged)
     switch (currentPath) {
       case "/daily-thoughts":
         return styles.dailyThoughtsActive;
@@ -198,8 +216,8 @@ const Navbar = () => {
     }
   };
 
-
   const toggleMenu = () => {
+    // ... (This function remains unchanged)
     if (menuOpen) {
       setMenuClosing(true);
       setTimeout(() => {
@@ -212,22 +230,16 @@ const Navbar = () => {
     }
   };
 
-
   const handleNavLinkClick = (e, path) => {
-    e.preventDefault(); // prevent default link behavior to control timing
-
-
-    // Update highlight immediately on click
+    // ... (This function remains unchanged)
+    e.preventDefault();
     updateHighlight(e.currentTarget);
     setClickedPath(path);
-
 
     if (menuOpen) {
       toggleMenu();
     }
 
-
-    // Optional: delay navigation slightly for close animation UX
     setTimeout(() => {
       navigate(path);
     }, 100);

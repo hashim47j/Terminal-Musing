@@ -207,7 +207,7 @@ const Navbar = () => {
     <>
       <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ""}`} aria-label="Home">
         <img
-          src={isLightBackground ? jerusalemHomeDark : jerusalemHomeLight}
+          src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark }
           alt="Home"
           style={{ width: "27px", height: "27px", objectFit: "contain" }}
         />
@@ -230,10 +230,10 @@ const Navbar = () => {
         `}
         style={{ width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto" }}
       >
-        <div 
-          ref={brandWrapperRef} 
-          className={styles.brandWrapper} 
-          onClick={handleBrandTap} 
+        <div
+          ref={brandWrapperRef}
+          className={styles.brandWrapper}
+          onClick={handleBrandTap}
           style={{ cursor: "pointer" }}
         >
           <Link to={currentPath} className={styles.brand}>

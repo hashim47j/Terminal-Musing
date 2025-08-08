@@ -18,7 +18,7 @@ const TechHero = () => {
         <p className={styles.description}>
           To build without understanding is to automate ignorance.
         </p>
-        <Link to="/technology" className={styles.categoryTag}>Technology</Link>
+        <Link to="/tech" className={styles.categoryTag}>Technology</Link>
       </div>
     </section>
   );

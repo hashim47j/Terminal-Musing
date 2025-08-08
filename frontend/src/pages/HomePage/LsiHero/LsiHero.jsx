@@ -9,6 +9,10 @@ import magnaCartaImage from '../../../assets/magnacarta.png';
 const LsiHero = () => {
   return (
     <section className={styles.lsiHero}>
+      {/* --- SENSOR ADDED --- */}
+      {/* This tells the Navbar that this section has a light background. */}
+      <div data-navbar-bg-detect></div>
+
       <div className={styles.contentWrapper}>
         <h1 className={styles.mainHeading}>Social struggle evolves the way of justice</h1>
         <p className={styles.description}>

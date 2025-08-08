@@ -14,6 +14,9 @@ import shakespeareImage from '../../../assets/shakespeare.png';
 const WritingsHero = () => {
   return (
     <section className={styles.writingsHero}>
+      {/* --- SENSOR ADDED --- */}
+      <div data-navbar-bg-detect></div>
+
       <div className={styles.contentWrapper}>
         <h1 className={styles.mainHeading}>It is not found in the order of words</h1>
         <div className={styles.haiku}>

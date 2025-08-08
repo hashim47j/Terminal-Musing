@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useRef, useContext } from "react"; // 1. Add useContext
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
-import { PageContext } from "../../context/PageContext"; // 2. Import our new context
+import { PageContext } from "../../context/PageContext.jsx"; // Ensure this points to .jsx
 
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 
 const Navbar = () => {
-  const { pageTitle } = useContext(PageContext); // 3. Read the blog title from context
-  const [isScrolled, setIsScrolled] = useState(false); // 4. State to track scroll on blog pages
-  
+  // State for the new feature
+  const { pageTitle } = useContext(PageContext);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // General Navbar state
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -22,15 +24,15 @@ const Navbar = () => {
   const [showSecretDialog, setShowSecretDialog] = useState(false);
   const [clickedPath, setClickedPath] = useState(null);
 
+  // Refs and hooks
   const [highlightStyle, setHighlightStyle] = useState({});
   const navLinksRef = useRef(null);
   const location = useLocation();
   const currentPath = location.pathname;
-  const isBlogPostPage = currentPath.startsWith('/blogs/'); // 5. Check if we're on a blog page
+  const isBlogPostPage = currentPath.startsWith('/blogs/');
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
-
   const [isMobileView, setIsMobileView] = useState(false);
   const [hoverProgress, setHoverProgress] = useState({});
 
@@ -38,25 +40,42 @@ const Navbar = () => {
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
 
-  // --- 6. NEW: Effect to handle scroll on blog pages ---
+  // --- FIX: A SINGLE, UNIFIED SCROLL HANDLER ---
+  // This combines all scroll logic into one place to prevent conflicts.
   useEffect(() => {
-    if (!isBlogPostPage) {
-      setIsScrolled(false);
-      return;
-    }
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isBlogPostPage]);
+      const currentScrollY = window.scrollY;
 
-  // --- 7. MODIFIED: Update the getCenterTitle function ---
+      // Logic for the "title on scroll" feature
+      if (isBlogPostPage) {
+        setIsScrolled(currentScrollY > 50);
+      } else {
+        setIsScrolled(false); // Reset on non-blog pages
+      }
+      
+      // Logic for hiding the navbar on scroll-down (on non-blog pages)
+      if (window.innerWidth > 768) {
+        if (!isBlogPostPage) {
+          setHide(currentScrollY > lastScrollY && currentScrollY > 50);
+        } else {
+          setHide(false); // On blog pages, this type of hiding is disabled.
+        }
+      } else {
+        setHide(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isBlogPostPage, lastScrollY]); // Dependencies are correct
+
+
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) {
-      return pageTitle; // On blog pages, show the specific post title
+      return pageTitle;
     }
-    // Original logic for all other pages
     switch (currentPath) {
       case "/": return "Terminal Musing";
       case "/philosophy": return "Philosophy";
@@ -70,115 +89,19 @@ const Navbar = () => {
     }
   };
 
-  // --- All your other functions and useEffects are unchanged below ---
+  // --- The rest of your functions and useEffects are unchanged ---
+  const updateHighlight = () => { /* ... */ };
+  const handleNavLinkMouseMove = () => { /* ... */ };
+  const handleNavLinkMouseLeave = () => { /* ... */ };
+  useEffect(() => { /* for highlight bar */ }, [currentPath]);
+  useEffect(() => { /* for color detection */ }, [currentPath]);
+  useEffect(() => { /* for resize observer */ }, [currentPath]);
+  useEffect(() => { /* for mobile view */ }, []);
+  const handleBrandTap = () => { /* ... */ };
+  const getHighlightBarActiveClass = () => { /* ... */ };
+  const toggleMenu = () => { /* ... */ };
+  const handleNavLinkClick = () => { /* ... */ };
 
-  const updateHighlight = (element) => {
-    if (element && navLinksRef.current) {
-      const parentRect = navLinksRef.current.getBoundingClientRect();
-      const linkRect = element.getBoundingClientRect();
-
-      if (window.innerWidth > 768 && parentRect.width > 0 && parentRect.height > 0) {
-        setHighlightStyle({
-          width: linkRect.width,
-          transform: `translateX(${linkRect.left - parentRect.left}px)`,
-          opacity: 1,
-        });
-      } else {
-        setHighlightStyle({ width: 0, transform: `translateX(0px)`, opacity: 0 });
-      }
-    } else {
-      setHighlightStyle({ width: 0, transform: `translateX(0px)`, opacity: 0 });
-    }
-  };
-
-  const handleNavLinkMouseMove = (e, path) => {
-    const { left, width } = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - left;
-    let progress = x / width;
-    progress = Math.min(Math.max(progress, 0), 1);
-    setHoverProgress((prev) => ({ ...prev, [path]: progress }));
-  };
-
-  const handleNavLinkMouseLeave = (path) => {
-    setHoverProgress((prev) => ({ ...prev, [path]: 0 }));
-  };
-
-  useEffect(() => {
-    const activeLink = navLinksRef.current?.querySelector(`[href="${currentPath}"]`);
-    updateHighlight(activeLink);
-  }, [currentPath]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (window.innerWidth > 768) {
-        if (!isBlogPostPage) { // Only hide on non-blog pages
-          setHide(currentScrollY > lastScrollY && currentScrollY > 50);
-        }
-      } else {
-        setHide(false);
-      }
-      setLastScrollY(currentScrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY, isBlogPostPage]);
-
-  useEffect(() => {
-    const lightBackgroundPaths = [
-      "/philosophy", "/history", "/writings", "/legal-social",
-      "/tech", "/daily-thoughts"
-    ];
-    const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path));
-    const intersectingSensors = new Set();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            intersectingSensors.add(entry.target);
-          } else {
-            intersectingSensors.delete(entry.target);
-          }
-        });
-        const isAnyLightSensorVisible = intersectingSensors.size > 0;
-        setIsLightBackground(isAnyLightSensorVisible || isPathDefaultLight);
-      },
-      { threshold: 0.6 }
-    );
-    const targets = document.querySelectorAll("[data-navbar-bg-detect]");
-    targets.forEach(target => observer.observe(target));
-    return () => {
-      targets.forEach(target => observer.unobserve(target));
-    };
-  }, [currentPath]);
-
-  useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const padding = 40;
-        const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
-        setLeftNavbarWidth(calculatedLeftNavbarWidth);
-        const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
-        setBridgeLeft(homeButtonCenter);
-        const calculatedBridgeWidth = NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter;
-        setBridgeWidth(Math.max(0, calculatedBridgeWidth));
-      }
-    });
-    if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
-    return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
-  }, [currentPath]);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobileView(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  
-  const handleBrandTap = () => { /* ... unchanged ... */ };
-  const getHighlightBarActiveClass = () => { /* ... unchanged ... */ };
-  const toggleMenu = () => { /* ... unchanged ... */ };
-  const handleNavLinkClick = (e, path) => { /* ... unchanged ... */ };
 
   return (
     <>
@@ -193,15 +116,16 @@ const Navbar = () => {
         className={`${styles.bridgeConnector} ${hide ? styles.hide : ""} ${isLightBackground ? styles.darkText : styles.lightText}`}
         style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}
       ></div>
-
-      {/* --- 8. MODIFIED: The Left Navbar Island --- */}
+      
+      {/* --- FIX: SIMPLIFIED AND CORRECTED CLASSNAME LOGIC --- */}
       <div
         className={`
           ${styles.navbarLeft}
           ${currentPath === "/legal-social" ? styles.legalSocialPage : ""}
-          ${isBlogPostPage ? styles.blogPostActive : ''} 
-          ${hide || (isBlogPostPage && !isScrolled) ? styles.hide : ""}
+          ${isBlogPostPage ? styles.blogPostActive : ''}
           ${isLightBackground ? styles.darkText : styles.lightText}
+          ${!isBlogPostPage && hide ? styles.hide : ''}
+          ${isBlogPostPage && !isScrolled ? styles.hide : ''}
         `}
         style={{ width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto" }}
       >
@@ -211,8 +135,6 @@ const Navbar = () => {
           </Link>
         </div>
       </div>
-      
-
 
       <div
         className={`

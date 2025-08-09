@@ -36,3 +36,17 @@
     animation: logo-spin infinite 20s linear;
   }
 }
+html {
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
+body {
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
+#root {
+  height: auto !important;
+  min-height: 100vh !important;
+}

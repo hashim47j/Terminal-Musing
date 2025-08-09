@@ -89,8 +89,6 @@ const HistoryBlog = () => {
     }
   };
 
-  // ----------- CONDITIONAL RENDERS -----------
-  // These guards now correctly protect the code below.
   if (loading) {
     return (
       <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
@@ -121,8 +119,6 @@ const HistoryBlog = () => {
     );
   }
 
-  // ----------- MAIN RENDER -----------
-  // --- FIX: Moved the date formatting logic here, after all guards have passed ---
   const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
@@ -131,7 +127,11 @@ const HistoryBlog = () => {
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
-    <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
+    // --- FIX: Added the style prop to the main container ---
+    <div
+      className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
+      style={{ position: 'relative', zIndex: 1 }}
+    >
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>

@@ -28,6 +28,7 @@ const Navbar = () => {
   const [highlightStyle, setHighlightStyle] = useState({});
   const [isMobileView, setIsMobileView] = useState(false);
   const [hoverProgress, setHoverProgress] = useState({});
+  const [isHomePage, setIsHomePage] = useState(false); // ADD: Homepage detection
   
   const navLinksRef = useRef(null);
   const location = useLocation();
@@ -50,6 +51,23 @@ const Navbar = () => {
       hide
     });
   }, [isBlogPostPage, pageTitle, isScrolled, hide]);
+
+  // ADD: Homepage detection for shadow control
+  useEffect(() => {
+    const checkHomePage = () => {
+      const homeElement = document.querySelector('[data-navbar-no-shadow]');
+      setIsHomePage(!!homeElement);
+    };
+
+    // Check initially
+    checkHomePage();
+
+    // Check on route changes
+    const observer = new MutationObserver(checkHomePage);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, [currentPath]);
 
   // --- Unified Scroll Handler ---
   useEffect(() => {
@@ -236,10 +254,11 @@ const Navbar = () => {
 
   return (
     <>
-      <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ""}`} aria-label="Home">
+      <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ""} ${isHomePage ? styles.noShadow : ""}`} aria-label="Home">
         <img src={isLightBackground ? jerusalemHomeDark : jerusalemHomeLight} alt="Home" style={{ width: "27px", height: "27px", objectFit: "contain" }} />
       </Link>
-      <div className={`${styles.bridgeConnector} ${hide ? styles.hide : ""} ${isLightBackground ? styles.darkText : styles.lightText}`} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
+      
+      <div className={`${styles.bridgeConnector} ${hide ? styles.hide : ""} ${isLightBackground ? styles.darkText : styles.lightText} ${isHomePage ? styles.noShadow : ""}`} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
       
       <div
         className={`
@@ -249,11 +268,12 @@ const Navbar = () => {
           ${isLightBackground ? styles.darkText : styles.lightText}
           ${!isBlogPostPage && hide ? styles.hide : ''}
           ${isBlogPostPage && !isScrolled ? styles.hide : ''}
+          ${isHomePage ? styles.noShadow : ""}
         `}
         style={{ 
           width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
           ...(isBlogPostPage && { 
-            top: isMobileView ? '80px' : '100px' // Different values for mobile vs desktop
+            top: isMobileView ? '80px' : '100px'
           })
         }}
       >
@@ -271,6 +291,7 @@ const Navbar = () => {
           ${isLightBackground ? styles.darkText : styles.lightText}
           ${menuOpen ? styles.menuOpen : ""}
           ${menuClosing ? styles.menuClosing : ""}
+          ${isHomePage ? styles.noShadow : ""}
         `}
       >
         <div

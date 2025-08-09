@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './TechBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
+import { PageContext } from '../../context/PageContext'; // ADD: Import PageContext
 
 const TechBlog = () => {
-  const { id }        = useParams();
-  const { darkMode }  = useDarkMode();
+  const { id } = useParams();
+  const { darkMode } = useDarkMode();
+  const { setPageTitle } = useContext(PageContext); // ADD: Get setPageTitle from context
 
-  const [blog, setBlog]       = useState(null);
+  const [blog, setBlog] = useState(null);
   const [comments, setComments] = useState([]);
-  const [form, setForm]       = useState({ name: '', email: '', comment: '' });
+  const [form, setForm] = useState({ name: '', email: '', comment: '' });
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [error, setError] = useState('');
 
   const categoryFolder = 'android & linux';
-  const encodedCat     = encodeURIComponent(categoryFolder);
+  const encodedCat = encodeURIComponent(categoryFolder);
 
-  const blogApiUrl     = `/api/blogs/${encodedCat}/${id}`;
+  const blogApiUrl = `/api/blogs/${encodedCat}/${id}`;
   const commentsApiUrl = `/api/comments/${encodedCat}/${id}`;
-  const viewsApiUrl    = `/api/views/${encodedCat}/${id}`;
+  const viewsApiUrl = `/api/views/${encodedCat}/${id}`;
 
   // -------- fetch blog & count view ----------
   useEffect(() => {
@@ -31,6 +33,12 @@ const TechBlog = () => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setBlog(data);
+        
+        // ADD: Set page title for navbar
+        if (data && data.title) {
+          setPageTitle(data.title);
+        }
+        
         fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});
       } catch (err) {
         setError(err.message || 'Failed to load blog');
@@ -39,7 +47,12 @@ const TechBlog = () => {
       }
     };
     loadBlog();
-  }, [id]);
+    
+    // ADD: Cleanup function
+    return () => {
+      setPageTitle(null);
+    };
+  }, [id, setPageTitle]);
 
   // -------- fetch comments ----------
   useEffect(() => {
@@ -113,7 +126,24 @@ const TechBlog = () => {
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
-    <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <div 
+      className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
+      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }} // ADD: z-index fix and padding
+    >
+      {/* ADD: COLOR SENSOR */}
+      <div 
+        data-navbar-bg-detect 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '200px', 
+          pointerEvents: 'none',
+          zIndex: -1 
+        }} 
+      />
+      
       <div className={styles.mainContentWrapper}>
         {/* ---- post ---- */}
         <section className={styles.postContentSection}>

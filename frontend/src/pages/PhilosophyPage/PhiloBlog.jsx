@@ -1,24 +1,26 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './PhiloBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
+import { PageContext } from '../../context/PageContext'; // ADD: Import PageContext
 
 const PhiloBlog = () => {
-  const { id }           = useParams();
-  const { darkMode }     = useDarkMode();
+  const { id } = useParams();
+  const { darkMode } = useDarkMode();
+  const { setPageTitle } = useContext(PageContext); // ADD: Get setPageTitle from context
 
-  const [blog, setBlog]       = useState(null);
+  const [blog, setBlog] = useState(null);
   const [comments, setComments] = useState([]);
-  const [form, setForm]       = useState({ name: '', email: '', comment: '' });
+  const [form, setForm] = useState({ name: '', email: '', comment: '' });
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [error, setError] = useState('');
 
   const navbarBgRef = useRef(null);
 
   // ---------------- API ENDPOINTS ----------------
-  const blogApiUrl     = `/api/blogs/philosophy/${id}`;
+  const blogApiUrl = `/api/blogs/philosophy/${id}`;
   const commentsApiUrl = `/api/comments/philosophy/${id}`;
-  const viewsApiUrl    = `/api/views/philosophy/${id}`;
+  const viewsApiUrl = `/api/views/philosophy/${id}`;
 
   // ---------------- FETCH BLOG (and record view) --------------
   useEffect(() => {
@@ -28,6 +30,11 @@ const PhiloBlog = () => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setBlog(data);
+
+        // ADD: Set page title for navbar
+        if (data && data.title) {
+          setPageTitle(data.title);
+        }
 
         // register a view but ignore errors
         fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});
@@ -39,7 +46,12 @@ const PhiloBlog = () => {
       }
     };
     fetchBlog();
-  }, [id]);
+    
+    // ADD: Cleanup function
+    return () => {
+      setPageTitle(null);
+    };
+  }, [id, setPageTitle]);
 
   // ---------------- FETCH COMMENTS ----------------
   useEffect(() => {
@@ -90,8 +102,8 @@ const PhiloBlog = () => {
 
   // ---------------- RENDER ----------------
   if (loading) return <div className={styles.loading}>Loading...</div>;
-  if (error)   return <div className={styles.error}>❌ {error}</div>;
-  if (!blog)   return <div className={styles.error}>❌ Blog not found.</div>;
+  if (error) return <div className={styles.error}>❌ {error}</div>;
+  if (!blog) return <div className={styles.error}>❌ Blog not found.</div>;
 
   const formattedDate = new Date(blog.date).toLocaleDateString('en-US', {
     day: 'numeric',
@@ -100,11 +112,22 @@ const PhiloBlog = () => {
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
-    <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <div
-        ref={navbarBgRef}
-        data-navbar-bg-detect
-        style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
+    <div 
+      className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
+      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }} // ADD: z-index fix and padding
+    >
+      {/* UPDATED: Better positioned color sensor */}
+      <div 
+        data-navbar-bg-detect 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '200px', 
+          pointerEvents: 'none',
+          zIndex: -1 
+        }} 
       />
 
       <div className={styles.mainContentWrapper}>

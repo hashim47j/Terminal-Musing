@@ -4,15 +4,15 @@ import { useParams } from 'react-router-dom';
 import styles from './WritingsBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
-import { PageContext } from '../../context/PageContext'; // ADD: Import PageContext
+import { PageContext } from '../../context/PageContext';
 
 const WritingsBlog = () => {
   const { id } = useParams();
   const { darkMode } = useDarkMode();
-  const { setPageTitle } = useContext(PageContext); // ADD: Get setPageTitle from context
+  const { setPageTitle } = useContext(PageContext);
 
   const [blog, setBlog] = useState(null);
-  const [blogCategory, setCategory] = useState(null);     // "poems" or "short stories"
+  const [blogCategory, setCategory] = useState(null);
   const [comments, setComments] = useState([]);
   const [form, setForm] = useState({ name: '', email: '', comment: '' });
   const [loading, setLoading] = useState(true);
@@ -40,10 +40,9 @@ const WritingsBlog = () => {
         const { data } = await fetchBlogByCategory('poems');
         setBlog(data);
         setCategory('poems');
-        // ADD: Set page title for navbar
-        if (data && data.title) {
-          setPageTitle(data.title);
-        }
+        // FIX: Ensure title is set immediately after blog data is set
+        console.log('Setting title for poems:', data.title); // Debug log
+        setPageTitle(data.title);
         fetch(`/api/views/poems/${id}`, { method: 'POST' }).catch(() => {});
       } catch {
         try {
@@ -51,13 +50,13 @@ const WritingsBlog = () => {
           const { data } = await fetchBlogByCategory('short stories');
           setBlog(data);
           setCategory('short stories');
-          // ADD: Set page title for navbar
-          if (data && data.title) {
-            setPageTitle(data.title);
-          }
+          // FIX: Ensure title is set immediately after blog data is set
+          console.log('Setting title for short stories:', data.title); // Debug log
+          setPageTitle(data.title);
           fetch(`/api/views/${encodeURIComponent('short stories')}/${id}`, { method: 'POST' }).catch(() => {});
         } catch {
           setError('Blog not found.');
+          setPageTitle(null); // Clear title on error
         }
       } finally {
         setLoading(false);
@@ -65,11 +64,18 @@ const WritingsBlog = () => {
     };
     load();
     
-    // ADD: Cleanup function to reset page title when component unmounts
     return () => {
       setPageTitle(null);
     };
   }, [id, setPageTitle]);
+
+  // FIX: Add an additional useEffect to ensure title is set when blog changes
+  useEffect(() => {
+    if (blog && blog.title) {
+      console.log('Double-checking title:', blog.title); // Debug log
+      setPageTitle(blog.title);
+    }
+  }, [blog, setPageTitle]);
 
   // ---------- comments ----------
   useEffect(() => {
@@ -157,9 +163,9 @@ const WritingsBlog = () => {
   return (
     <div 
       className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
-      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }} // ADD: z-index fix and padding
+      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }}
     >
-      {/* ADD: COLOR SENSOR - invisible div to trigger navbar color change */}
+      {/* COLOR SENSOR */}
       <div 
         data-navbar-bg-detect 
         style={{ 

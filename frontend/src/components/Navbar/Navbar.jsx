@@ -273,7 +273,7 @@ const Navbar = () => {
         style={{ 
           width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
           ...(isBlogPostPage && { 
-            top: isMobileView ? '100px' : '110px'
+            top: isMobileView ? '95px' : '110px'
           })
         }}
       >

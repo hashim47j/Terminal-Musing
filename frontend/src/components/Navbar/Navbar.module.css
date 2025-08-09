@@ -572,15 +572,8 @@
     max-width: 150px; /* Shorter width for mobile */
   }
 }
-.navbarLeft.homePage,
-.navbarRight.homePage {
-  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
-}
 
-.homeButton.homePage {
-  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
-}
-
-.bridgeConnector.homePage {
-  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
+/* In your Navbar.module.css */
+.noShadow {
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15) !important;
 }

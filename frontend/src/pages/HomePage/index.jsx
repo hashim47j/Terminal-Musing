@@ -37,6 +37,7 @@ const HomePage = () => {
     <div
       className={styles.fullPageContainer}
       onMouseMove={handleMouseMove}
+      data-navbar-no-shadow // ADD: This single line is all you need
     >
       {/* Conditionally render cursor square only on desktop */}
       {!isMobile && (

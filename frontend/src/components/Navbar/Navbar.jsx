@@ -271,11 +271,12 @@ const Navbar = () => {
           ${isHomePage ? styles.noShadow : ""}
         `}
         style={{ 
-          width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+          width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto", // Remove !isMobileView condition
           ...(isBlogPostPage && { 
             top: isMobileView ? '95px' : '110px'
           })
         }}
+        
       >
         <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
           <Link to={currentPath} className={styles.brand}>

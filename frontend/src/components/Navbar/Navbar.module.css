@@ -271,9 +271,27 @@
   }
 
   .navbarLeft {
-    left: 85px;
-    z-index: 1001;
-    top: 25px;
+    .navbarLeft {
+      left: 85px;
+      z-index: 1001;
+      top: 25px;
+      /* ADD: Ensure width animations work in mobile too */
+      transition: width 0.4s ease, transform 0.3s ease, left 0.3s ease, top 0.3s ease;
+      width: auto; /* Allow dynamic width */
+      min-width: fit-content; /* Ensure content fits */
+    }
+  
+    .navbarLeft .brandWrapper {
+      padding: 8px 10px;
+      /* ADD: Ensure smooth transition for brand wrapper too */
+      transition: all 0.4s ease;
+    }
+  
+    .navbarLeft .brand {
+      font-size: 1.4em;
+      /* ADD: Ensure the text itself can transition smoothly */
+      transition: font-size 0.3s ease;
+    }
   }
 
   .navbarLeft .brandWrapper {

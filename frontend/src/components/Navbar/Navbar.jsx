@@ -15,7 +15,7 @@ const Navbar = () => {
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   
-  // All other state variables and hooks...
+  // All other state variables
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuClosing, setMenuClosing] = useState(false);
   const [isLightBackground, setIsLightBackground] = useState(false);
@@ -42,7 +42,6 @@ const Navbar = () => {
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
 
   // --- DEBUGGING STEP ---
-  // This will log the critical state values to the console
   useEffect(() => {
     console.log("NAVBAR DEBUG:", {
       isBlogPostPage,
@@ -51,7 +50,6 @@ const Navbar = () => {
       hide
     });
   }, [isBlogPostPage, pageTitle, isScrolled, hide]);
-
 
   // --- Unified Scroll Handler ---
   useEffect(() => {
@@ -91,16 +89,125 @@ const Navbar = () => {
     }
   };
   
-  // The rest of your functions and useEffects
-  const updateHighlight = (element) => { /* ... */ };
-  const handleNavLinkMouseMove = (e, path) => { /* ... */ };
-  const handleNavLinkMouseLeave = (path) => { /* ... */ };
-  useEffect(() => { /* for highlight bar */ }, [currentPath]);
-  useEffect(() => { /* for color detection */ }, [currentPath]);
-  useEffect(() => { /* for resize observer */ }, [currentPath]);
-  useEffect(() => { /* for mobile view */ }, []);
-  const handleBrandTap = () => { /* ... */ };
-  const getHighlightBarActiveClass = () => { /* ... */ };
+  // --- ALL MISSING FUNCTIONS IMPLEMENTED ---
+  const updateHighlight = (element) => {
+    if (element && navLinksRef.current) {
+      const parentRect = navLinksRef.current.getBoundingClientRect();
+      const linkRect = element.getBoundingClientRect();
+
+      if (window.innerWidth > 768 && parentRect.width > 0 && parentRect.height > 0) {
+        setHighlightStyle({
+          width: linkRect.width,
+          transform: `translateX(${linkRect.left - parentRect.left}px)`,
+          opacity: 1,
+        });
+      } else {
+        setHighlightStyle({ width: 0, transform: `translateX(0px)`, opacity: 0 });
+      }
+    } else {
+      setHighlightStyle({ width: 0, transform: `translateX(0px)`, opacity: 0 });
+    }
+  };
+
+  const handleNavLinkMouseMove = (e, path) => {
+    const { left, width } = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - left;
+    let progress = x / width;
+    progress = Math.min(Math.max(progress, 0), 1);
+    setHoverProgress((prev) => ({ ...prev, [path]: progress }));
+  };
+
+  const handleNavLinkMouseLeave = (path) => {
+    setHoverProgress((prev) => ({ ...prev, [path]: 0 }));
+  };
+
+  // Highlight bar effect
+  useEffect(() => {
+    const activeLink = navLinksRef.current?.querySelector(`[href="${currentPath}"]`);
+    updateHighlight(activeLink);
+  }, [currentPath]);
+
+  // Color detection effect
+  useEffect(() => {
+    const lightBackgroundPaths = [
+      "/philosophy", "/history", "/writings", "/legal-social",
+      "/tech", "/daily-thoughts"
+    ];
+    const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path));
+    const intersectingSensors = new Set();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            intersectingSensors.add(entry.target);
+          } else {
+            intersectingSensors.delete(entry.target);
+          }
+        });
+        const isAnyLightSensorVisible = intersectingSensors.size > 0;
+        setIsLightBackground(isAnyLightSensorVisible || isPathDefaultLight);
+      },
+      { threshold: 0.6 }
+    );
+
+    const targets = document.querySelectorAll("[data-navbar-bg-detect]");
+    targets.forEach(target => observer.observe(target));
+
+    return () => {
+      targets.forEach(target => observer.unobserve(target));
+    };
+  }, [currentPath]);
+
+  // Resize observer effect
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const padding = 40;
+        const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
+        setLeftNavbarWidth(calculatedLeftNavbarWidth);
+
+        const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
+        setBridgeLeft(homeButtonCenter);
+        const calculatedBridgeWidth = NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter;
+        setBridgeWidth(Math.max(0, calculatedBridgeWidth));
+      }
+    });
+    if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
+    return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
+  }, [currentPath]);
+
+  // Mobile view effect
+  useEffect(() => {
+    const handleResize = () => setIsMobileView(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleBrandTap = () => {
+    if (tapTimeout.current) clearTimeout(tapTimeout.current);
+    setTapCount((prev) => {
+      const next = prev + 1;
+      if (next === 3) {
+        setShowSecretDialog(true);
+        return 0;
+      }
+      tapTimeout.current = setTimeout(() => setTapCount(0), 1500);
+      return next;
+    });
+  };
+
+  const getHighlightBarActiveClass = () => {
+    switch (currentPath) {
+      case "/daily-thoughts": return styles.dailyThoughtsActive;
+      case "/philosophy": return styles.philosophyActive;
+      case "/history": return styles.historyActive;
+      case "/writings": return styles.writingsActive;
+      case "/legal-social": return styles.legalSocialActive;
+      default: return "";
+    }
+  };
 
   const toggleMenu = () => {
     if (menuOpen) {
@@ -152,7 +259,6 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* --- FIX: The complete, unabridged JSX for the right navbar --- */}
       <div
         className={`
           ${styles.navbarRight}

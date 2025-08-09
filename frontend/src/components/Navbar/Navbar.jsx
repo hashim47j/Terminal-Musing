@@ -271,7 +271,8 @@ const Navbar = () => {
           ${isHomePage ? styles.noShadow : ""}
         `}
         style={{ 
-          width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto", // Remove !isMobileView condition
+          width: "auto",
+          maxWidth: isMobileView ? "250px" : (leftNavbarWidth ? `${leftNavbarWidth}px` : "auto"),
           ...(isBlogPostPage && { 
             top: isMobileView ? '95px' : '110px'
           })

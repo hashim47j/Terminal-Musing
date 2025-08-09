@@ -270,42 +270,32 @@
     z-index: 1000;
   }
 
-  .navbarLeft {
+  @media (max-width: 768px) {
     .navbarLeft {
       left: 85px;
       z-index: 1001;
       top: 25px;
-      /* ADD: Ensure width animations work in mobile too */
-      transition: width 0.4s ease, transform 0.3s ease, left 0.3s ease, top 0.3s ease;
-      width: auto; /* Allow dynamic width */
-      min-width: fit-content; /* Ensure content fits */
+      /* FIX: Only animate width, not position */
+      transition: width 0.4s ease;
+      width: auto;
+      min-width: fit-content;
+      /* ADD: Prevent position shifts */
+      transform-origin: left center; /* Expand from left edge */
     }
   
     .navbarLeft .brandWrapper {
       padding: 8px 10px;
-      /* ADD: Ensure smooth transition for brand wrapper too */
-      transition: all 0.4s ease;
+      /* FIX: Only animate padding/background, not positioning */
+      transition: padding 0.4s ease, background-color 0.3s ease;
     }
   
     .navbarLeft .brand {
       font-size: 1.4em;
-      /* ADD: Ensure the text itself can transition smoothly */
-      transition: font-size 0.3s ease;
+      /* FIX: Only animate text properties */
+      transition: font-size 0.3s ease, color 0.3s ease;
     }
   }
-
-  .navbarLeft .brandWrapper {
-    padding: 8px 10px;
-  }
-
-  .navbarLeft .brand {
-    font-size: 1.4em;
-  }
-
-  /* Special case for Legal & Social Concerns page */
-  .navbarLeft.legalSocialPage .brand {
-    font-size: 1.0em;
-  }
+  
 
   .homeButton {
     top: 25px;

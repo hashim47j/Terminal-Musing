@@ -37,16 +37,15 @@
   }
 }
 html {
-  height: auto !important;
+  height: 100% !important;
   min-height: 100vh !important;
+  overflow: visible !important;
 }
 
 body {
-  height: auto !important;
+  height: 100% !important;
   min-height: 100vh !important;
-}
-
-#root {
-  height: auto !important;
-  min-height: 100vh !important;
+  overflow: visible !important;
+  margin: 0;
+  padding: 0;
 }

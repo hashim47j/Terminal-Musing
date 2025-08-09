@@ -127,10 +127,9 @@ const HistoryBlog = () => {
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
-    // --- FIX: Added the style prop to force this container below the navbar ---
     <div
       className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
-      style={{ position: 'relative', zIndex: 1 }}
+      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }}
     >
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>

@@ -10,6 +10,7 @@ const Navbar = () => {
   // State for the new feature
   const { pageTitle } = useContext(PageContext);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   // General Navbar state
   const [hide, setHide] = useState(false);
@@ -69,26 +70,35 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
-  // --- Unified Scroll Handler ---
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (isBlogPostPage) {
-        setIsScrolled(currentScrollY > 50);
-      } else {
-        setIsScrolled(false);
-      }
-      if (window.innerWidth > 768 && !isBlogPostPage) {
-        setHide(currentScrollY > lastScrollY && currentScrollY > 50);
-      } else {
-        setHide(false); 
-      }
-      setLastScrollY(currentScrollY);
-    };
+// --- COMBINED: Unified Scroll Handler with Progress Tracking ---
+useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    
+    // ADD: Calculate scroll progress for blog pages
+    if (isBlogPostPage) {
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
+      setScrollProgress(Math.min(progress, 100)); // Cap at 100%
+      setIsScrolled(currentScrollY > 50);
+    } else {
+      setScrollProgress(0); // Reset progress on non-blog pages
+      setIsScrolled(false);
+    }
+    
+    // Navbar hiding logic (unchanged)
+    if (window.innerWidth > 768 && !isBlogPostPage) {
+      setHide(currentScrollY > lastScrollY && currentScrollY > 50);
+    } else {
+      setHide(false); 
+    }
+    setLastScrollY(currentScrollY);
+  };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isBlogPostPage, lastScrollY]);
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [isBlogPostPage, lastScrollY]);
+
 
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) {
@@ -203,6 +213,31 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Calculate scroll progress
+      const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
+      console.log("Scroll progress:", progress, "Current Y:", currentScrollY); // ADD THIS
+      setScrollProgress(Math.min(progress, 100));
+
+      if (isBlogPostPage) {
+        setIsScrolled(currentScrollY > 50);
+      } else {
+        setIsScrolled(false);
+      }
+      if (window.innerWidth > 768 && !isBlogPostPage) {
+        setHide(currentScrollY > lastScrollY && currentScrollY > 50);
+      } else {
+        setHide(false); 
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isBlogPostPage, lastScrollY]);
   const handleBrandTap = () => {
     if (tapTimeout.current) clearTimeout(tapTimeout.current);
     setTapCount((prev) => {
@@ -278,6 +313,17 @@ const Navbar = () => {
         }}
         
       >
+                {/* ADD: Progress fill overlay */}
+                {isBlogPostPage && (
+          <div 
+            className={styles.progressFill}
+            style={{ 
+              width: `${scrollProgress}%`,
+              opacity: isScrolled ? 0.3 : 0 // Only show when scrolled
+            }}
+          />
+        )}
+
         <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle()}

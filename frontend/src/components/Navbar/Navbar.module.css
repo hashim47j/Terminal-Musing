@@ -600,3 +600,43 @@
 .noShadow {
   box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15) !important;
 }
+/* ADD: Progress fill styles */
+.progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  border-radius: 14px;
+  transition: width 0.1s ease-out, opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure the brand text stays above the progress fill */
+.brandWrapper {
+  position: relative;
+  z-index: 1;
+  padding: 13px 20px;
+  display: inline-block;
+  transition: all 0.4s ease;
+  vertical-align: middle;
+}
+
+/* ADD: Different progress colors for light/dark backgrounds */
+.darkText .progressFill {
+  background: linear-gradient(90deg, 
+    rgba(0, 0, 0, 0.15) 0%, 
+    rgba(0, 0, 0, 0.08) 100%
+  );
+}
+
+.lightText .progressFill {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    rgba(255, 255, 255, 0.2) 100%
+  );
+}

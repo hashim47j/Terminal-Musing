@@ -562,13 +562,13 @@
   max-width: 300px; /* Adjust as needed */
   white-space: nowrap;
   overflow: hidden;
-  top: 65px !important;
+  top: 100px !important;
   text-overflow: ellipsis;
 }
 
 @media (max-width: 768px) {
   .navbarLeft.blogPostActive .brand {
-    top: 60px !important;
+    top: 100px !important;
     max-width: 150px; /* Shorter width for mobile */
   }
 }

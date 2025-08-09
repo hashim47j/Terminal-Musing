@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
-import { PageContext } from "../../context/PageContext.jsx"; // Make sure this points to .jsx
+import { PageContext } from "../../context/PageContext.jsx"; // Ensure this points to .jsx
 
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
@@ -42,13 +42,13 @@ const Navbar = () => {
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
 
-  // --- FIX: THIS IS THE NEW, SINGLE, UNIFIED SCROLL HANDLER ---
-  // It replaces the two conflicting useEffects from the previous code.
+  // --- FIX: A SINGLE, UNIFIED SCROLL HANDLER ---
+  // This combines all scroll logic into one place to prevent conflicts.
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Logic for the blog page "title on scroll"
+      // Logic for the blog page "title on scroll" feature
       if (isBlogPostPage) {
         setIsScrolled(currentScrollY > 50);
       } else {
@@ -71,6 +71,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isBlogPostPage, lastScrollY]); // Dependencies are correct
 
+
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) {
       return pageTitle;
@@ -88,7 +89,7 @@ const Navbar = () => {
     }
   };
 
-  // --- The rest of your functions and useEffects are correct and unchanged ---
+  // The rest of your functions and useEffects are correct and unchanged
   const updateHighlight = (element) => { /* ... */ };
   const handleNavLinkMouseMove = (e, path) => { /* ... */ };
   const handleNavLinkMouseLeave = (path) => { /* ... */ };

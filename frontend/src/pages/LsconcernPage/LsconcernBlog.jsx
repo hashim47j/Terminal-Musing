@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './LsconcernBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
+import { PageContext } from '../../context/PageContext'; // ADD: Import PageContext
 
 const LsconcernBlog = () => {
-  const { id }        = useParams();
-  const { darkMode }  = useDarkMode();
+  const { id } = useParams();
+  const { darkMode } = useDarkMode();
+  const { setPageTitle } = useContext(PageContext); // ADD: Get setPageTitle from context
 
-  const [blog, setBlog]             = useState(null);
+  const [blog, setBlog] = useState(null);
   const [blogCategory, setCategory] = useState(null);   // 'legal' or 'social issues'
-  const [comments, setComments]     = useState([]);
-  const [form, setForm]             = useState({ name: '', email: '', comment: '' });
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState('');
+  const [comments, setComments] = useState([]);
+  const [form, setForm] = useState({ name: '', email: '', comment: '' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   // --- helper to try a category ---
   const fetchBlogByCategory = async (cat) => {
@@ -36,6 +38,10 @@ const LsconcernBlog = () => {
         const { data } = await fetchBlogByCategory('legal');
         setBlog(data);
         setCategory('legal');
+        // ADD: Set page title for navbar
+        if (data && data.title) {
+          setPageTitle(data.title);
+        }
         fetch(`/api/views/legal/${id}`, { method: 'POST' }).catch(() => {});
       } catch {
         try {
@@ -43,6 +49,10 @@ const LsconcernBlog = () => {
           const { data } = await fetchBlogByCategory('social issues');
           setBlog(data);
           setCategory('social issues');
+          // ADD: Set page title for navbar
+          if (data && data.title) {
+            setPageTitle(data.title);
+          }
           fetch(`/api/views/${encodeURIComponent('social issues')}/${id}`, { method: 'POST' }).catch(() => {});
         } catch {
           setError('Blog not found.');
@@ -52,7 +62,12 @@ const LsconcernBlog = () => {
       }
     };
     load();
-  }, [id]);
+    
+    // ADD: Cleanup function to reset page title when component unmounts
+    return () => {
+      setPageTitle(null);
+    };
+  }, [id, setPageTitle]);
 
   // --- load comments whenever category known ---
   useEffect(() => {
@@ -128,7 +143,24 @@ const LsconcernBlog = () => {
 
   // --- render ---
   return (
-    <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <div 
+      className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
+      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }} // ADD: z-index fix and padding
+    >
+      {/* ADD: COLOR SENSOR - invisible div to trigger navbar color change */}
+      <div 
+        data-navbar-bg-detect 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '200px', 
+          pointerEvents: 'none',
+          zIndex: -1 
+        }} 
+      />
+      
       <div className={styles.mainContentWrapper}>
         {/* post */}
         <section className={styles.postContentSection}>

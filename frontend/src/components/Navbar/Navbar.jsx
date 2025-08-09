@@ -250,7 +250,7 @@ const Navbar = () => {
           ${!isBlogPostPage && hide ? styles.hide : ''}
           ${isBlogPostPage && !isScrolled ? styles.hide : ''}
         `}
-        style={{ width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto" ,    ...(isBlogPostPage && { top: '80px' })
+        style={{ width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto" ,    ...(isBlogPostPage && { top: '100px' })
       }}
       >
         <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>

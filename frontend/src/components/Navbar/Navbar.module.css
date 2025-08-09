@@ -289,12 +289,24 @@
       transition: padding 0.4s ease, background-color 0.3s ease;
     }
   
-    .navbarLeft .brand {
-      font-size: 1.4em;
-      /* FIX: Only animate text properties */
-      transition: font-size 0.3s ease, color 0.3s ease;
+   
+   
+      .navbarLeft .brand {
+        font-size: clamp(0.9em, 4vw, 1.4em); /* Responsive font size */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px; /* Limit maximum width */
+      }
+    
+      /* Override for legal-social specifically */
+      .navbarLeft.legalSocialPage .brand {
+        font-size: 0.95em;
+        max-width: 160px;
+      }
     }
-  }
+    
+  
   
 
   .homeButton {

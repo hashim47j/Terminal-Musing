@@ -68,43 +68,54 @@ const Navbar = () => {
   }, [currentPath]);
 
   // --- COMBINED: Unified Scroll Handler with Progress Tracking ---
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    
+    // ADD: Always log scroll events first
+    console.log("🔥 SCROLL EVENT FIRED:", { currentScrollY, isBlogPostPage });
+    
+    // Calculate scroll progress for blog pages
+    if (isBlogPostPage) {
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
       
-      // Calculate scroll progress for blog pages
-      if (isBlogPostPage) {
-        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
-        
-        // DEBUG: Add console log
-        console.log("🐛 PROGRESS DEBUG:", {
-          isBlogPostPage,
-          currentScrollY,
-          documentHeight,
-          progress: Math.min(progress, 100),
-          isScrolled: currentScrollY > 50
-        });
-        
-        setScrollProgress(Math.min(progress, 100));
-        setIsScrolled(currentScrollY > 50);
-      } else {
-        setScrollProgress(0);
-        setIsScrolled(false);
-      }
+      // DEBUG: Detailed progress logging
+      console.log("🐛 PROGRESS DEBUG:", {
+        isBlogPostPage,
+        currentScrollY,
+        documentHeight,
+        windowHeight: window.innerHeight,
+        scrollHeight: document.documentElement.scrollHeight,
+        progress: Math.min(progress, 100),
+        isScrolled: currentScrollY > 50,
+        scrollProgress // Current state value
+      });
       
-      // Navbar hiding logic (unchanged)
-      if (window.innerWidth > 768 && !isBlogPostPage) {
-        setHide(currentScrollY > lastScrollY && currentScrollY > 50);
-      } else {
-        setHide(false); 
-      }
-      setLastScrollY(currentScrollY);
-    };
+      setScrollProgress(Math.min(progress, 100));
+      setIsScrolled(currentScrollY > 50);
+    } else {
+      setScrollProgress(0);
+      setIsScrolled(false);
+    }
+    
+    // Navbar hiding logic (unchanged)
+    if (window.innerWidth > 768 && !isBlogPostPage) {
+      setHide(currentScrollY > lastScrollY && currentScrollY > 50);
+    } else {
+      setHide(false); 
+    }
+    setLastScrollY(currentScrollY);
+  };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isBlogPostPage, lastScrollY]);
+  console.log("🎯 ADDING SCROLL LISTENER - isBlogPostPage:", isBlogPostPage);
+  window.addEventListener("scroll", handleScroll);
+  
+  return () => {
+    console.log("🗑️ REMOVING SCROLL LISTENER");
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, [isBlogPostPage, lastScrollY, scrollProgress]); // Added scrollProgress to deps
 
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) {

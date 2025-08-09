@@ -250,8 +250,12 @@ const Navbar = () => {
           ${!isBlogPostPage && hide ? styles.hide : ''}
           ${isBlogPostPage && !isScrolled ? styles.hide : ''}
         `}
-        style={{ width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto" ,    ...(isBlogPostPage && { top: '100px' })
-      }}
+        style={{ 
+          width: !isMobileView && leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+          ...(isBlogPostPage && { 
+            top: isMobileView ? '65px' : '100px' // Different values for mobile vs desktop
+          })
+        }}
       >
         <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
           <Link to={currentPath} className={styles.brand}>

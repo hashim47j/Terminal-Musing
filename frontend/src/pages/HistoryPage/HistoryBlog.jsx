@@ -131,6 +131,20 @@ const HistoryBlog = () => {
       className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
       style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }}
     >
+      {/* COLOR SENSOR: Add this invisible div at the top to trigger navbar color change */}
+      <div 
+        data-navbar-bg-detect 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '200px', 
+          pointerEvents: 'none',
+          zIndex: -1 
+        }} 
+      />
+      
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>

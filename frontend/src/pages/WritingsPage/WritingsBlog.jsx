@@ -1,20 +1,22 @@
 // src/pages/WritingsPage/WritingsBlog.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './WritingsBlog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
 import BlogRenderer from '../../components/BlogRenderer';
+import { PageContext } from '../../context/PageContext'; // ADD: Import PageContext
 
 const WritingsBlog = () => {
-  const { id }        = useParams();
-  const { darkMode }  = useDarkMode();
+  const { id } = useParams();
+  const { darkMode } = useDarkMode();
+  const { setPageTitle } = useContext(PageContext); // ADD: Get setPageTitle from context
 
-  const [blog, setBlog]             = useState(null);
-  const [blogCategory, setCategory] = useState(null);     // “poems” or “short stories”
-  const [comments, setComments]     = useState([]);
-  const [form, setForm]             = useState({ name: '', email: '', comment: '' });
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState('');
+  const [blog, setBlog] = useState(null);
+  const [blogCategory, setCategory] = useState(null);     // "poems" or "short stories"
+  const [comments, setComments] = useState([]);
+  const [form, setForm] = useState({ name: '', email: '', comment: '' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   // ---------- helper ----------
   const fetchBlogByCategory = async (cat) => {
@@ -38,6 +40,10 @@ const WritingsBlog = () => {
         const { data } = await fetchBlogByCategory('poems');
         setBlog(data);
         setCategory('poems');
+        // ADD: Set page title for navbar
+        if (data && data.title) {
+          setPageTitle(data.title);
+        }
         fetch(`/api/views/poems/${id}`, { method: 'POST' }).catch(() => {});
       } catch {
         try {
@@ -45,6 +51,10 @@ const WritingsBlog = () => {
           const { data } = await fetchBlogByCategory('short stories');
           setBlog(data);
           setCategory('short stories');
+          // ADD: Set page title for navbar
+          if (data && data.title) {
+            setPageTitle(data.title);
+          }
           fetch(`/api/views/${encodeURIComponent('short stories')}/${id}`, { method: 'POST' }).catch(() => {});
         } catch {
           setError('Blog not found.');
@@ -54,7 +64,12 @@ const WritingsBlog = () => {
       }
     };
     load();
-  }, [id]);
+    
+    // ADD: Cleanup function to reset page title when component unmounts
+    return () => {
+      setPageTitle(null);
+    };
+  }, [id, setPageTitle]);
 
   // ---------- comments ----------
   useEffect(() => {
@@ -140,9 +155,25 @@ const WritingsBlog = () => {
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
-    <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <div 
+      className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
+      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }} // ADD: z-index fix and padding
+    >
+      {/* ADD: COLOR SENSOR - invisible div to trigger navbar color change */}
+      <div 
+        data-navbar-bg-detect 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '200px', 
+          pointerEvents: 'none',
+          zIndex: -1 
+        }} 
+      />
+      
       <div className={styles.mainContentWrapper}>
-
         {/* blog body */}
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>

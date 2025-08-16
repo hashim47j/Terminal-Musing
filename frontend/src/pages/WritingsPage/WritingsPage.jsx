@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import styles from './WritingPage.module.css';
 import writingHero from '../../assets/writing-hero.png';
 
+
 const WritingPage = () => {
   const navigate = useNavigate();
   const [posts, setPosts]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
+
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -17,12 +19,15 @@ const WritingPage = () => {
         const resPoems = await fetch('/api/blogs?category=poems');
         const poems    = resPoems.ok ? await resPoems.json() : [];
 
+
         // short stories  (URL-encoded space)
         const resSS = await fetch('/api/blogs?category=' + encodeURIComponent('short stories'));
         const shorts = resSS.ok ? await resSS.json() : [];
 
+
         const combined = [...poems, ...shorts]
           .filter(Array.isArray(poems) ? () => true : () => false); // ensure arrays
+
 
         combined.sort((a, b) => new Date(b.date) - new Date(a.date));
         setPosts(combined);
@@ -34,45 +39,35 @@ const WritingPage = () => {
       }
     };
 
+
     fetchBlogs();
   }, []);
 
-  if (loading) {
-    return (
-      <div className={styles.writingsPageContainer} style={{ padding: '2rem', textAlign: 'center' }}>
-        Loading writing posts...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div
-        className={styles.writingsPageContainer}
-        style={{ padding: '2rem', textAlign: 'center', color: 'red' }}
-      >
-        {error}
-      </div>
-    );
-  }
 
   return (
     <div className={styles.writingsPageContainer}>
       {/* navbar background detector */}
       <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, height: 80, width: '100%' }} />
 
+
       {/* Hero */}
       <section className={styles.headerSection}>
         <img src={writingHero} alt="Writing Hero" className={styles.heroImage} />
       </section>
+
 
       {/* Posts */}
       <div className={styles.mainContentWrapper}>
         <section className={styles.postsSection}>
           <h2 className={styles.postsHeading}>Writing Posts</h2>
 
+
           <div className={styles.blogGrid}>
-            {posts.length === 0 ? (
+            {loading ? (
+              <p style={{ textAlign: 'center', color: '#666' }}>Loading writing posts...</p>
+            ) : error ? (
+              <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>
+            ) : posts.length === 0 ? (
               <p style={{ textAlign: 'center', color: '#666' }}>No writing posts available.</p>
             ) : (
               posts.map((post) => (
@@ -92,6 +87,7 @@ const WritingPage = () => {
                   ) : (
                     <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
                   )}
+
 
                   <div className={styles.blogContent}>
                     <h3 className={styles.blogTitle}>{post.title}</h3>
@@ -113,5 +109,6 @@ const WritingPage = () => {
     </div>
   );
 };
+
 
 export default WritingPage;

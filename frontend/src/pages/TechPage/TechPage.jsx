@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import styles from './TechPage.module.css';
 import techHero from '../../assets/techhero.png';
 
+
 const TechPage = () => {
   const navigate = useNavigate();
   const [posts, setPosts]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -28,40 +30,28 @@ const TechPage = () => {
     fetchPosts();
   }, []);
 
-  if (loading) {
-    return (
-      <div className={styles.pageContainer} style={{ padding: '2rem', textAlign: 'center' }}>
-        Loading tech posts...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div
-        className={styles.pageContainer}
-        style={{ padding: '2rem', textAlign: 'center', color: 'red' }}
-      >
-        {error}
-      </div>
-    );
-  }
 
   return (
     <div className={styles.pageContainer}>
       {/* navbar background detector */}
       <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, height: 80, width: '100%' }} />
 
+
       {/* Hero */}
       <section className={styles.headerSection}>
         <img src={techHero} alt="Tech Hero" className={styles.heroImage} />
       </section>
 
+
       {/* Posts */}
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>Tech Insights</h2>
         <div className={styles.blogGrid}>
-          {posts.length === 0 ? (
+          {loading ? (
+            <p style={{ textAlign: 'center', color: '#666' }}>Loading tech posts...</p>
+          ) : error ? (
+            <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>
+          ) : posts.length === 0 ? (
             <p style={{ textAlign: 'center', color: '#666' }}>No tech posts available.</p>
           ) : (
             posts.map((post) => (
@@ -100,5 +90,6 @@ const TechPage = () => {
     </div>
   );
 };
+
 
 export default TechPage;

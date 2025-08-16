@@ -23,7 +23,7 @@
     background-position: center;
     background-repeat: no-repeat;
     text-align: center;
-    padding: 60px 20px 100px;
+    padding:  40px 20px 60px; 
     position: relative;
     }
     
@@ -41,7 +41,7 @@
 
 .postsSection {
   background-color: #f8f7f3;
-  padding: 60px 5% 80px;
+  padding: 40px 5% 60px;
 }
 
 .postsHeading {

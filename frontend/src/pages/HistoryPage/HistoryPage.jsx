@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
 
+
 const HistoryPage = () => {
   const navigate = useNavigate();
   const [posts, setPosts]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -16,6 +18,7 @@ const HistoryPage = () => {
         const res = await fetch('/api/blogs?category=history');   // ✅ relative URL
         if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
         const data = await res.json();
+
 
         // Ensure we got an array
         const list = Array.isArray(data) ? data : [];
@@ -29,27 +32,10 @@ const HistoryPage = () => {
       }
     };
 
+
     fetchPosts();
   }, []);
 
-  if (loading) {
-    return (
-      <div className={styles.historyPageContainer} style={{ padding: '2rem', textAlign: 'center' }}>
-        Loading posts...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div
-        className={styles.historyPageContainer}
-        style={{ padding: '2rem', textAlign: 'center', color: 'red' }}
-      >
-        {error}
-      </div>
-    );
-  }
 
   return (
     <div className={styles.historyPageContainer}>
@@ -59,6 +45,7 @@ const HistoryPage = () => {
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
+
       <section className={styles.headerSection}>
         <img
           src={historyLight}
@@ -67,11 +54,17 @@ const HistoryPage = () => {
         />
       </section>
 
+
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>History Posts</h2>
 
+
         <div className={styles.blogGrid}>
-          {posts.length === 0 ? (
+          {loading ? (
+            <p style={{ textAlign: 'center', color: '#666' }}>Loading posts...</p>
+          ) : error ? (
+            <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>
+          ) : posts.length === 0 ? (
             <p style={{ textAlign: 'center', color: '#666' }}>No history posts available.</p>
           ) : (
             posts.map((post) => (
@@ -92,6 +85,7 @@ const HistoryPage = () => {
                   <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
                 )}
 
+
                 <div className={styles.blogContent}>
                   <h3 className={styles.blogTitle}>{post.title}</h3>
                   <p className={styles.blogSubheading}>{post.subheading}</p>
@@ -111,5 +105,6 @@ const HistoryPage = () => {
     </div>
   );
 };
+
 
 export default HistoryPage;

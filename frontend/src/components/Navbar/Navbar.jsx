@@ -272,7 +272,7 @@ const Navbar = () => {
         style={{ 
           width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
           ...(isBlogPostPage && { 
-           transform: `translateY(${isMobileView ? '25px' : '25px'})`
+           transform: `translateY(${isMobileView ? '0px' : '0px'})`
           })
         }}
       >

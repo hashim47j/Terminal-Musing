@@ -40,6 +40,27 @@
 
 .hide {
   transform: translateY(-120%);
+  .hide {
+    transform: translateY(-120%);
+  }
+  
+  /* For blog pages when hidden */
+  .blogPostActive.hide {
+    transform: translateY(-120%) translateY(90px); /* Combines both transforms */
+  }
+  
+  @media (max-width: 768px) {
+    .blogPostActive.hide {
+      transform: translateY(-120%) translateY(70px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blogPostActive.hide {
+      transform: translateY(-120%) translateY(70px);
+    }
+  }
+
 }
 
 .navbarRight {

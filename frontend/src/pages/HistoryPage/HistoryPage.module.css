@@ -2,7 +2,7 @@
 
 .historyPageContainer {
   background-color: #929292;
-  min-height: 60vh;
+  min-height: 100vh;
   font-family: 'Playfair Display', serif;
 }
 
@@ -41,7 +41,7 @@
 
 .postsSection {
   background-color: #f8f7f3;
-  padding: 40px 5% 60px;
+  padding: 800px 5% 60px;
 }
 
 .postsHeading {

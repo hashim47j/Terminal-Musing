@@ -2,10 +2,21 @@
 
 .historyPageContainer {
   background-color: #929292;
-  min-height: 60vh;
+  min-height: 60vh; /* Changed from 100vh */
   font-family: 'Playfair Display', serif;
 }
 
+.footer {
+  width: 100%;
+  background: #262727;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 0;
+  font-size: 1.05em;
+  letter-spacing: 0.07em;
+  margin-top: 30px;
+  border-radius: 0 0 8px 8px;
+}
     .headerSection {
     background-image: url('../../assets/history-background.png');
     background-size: auto;

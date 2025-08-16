@@ -4,23 +4,20 @@ import { useNavigate } from 'react-router-dom';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
 
-
 const HistoryPage = () => {
   const navigate = useNavigate();
-  const [posts, setPosts]     = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
-
+  const [error, setError] = useState('');
+  const [showFooter, setShowFooter] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch('/api/blogs?category=history');   // ✅ relative URL
+        const res = await fetch('/api/blogs?category=history');
         if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
         const data = await res.json();
 
-
-        // Ensure we got an array
         const list = Array.isArray(data) ? data : [];
         const sorted = list.sort((a, b) => new Date(b.date) - new Date(a.date));
         setPosts(sorted);
@@ -32,10 +29,22 @@ const HistoryPage = () => {
       }
     };
 
-
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollY >= totalHeight - 48) {
+        setShowFooter(true);
+      } else {
+        setShowFooter(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className={styles.historyPageContainer}>
@@ -45,7 +54,6 @@ const HistoryPage = () => {
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
-
       <section className={styles.headerSection}>
         <img
           src={historyLight}
@@ -54,10 +62,8 @@ const HistoryPage = () => {
         />
       </section>
 
-
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>History Posts</h2>
-
 
         <div className={styles.blogGrid}>
           {loading ? (
@@ -85,7 +91,6 @@ const HistoryPage = () => {
                   <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
                 )}
 
-
                 <div className={styles.blogContent}>
                   <h3 className={styles.blogTitle}>{post.title}</h3>
                   <p className={styles.blogSubheading}>{post.subheading}</p>
@@ -102,9 +107,14 @@ const HistoryPage = () => {
           )}
         </div>
       </section>
+
+      {showFooter && (
+        <footer className={styles.footer}>
+          © 2025 Terminal Musing
+        </footer>
+      )}
     </div>
   );
 };
-
 
 export default HistoryPage;

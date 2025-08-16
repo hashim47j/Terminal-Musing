@@ -635,6 +635,7 @@
   transition: width 0.1s ease-out, opacity 0.3s ease;
   pointer-events: none;
   z-index: 0;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.6); /* Add glow */
 }
 
 /* Ensure the brand text stays above the progress fill */

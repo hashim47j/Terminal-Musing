@@ -7,17 +7,19 @@
 }
 
 /* Fixed Hero Section */
-
 .headerSection {
-  background-image: url('../../assets/philosophy-background.png');
+  background-image: url('../../assets/history-background.png');
   background-size: auto;
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
-  padding: 60px 20px 100px;
-  position: relative;
-  overflow: visible;
-  position: relative;
+  padding: 40px 20px 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 400px;
 }
 
 .heroImage {

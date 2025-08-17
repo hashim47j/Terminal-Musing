@@ -34,15 +34,15 @@
   z-index: 2;
 }
 
-/* Fixed Posts Heading */
+/* Fixed Posts Heading - moved to be under posts section */
 .postsHeadingSection {
   position: fixed;
-  top: 250px;
+  top: 260px; /* Start right after hero section */
   left: 0;
   right: 0;
   background-color: #E4E4E4;
   z-index: 5;
-  padding: 30px 0;
+  padding: 20px 0;
   text-align: center;
 }
 
@@ -53,11 +53,11 @@
   margin: 0;
 }
 
-/* Scrollable Posts Section */
+/* Scrollable Posts Section - starts after heading */
 .postsSection {
   background-color: #E4E4E4;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);;
-  margin-top: 380px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-top: 340px; /* Hero (260px) + Heading (80px) = 340px */
   background-position: center;
   margin-left: 40px;
   margin-right: 40px;
@@ -205,11 +205,11 @@
   }
 
   .postsHeadingSection {
-    top: 180px;
+    top: 180px; /* Adjust for mobile hero height */
   }
 
   .postsSection {
-    margin-top: 240px;
+    margin-top: 240px; /* Hero (180px) + Heading (60px) = 240px */
   }
 
   .postsHeading {

@@ -13,7 +13,7 @@
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
-  padding: 60px 20px 60px;
+  padding: 40px 20px 60px;
   position: fixed;
   top: 0;
   left: 0;
@@ -36,7 +36,7 @@
 /* Fixed Posts Heading - moved to be under posts section */
 .postsHeadingSection {
   position: fixed;
-  top: 190px; 
+  top: 250px; 
   left: 0;
   right: 0;
   background-color: #E4E4E4;
@@ -56,7 +56,7 @@
 .postsSection {
   background-color: #ecebeb;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  margin-top: 340px; /* Hero (260px) + Heading (80px) = 340px */
+  margin-top: 380px; /* Hero (260px) + Heading (80px) = 340px */
   background-position: center;
   margin-left: 40px;
   margin-right: 40px;

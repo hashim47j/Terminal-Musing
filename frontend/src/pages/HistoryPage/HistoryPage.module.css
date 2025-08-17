@@ -10,7 +10,7 @@
 .headerSection {
   background-image: url('../../assets/history-background.png');
   background-size: auto; 
-  background-position: top;
+  background-position: center;
   background-repeat: no-repeat;
   text-align: center;
   padding: 40px 20px 60px;

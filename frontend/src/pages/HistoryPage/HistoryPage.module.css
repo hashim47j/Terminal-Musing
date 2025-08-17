@@ -9,7 +9,7 @@
 /* Fixed Hero Section */
 .headerSection {
   background-image: url('../../assets/history-background.png');
-  background-size: auto;
+  background-size: cover; /* Add this to make it fill the taller container */
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
@@ -19,7 +19,7 @@
   left: 0;
   right: 0;
   z-index: 1;
-  height: 400px;
+  height: 300px; /* Increase from 200px to 300px or whatever height you want */
 }
 
 .heroImage {
@@ -36,7 +36,7 @@
 /* Fixed Posts Heading */
 .postsHeadingSection {
   position: fixed;
-  top: 200px;
+  top: 300px;
   left: 0;
   right: 0;
   background-color: #f8f7f3;
@@ -55,7 +55,7 @@
 /* Scrollable Posts Section */
 .postsSection {
   background-color: #f8f7f3;
-  margin-top: 280px; /* Space for fixed header + heading */
+  margin-top: 380px; /* Space for fixed header + heading */
   flex: 1;
   padding: 0 5%;
 }

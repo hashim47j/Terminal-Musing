@@ -55,7 +55,7 @@
 
 /* Scrollable Posts Section - starts after heading */
 .postsSection {
-  background-color: #E4E4E4;
+  background-color: #ecebeb;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   margin-top: 340px; /* Hero (260px) + Heading (80px) = 340px */
   background-position: center;

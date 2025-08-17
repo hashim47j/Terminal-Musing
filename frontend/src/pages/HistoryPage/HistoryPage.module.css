@@ -7,7 +7,6 @@
   background-color: #E4E4E4;
 }
 
-/* Fixed Hero Section */
 .headerSection {
   background-image: url('../../assets/history-background.png');
   background-size: auto; 
@@ -37,7 +36,7 @@
 /* Fixed Posts Heading - moved to be under posts section */
 .postsHeadingSection {
   position: fixed;
-  top: 260px; /* Start right after hero section */
+  top: 300px; 
   left: 0;
   right: 0;
   background-color: #E4E4E4;

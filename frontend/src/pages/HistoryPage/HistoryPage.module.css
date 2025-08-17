@@ -1,13 +1,12 @@
-/* Terminal-Musing/src/pages/HistoryPage/HistoryPage.module.css */
-
 .historyPageContainer {
-  background-color: #929292;
   min-height: 100vh;
   font-family: 'Playfair Display', serif;
+  display: flex;
+  flex-direction: column;
   position: relative;
-  overflow: hidden;
 }
 
+/* Fixed Hero Section */
 .headerSection {
   background-image: url('../../assets/history-background.png');
   background-size: auto;
@@ -20,6 +19,7 @@
   left: 0;
   right: 0;
   z-index: 1;
+  height: 200px;
 }
 
 .heroImage {
@@ -33,33 +33,35 @@
   z-index: 2;
 }
 
-.postsSection {
-  background-color: #f8f7f3;
-  position: absolute;
-  top: 90vh; /* Push posts section down to show 10% gray background */
+/* Fixed Posts Heading */
+.postsHeadingSection {
+  position: fixed;
+  top: 200px;
   left: 0;
   right: 0;
-  height: 90vh;
-  padding: 0 5%;
-  display: flex;
-  flex-direction: column;
+  background-color: #f8f7f3;
+  z-index: 5;
+  padding: 30px 0;
+  text-align: center;
 }
 
 .postsHeading {
   font-size: 2.3em;
   color: #1d1d1d;
   font-weight: 600;
-  text-align: center;
-  margin: 30px 0;
+  margin: 0;
+}
+
+/* Scrollable Posts Section */
+.postsSection {
   background-color: #f8f7f3;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  padding: 20px 0;
+  margin-top: 280px; /* Space for fixed header + heading */
+  flex: 1;
+  padding: 0 5%;
 }
 
 .blogGridContainer {
-  flex: 1;
+  height: 50vh;
   overflow-y: auto;
   padding-right: 10px;
   scrollbar-width: thin;
@@ -85,7 +87,7 @@
   gap: 40px 30px;
   max-width: 1300px;
   margin: 0 auto;
-  padding-bottom: 40px;
+  padding: 20px 0 40px 0;
 }
 
 .blogCard {
@@ -142,25 +144,25 @@
   margin-top: auto;
 }
 
-.footer {
+/* Gray Strip at Bottom */
+.grayStrip {
+  background-color: #929292;
+  height: 10vh;
+  width: 100%;
+}
+
+/* Animated Footer */
+.footerContainer {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  width: 100%;
-  background: #262727;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 0;
-  font-size: 1.05em;
-  letter-spacing: 0.07em;
-  border-radius: 8px 8px 0 0;
   transform: translateY(100%);
   transition: transform 0.3s ease;
   z-index: 20;
 }
 
-.footer.show {
+.footerContainer.show {
   transform: translateY(0);
 }
 
@@ -185,19 +187,25 @@
     padding: 36px 8px 48px;
     background-size: 220%;
     background-position: 45% center;
-    min-height: 200px;
+    height: 180px;
   }
 
   .heroImage {
     width: 120px;
     left: var(--hero-x, 8px);
     top: var(--hero-y, 15px);
-    margin-bottom: 10px;
+  }
+
+  .postsHeadingSection {
+    top: 180px;
+  }
+
+  .postsSection {
+    margin-top: 240px;
   }
 
   .postsHeading {
     font-size: 1.5em;
-    margin-bottom: 30px;
   }
 
   .blogTitle {

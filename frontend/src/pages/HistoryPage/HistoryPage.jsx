@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
+import Footer from '../../components/Footer/Footer';
 
 const HistoryPage = () => {
   const navigate = useNavigate();
@@ -33,10 +34,10 @@ const HistoryPage = () => {
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      const postsSection = document.querySelector(`.${styles.postsSection}`);
-      if (postsSection) {
-        const rect = postsSection.getBoundingClientRect();
-        const isOutsidePosts = e.clientY < rect.top || e.clientY > rect.bottom;
+      const blogContainer = document.querySelector(`.${styles.blogGridContainer}`);
+      if (blogContainer) {
+        const rect = blogContainer.getBoundingClientRect();
+        const isOutsidePosts = e.clientY < rect.top - 100 || e.clientY > rect.bottom + 100;
         setShowFooter(isOutsidePosts);
       }
     };
@@ -55,6 +56,7 @@ const HistoryPage = () => {
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
+      {/* Fixed Hero Section */}
       <section className={styles.headerSection}>
         <img
           src={historyLight}
@@ -63,9 +65,13 @@ const HistoryPage = () => {
         />
       </section>
 
-      <section className={styles.postsSection}>
+      {/* Fixed Posts Heading */}
+      <div className={styles.postsHeadingSection}>
         <h2 className={styles.postsHeading}>History Posts</h2>
+      </div>
 
+      {/* Scrollable Posts Section */}
+      <section className={styles.postsSection}>
         <div className={styles.blogGridContainer}>
           <div className={styles.blogGrid}>
             {loading ? (
@@ -111,9 +117,13 @@ const HistoryPage = () => {
         </div>
       </section>
 
-      <footer className={`${styles.footer} ${showFooter ? styles.show : ''}`}>
-        © 2025 Terminal Musing
-      </footer>
+      {/* Gray Strip at Bottom */}
+      <div className={styles.grayStrip}></div>
+
+      {/* Animated Footer */}
+      <div className={`${styles.footerContainer} ${showFooter ? styles.show : ''}`}>
+        <Footer />
+      </div>
     </div>
   );
 };

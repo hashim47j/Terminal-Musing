@@ -39,7 +39,7 @@
   top: 250px;
   left: 0;
   right: 0;
-  background-color: #f8f7f3;
+  background-color: #E4E4E4;
   z-index: 5;
   padding: 30px 0;
   text-align: center;
@@ -54,9 +54,9 @@
 
 /* Scrollable Posts Section */
 .postsSection {
-  background-color: #f8f7f3;
+  background-color: #E4E4E4;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);;
-  margin-top: 380px; /* Space for fixed header + heading */
+  margin-top: 380px; 
   background-position: center;
   margin-left: 40px;
   margin-right: 40px;

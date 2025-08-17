@@ -36,7 +36,7 @@
 /* Fixed Posts Heading - moved to be under posts section */
 .postsHeadingSection {
   position: fixed;
-  top: 200px; 
+  top: 190px; 
   left: 0;
   right: 0;
   background-color: #E4E4E4;
@@ -46,9 +46,9 @@
 }
 
 .postsHeading {
-  font-size: 2.3em;
+  font-size: 2.0em;
   color: #1d1d1d;
-  font-weight: 600;
+  font-weight: 400;
   margin: 0;
 }
 

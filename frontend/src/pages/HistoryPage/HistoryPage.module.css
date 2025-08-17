@@ -9,7 +9,7 @@
 /* Fixed Hero Section */
 .headerSection {
   background-image: url('../../assets/history-background.png');
-  background-size: cover; /* Add this to make it fill the taller container */
+  background-size: auto; 
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
@@ -19,7 +19,7 @@
   left: 0;
   right: 0;
   z-index: 1;
-  height: 250px; /* Increase from 200px to 300px or whatever height you want */
+  height: 260px;
 }
 
 .heroImage {

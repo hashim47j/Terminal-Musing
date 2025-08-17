@@ -19,7 +19,7 @@
   left: 0;
   right: 0;
   z-index: 1;
-  height: 300px; /* Increase from 200px to 300px or whatever height you want */
+  height: 250px; /* Increase from 200px to 300px or whatever height you want */
 }
 
 .heroImage {

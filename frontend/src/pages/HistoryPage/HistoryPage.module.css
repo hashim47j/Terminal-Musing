@@ -54,7 +54,8 @@
 
 /* Scrollable Posts Section */
 .postsSection {
-  background-color: #dbdad5;
+  background-color: #f8f7f3;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);;
   margin-top: 380px; /* Space for fixed header + heading */
   background-position: center;
   margin-left: 40px;

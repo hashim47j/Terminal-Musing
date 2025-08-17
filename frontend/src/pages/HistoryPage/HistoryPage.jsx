@@ -9,7 +9,6 @@ const HistoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showFooter, setShowFooter] = useState(false);
-  const [scrollMode, setScrollMode] = useState('page'); // 'page' or 'blogs'
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -34,30 +33,20 @@ const HistoryPage = () => {
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      const blogSection = document.querySelector(`.${styles.blogGridContainer}`);
-      if (blogSection) {
-        const rect = blogSection.getBoundingClientRect();
-        const isNearBlogs = e.clientY >= rect.top - 50 && e.clientY <= rect.bottom + 50;
-        setScrollMode(isNearBlogs ? 'blogs' : 'page');
-      }
-    };
-
-    const handleScroll = () => {
-      if (scrollMode === 'page') {
-        const scrollY = window.scrollY;
-        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-        setShowFooter(scrollY >= totalHeight - 48);
+      const postsSection = document.querySelector(`.${styles.postsSection}`);
+      if (postsSection) {
+        const rect = postsSection.getBoundingClientRect();
+        const isOutsidePosts = e.clientY < rect.top || e.clientY > rect.bottom;
+        setShowFooter(isOutsidePosts);
       }
     };
 
     document.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
     
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
     };
-  }, [scrollMode]);
+  }, []);
 
   return (
     <div className={styles.historyPageContainer}>
@@ -122,11 +111,9 @@ const HistoryPage = () => {
         </div>
       </section>
 
-      {showFooter && (
-        <footer className={styles.footer}>
-          © 2025 Terminal Musing
-        </footer>
-      )}
+      <footer className={`${styles.footer} ${showFooter ? styles.show : ''}`}>
+        © 2025 Terminal Musing
+      </footer>
     </div>
   );
 };

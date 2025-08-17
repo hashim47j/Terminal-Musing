@@ -4,34 +4,28 @@
   background-color: #929292;
   min-height: 100vh;
   font-family: 'Playfair Display', serif;
+  position: relative;
+  overflow: hidden;
 }
 
-.footer {
-  width: 100%;
-  background: #262727;
-  color: #f2f2f2;
+.headerSection {
+  background-image: url('../../assets/history-background.png');
+  background-size: auto;
+  background-position: center;
+  background-repeat: no-repeat;
   text-align: center;
-  padding: 14px 0;
-  font-size: 1.05em;
-  letter-spacing: 0.07em;
-  margin-top: 30px;
-  border-radius: 0 0 8px 8px;
+  padding: 40px 20px 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
 }
-    .headerSection {
-    background-image: url('../../assets/history-background.png');
-    background-size: auto;
-    background-position: center;
-    background-repeat: no-repeat;
-    text-align: center;
-    padding:  40px 20px 60px; 
-    position: relative;
-    }
-    
 
 .heroImage {
   position: relative;
-  left: var(--hero-x, -45px);         
-  top: var(--hero-y, 8px); 
+  left: var(--hero-x, -45px);
+  top: var(--hero-y, 8px);
   width: 160px;
   height: auto;
   display: block;
@@ -41,7 +35,14 @@
 
 .postsSection {
   background-color: #f8f7f3;
-  padding: 40px 5% 80px;
+  position: absolute;
+  top: 90vh; /* Push posts section down to show 10% gray background */
+  left: 0;
+  right: 0;
+  height: 90vh;
+  padding: 0 5%;
+  display: flex;
+  flex-direction: column;
 }
 
 .postsHeading {
@@ -49,7 +50,33 @@
   color: #1d1d1d;
   font-weight: 600;
   text-align: center;
-  margin-bottom: 50px;
+  margin: 30px 0;
+  background-color: #f8f7f3;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 20px 0;
+}
+
+.blogGridContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #999 transparent;
+}
+
+.blogGridContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.blogGridContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.blogGridContainer::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 3px;
 }
 
 .blogGrid {
@@ -58,6 +85,7 @@
   gap: 40px 30px;
   max-width: 1300px;
   margin: 0 auto;
+  padding-bottom: 40px;
 }
 
 .blogCard {
@@ -114,6 +142,28 @@
   margin-top: auto;
 }
 
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #262727;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 0;
+  font-size: 1.05em;
+  letter-spacing: 0.07em;
+  border-radius: 8px 8px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 20;
+}
+
+.footer.show {
+  transform: translateY(0);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .blogCard {
@@ -131,32 +181,18 @@
 }
 
 @media (max-width: 480px) {
-  .postsHeading {
-    font-size: 1.8em;
-  }
-
-  .blogTitle {
-    font-size: 1.2em;
-  }
-
-  .blogSubheading {
-    font-size: 0.9em;
-  }
-}
-@media (max-width: 480px) {
   .headerSection {
-    /* Tighter vertical padding, and zoom/pan the background image for clarity. */
     padding: 36px 8px 48px;
-    background-size: 220%;     /* Zoom in background image on mobile */
-    background-position: 45% center; /* Pan/crop as needed. Adjust 60% for best fit. */
-    min-height: 200px;         /* Add if you'd like guaranteed visibility */
+    background-size: 220%;
+    background-position: 45% center;
+    min-height: 200px;
   }
 
   .heroImage {
-    width: 120px;              /* Smaller hero image for mobile */
-    left: var(--hero-x, 8px);/* Adjust offset for best position */
+    width: 120px;
+    left: var(--hero-x, 8px);
     top: var(--hero-y, 15px);
-    margin-bottom: 10px;       /* Add a bit of space below */
+    margin-bottom: 10px;
   }
 
   .postsHeading {
@@ -187,44 +223,4 @@
   .blogContent {
     padding: 14px 11px;
   }
-}
-
-.blogGridContainer {
-  max-height: 70vh;
-  overflow-y: auto;
-  padding-right: 10px;
-  scrollbar-width: thin;
-  scrollbar-color: #999 transparent;
-}
-
-.blogGridContainer::-webkit-scrollbar {
-  width: 6px;
-}
-
-.blogGridContainer::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.blogGridContainer::-webkit-scrollbar-thumb {
-  background-color: #999;
-  border-radius: 3px;
-}
-
-.postsSection {
-  background-color: #f8f7f3;
-  padding: 40px 5% 40px; /* Reduced bottom padding */
-  position: relative;
-}
-
-.postsHeading {
-  font-size: 2.3em;
-  color: #1d1d1d;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 30px;
-  position: sticky;
-  top: 0;
-  background-color: #f8f7f3;
-  padding: 20px 0;
-  z-index: 10;
 }

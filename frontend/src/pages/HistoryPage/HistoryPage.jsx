@@ -120,10 +120,12 @@ const HistoryPage = () => {
       {/* Gray Strip at Bottom */}
       <div className={styles.grayStrip}></div>
 
-      {/* Animated Footer */}
-      <div className={`${styles.footerContainer} ${showFooter ? styles.show : ''}`}>
-        <Footer />
-      </div>
+      {/* Your Original Footer Component */}
+      {showFooter && (
+        <div className={styles.footerContainer}>
+          <Footer />
+        </div>
+      )}
     </div>
   );
 };

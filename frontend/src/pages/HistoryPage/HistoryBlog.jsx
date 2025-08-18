@@ -144,7 +144,9 @@ const HistoryBlog = () => {
           zIndex: -1 
         }} 
       />
-      
+      <h1 className={styles.title}>{blog.title}</h1>
+            <div className={styles.titleLine}></div>
+
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>
           <h1 className={styles.title}>{blog.title}</h1>

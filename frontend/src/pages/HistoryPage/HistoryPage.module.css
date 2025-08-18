@@ -56,12 +56,12 @@
 .postsSection {
   background-color: #ecebeb;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  margin-top: 400px; /* Hero (260px) + Heading (80px) = 340px */
+  margin-top: 380px; /* Hero (260px) + Heading (80px) = 340px */
   background-position: center;
   margin-left: 40px;
   margin-right: 40px;
   margin-bottom: 40px;
-  height: auto;
+  height: 500px;
   width: auto;
   flex: 1;
   padding: 0 5%;

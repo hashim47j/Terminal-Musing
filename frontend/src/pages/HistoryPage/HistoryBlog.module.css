@@ -16,7 +16,9 @@
   display: flex;
   flex-direction: column;
   gap: 50px;
-  width: 1800px;
+  width: auto;
+  margin-left: 25%;
+  margin-right: 25%;
 
 }
 

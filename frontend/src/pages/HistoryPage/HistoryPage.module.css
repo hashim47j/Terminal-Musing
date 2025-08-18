@@ -58,8 +58,8 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   margin-top: 340px;
   background-position: center;
-  margin-left: 40px;
-  margin-right: 40px;
+  margin-left: 60px;
+  margin-right: 60px;
   margin-bottom: 40px;
   height: auto;
   width: auto;
@@ -99,6 +99,7 @@
 
 .blogCard {
   background-color: #ffffff;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
   border-radius: 6px;

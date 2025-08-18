@@ -45,7 +45,9 @@
 .contentBodyPlaceholder {
   background-color: #fafafa;
   min-height: 60vh;
-  padding: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+  padding: 40px;
   border-radius: 8px;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;

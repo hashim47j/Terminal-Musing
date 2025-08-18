@@ -10,7 +10,8 @@
 .mainContentWrapper {
   background-color: #ffffff;
   padding: 60px 8%;
-  margin: 0;
+  margin-left: 10%;
+  margin-right: 10%;
   border-radius: 0;
   box-shadow: none;
   flex-grow: 1;

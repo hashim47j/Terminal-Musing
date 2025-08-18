@@ -5,6 +5,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 
 .mainContentWrapper {
@@ -45,8 +47,6 @@
 .contentBodyPlaceholder {
   background-color: #fafafa;
   min-height: 60vh;
-  margin-left: 10%;
-  margin-right: 10%;
   padding: 40px;
   border-radius: 8px;
   box-sizing: border-box;

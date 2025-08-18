@@ -146,8 +146,8 @@ const HistoryBlog = () => {
       />
       
       <div className={styles.mainContentWrapper}>
+      <h1 className={styles.title}>{blog.title}</h1>
         <section className={styles.postContentSection}>
-          <h1 className={styles.title}>{blog.title}</h1>
           <div className={styles.titleLine}></div>   
           <p className={styles.date}>{metaText}</p>
           {blog.coverImage && (

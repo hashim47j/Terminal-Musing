@@ -9,7 +9,7 @@
 
 .mainContentWrapper {
   background-color: #ffffff;
-  padding: 600px 2%; 
+  padding: 60px 8%; 
   border-radius: 0;
   box-shadow: none;
   flex-grow: 1;
@@ -45,7 +45,7 @@
 .contentBodyPlaceholder {
   background-color: #fafafa;
   min-height: 60vh;
-  padding: 40px;
+  padding: 80px;
   border-radius: 8px;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;

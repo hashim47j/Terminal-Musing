@@ -144,10 +144,11 @@ const HistoryBlog = () => {
           zIndex: -1 
         }} 
       />
-      <h1 className={styles.title}>{blog.title}</h1>
+      
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>
-          <div className={styles.titleLine}></div>   
+        <div className={styles.titleLine}></div> 
+          <h1 className={styles.title}>{blog.title}</h1>  
           <p className={styles.date}>{metaText}</p>
           {blog.coverImage && (
             <img

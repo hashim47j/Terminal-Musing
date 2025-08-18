@@ -346,12 +346,10 @@
   }
 }
 
-/* Add beneath .title or wherever you want the line */
 .titleLine {
   width: 100%;
-  height: 4px;           /* Thicker line; use 2px for thin, 4px for thicker */
+  height: 4px;
   background: #929292;
-  margin-top: 6px;       /* Adjust spacing from title */
-  margin-bottom: 38px;   /* Adjust bottom spacing before date/content */
+  margin-bottom: 18px; /* Adjust this for spacing above the title */
   border-radius: 2px;
 }

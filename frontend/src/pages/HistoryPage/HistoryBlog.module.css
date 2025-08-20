@@ -19,7 +19,7 @@
   line-height: 1.3;
   font-weight: 600;
   text-align: left;
-  margin-left: 5%;
+  margin-left: 4%;
 }
 
 .date {
@@ -28,7 +28,7 @@
   color: #666666;
   margin-bottom: 40px;
   text-align: left;
-  margin-left: 5%;
+  margin-left: 4%;
 
 }
 
@@ -43,8 +43,8 @@
   line-height: 1.8;
   color: #333333;
   border: 1px solid #e5e5e5;
-  margin-left: 5%;
-  margin-right: 5%;
+  margin-left: 4%;
+  margin-right: 4%;
 }
 
 .paragraph {
@@ -78,6 +78,7 @@
   margin-bottom: 20px;
   border: 1px solid #474747;
   border-radius: 5px;
+  margin-left: 4%;
 }
 
 .commentBox strong {
@@ -124,6 +125,7 @@
   display: flex;
   flex-direction: column;
   padding-left: 15px;
+  margin-right: 4%;
 }
 
 .commentForm h3 {
@@ -337,7 +339,7 @@
 
 .titleLine {
   width: 100%;
-  height: 10px;
+  height: 40px;
   background: #929292;
   margin-bottom: 18px; /* Adjust this for spacing above the title */
   border-radius: 2px;

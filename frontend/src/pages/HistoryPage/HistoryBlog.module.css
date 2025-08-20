@@ -16,7 +16,7 @@
   display: flex;
   flex-direction: column;
   gap: 50px;
-  width: auto;
+  width: 100%;
   margin-left: 6%;
   margin-right: 6%;
   margin-top: -4%;

@@ -142,23 +142,24 @@ const HistoryBlog = () => {
         }} 
       />
       
-      {/* Hero Section with Cover Image */}
-      {blog.coverImage && (
-        <section className={styles.heroSection}>
-          <img
-            src={blog.coverImage}
-            alt="Cover"
-            className={styles.heroImage}
-            onError={(e) => (e.target.style.display = 'none')}
-          />
-          <div className={styles.heroOverlay}></div>
-          <div className={styles.heroContent}>
-            <div className={styles.titleLine}></div>
-            <h1 className={styles.title}>{blog.title}</h1>
-            <p className={styles.date}>{metaText}</p>
-          </div>
-        </section>
-      )}
+{/* Hero Section with Cover Image */}
+{blog.coverImage && (
+  <section className={styles.heroSection}>
+    <img
+      src={blog.coverImage}
+      alt="Cover"
+      className={styles.heroImage}
+      onError={(e) => (e.target.style.display = 'none')}
+    />
+    <div className={styles.heroOverlay}></div> {/* Keep this overlay */}
+    <div className={styles.heroContent}>
+      <div className={styles.titleLine}></div>
+      <h1 className={styles.title}>{blog.title}</h1>
+      <p className={styles.date}>{metaText}</p>
+    </div>
+  </section>
+)}
+
       
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>

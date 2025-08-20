@@ -19,8 +19,14 @@ const AdminPage = () => {
   const [subheading, setSubheading] = useState('');
   const [body, setBody] = useState('');
   const [category, setCategory] = useState(categories[0]);
+  
+  // Upload progress states
+  const [coverImageUploading, setCoverImageUploading] = useState(false);
+  const [bodyImageUploading, setBodyImageUploading] = useState(false);
 
-  const uploadImage = async (file) => {
+  const uploadImage = async (file, setUploading = null) => {
+    if (setUploading) setUploading(true);
+    
     const formData = new FormData();
     formData.append('image', file);
 
@@ -33,11 +39,14 @@ const AdminPage = () => {
       if (!res.ok) throw new Error('Upload failed');
       const data = await res.json();
       
+      if (setUploading) setUploading(false);
+      
       // Return the relative URL directly (no domain prefix needed)
       return data.imageUrl;  // This will be "/uploads/filename.png"
 
     } catch (err) {
       console.error('❌ Image upload failed:', err);
+      if (setUploading) setUploading(false);
       return null;
     }
   };
@@ -45,7 +54,7 @@ const AdminPage = () => {
   const handleInsertImageIntoBody = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = await uploadImage(file);
+      const imageUrl = await uploadImage(file, setBodyImageUploading);
       if (imageUrl) {
         setBody((prev) => prev + `\n\n<img src="${imageUrl}" alt="Inserted image" style="max-width: 100%; height: auto;" />`);
       } else {
@@ -67,7 +76,7 @@ const AdminPage = () => {
 
     let coverImageUrl = '';
     if (coverImage) {
-      coverImageUrl = await uploadImage(coverImage);
+      coverImageUrl = await uploadImage(coverImage, setCoverImageUploading);
       if (!coverImageUrl) {
         alert('Cover image upload failed.');
         return;
@@ -119,6 +128,55 @@ const AdminPage = () => {
     }
   };
 
+  // Progress bar component
+  const ProgressBar = ({ isUploading, text }) => {
+    if (!isUploading) return null;
+    
+    return (
+      <div style={{ 
+        width: '100%', 
+        backgroundColor: '#e0e0e0', 
+        borderRadius: '4px', 
+        marginTop: '8px',
+        height: '20px',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          height: '100%',
+          background: 'linear-gradient(90deg, #4CAF50, #45a049)',
+          borderRadius: '4px',
+          animation: 'progressAnimation 2s ease-in-out infinite',
+          width: '100%'
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          right: '0',
+          bottom: '0',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '12px',
+          fontWeight: 'bold'
+        }}>
+          {text}
+        </div>
+        <style>
+          {`
+            @keyframes progressAnimation {
+              0% { opacity: 0.7; }
+              50% { opacity: 1; }
+              100% { opacity: 0.7; }
+            }
+          `}
+        </style>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.adminPage}>
       <h1>Post a New Blog</h1>
@@ -139,8 +197,10 @@ const AdminPage = () => {
           type="file" 
           accept="image/*" 
           onChange={(e) => setCoverImage(e.target.files[0])}
+          disabled={coverImageUploading}
         />
         {coverImage && <p>{coverImage.name}</p>}
+        <ProgressBar isUploading={coverImageUploading} text="Uploading cover image..." />
       </div>
 
       <div className={styles.field}>
@@ -164,7 +224,9 @@ const AdminPage = () => {
           type="file" 
           accept="image/*" 
           onChange={handleInsertImageIntoBody}
+          disabled={bodyImageUploading}
         />
+        <ProgressBar isUploading={bodyImageUploading} text="Uploading image..." />
       </div>
 
       <div className={styles.field}>
@@ -176,8 +238,12 @@ const AdminPage = () => {
         </select>
       </div>
 
-      <button className={styles.publishButton} onClick={handlePublish}>
-        Publish Blog
+      <button 
+        className={styles.publishButton} 
+        onClick={handlePublish}
+        disabled={coverImageUploading || bodyImageUploading}
+      >
+        {(coverImageUploading || bodyImageUploading) ? 'Uploading...' : 'Publish Blog'}
       </button>
     </div>
   );

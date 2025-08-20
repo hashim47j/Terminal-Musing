@@ -7,8 +7,6 @@
   flex-direction: column;
 }
 
-
-
 .postContentSection {
   padding-bottom: 20px;
 }
@@ -42,6 +40,8 @@
   line-height: 1.8;
   color: #333333;
   border: 1px solid #e5e5e5;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 
 .paragraph {

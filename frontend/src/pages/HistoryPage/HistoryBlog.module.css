@@ -20,8 +20,8 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  position: relative; /* Add this */
-  z-index: 1; /* Add this to ensure image shows */
+  border: 5px solid red; /* Temporary - to see if element exists */
+  background-color: yellow; /* Temporary - to see container */
 }
 
 

@@ -142,16 +142,19 @@ const HistoryBlog = () => {
         }} 
       />
       
-{/* Hero Section with Cover Image */}
-{blog.coverImage && (
+      {/* Hero Section with Cover Image */}
+      {blog.coverImage && (
   <section className={styles.heroSection}>
     <img
       src={blog.coverImage}
       alt="Cover"
       className={styles.heroImage}
-      onError={(e) => (e.target.style.display = 'none')}
+      onLoad={() => console.log('Image loaded successfully')}
+      onError={(e) => {
+        console.log('Image failed to load:', e.target.src);
+        e.target.style.display = 'none';
+      }}
     />
-    <div className={styles.heroOverlay}></div> {/* Keep this overlay */}
     <div className={styles.heroContent}>
       <div className={styles.titleLine}></div>
       <h1 className={styles.title}>{blog.title}</h1>

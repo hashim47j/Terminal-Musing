@@ -127,10 +127,7 @@ const HistoryBlog = () => {
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
-    <div
-      className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}
-      style={{ position: 'relative', zIndex: 1, paddingTop: '120px' }}
-    >
+    <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
       {/* COLOR SENSOR: Add this invisible div at the top to trigger navbar color change */}
       <div 
         data-navbar-bg-detect 
@@ -145,19 +142,32 @@ const HistoryBlog = () => {
         }} 
       />
       
+      {/* Hero Section with Cover Image */}
+      {blog.coverImage && (
+        <section className={styles.heroSection}>
+          <img
+            src={blog.coverImage}
+            alt="Cover"
+            className={styles.heroImage}
+            onError={(e) => (e.target.style.display = 'none')}
+          />
+          <div className={styles.heroOverlay}></div>
+          <div className={styles.heroContent}>
+            <div className={styles.titleLine}></div>
+            <h1 className={styles.title}>{blog.title}</h1>
+            <p className={styles.date}>{metaText}</p>
+          </div>
+        </section>
+      )}
+      
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>
-        <div className={styles.titleLine}></div> 
-          <h1 className={styles.title}>{blog.title}</h1>  
-          <p className={styles.date}>{metaText}</p>
-          {blog.coverImage && (
-            <img
-              src={blog.coverImage}
-              alt="Cover"
-              className={styles.inlineImage}
-              style={{ marginBottom: 20 }}
-              onError={(e) => (e.target.style.display = 'none')}
-            />
+          {!blog.coverImage && (
+            <>
+              <div className={styles.titleLine}></div>
+              <h1 className={styles.contentTitle}>{blog.title}</h1>
+              <p className={styles.contentDate}>{metaText}</p>
+            </>
           )}
           <div className={styles.contentBodyPlaceholder}>
             <BlogRenderer content={blog.content} />

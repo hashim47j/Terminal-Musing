@@ -13,17 +13,18 @@
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  background-color: #E4E4E4;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #E4E4E4; /* Sides always #E4E4E4 */
 }
 
 .heroImageWrapper {
   position: relative;
   width: 85%;
   height: 100%;
-  display: block; /* Changed from flex */
+  display: block;
+  margin: 0 auto;      /* Center the wrapper horizontally */
 }
 
 .heroImage {

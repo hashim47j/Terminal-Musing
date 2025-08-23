@@ -129,27 +129,29 @@ const HistoryBlog = () => {
       <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '200px', pointerEvents: 'none', zIndex: -1 }} />
 
       {blog.coverImage && (
-        <section className={styles.heroSection}>
-        <div className={styles.heroImageWrapper}></div>
-          <img
-            src={blog.coverImage}
-            alt={blog.title}
-            className={styles.heroImage}
-            onLoad={() => {}}
-            onError={(e) => { e.target.style.display = 'none'; }}
-          />
-          <div className={styles.heroOverlay} />
-          <div className={styles.heroContent}>
-            <h1 className={styles.title}>{blog.title}</h1>
-            {subtitle && (
-              <p className={styles.subheadingText}>
-                {subtitle}
-              </p>
-            )}
-            <p className={styles.date}>{metaText}</p>
-          </div>
-        </section>
+  <section className={styles.heroSection}>
+    <div className={styles.heroImageWrapper}>
+      <img
+        src={blog.coverImage}
+        alt={blog.title}
+        className={styles.heroImage}
+        onLoad={() => {}}
+        onError={(e) => { e.target.style.display = 'none'; }}
+      />
+      <div className={styles.heroGrain} />
+      <div className={styles.heroOverlay} />
+    </div>
+    <div className={styles.heroContent}>
+      <h1 className={styles.title}>{blog.title}</h1>
+      {subtitle && (
+        <p className={styles.subheadingText}>
+          {subtitle}
+        </p>
       )}
+      <p className={styles.date}>{metaText}</p>
+    </div>
+  </section>
+)}
 
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>

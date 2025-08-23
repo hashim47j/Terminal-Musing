@@ -20,44 +20,51 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border: 5px solid red; /* Temporary - to see if element exists */
-  background-color: yellow; /* Temporary - to see container */
 }
 
-
-/* .heroOverlay {
+.heroOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.25);
+  z-index: 1;
   pointer-events: none;
-} */
-
-
+}
 
 .heroContent {
   position: absolute;
-  bottom: 20%;
+  top: 7%; /* Move title to upper part */
   left: 4%;
   z-index: 2;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  width: 50%;
+  max-width: 700px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
 }
 
 .postContentSection {
   padding-bottom: 20px;
   margin-top: 40px;
 }
-
 .title {
   font-family: 'Playfair Display', serif;
   font-size: 3.5em;
-  color: white;
-  margin-bottom: 15px;
-  line-height: 1.3;
   font-weight: 600;
+  line-height: 1.3;
+  color: white;
+  margin-bottom: 0.15em;
+  text-align: left;
+}
+
+.subheadingText {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.4em;
+  color: rgba(255,255,255,0.97);
+  margin-bottom: 18px;
+  margin-top: 6px;
   text-align: left;
 }
 

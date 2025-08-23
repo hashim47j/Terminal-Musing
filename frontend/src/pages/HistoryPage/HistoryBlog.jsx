@@ -1,4 +1,3 @@
-// src/pages/HistoryPage/HistoryBlog.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './HistoryBlog.module.css';
@@ -30,9 +29,7 @@ const HistoryBlog = () => {
         if (!res.ok) throw new Error(`Blog fetch failed: HTTP ${res.status}`);
         const data = await res.json();
         setBlog(data);
-        if (data && data.title) {
-          setPageTitle(data.title);
-        }
+        if (data && data.title) setPageTitle(data.title);
         fetch(viewsApiUrl, { method: 'POST' }).catch(() => {});
       } catch (err) {
         setError(err.message || 'Failed to load blog');
@@ -42,9 +39,7 @@ const HistoryBlog = () => {
       }
     };
     fetchAndTrackBlog();
-    return () => {
-      setPageTitle(null);
-    };
+    return () => setPageTitle(null);
   }, [id, blogApiUrl, viewsApiUrl, setPageTitle]);
 
   useEffect(() => {
@@ -124,52 +119,44 @@ const HistoryBlog = () => {
     month: 'short',
     year: 'numeric',
   });
+  // subheading below main heading over image
+  const subtitle = blog.subtitle || blog.subheading || '';
+
   const metaText = `On ${formattedDate}${blog.author ? `, By ${blog.author}` : ''}`;
 
   return (
     <div className={`${styles.blogPageOuterContainer} ${darkMode ? styles.darkMode : ''}`}>
-      {/* COLOR SENSOR: Add this invisible div at the top to trigger navbar color change */}
-      <div 
-        data-navbar-bg-detect 
-        style={{ 
-          position: 'absolute', 
-          top: 0, 
-          left: 0, 
-          width: '100%', 
-          height: '200px', 
-          pointerEvents: 'none',
-          zIndex: -1 
-        }} 
-      />
-      
-      {/* Hero Section with Cover Image */}
-      {blog.coverImage && (
-  <section className={styles.heroSection}>
-    <img
-      src={blog.coverImage}
-      alt="Cover"
-      className={styles.heroImage}
-      onLoad={() => console.log('Image loaded successfully')}
-      onError={(e) => {
-        console.log('Image failed to load:', e.target.src);
-        e.target.style.display = 'none';
-      }}
-    />
-    <div className={styles.heroContent}>
-      <div className={styles.titleLine}></div>
-      <h1 className={styles.title}>{blog.title}</h1>
-      <p className={styles.date}>{metaText}</p>
-    </div>
-  </section>
-)}
+      <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '200px', pointerEvents: 'none', zIndex: -1 }} />
 
-      
+      {blog.coverImage && (
+        <section className={styles.heroSection}>
+          <img
+            src={blog.coverImage}
+            alt={blog.title}
+            className={styles.heroImage}
+            onLoad={() => {}}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+          <div className={styles.heroOverlay} />
+          <div className={styles.heroContent}>
+            <h1 className={styles.title}>{blog.title}</h1>
+            {subtitle && (
+              <p className={styles.subheadingText}>
+                {subtitle}
+              </p>
+            )}
+            <p className={styles.date}>{metaText}</p>
+          </div>
+        </section>
+      )}
+
       <div className={styles.mainContentWrapper}>
         <section className={styles.postContentSection}>
           {!blog.coverImage && (
             <>
               <div className={styles.titleLine}></div>
               <h1 className={styles.contentTitle}>{blog.title}</h1>
+              {subtitle && <p className={styles.contentDate}>{subtitle}</p>}
               <p className={styles.contentDate}>{metaText}</p>
             </>
           )}
@@ -194,7 +181,6 @@ const HistoryBlog = () => {
               ))
             )}
           </div>
-
           <form className={styles.commentForm} onSubmit={handleSubmit}>
             <h3>Share your thoughts</h3>
             <label htmlFor="nameInput">Name</label>

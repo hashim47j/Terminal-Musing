@@ -130,6 +130,7 @@ const HistoryBlog = () => {
 
       {blog.coverImage && (
         <section className={styles.heroSection}>
+        <div className={styles.heroImageWrapper}></div>
           <img
             src={blog.coverImage}
             alt={blog.title}

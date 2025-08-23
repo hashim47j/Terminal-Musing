@@ -18,12 +18,15 @@
 .heroImage {
   width: 80%;
   height: 100%;
-  background-position: center;
   object-fit: cover;
   display: block;
   filter: contrast(1.1) brightness(0.85) saturate(0.9);
   position: relative;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
 }
+
 
 .heroImage::after {
   content: '';

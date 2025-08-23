@@ -1,7 +1,7 @@
 /* Terminal-Musing/src/pages/HomePage/HistoryHero/HistoryBlog.module.css */
 
 .blogPageOuterContainer {
-  background-color: #ffffff;
+  background-color: #E4E4E4;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@
 /* Hero Cover Image Section */
 .heroSection {
   position: relative;
-  background-color: #ffffff;
+
   width: 100%;
   height: 100vh;
   overflow: hidden;

@@ -12,12 +12,12 @@ const PageTransition = ({ children }) => {
 
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
-      console.log('🎬 Animation direction:', transitionDirection);
+      console.log('🎬 Cinematic animation with fade & grayscale');
       
       setAnimationPhase('prepare');
       
       setTimeout(() => {
-        console.log('🎬 Both pages sliding now');
+        console.log('🎬 Both pages sliding with effects');
         setAnimationPhase('animate');
       }, 50);
       
@@ -36,7 +36,24 @@ const PageTransition = ({ children }) => {
   return (
     <div className={`${styles.transitionContainer} ${animationPhase === 'animate' ? styles.transitioning : ''}`}>
       
-      {/* Current Page - slides out in OPPOSITE direction of target button */}
+      {/* Dark overlay during transition for extra drama */}
+      {animationPhase === 'animate' && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            zIndex: 3,
+            pointerEvents: 'none',
+            transition: 'opacity 600ms ease'
+          }}
+        />
+      )}
+      
+      {/* Current Page - fades to black/white and slides out */}
       <div 
         className={`
           ${styles.pageWrapper} 
@@ -54,7 +71,7 @@ const PageTransition = ({ children }) => {
         {children}
       </div>
       
-      {/* Target Page - slides in from direction of button position */}
+      {/* Target Page - slides in with full color */}
       {isTransitioning && targetPageContent && (
         <div 
           className={`

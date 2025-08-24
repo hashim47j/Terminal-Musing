@@ -23,9 +23,10 @@ import AdminDashboard from './pages/AdminPage/AdminDashboard';
 import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
 import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
 import { PageProvider } from './context/PageContext'; 
-
+import { PageTransitionProvider } from './components/pageanim/PageTransitionContext';
 function App() {
   return (
+    <PageTransitionProvider>
     <PageProvider>
       <Navbar />
       <main>
@@ -54,6 +55,7 @@ function App() {
       </main>
       <Footer />
     </PageProvider>
+    </PageTransitionProvider>
   );
 }
 

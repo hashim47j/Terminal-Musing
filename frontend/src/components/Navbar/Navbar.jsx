@@ -5,6 +5,7 @@ import { PageContext } from "../../context/PageContext.jsx";
 
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
+import { PageTransitionContext } from '../pageanim/PageTransitionContext'; 
 
 const Navbar = () => {
   // State for the new feature
@@ -42,6 +43,8 @@ const Navbar = () => {
   const HOME_BUTTON_LEFT = 30;
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
+
+  const { startPageTransition } = useContext(PageTransitionContext);
 
   // Homepage detection for shadow control
   useEffect(() => {
@@ -243,12 +246,16 @@ const Navbar = () => {
     e.preventDefault();
     updateHighlight(e.currentTarget);
     setClickedPath(path);
+    
     if (menuOpen) {
       toggleMenu();
     }
-    setTimeout(() => {
+  
+    // Only use the transition system - it handles the navigation timing
+    startPageTransition(path, () => {
       navigate(path);
-    }, 100);
+    });
+    
   };
 
   return (

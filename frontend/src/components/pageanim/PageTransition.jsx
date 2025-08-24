@@ -10,16 +10,8 @@ const PageTransition = ({ children }) => {
   const [displayedPage, setDisplayedPage] = useState(children);
   const [previousPage, setPreviousPage] = useState(null);
   const [animationState, setAnimationState] = useState('idle');
+  const [animationKey, setAnimationKey] = useState(0); // FORCE ANIMATION RESTART
   const previousLocation = useRef(location.pathname);
-
-  // DEBUG: Log everything
-  console.log('🔍 DEBUG:', {
-    isTransitioning,
-    transitionDirection,
-    animationState,
-    currentPath: location.pathname,
-    previousPath: previousLocation.current
-  });
 
   useEffect(() => {
     if (location.pathname === previousLocation.current) {
@@ -28,88 +20,70 @@ const PageTransition = ({ children }) => {
 
     if (isTransitioning) {
       console.log('🎬 STARTING ANIMATION');
-      console.log('🎬 Direction:', transitionDirection);
+      
+      // FORCE NEW ANIMATION by changing key
+      setAnimationKey(prev => prev + 1);
       
       setAnimationState('prepare');
       setPreviousPage(displayedPage);
       
-      setTimeout(() => {
-        console.log('🎬 ANIMATE STATE');
-        setAnimationState('animate');
-        
-        setTimeout(() => {
-          console.log('🎬 COMPLETE');
-          setDisplayedPage(children);
-          setPreviousPage(null);
-          setAnimationState('idle');
-          endTransition();
-          previousLocation.current = location.pathname;
-        }, 2000); // Made it 2 seconds for debugging
-      }, 100);
+      // Use requestAnimationFrame to ensure proper timing
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          console.log('🎬 ANIMATE NOW');
+          setAnimationState('animate');
+          
+          setTimeout(() => {
+            console.log('🎬 COMPLETE');
+            setDisplayedPage(children);
+            setPreviousPage(null);
+            setAnimationState('idle');
+            endTransition();
+            previousLocation.current = location.pathname;
+          }, 900);
+        });
+      });
     } else {
       setDisplayedPage(children);
       previousLocation.current = location.pathname;
     }
-  }, [location.pathname, isTransitioning, children, displayedPage, endTransition, transitionDirection]);
+  }, [location.pathname, isTransitioning, children, displayedPage, endTransition]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
   }
 
-  // DEBUG: Log actual classes being applied
-  const outgoingClasses = `
-    ${styles.pageWrapper} 
-    ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
-  `;
-  
-  const incomingClasses = `
-    ${styles.incomingPage}
-    ${animationState === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
-    ${animationState === 'animate' ? styles.slideInComplete : ''}
-  `;
-
-  console.log('🔍 Outgoing classes:', outgoingClasses);
-  console.log('🔍 Incoming classes:', incomingClasses);
-  console.log('🔍 Styles object:', styles);
-
   return (
-    <div 
-      className={styles.transitionContainer}
-      style={{ border: '3px solid red', minHeight: '100vh' }} // Debug border
-    >
+    <div className={styles.transitionContainer}>
       
-      {/* Old page with debug styling */}
+      {/* OLD PAGE - Force restart with key */}
       <div 
-        className={outgoingClasses}
+        key={`old-${animationKey}`} // FORCE RE-RENDER
+        className={`
+          ${styles.pageWrapper} 
+          ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
+        `}
         style={{
           position: animationState !== 'idle' ? 'absolute' : 'relative',
           top: 0,
           left: 0,
           width: '100%',
-          zIndex: 1,
-          border: '3px solid blue', // Debug border
-          backgroundColor: 'rgba(0,0,255,0.1)' // Debug background
+          zIndex: 1
         }}
       >
-        <h1 style={{color: 'red'}}>OLD PAGE: {previousPage ? 'Previous' : 'Current'}</h1>
         {previousPage || displayedPage}
       </div>
       
-      {/* New page with debug styling */}
+      {/* NEW PAGE - Force restart with key */}
       {animationState !== 'idle' && (
         <div 
-          className={incomingClasses}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            zIndex: 2,
-            border: '3px solid green', // Debug border
-            backgroundColor: 'rgba(0,255,0,0.1)' // Debug background
-          }}
+          key={`new-${animationKey}`} // FORCE RE-RENDER
+          className={`
+            ${styles.incomingPage}
+            ${animationState === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
+            ${animationState === 'animate' ? styles.slideInComplete : ''}
+          `}
         >
-          <h1 style={{color: 'green'}}>NEW PAGE</h1>
           {children}
         </div>
       )}

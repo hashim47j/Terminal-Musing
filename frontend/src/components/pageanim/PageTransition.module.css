@@ -7,10 +7,16 @@
   .pageWrapper {
     width: 100%;
     transition: none;
+    position: relative;
+    z-index: 1;
   }
   
   .pageWrapper.transitioning {
     transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
   
   .pageWrapper.slideLeft {
@@ -21,16 +27,16 @@
     transform: translateX(100%);
   }
   
-  .pageWrapper.slideIn {
-    transform: translateX(0);
-  }
-  
   /* Incoming page styles */
   .incomingPage {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+    z-index: 2;
+  }
+  
+  .incomingPage.transitioning {
     transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
@@ -57,10 +63,11 @@
     .pageWrapper {
       transition: none !important;
       transform: none !important;
+      position: relative !important;
     }
     
     .incomingPage {
-      position: static;
+      position: static !important;
       transition: none !important;
       transform: none !important;
     }
@@ -68,11 +75,5 @@
     .transitionContainer {
       overflow: visible;
     }
-  }
-  
-  /* Smooth scroll reset after transition */
-  .pageWrapper.resetTransition {
-    transition: none;
-    transform: translateX(0);
   }
   

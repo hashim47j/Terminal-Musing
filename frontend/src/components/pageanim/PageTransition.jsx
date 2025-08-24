@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
-import usePageTransition from './usePageTransition.js'; // Added .js extension
+import usePageTransition from './usePageTransition.js';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
@@ -15,6 +15,7 @@ const PageTransition = ({ children }) => {
   
   const [currentPage, setCurrentPage] = useState(children);
   const [incomingPage, setIncomingPage] = useState(null);
+  const [showBothPages, setShowBothPages] = useState(false);
   const previousPath = useRef(location.pathname);
   const containerRef = useRef(null);
 
@@ -39,6 +40,7 @@ const PageTransition = ({ children }) => {
 
     // Set up incoming page
     setIncomingPage(children);
+    setShowBothPages(true);
 
     // Force a reflow to ensure the incoming page is positioned
     if (containerRef.current) {
@@ -47,13 +49,14 @@ const PageTransition = ({ children }) => {
 
     // Start the animation after a small delay
     const animationTimer = setTimeout(() => {
-      // Trigger the slide animation
-      setCurrentPage(null); // This will trigger the slide out
+      // This will trigger both pages to animate simultaneously
+      setShowBothPages(true);
       
       // Complete the transition after animation duration
       const completeTimer = setTimeout(() => {
         setCurrentPage(children);
         setIncomingPage(null);
+        setShowBothPages(false);
         endTransition();
         previousPath.current = currentPath;
       }, 600); // Match CSS transition duration
@@ -69,20 +72,15 @@ const PageTransition = ({ children }) => {
     return <>{children}</>;
   }
 
-  const getPageWrapperClasses = () => {
+  const getCurrentPageClasses = () => {
     let classes = [styles.pageWrapper];
     
-    if (isTransitioning) {
+    if (isTransitioning && showBothPages) {
       classes.push(styles.transitioning);
-      
-      if (!currentPage) {
-        // Page is sliding out
-        classes.push(
-          transitionDirection === 'right' ? styles.slideLeft : styles.slideRight
-        );
-      } else {
-        classes.push(styles.slideIn);
-      }
+      // Current page slides out in the direction opposite to incoming page
+      classes.push(
+        transitionDirection === 'right' ? styles.slideLeft : styles.slideRight
+      );
     }
     
     return classes.join(' ');
@@ -92,11 +90,13 @@ const PageTransition = ({ children }) => {
     let classes = [styles.incomingPage];
     
     if (isTransitioning) {
-      if (currentPage) {
-        // Incoming page is sliding in
+      classes.push(styles.transitioning);
+      
+      if (showBothPages) {
+        // Incoming page slides in from the specified direction
         classes.push(styles.slideInComplete);
       } else {
-        // Incoming page is waiting
+        // Incoming page starts positioned off-screen
         classes.push(
           transitionDirection === 'right' ? styles.fromRight : styles.fromLeft
         );
@@ -112,16 +112,31 @@ const PageTransition = ({ children }) => {
       className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}
     >
       {/* Current/Outgoing Page */}
-      {currentPage && (
-        <div className={getPageWrapperClasses()}>
+      {currentPage && !incomingPage && (
+        <div className={styles.pageWrapper}>
           {currentPage}
         </div>
       )}
       
-      {/* Incoming Page */}
-      {incomingPage && (
-        <div className={getIncomingPageClasses()}>
-          {incomingPage}
+      {/* During transition - show both pages */}
+      {isTransitioning && currentPage && incomingPage && (
+        <>
+          {/* Current page sliding out */}
+          <div className={getCurrentPageClasses()}>
+            {currentPage}
+          </div>
+          
+          {/* Incoming page sliding in */}
+          <div className={getIncomingPageClasses()}>
+            {incomingPage}
+          </div>
+        </>
+      )}
+      
+      {/* After transition - show only new page */}
+      {!isTransitioning && !incomingPage && (
+        <div className={styles.pageWrapper}>
+          {currentPage}
         </div>
       )}
     </div>

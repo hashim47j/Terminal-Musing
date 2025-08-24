@@ -18,7 +18,7 @@
     filter: grayscale(100%) brightness(0.9) blur(8px) !important;
   }
   
-  /* PHASE 2: Drift based on direction - THIS IS PERFECT */
+  /* PHASE 2: Drift based on direction */
   .driftLeft {
     transform: translateX(-30px) translateZ(0) !important;
     opacity: 0 !important;
@@ -31,7 +31,7 @@
     filter: grayscale(100%) brightness(0.6) blur(12px) !important;
   }
   
-  /* New page coming in - FIXED: No movement, just appears */
+  /* New page coming in - NO POST ANIMATION */
   .incomingPage {
     position: absolute;
     top: 0;
@@ -41,19 +41,19 @@
     will-change: opacity, filter;
   }
   
-  /* REMOVED: No starting position - appears in place */
   .fromLeft,
   .fromRight {
     opacity: 0;
     filter: blur(15px);
-    /* NO transform - stays in final position */
   }
   
   .slideInFromBlur {
     animation: subtleAppear 600ms ease-out forwards;
+    /* Remove animation after completion */
+    animation-fill-mode: none; 
   }
   
-  /* New page subtly appears in place - blur → clear */
+  /* Simple appear animation - no lingering effects */
   @keyframes subtleAppear {
     0% {
       opacity: 0;
@@ -62,7 +62,6 @@
     100% {
       opacity: 1;
       filter: blur(0px);
-      /* No transform - stays in place */
     }
   }
   

@@ -1,38 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
 import { usePageTransition } from './PageTransitionContext';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
-  const { isTransitioning, transitionDirection, pendingNavigation, endTransition } = usePageTransition();
+  const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
   
   const [currentPage, setCurrentPage] = useState(children);
-  const [previousPage, setPreviousPage] = useState(null);
+  const [incomingPage, setIncomingPage] = useState(null);
+  const [animationPhase, setAnimationPhase] = useState('idle'); // 'idle', 'prepare', 'animate'
+  const previousPath = useRef(location.pathname);
 
   useEffect(() => {
-    if (isTransitioning && pendingNavigation) {
-      console.log('🎬 Animation: keeping old page, preparing new page');
-      
-      // Keep old page visible, prepare new page
-      setPreviousPage(currentPage);
-      
-      // Start animation after setup
-      setTimeout(() => {
-        console.log('🎬 Animation: both pages sliding');
+    if (location.pathname !== previousPath.current) {
+      if (isTransitioning) {
+        console.log('🎬 Route changed, starting animation');
         
-        // Complete animation
+        // Phase 1: Prepare animation
+        setAnimationPhase('prepare');
+        setIncomingPage(children);
+        
+        // Phase 2: Start animation
         setTimeout(() => {
-          setCurrentPage(children);
-          setPreviousPage(null);
-          endTransition();
-          console.log('✅ Animation completed');
-        }, 650);
-      }, 50);
-    } else if (!isTransitioning) {
-      setCurrentPage(children);
+          setAnimationPhase('animate');
+          
+          // Phase 3: Complete animation
+          setTimeout(() => {
+            setCurrentPage(children);
+            setIncomingPage(null);
+            setAnimationPhase('idle');
+            endTransition();
+            previousPath.current = location.pathname;
+          }, 650);
+        }, 50);
+      } else {
+        // No transition - just update
+        setCurrentPage(children);
+        previousPath.current = location.pathname;
+      }
     }
-  }, [isTransitioning, pendingNavigation, children, currentPage, endTransition]);
+  }, [location.pathname, isTransitioning, children, endTransition]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
@@ -40,26 +48,27 @@ const PageTransition = ({ children }) => {
 
   return (
     <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
-      {/* Current/Previous Page */}
+      {/* Current page */}
       <div 
         className={`
           ${styles.pageWrapper} 
-          ${isTransitioning && previousPage ? styles.transitioning : ''}
-          ${isTransitioning && previousPage ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
+          ${animationPhase === 'animate' ? styles.transitioning : ''}
+          ${animationPhase === 'animate' ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
         `}
       >
-        {isTransitioning && previousPage ? previousPage : currentPage}
+        {currentPage}
       </div>
       
-      {/* New Page sliding in */}
-      {isTransitioning && pendingNavigation && (
+      {/* Incoming page during transition */}
+      {incomingPage && animationPhase !== 'idle' && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${styles.slideInComplete}
+            ${animationPhase === 'prepare' ? (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight) : ''}
+            ${animationPhase === 'animate' ? styles.slideInComplete : ''}
           `}
         >
-          {children}
+          {incomingPage}
         </div>
       )}
     </div>

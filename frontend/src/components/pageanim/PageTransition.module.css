@@ -2,6 +2,7 @@
     position: relative;
     width: 100%;
     overflow: hidden;
+    min-height: 100vh;
   }
   
   .pageWrapper {
@@ -13,10 +14,6 @@
   
   .pageWrapper.transitioning {
     transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
   }
   
   .pageWrapper.slideLeft {
@@ -34,9 +31,6 @@
     left: 0;
     width: 100%;
     z-index: 2;
-  }
-  
-  .incomingPage.transitioning {
     transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
@@ -52,10 +46,9 @@
     transform: translateX(0);
   }
   
-  /* Prevent scrolling during transition */
+  /* Prevent content jumping during transition */
   .transitionContainer.transitioning {
-    height: 100vh;
-    overflow: hidden;
+    position: relative;
   }
   
   /* Mobile - no transitions */
@@ -74,6 +67,7 @@
     
     .transitionContainer {
       overflow: visible;
+      min-height: auto;
     }
   }
   

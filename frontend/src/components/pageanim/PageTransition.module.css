@@ -9,77 +9,64 @@
     width: 100%;
     position: relative;
     z-index: 1;
-    will-change: opacity, filter;
+    will-change: filter, transform, opacity;
+    transition: filter 200ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
   }
   
-  .pageWrapper.transitioning {
-    transition: opacity 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                filter 400ms ease-out;
+  /* PHASE 1: Instant black and white */
+  .turnBlackWhite {
+    filter: grayscale(100%) brightness(1) !important;
   }
   
-  /* Only opacity and animation - let keyframes handle transform */
-  .pageWrapper.slideLeft {
+  /* PHASE 2: Add blur while staying B&W */
+  .addBlur {
+    filter: grayscale(100%) brightness(0.9) blur(8px) !important;
+  }
+  
+  /* PHASE 3: Drift with fade */
+  .driftLeft {
+    transform: translateX(-30px) translateZ(0) !important;
     opacity: 0 !important;
-    animation: driftLeftAndFade 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    filter: grayscale(100%) brightness(0.6) blur(12px) !important;
   }
   
-  .pageWrapper.slideRight {
+  .driftRight {
+    transform: translateX(30px) translateZ(0) !important;
     opacity: 0 !important;
-    animation: driftRightAndFade 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    filter: grayscale(100%) brightness(0.6) blur(12px) !important;
   }
   
-  /* Incoming page starting positions */
-  .incomingPage.fromLeft {
-    transform: translateX(-20px) translateZ(0);
+  /* New page coming in */
+  .incomingPage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+    will-change: transform, opacity, filter;
+  }
+  
+  .fromLeft {
+    transform: translateX(-30px) translateZ(0);
     opacity: 0;
-    filter: blur(12px);
+    filter: blur(15px);
   }
   
-  .incomingPage.fromRight {
-    transform: translateX(20px) translateZ(0);
+  .fromRight {
+    transform: translateX(30px) translateZ(0);
     opacity: 0;
-    filter: blur(12px);
+    filter: blur(15px);
   }
   
-  /* Only opacity and animation - let keyframes handle transform */
-  .incomingPage.slideInComplete {
-    opacity: 1;
-    filter: blur(0px);
-    animation: driftInFromBlur 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  .slideInFromBlur {
+    animation: clearIntoFocus 600ms ease-out forwards;
   }
   
-  /* Your existing working animations - keep these! */
-  @keyframes driftLeftAndFade {
-    0% {
-      opacity: 1;
-      transform: translateX(0) translateZ(0);
-      filter: grayscale(100%) brightness(1) blur(0px);
-    }
-    100% {
-      opacity: 0;
-      transform: translateX(-30px) translateZ(0);
-      filter: grayscale(100%) brightness(0.6) blur(8px);
-    }
-  }
-  
-  @keyframes driftRightAndFade {
-    0% {
-      opacity: 1;
-      transform: translateX(0) translateZ(0);
-      filter: grayscale(100%) brightness(1) blur(0px);
-    }
-    100% {
-      opacity: 0;
-      transform: translateX(30px) translateZ(0);
-      filter: grayscale(100%) brightness(0.6) blur(8px);
-    }
-  }
-  
-  @keyframes driftInFromBlur {
+  /* New page clears into focus */
+  @keyframes clearIntoFocus {
     0% {
       opacity: 0;
-      transform: translateX(20px) translateZ(0);
-      filter: blur(12px);
+      filter: blur(15px);
     }
     100% {
       opacity: 1;
@@ -88,31 +75,21 @@
     }
   }
   
-  /* Your mobile styles - keep these! */
+  /* Mobile */
   @media (max-width: 768px) {
     .pageWrapper {
       transition: none !important;
       transform: none !important;
-      position: relative !important;
       opacity: 1 !important;
       filter: none !important;
-      animation: none !important;
-      will-change: auto;
     }
     
     .incomingPage {
       position: static !important;
-      transition: none !important;
+      animation: none !important;
       transform: none !important;
       opacity: 1 !important;
       filter: none !important;
-      animation: none !important;
-      will-change: auto;
-    }
-    
-    .transitionContainer {
-      overflow: visible;
-      min-height: auto;
     }
   }
   

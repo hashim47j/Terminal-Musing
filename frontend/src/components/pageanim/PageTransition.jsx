@@ -8,43 +8,30 @@ const PageTransition = ({ children }) => {
   const location = useLocation();
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   
-  const [animationPhase, setAnimationPhase] = useState('idle');
-  const [showWindParticles, setShowWindParticles] = useState(false);
-
-  // Generate random particles for wind effect
-  const generateParticles = () => {
-    return Array.from({ length: 12 }, (_, i) => ({
-      id: i,
-      delay: Math.random() * 400,
-      size: Math.random() * 4 + 2,
-      startX: Math.random() * 100,
-      startY: Math.random() * 100,
-      endX: Math.random() * 200 - 50,
-      endY: Math.random() * 200 - 50,
-    }));
-  };
-
-  const [particles] = useState(generateParticles());
-
+  const [animationPhase, setAnimationPhase] = useState('idle'); // idle, blackwhite, blur, drift
+  
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
-      console.log('🌬️ Wind effect animation starting');
+      console.log('🎬 Starting 3-phase animation');
       
-      setAnimationPhase('prepare');
-      setShowWindParticles(true);
-      
-      setTimeout(() => {
-        console.log('🌪️ Wind blowing both pages');
-        setAnimationPhase('animate');
-      }, 50);
+      // PHASE 1: Turn black and white INSTANTLY
+      setAnimationPhase('blackwhite');
       
       setTimeout(() => {
-        setAnimationPhase('idle');
-        setShowWindParticles(false);
-      }, 650);
+        console.log('🌫️ Phase 2: Adding blur');
+        setAnimationPhase('blur');
+        
+        setTimeout(() => {
+          console.log('🌊 Phase 3: Drifting');
+          setAnimationPhase('drift');
+          
+          setTimeout(() => {
+            setAnimationPhase('idle');
+          }, 600); // Drift duration
+        }, 300); // Blur duration  
+      }, 200); // B&W duration
     } else {
       setAnimationPhase('idle');
-      setShowWindParticles(false);
     }
   }, [isTransitioning, targetPageContent, transitionDirection]);
 
@@ -53,87 +40,40 @@ const PageTransition = ({ children }) => {
   }
 
   return (
-    <div className={`${styles.transitionContainer} ${animationPhase === 'animate' ? styles.transitioning : ''}`}>
+    <div className={styles.transitionContainer}>
       
-      {/* Wind particles effect */}
-      {showWindParticles && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-            zIndex: 4
-          }}
-        >
-          {particles.map((particle) => (
-            <div
-              key={particle.id}
-              style={{
-                position: 'absolute',
-                left: `${particle.startX}%`,
-                top: `${particle.startY}%`,
-                width: `${particle.size}px`,
-                height: `${particle.size}px`,
-                backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                borderRadius: '50%',
-                animation: `windParticle${transitionDirection === 'right' ? 'Left' : 'Right'} 600ms ease-out ${particle.delay}ms forwards`,
-                opacity: 0,
-              }}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Subtle wind overlay */}
-      {animationPhase === 'animate' && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.05) 100%)',
-            zIndex: 3,
-            pointerEvents: 'none',
-            animation: `windOverlay${transitionDirection === 'right' ? 'Left' : 'Right'} 600ms ease-out`
-          }}
-        />
-      )}
-      
-      {/* Current Page - blown away by wind */}
+      {/* Current Page - 3-phase transition */}
       <div 
         className={`
           ${styles.pageWrapper} 
-          ${animationPhase === 'animate' ? styles.transitioning : ''}
-          ${animationPhase === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
+          ${animationPhase === 'blackwhite' ? styles.turnBlackWhite : ''}
+          ${animationPhase === 'blur' ? styles.addBlur : ''}
+          ${animationPhase === 'drift' ? (transitionDirection === 'right' ? styles.driftLeft : styles.driftRight) : ''}
         `}
         style={{
-          position: animationPhase === 'animate' ? 'absolute' : 'relative',
-          top: animationPhase === 'animate' ? 0 : 'auto',
-          left: animationPhase === 'animate' ? 0 : 'auto',
-          width: animationPhase === 'animate' ? '100%' : 'auto',
-          zIndex: animationPhase === 'animate' ? 1 : 'auto'
+          position: animationPhase !== 'idle' ? 'absolute' : 'relative',
+          top: 0,
+          left: 0,
+          width: '100%',
+          zIndex: 1
         }}
       >
         {children}
       </div>
       
-      {/* Target Page - slides in fresh */}
-      {isTransitioning && targetPageContent && (
+      {/* New Page - slides in during drift phase */}
+      {animationPhase === 'drift' && targetPageContent && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${animationPhase === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
-            ${animationPhase === 'animate' ? styles.slideInComplete : ''}
+            ${styles.slideInFromBlur}
+            ${transitionDirection === 'right' ? styles.fromRight : styles.fromLeft}
           `}
         >
           {getPageComponent(targetPageContent)}
         </div>
       )}
+      
     </div>
   );
 };

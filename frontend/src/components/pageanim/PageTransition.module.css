@@ -3,130 +3,144 @@
     width: 100%;
     overflow: hidden;
     min-height: 100vh;
-    background: #000; /* Dark void between memories and life */
   }
   
   .pageWrapper {
     width: 100%;
     position: relative;
     z-index: 1;
-    will-change: opacity, filter, transform;
+    will-change: opacity, filter;
   }
   
   .pageWrapper.transitioning {
-    transition: opacity 1200ms ease-out,
-                filter 800ms ease-out,
-                transform 1200ms cubic-bezier(0.19, 1, 0.22, 1);
+    /* No sliding - just opacity and filter transitions */
+    transition: opacity 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                filter 900ms ease-out; /* Made filter transition longer */
   }
   
-  /* THE MEMORY FADE - Old page becomes a distant, fading memory */
-  .pageWrapper.slideLeft,
-  .pageWrapper.slideRight {
+  /* Outgoing page - drifts slightly and fades WITH black and white */
+  .pageWrapper.slideLeft {
+    transform: translateX(-30px) translateZ(0) !important;
     opacity: 0 !important;
-    transform: scale(0.85) translateY(40px) rotateX(10deg) translateZ(0) !important;
-    animation: memoryFade 1200ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    animation: driftLeftAndFade 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
   
-  /* Memory fading animation - like memories dissolving */
-  @keyframes memoryFade {
-    0% {
-      opacity: 1;
-      transform: scale(1) translateY(0) rotateX(0deg) translateZ(0);
-      filter: grayscale(0%) brightness(1) blur(0px) contrast(1);
-    }
-    15% {
-      opacity: 0.9;
-      transform: scale(0.98) translateY(5px) rotateX(1deg) translateZ(0);
-      filter: grayscale(30%) brightness(0.95) blur(1px) contrast(0.9);
-    }
-    35% {
-      opacity: 0.6;
-      transform: scale(0.94) translateY(15px) rotateX(4deg) translateZ(0);
-      filter: grayscale(70%) brightness(0.8) blur(4px) contrast(0.7);
-    }
-    60% {
-      opacity: 0.3;
-      transform: scale(0.9) translateY(25px) rotateX(7deg) translateZ(0);
-      filter: grayscale(95%) brightness(0.65) blur(8px) contrast(0.5);
-    }
-    85% {
-      opacity: 0.1;
-      transform: scale(0.87) translateY(35px) rotateX(9deg) translateZ(0);
-      filter: grayscale(100%) brightness(0.5) blur(12px) contrast(0.3);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.85) translateY(40px) rotateX(10deg) translateZ(0);
-      filter: grayscale(100%) brightness(0.4) blur(15px) contrast(0.2);
-    }
+  .pageWrapper.slideRight {
+    transform: translateX(30px) translateZ(0) !important;
+    opacity: 0 !important;
+    animation: driftRightAndFade 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
   
-  .incomingPage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2;
-    will-change: opacity, filter, transform;
-  }
-  
-  /* THE LIFE EMERGENCE - New page emerges from blur like life coming into focus */
-  .incomingPage.fromLeft,
-  .incomingPage.fromRight {
+  /* Incoming page - drifts into place */
+  .incomingPage.fromLeft {
+    transform: translateX(-20px) translateZ(0);
     opacity: 0;
-    transform: scale(1.1) translateY(-30px) rotateX(-8deg) translateZ(0);
-    filter: blur(20px) brightness(1.2) contrast(0.4) saturate(0.3);
+    filter: blur(12px);
+  }
+  
+  .incomingPage.fromRight {
+    transform: translateX(20px) translateZ(0);
+    opacity: 0;
+    filter: blur(12px);
   }
   
   .incomingPage.slideInComplete {
+    transform: translateX(0) translateZ(0);
     opacity: 1;
-    transform: scale(1) translateY(0) rotateX(0deg) translateZ(0);
-    filter: blur(0px) brightness(1) contrast(1) saturate(1);
-    animation: lifeEmergence 1200ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    filter: blur(0px);
+    animation: driftInFromBlur 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
   
-  /* Life emergence animation - like life becoming vivid and real */
-  @keyframes lifeEmergence {
+  /* Updated drift animations WITH gradual black and white */
+  @keyframes driftLeftAndFade {
+    0% {
+      opacity: 1;
+      transform: translateX(0) translateZ(0);
+      filter: grayscale(0%) brightness(1) blur(0px);
+    }
+    25% {
+      opacity: 0.8;
+      transform: translateX(-8px) translateZ(0);
+      filter: grayscale(40%) brightness(0.9) blur(2px);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateX(-18px) translateZ(0);
+      filter: grayscale(80%) brightness(0.75) blur(5px);
+    }
+    75% {
+      opacity: 0.2;
+      transform: translateX(-25px) translateZ(0);
+      filter: grayscale(100%) brightness(0.65) blur(7px);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-30px) translateZ(0);
+      filter: grayscale(100%) brightness(0.6) blur(8px);
+    }
+  }
+  
+  @keyframes driftRightAndFade {
+    0% {
+      opacity: 1;
+      transform: translateX(0) translateZ(0);
+      filter: grayscale(0%) brightness(1) blur(0px);
+    }
+    25% {
+      opacity: 0.8;
+      transform: translateX(8px) translateZ(0);
+      filter: grayscale(40%) brightness(0.9) blur(2px);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateX(18px) translateZ(0);
+      filter: grayscale(80%) brightness(0.75) blur(5px);
+    }
+    75% {
+      opacity: 0.2;
+      transform: translateX(25px) translateZ(0);
+      filter: grayscale(100%) brightness(0.65) blur(7px);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(30px) translateZ(0);
+      filter: grayscale(100%) brightness(0.6) blur(8px);
+    }
+  }
+  
+  @keyframes driftInFromBlur {
     0% {
       opacity: 0;
-      transform: scale(1.1) translateY(-30px) rotateX(-8deg) translateZ(0);
-      filter: blur(20px) brightness(1.2) contrast(0.4) saturate(0.3);
+      transform: translateX(20px) translateZ(0);
+      filter: blur(12px);
     }
-    20% {
-      opacity: 0.2;
-      transform: scale(1.08) translateY(-20px) rotateX(-5deg) translateZ(0);
-      filter: blur(15px) brightness(1.15) contrast(0.6) saturate(0.5);
+    30% {
+      opacity: 0.4;
+      transform: translateX(12px) translateZ(0);
+      filter: blur(8px);
     }
-    40% {
-      opacity: 0.5;
-      transform: scale(1.05) translateY(-10px) rotateX(-3deg) translateZ(0);
-      filter: blur(10px) brightness(1.1) contrast(0.8) saturate(0.7);
-    }
-    65% {
+    70% {
       opacity: 0.8;
-      transform: scale(1.02) translateY(-3px) rotateX(-1deg) translateZ(0);
-      filter: blur(5px) brightness(1.05) contrast(0.9) saturate(0.85);
-    }
-    85% {
-      opacity: 0.95;
-      transform: scale(1.01) translateY(-1px) rotateX(0deg) translateZ(0);
-      filter: blur(2px) brightness(1.02) contrast(0.95) saturate(0.95);
+      transform: translateX(4px) translateZ(0);
+      filter: blur(3px);
     }
     100% {
       opacity: 1;
-      transform: scale(1) translateY(0) rotateX(0deg) translateZ(0);
-      filter: blur(0px) brightness(1) contrast(1) saturate(1);
+      transform: translateX(0) translateZ(0);
+      filter: blur(0px);
     }
   }
   
-  /* Mobile - simpler version */
+  /* Mobile - no transitions */
   @media (max-width: 768px) {
     .pageWrapper {
       transition: none !important;
       transform: none !important;
+      position: relative !important;
       opacity: 1 !important;
       filter: none !important;
       animation: none !important;
+      will-change: auto;
     }
     
     .incomingPage {
@@ -136,6 +150,12 @@
       opacity: 1 !important;
       filter: none !important;
       animation: none !important;
+      will-change: auto;
+    }
+    
+    .transitionContainer {
+      overflow: visible;
+      min-height: auto;
     }
   }
   

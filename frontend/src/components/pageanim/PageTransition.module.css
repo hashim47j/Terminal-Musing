@@ -9,16 +9,15 @@
     width: 100%;
     position: relative;
     z-index: 1;
-    will-change: opacity, filter, transform;
   }
   
-  /* Outgoing page animations */
-  .pageWrapper.slideLeft {
-    animation: driftLeftAndFade 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  /* Simple test animations */
+  .slideLeft {
+    animation: testSlideLeft 2s linear forwards !important;
   }
   
-  .pageWrapper.slideRight {
-    animation: driftRightAndFade 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  .slideRight {
+    animation: testSlideRight 2s linear forwards !important;
   }
   
   .incomingPage {
@@ -27,81 +26,56 @@
     left: 0;
     width: 100%;
     z-index: 2;
-    will-change: opacity, filter, transform;
   }
   
-  /* Incoming page starting positions */
-  .incomingPage.fromLeft {
-    transform: translateX(-30px) translateZ(0);
-    opacity: 0;
-    filter: blur(12px);
+  .fromLeft {
+    transform: translateX(-100px);
+    opacity: 0.5;
+    background-color: rgba(255,0,0,0.3) !important;
   }
   
-  .incomingPage.fromRight {
-    transform: translateX(30px) translateZ(0);
-    opacity: 0;
-    filter: blur(12px);
+  .fromRight {
+    transform: translateX(100px);
+    opacity: 0.5;
+    background-color: rgba(0,255,0,0.3) !important;
   }
   
-  .incomingPage.slideInComplete {
-    animation: driftInFromBlur 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  .slideInComplete {
+    animation: testSlideIn 2s linear forwards !important;
   }
   
-  /* Animation keyframes */
-  @keyframes driftLeftAndFade {
+  /* Super obvious test animations */
+  @keyframes testSlideLeft {
     0% {
-      opacity: 1;
-      transform: translateX(0) translateZ(0);
-      filter: grayscale(100%) brightness(1) blur(0px);
+      transform: translateX(0);
+      background-color: blue;
     }
     100% {
+      transform: translateX(-200px);
+      background-color: red;
       opacity: 0;
-      transform: translateX(-30px) translateZ(0);
-      filter: grayscale(100%) brightness(0.6) blur(8px);
     }
   }
   
-  @keyframes driftRightAndFade {
+  @keyframes testSlideRight {
     0% {
-      opacity: 1;
-      transform: translateX(0) translateZ(0);
-      filter: grayscale(100%) brightness(1) blur(0px);
+      transform: translateX(0);
+      background-color: blue;
     }
     100% {
+      transform: translateX(200px);
+      background-color: green;
       opacity: 0;
-      transform: translateX(30px) translateZ(0);
-      filter: grayscale(100%) brightness(0.6) blur(8px);
     }
   }
   
-  @keyframes driftInFromBlur {
+  @keyframes testSlideIn {
     0% {
-      opacity: 0;
-      filter: blur(12px);
+      opacity: 0.5;
     }
     100% {
       opacity: 1;
-      transform: translateX(0) translateZ(0);
-      filter: blur(0px);
-    }
-  }
-  
-  /* Mobile - no transitions */
-  @media (max-width: 768px) {
-    .pageWrapper {
-      animation: none !important;
-      transform: none !important;
-      position: relative !important;
-      opacity: 1 !important;
-      filter: none !important;
-    }
-    
-    .incomingPage {
-      position: static !important;
-      animation: none !important;
-      transform: none !important;
-      opacity: 1 !important;
-      filter: none !important;
+      transform: translateX(0);
     }
   }
   

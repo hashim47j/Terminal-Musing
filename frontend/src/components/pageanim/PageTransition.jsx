@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
-import usePageTransition from './usePageTransition.js';
+import usePageTransition from './usePageTransition';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
@@ -15,24 +15,19 @@ const PageTransition = ({ children }) => {
   
   const [currentPage, setCurrentPage] = useState(children);
   const [incomingPage, setIncomingPage] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationPhase, setAnimationPhase] = useState('idle'); // 'idle', 'starting', 'animating'
   const previousPath = useRef(location.pathname);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    console.log('🔄 Location changed:', location.pathname);
-    
     const currentPath = location.pathname;
     const prevPath = previousPath.current;
 
-    // Skip if same path or already animating
-    if (currentPath === prevPath || isAnimating) {
-      console.log('⏭️ Skipping - same path or already animating');
+    if (currentPath === prevPath) {
       return;
     }
 
     const shouldAnimate = startTransition(prevPath, currentPath);
-    console.log('🎬 Should animate:', shouldAnimate);
     
     if (!shouldAnimate || isMobile) {
       setCurrentPage(children);
@@ -40,24 +35,28 @@ const PageTransition = ({ children }) => {
       return;
     }
 
-    console.log('✅ Starting animation');
-    setIsAnimating(true);
+    console.log('🎬 Starting animation from', prevPath, 'to', currentPath, 'direction:', transitionDirection);
+
+    // Phase 1: Setup incoming page
+    setAnimationPhase('starting');
     setIncomingPage(children);
 
-    // Wait one frame to ensure DOM is ready
-    requestAnimationFrame(() => {
-      // Complete after animation duration
+    // Phase 2: Start animation after DOM update
+    setTimeout(() => {
+      setAnimationPhase('animating');
+      
+      // Phase 3: Complete animation
       setTimeout(() => {
-        console.log('🏁 Completing animation');
         setCurrentPage(children);
         setIncomingPage(null);
-        setIsAnimating(false);
+        setAnimationPhase('idle');
         endTransition();
         previousPath.current = currentPath;
-      }, 600);
-    });
+        console.log('✅ Animation completed');
+      }, 650); // Slightly longer than CSS transition
+    }, 50);
 
-  }, [location.pathname]); // Removed other dependencies to prevent double triggers
+  }, [location.pathname, children, startTransition, endTransition, isMobile]);
 
   if (isMobile) {
     return <>{children}</>;
@@ -69,16 +68,26 @@ const PageTransition = ({ children }) => {
       className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}
     >
       {/* Current/Outgoing Page */}
-      <div 
-        className={`${styles.pageWrapper} ${isTransitioning && isAnimating ? styles.transitioning : ''} ${isTransitioning && isAnimating ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}`}
-      >
-        {currentPage}
-      </div>
+      {currentPage && (
+        <div 
+          className={`
+            ${styles.pageWrapper} 
+            ${animationPhase === 'animating' ? styles.transitioning : ''}
+            ${animationPhase === 'animating' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
+          `}
+        >
+          {currentPage}
+        </div>
+      )}
       
       {/* Incoming Page */}
-      {incomingPage && isAnimating && (
+      {incomingPage && (
         <div 
-          className={`${styles.incomingPage} ${styles.slideInComplete}`}
+          className={`
+            ${styles.incomingPage}
+            ${animationPhase === 'starting' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
+            ${animationPhase === 'animating' ? styles.slideInComplete : ''}
+          `}
         >
           {incomingPage}
         </div>

@@ -1,51 +1,30 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
 import { usePageTransition } from './PageTransitionContext';
+import getPageComponent from './PageMapper';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
-  const { isTransitioning, transitionDirection, pendingNavigation, endTransition } = usePageTransition();
+  const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   
-  const [currentContent, setCurrentContent] = useState(children);
-  const [previousContent, setPreviousContent] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
-  const previousLocation = useRef(location.pathname);
 
   useEffect(() => {
-    // Only react to location changes when we're expecting them
-    if (location.pathname !== previousLocation.current) {
+    if (isTransitioning && targetPageContent) {
+      console.log('🎬 Starting visual animation');
       
-      if (isTransitioning && pendingNavigation) {
-        console.log('🎬 Route changed during transition - setting up animation');
-        
-        // Step 1: Keep the OLD content visible and prepare for animation
-        setPreviousContent(currentContent);
+      // Start animation immediately
+      setTimeout(() => {
         setShowAnimation(true);
-        
-        // Step 2: Start the slide animation
-        setTimeout(() => {
-          // Both pages slide simultaneously
-          console.log('🎬 Both pages sliding now');
-          
-          // Step 3: Complete the animation
-          setTimeout(() => {
-            setCurrentContent(children);
-            setPreviousContent(null);
-            setShowAnimation(false);
-            endTransition();
-            previousLocation.current = location.pathname;
-            console.log('✅ Animation completed');
-          }, 650);
-        }, 50);
-        
-      } else {
-        // No animation - direct update
-        setCurrentContent(children);
-        previousLocation.current = location.pathname;
-      }
+      }, 50);
+      
+      // Reset animation state when transition ends
+      setTimeout(() => {
+        setShowAnimation(false);
+      }, 650);
     }
-  }, [location.pathname, isTransitioning, pendingNavigation, children, currentContent, endTransition]);
+  }, [isTransitioning, targetPageContent]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
@@ -54,7 +33,7 @@ const PageTransition = ({ children }) => {
   return (
     <div className={`${styles.transitionContainer} ${showAnimation ? styles.transitioning : ''}`}>
       
-      {/* Current/Previous Page (slides out) */}
+      {/* Current Page (Philosophy) - slides out */}
       <div 
         className={`
           ${styles.pageWrapper} 
@@ -62,19 +41,18 @@ const PageTransition = ({ children }) => {
           ${showAnimation ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
         `}
       >
-        {showAnimation ? previousContent : currentContent}
+        {children}
       </div>
       
-      {/* New Page (slides in) */}
-      {showAnimation && (
+      {/* Target Page (History) - slides in */}
+      {isTransitioning && targetPageContent && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${transitionDirection === 'right' ? styles.fromLeft : styles.fromRight}
-            ${styles.slideInComplete}
+            ${showAnimation ? styles.slideInComplete : (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight)}
           `}
         >
-          {children}
+          {getPageComponent(targetPageContent)}
         </div>
       )}
     </div>

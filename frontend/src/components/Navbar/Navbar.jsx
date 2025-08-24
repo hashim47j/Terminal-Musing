@@ -251,16 +251,12 @@ const Navbar = () => {
       toggleMenu();
     }
   
-    // Make sure startPageTransition is properly imported and defined
-    if (startPageTransition && typeof startPageTransition === 'function') {
-      startPageTransition(path, () => {
-        navigate(path);
-      });
-    } else {
-      // Fallback if transition system fails
+    // Start animation FIRST, navigate LATER
+    startPageTransition(path, () => {
       navigate(path);
-    }
+    });
   };
+  
   
 
   return (

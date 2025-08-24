@@ -5,7 +5,7 @@ const PageTransitionContext = createContext();
 export const PageTransitionProvider = ({ children }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState('right');
-  const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [targetPageContent, setTargetPageContent] = useState(null);
 
   const pageOrder = [
     '/',
@@ -18,10 +18,6 @@ export const PageTransitionProvider = ({ children }) => {
   ];
 
   const calculateDirection = (currentPath, targetPath) => {
-    if (targetPath === '/admin/login' || currentPath === '/admin/login') {
-      return 'none';
-    }
-
     const currentIndex = pageOrder.indexOf(currentPath);
     const targetIndex = pageOrder.indexOf(targetPath);
 
@@ -36,7 +32,6 @@ export const PageTransitionProvider = ({ children }) => {
     const currentPath = window.location.pathname;
     
     if (currentPath === targetPath || isTransitioning) {
-      navigationCallback();
       return;
     }
 
@@ -47,21 +42,27 @@ export const PageTransitionProvider = ({ children }) => {
       return;
     }
 
-    console.log('🎬 Starting transition:', currentPath, '→', targetPath, 'direction:', direction);
+    console.log('🎬 Starting blocked animation:', currentPath, '→', targetPath, 'direction:', direction);
     
+    // Step 1: Block navigation and set up animation
     setTransitionDirection(direction);
     setIsTransitioning(true);
-    setPendingNavigation(targetPath);
-
-    // IMPORTANT: Delay navigation to allow animation setup
+    
+    // Step 2: Pre-load target page content (we'll fake this)
+    setTargetPageContent(targetPath);
+    
+    // Step 3: After animation completes, actually navigate
     setTimeout(() => {
-      navigationCallback();
-    }, 200); // Increased delay
+      console.log('🚀 Animation done, now navigating');
+      setIsTransitioning(false);
+      setTargetPageContent(null);
+      navigationCallback(); // NOW actually navigate
+    }, 650);
   };
 
   const endTransition = () => {
     setIsTransitioning(false);
-    setPendingNavigation(null);
+    setTargetPageContent(null);
   };
 
   return (
@@ -69,7 +70,7 @@ export const PageTransitionProvider = ({ children }) => {
       value={{
         isTransitioning,
         transitionDirection,
-        pendingNavigation,
+        targetPageContent,
         startPageTransition,
         endTransition,
       }}

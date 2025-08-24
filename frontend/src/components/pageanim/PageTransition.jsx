@@ -15,7 +15,7 @@ const PageTransition = ({ children }) => {
   
   const [currentPage, setCurrentPage] = useState(children);
   const [incomingPage, setIncomingPage] = useState(null);
-  const [animationPhase, setAnimationPhase] = useState('idle'); // 'idle', 'starting', 'animating'
+  const [showBothPages, setShowBothPages] = useState(false);
   const previousPath = useRef(location.pathname);
   const containerRef = useRef(null);
 
@@ -35,25 +35,24 @@ const PageTransition = ({ children }) => {
       return;
     }
 
-    console.log('🎬 Starting animation from', prevPath, 'to', currentPath, 'direction:', transitionDirection);
+    console.log('🎬 Animation:', prevPath, '→', currentPath, 'direction:', transitionDirection);
 
-    // Phase 1: Setup incoming page
-    setAnimationPhase('starting');
+    // Step 1: Set up incoming page (positioned off-screen)
     setIncomingPage(children);
+    setShowBothPages(false);
 
-    // Phase 2: Start animation after DOM update
+    // Step 2: Start animation after DOM update
     setTimeout(() => {
-      setAnimationPhase('animating');
+      setShowBothPages(true); // This triggers both pages to animate
       
-      // Phase 3: Complete animation
+      // Step 3: Complete animation
       setTimeout(() => {
         setCurrentPage(children);
         setIncomingPage(null);
-        setAnimationPhase('idle');
+        setShowBothPages(false);
         endTransition();
         previousPath.current = currentPath;
-        console.log('✅ Animation completed');
-      }, 650); // Slightly longer than CSS transition
+      }, 650);
     }, 50);
 
   }, [location.pathname, children, startTransition, endTransition, isMobile]);
@@ -67,26 +66,25 @@ const PageTransition = ({ children }) => {
       ref={containerRef}
       className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}
     >
-      {/* Current/Outgoing Page */}
-      {currentPage && (
+      {/* Current/Outgoing Page - Always render during transition */}
+      {(currentPage || isTransitioning) && (
         <div 
           className={`
             ${styles.pageWrapper} 
-            ${animationPhase === 'animating' ? styles.transitioning : ''}
-            ${animationPhase === 'animating' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
+            ${showBothPages ? styles.transitioning : ''}
+            ${showBothPages ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
           `}
         >
           {currentPage}
         </div>
       )}
       
-      {/* Incoming Page */}
-      {incomingPage && (
+      {/* Incoming Page - Only render during transition */}
+      {incomingPage && isTransitioning && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${animationPhase === 'starting' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
-            ${animationPhase === 'animating' ? styles.slideInComplete : ''}
+            ${showBothPages ? styles.slideInComplete : (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight)}
           `}
         >
           {incomingPage}

@@ -13,26 +13,22 @@
   }
   
   .pageWrapper.transitioning {
-    /* No sliding - just opacity and filter transitions */
     transition: opacity 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
                 filter 400ms ease-out;
   }
   
-  /* Outgoing page - fades out with B&W effect (NO SLIDING) */
-  /* Outgoing page - drifts slightly and fades */
-.pageWrapper.slideLeft {
-    transform: translateX(-30px) translateZ(0) !important;
+  /* Only opacity and animation - let keyframes handle transform */
+  .pageWrapper.slideLeft {
     opacity: 0 !important;
     animation: driftLeftAndFade 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
   
   .pageWrapper.slideRight {
-    transform: translateX(30px) translateZ(0) !important;
     opacity: 0 !important;
     animation: driftRightAndFade 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
   
-  /* Incoming page - drifts into place */
+  /* Incoming page starting positions */
   .incomingPage.fromLeft {
     transform: translateX(-20px) translateZ(0);
     opacity: 0;
@@ -45,19 +41,19 @@
     filter: blur(12px);
   }
   
+  /* Only opacity and animation - let keyframes handle transform */
   .incomingPage.slideInComplete {
-    transform: translateX(0) translateZ(0);
     opacity: 1;
     filter: blur(0px);
     animation: driftInFromBlur 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
   
-  /* Drift animations */
+  /* Your existing working animations - keep these! */
   @keyframes driftLeftAndFade {
     0% {
       opacity: 1;
       transform: translateX(0) translateZ(0);
-      filter: grayscale(0%) brightness(1) blur(0px);
+      filter: grayscale(100%) brightness(1) blur(0px);
     }
     100% {
       opacity: 0;
@@ -70,7 +66,7 @@
     0% {
       opacity: 1;
       transform: translateX(0) translateZ(0);
-      filter: grayscale(0%) brightness(1) blur(0px);
+      filter: grayscale(100%) brightness(1) blur(0px);
     }
     100% {
       opacity: 0;
@@ -92,8 +88,7 @@
     }
   }
   
-  
-  /* Mobile - no transitions */
+  /* Your mobile styles - keep these! */
   @media (max-width: 768px) {
     .pageWrapper {
       transition: none !important;

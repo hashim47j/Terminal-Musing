@@ -1,38 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
 import { usePageTransition } from './PageTransitionContext';
-import getPageComponent from './PageMapper';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
-  const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
+  const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
   
-  const [animationPhase, setAnimationPhase] = useState('idle');
+  const [displayedPage, setDisplayedPage] = useState(children);
+  const [previousPage, setPreviousPage] = useState(null);
+  const [animationState, setAnimationState] = useState('idle'); // Make sure this is defined
+  const previousLocation = useRef(location.pathname);
 
   useEffect(() => {
-    if (isTransitioning && targetPageContent) {
-      console.log('🎬 Starting smooth animation');
-      
-      setAnimationPhase('prepare');
-      
-      // Use requestAnimationFrame for smoother timing
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          console.log('🎬 Animation phase: sliding');
-          setAnimationPhase('animate');
-        }, 16); // One frame delay
-      });
-      
-      // Clean reset timing
-      setTimeout(() => {
-        console.log('🎬 Animation phase: reset');
-        setAnimationPhase('idle');
-      }, 950);
-    } else {
-      setAnimationPhase('idle');
+    if (location.pathname === previousLocation.current) {
+      return;
     }
-  }, [isTransitioning, targetPageContent, transitionDirection]);
+
+    if (isTransitioning) {
+      console.log('🎬 Route changed during transition, setting up animation');
+      
+      setAnimationState('prepare');
+      setPreviousPage(displayedPage);
+      
+      setTimeout(() => {
+        setAnimationState('animate');
+        
+        setTimeout(() => {
+          setDisplayedPage(children);
+          setPreviousPage(null);
+          setAnimationState('idle');
+          endTransition();
+          previousLocation.current = location.pathname;
+          console.log('✅ Animation completed');
+        }, 900); // Match CSS timing
+      }, 50);
+    } else {
+      setDisplayedPage(children);
+      previousLocation.current = location.pathname;
+    }
+  }, [location.pathname, isTransitioning, children, displayedPage, endTransition]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
@@ -41,7 +48,7 @@ const PageTransition = ({ children }) => {
   return (
     <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
       
-      {/* Show the OLD page during transition */}
+      {/* Current/Previous page - slides out */}
       {(animationState === 'idle' || animationState === 'prepare' || animationState === 'animate') && displayedPage && (
         <div 
           className={`
@@ -54,7 +61,7 @@ const PageTransition = ({ children }) => {
         </div>
       )}
       
-      {/* Show the NEW page sliding in during animation */}
+      {/* Incoming page - slides in */}
       {(animationState === 'prepare' || animationState === 'animate') && children && (
         <div 
           className={`
@@ -69,6 +76,6 @@ const PageTransition = ({ children }) => {
       
     </div>
   );
-};  
+};
 
 export default PageTransition;

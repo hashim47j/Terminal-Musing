@@ -53,11 +53,12 @@ export const PageTransitionProvider = ({ children }) => {
     
     // Cleaner timing - match CSS exactly
     setTimeout(() => {
-      console.log('✨ Smooth transition completed');
-      setIsTransitioning(false);
-      setTargetPageContent(null);
-      navigationCallback();
-    }, 950); // Match the 900ms + 50ms buffer
+        console.log('🌅 Memory to life transition completed');
+        setIsTransitioning(false);
+        setTargetPageContent(null);
+        navigationCallback();
+      }, 1250); // Longer for the dramatic effect
+      
   };
 
   const endTransition = () => {

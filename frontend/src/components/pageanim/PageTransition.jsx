@@ -5,70 +5,76 @@ import { usePageTransition } from './PageTransitionContext';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
-  const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
+  const { isTransitioning, transitionDirection, pendingNavigation, endTransition } = usePageTransition();
   
-  const [currentPage, setCurrentPage] = useState(children);
-  const [incomingPage, setIncomingPage] = useState(null);
-  const [animationPhase, setAnimationPhase] = useState('idle'); // 'idle', 'prepare', 'animate'
-  const previousPath = useRef(location.pathname);
+  const [currentContent, setCurrentContent] = useState(children);
+  const [previousContent, setPreviousContent] = useState(null);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const previousLocation = useRef(location.pathname);
 
   useEffect(() => {
-    if (location.pathname !== previousPath.current) {
-      if (isTransitioning) {
-        console.log('🎬 Route changed, starting animation');
+    // Only react to location changes when we're expecting them
+    if (location.pathname !== previousLocation.current) {
+      
+      if (isTransitioning && pendingNavigation) {
+        console.log('🎬 Route changed during transition - setting up animation');
         
-        // Phase 1: Prepare animation
-        setAnimationPhase('prepare');
-        setIncomingPage(children);
+        // Step 1: Keep the OLD content visible and prepare for animation
+        setPreviousContent(currentContent);
+        setShowAnimation(true);
         
-        // Phase 2: Start animation
+        // Step 2: Start the slide animation
         setTimeout(() => {
-          setAnimationPhase('animate');
+          // Both pages slide simultaneously
+          console.log('🎬 Both pages sliding now');
           
-          // Phase 3: Complete animation
+          // Step 3: Complete the animation
           setTimeout(() => {
-            setCurrentPage(children);
-            setIncomingPage(null);
-            setAnimationPhase('idle');
+            setCurrentContent(children);
+            setPreviousContent(null);
+            setShowAnimation(false);
             endTransition();
-            previousPath.current = location.pathname;
+            previousLocation.current = location.pathname;
+            console.log('✅ Animation completed');
           }, 650);
         }, 50);
+        
       } else {
-        // No transition - just update
-        setCurrentPage(children);
-        previousPath.current = location.pathname;
+        // No animation - direct update
+        setCurrentContent(children);
+        previousLocation.current = location.pathname;
       }
     }
-  }, [location.pathname, isTransitioning, children, endTransition]);
+  }, [location.pathname, isTransitioning, pendingNavigation, children, currentContent, endTransition]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
   }
 
   return (
-    <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
-      {/* Current page */}
+    <div className={`${styles.transitionContainer} ${showAnimation ? styles.transitioning : ''}`}>
+      
+      {/* Current/Previous Page (slides out) */}
       <div 
         className={`
           ${styles.pageWrapper} 
-          ${animationPhase === 'animate' ? styles.transitioning : ''}
-          ${animationPhase === 'animate' ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
+          ${showAnimation ? styles.transitioning : ''}
+          ${showAnimation ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
         `}
       >
-        {currentPage}
+        {showAnimation ? previousContent : currentContent}
       </div>
       
-      {/* Incoming page during transition */}
-      {incomingPage && animationPhase !== 'idle' && (
+      {/* New Page (slides in) */}
+      {showAnimation && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${animationPhase === 'prepare' ? (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight) : ''}
-            ${animationPhase === 'animate' ? styles.slideInComplete : ''}
+            ${transitionDirection === 'right' ? styles.fromLeft : styles.fromRight}
+            ${styles.slideInComplete}
           `}
         >
-          {incomingPage}
+          {children}
         </div>
       )}
     </div>

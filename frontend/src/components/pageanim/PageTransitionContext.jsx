@@ -22,10 +22,6 @@ export const PageTransitionProvider = ({ children }) => {
       return 'none';
     }
 
-    if (currentPath.startsWith('/blogs/') || targetPath.startsWith('/blogs/')) {
-      return currentPath.startsWith('/blogs/') ? 'left' : 'right';
-    }
-
     const currentIndex = pageOrder.indexOf(currentPath);
     const targetIndex = pageOrder.indexOf(targetPath);
 
@@ -36,18 +32,18 @@ export const PageTransitionProvider = ({ children }) => {
     return targetIndex > currentIndex ? 'right' : 'left';
   };
 
-  const startPageTransition = (targetPath, callback) => {
+  const startPageTransition = (targetPath, navigationCallback) => {
     const currentPath = window.location.pathname;
     
     if (currentPath === targetPath || isTransitioning) {
-      callback();
+      navigationCallback();
       return;
     }
 
     const direction = calculateDirection(currentPath, targetPath);
     
     if (direction === 'none' || window.innerWidth <= 768) {
-      callback();
+      navigationCallback();
       return;
     }
 
@@ -57,10 +53,10 @@ export const PageTransitionProvider = ({ children }) => {
     setIsTransitioning(true);
     setPendingNavigation(targetPath);
 
-    // Navigate after setting up animation state
+    // IMPORTANT: Delay navigation to allow animation setup
     setTimeout(() => {
-      callback();
-    }, 100);
+      navigationCallback();
+    }, 200); // Increased delay
   };
 
   const endTransition = () => {

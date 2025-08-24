@@ -15,73 +15,70 @@ const PageTransition = ({ children }) => {
   
   const [currentPage, setCurrentPage] = useState(children);
   const [incomingPage, setIncomingPage] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
   const previousPath = useRef(location.pathname);
   const containerRef = useRef(null);
 
   useEffect(() => {
     console.log('🔄 Location changed:', location.pathname);
-    console.log('📍 Previous path:', previousPath.current);
-    console.log('📱 Is mobile:', isMobile);
-
+    
     const currentPath = location.pathname;
     const prevPath = previousPath.current;
 
-    if (currentPath === prevPath) {
-      console.log('⏭️ Same path, skipping animation');
+    // Skip if same path or already animating
+    if (currentPath === prevPath || isAnimating) {
+      console.log('⏭️ Skipping - same path or already animating');
       return;
     }
 
     const shouldAnimate = startTransition(prevPath, currentPath);
     console.log('🎬 Should animate:', shouldAnimate);
-    console.log('➡️ Transition direction:', transitionDirection);
     
     if (!shouldAnimate || isMobile) {
       setCurrentPage(children);
       previousPath.current = currentPath;
-      console.log('❌ No animation - mobile or admin page');
       return;
     }
 
     console.log('✅ Starting animation');
+    setIsAnimating(true);
     setIncomingPage(children);
 
-    setTimeout(() => {
-      console.log('🏁 Completing animation');
+    // Wait one frame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      // Complete after animation duration
       setTimeout(() => {
+        console.log('🏁 Completing animation');
         setCurrentPage(children);
         setIncomingPage(null);
+        setIsAnimating(false);
         endTransition();
         previousPath.current = currentPath;
       }, 600);
-    }, 16);
+    });
 
-  }, [location.pathname, children, startTransition, endTransition, isMobile]);
+  }, [location.pathname]); // Removed other dependencies to prevent double triggers
 
   if (isMobile) {
     return <>{children}</>;
   }
 
-  console.log('🎨 Rendering - isTransitioning:', isTransitioning, 'hasIncomingPage:', !!incomingPage);
-
   return (
     <div 
       ref={containerRef}
       className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}
-      style={{ border: '2px solid red' }} // Temporary visual indicator
     >
       {/* Current/Outgoing Page */}
       <div 
-        className={`${styles.pageWrapper} ${isTransitioning ? styles.transitioning : ''} ${isTransitioning ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}`}
-        style={{ border: '2px solid blue' }} // Temporary visual indicator
+        className={`${styles.pageWrapper} ${isTransitioning && isAnimating ? styles.transitioning : ''} ${isTransitioning && isAnimating ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}`}
       >
         {currentPage}
       </div>
       
       {/* Incoming Page */}
-      {incomingPage && (
+      {incomingPage && isAnimating && (
         <div 
-          className={`${styles.incomingPage} ${isTransitioning ? styles.slideInComplete : (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft)}`}
-          style={{ border: '2px solid green' }} // Temporary visual indicator
+          className={`${styles.incomingPage} ${styles.slideInComplete}`}
         >
           {incomingPage}
         </div>

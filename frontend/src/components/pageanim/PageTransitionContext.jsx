@@ -7,14 +7,13 @@ export const PageTransitionProvider = ({ children }) => {
   const [transitionDirection, setTransitionDirection] = useState('right');
   const [targetPageContent, setTargetPageContent] = useState(null);
 
-  // This represents the VISUAL order of buttons in your navbar
   const navbarOrder = [
-    '/philosophy',    // Position 0 (leftmost)
-    '/history',       // Position 1  
-    '/writings',      // Position 2
-    '/legal-social',  // Position 3
-    '/tech',          // Position 4
-    '/daily-thoughts' // Position 5 (rightmost)
+    '/philosophy',
+    '/history',       
+    '/writings',      
+    '/legal-social',  
+    '/tech',          
+    '/daily-thoughts' 
   ];
 
   const calculateDirection = (currentPath, targetPath) => {
@@ -29,15 +28,6 @@ export const PageTransitionProvider = ({ children }) => {
       return 'right';
     }
 
-    console.log('🎯 Button positions:', {
-      current: currentPath,
-      currentIndex,
-      target: targetPath, 
-      targetIndex
-    });
-
-    // If target is to the RIGHT of current → slide LEFT out, slide in from RIGHT
-    // If target is to the LEFT of current → slide RIGHT out, slide in from LEFT
     return targetIndex > currentIndex ? 'right' : 'left';
   };
 
@@ -55,20 +45,19 @@ export const PageTransitionProvider = ({ children }) => {
       return;
     }
 
-    console.log('🎬 Animation direction:', direction);
-    console.log('📍 Current page slides:', direction === 'right' ? 'LEFT' : 'RIGHT');
-    console.log('📍 Target page slides from:', direction === 'right' ? 'RIGHT' : 'LEFT');
+    console.log('🌀 Connected blur transition:', direction);
     
     setTransitionDirection(direction);
     setIsTransitioning(true);
     setTargetPageContent(targetPath);
     
+    // Longer timeout for extended blur effect
     setTimeout(() => {
-      console.log('🚀 Animation done, now navigating');
+      console.log('🚀 Connected animation completed');
       setIsTransitioning(false);
       setTargetPageContent(null);
       navigationCallback();
-    }, 650);
+    }, 1050); // Longer to match slower animation
   };
 
   const endTransition = () => {
@@ -94,7 +83,7 @@ export const PageTransitionProvider = ({ children }) => {
 export const usePageTransition = () => {
   const context = useContext(PageTransitionContext);
   if (!context) {
-    throw new error('usePageTransition must be used within PageTransitionProvider');
+    throw new Error('usePageTransition must be used within PageTransitionProvider');
   }
   return context;
 };

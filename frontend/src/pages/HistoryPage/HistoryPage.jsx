@@ -67,7 +67,7 @@ const HistoryPage = () => {
 
       {/* Fixed Posts Heading */}
       <div className={styles.postsHeadingSection}>
-        <h2 className={styles.postsHeading}>Posts</h2>
+        <h2 className={styles.postsHeading}>History Posts</h2>
       </div>
 
       {/* Scrollable Posts Section */}
@@ -98,23 +98,17 @@ const HistoryPage = () => {
                   ) : (
                     <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }} />
                   )}
-              
+
                   <div className={styles.blogContent}>
-                    <div className={styles.blogMetaRow}>
-                      <span className={styles.blogMeta}>
-                        On {new Date(post.date).toLocaleDateString('en-US', {
-                          day: 'numeric',
-                          month: 'short'
-                        })}
-                      </span>
-                      <h3 className={styles.blogTitle}>{post.title}</h3>
-                      <p className={styles.blogSubheading}>{post.subheading}</p>
-                    </div>
-                    
-                    <div className={styles.blogTimeRow}>
-                      <span className={styles.blogTime}>6hr ago</span>
-                      <div className={styles.blogUnderline}></div>
-                    </div>
+                    <h3 className={styles.blogTitle}>{post.title}</h3>
+                    <p className={styles.blogSubheading}>{post.subheading}</p>
+                    <span className={styles.blogTime}>
+                      {new Date(post.date).toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
                   </div>
                 </div>
               ))

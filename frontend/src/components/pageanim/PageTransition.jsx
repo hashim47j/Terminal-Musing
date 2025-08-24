@@ -19,63 +19,70 @@ const PageTransition = ({ children }) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
+    console.log('🔄 Location changed:', location.pathname);
+    console.log('📍 Previous path:', previousPath.current);
+    console.log('📱 Is mobile:', isMobile);
+
     const currentPath = location.pathname;
     const prevPath = previousPath.current;
 
-    // Skip animation if paths are the same
     if (currentPath === prevPath) {
+      console.log('⏭️ Same path, skipping animation');
       return;
     }
 
-    // Start transition
     const shouldAnimate = startTransition(prevPath, currentPath);
+    console.log('🎬 Should animate:', shouldAnimate);
+    console.log('➡️ Transition direction:', transitionDirection);
     
     if (!shouldAnimate || isMobile) {
-      // No animation - just update content immediately
       setCurrentPage(children);
       previousPath.current = currentPath;
+      console.log('❌ No animation - mobile or admin page');
       return;
     }
 
-    // Set up incoming page
+    console.log('✅ Starting animation');
     setIncomingPage(children);
 
-    // Force a reflow
-    if (containerRef.current) {
-      containerRef.current.offsetHeight;
-    }
-
-    // Start animation immediately
     setTimeout(() => {
-      // Complete transition
+      console.log('🏁 Completing animation');
       setTimeout(() => {
         setCurrentPage(children);
         setIncomingPage(null);
         endTransition();
         previousPath.current = currentPath;
-      }, 600); // Match CSS transition duration
-    }, 16); // One frame delay
+      }, 600);
+    }, 16);
 
   }, [location.pathname, children, startTransition, endTransition, isMobile]);
 
-  // Don't render transition container on mobile
   if (isMobile) {
     return <>{children}</>;
   }
+
+  console.log('🎨 Rendering - isTransitioning:', isTransitioning, 'hasIncomingPage:', !!incomingPage);
 
   return (
     <div 
       ref={containerRef}
       className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}
+      style={{ border: '2px solid red' }} // Temporary visual indicator
     >
       {/* Current/Outgoing Page */}
-      <div className={`${styles.pageWrapper} ${isTransitioning ? styles.transitioning : ''} ${isTransitioning ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}`}>
+      <div 
+        className={`${styles.pageWrapper} ${isTransitioning ? styles.transitioning : ''} ${isTransitioning ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}`}
+        style={{ border: '2px solid blue' }} // Temporary visual indicator
+      >
         {currentPage}
       </div>
       
       {/* Incoming Page */}
       {incomingPage && (
-        <div className={`${styles.incomingPage} ${isTransitioning ? styles.slideInComplete : (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft)}`}>
+        <div 
+          className={`${styles.incomingPage} ${isTransitioning ? styles.slideInComplete : (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft)}`}
+          style={{ border: '2px solid green' }} // Temporary visual indicator
+        >
           {incomingPage}
         </div>
       )}

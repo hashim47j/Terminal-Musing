@@ -8,7 +8,7 @@ const PageTransition = ({ children }) => {
   const location = useLocation();
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   
-  const [animationPhase, setAnimationPhase] = useState('idle'); // idle, blackwhiteblur, drift
+  const [animationPhase, setAnimationPhase] = useState('idle'); // idle, blackwhiteblur, drift, complete
   
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
@@ -18,13 +18,14 @@ const PageTransition = ({ children }) => {
       setAnimationPhase('blackwhiteblur');
       
       setTimeout(() => {
-        console.log('🌊 Phase 2: Drifting', transitionDirection === 'right' ? 'LEFT' : 'RIGHT');
+        console.log('🌊 Phase 2: Drifting');
         setAnimationPhase('drift');
         
         setTimeout(() => {
-          setAnimationPhase('idle');
-        }, 600); // Drift duration
-      }, 400); // B&W + Blur duration  
+          console.log('✅ Phase 3: Complete - no more animations');
+          setAnimationPhase('complete'); // NEW PHASE
+        }, 600);
+      }, 400);
     } else {
       setAnimationPhase('idle');
     }
@@ -37,25 +38,27 @@ const PageTransition = ({ children }) => {
   return (
     <div className={styles.transitionContainer}>
       
-      {/* Current Page - 2-phase transition with direction logic */}
-      <div 
-        className={`
-          ${styles.pageWrapper} 
-          ${animationPhase === 'blackwhiteblur' ? styles.turnBlackWhiteBlur : ''}
-          ${animationPhase === 'drift' ? (transitionDirection === 'right' ? styles.driftLeft : styles.driftRight) : ''}
-        `}
-        style={{
-          position: animationPhase !== 'idle' ? 'absolute' : 'relative',
-          top: 0,
-          left: 0,
-          width: '100%',
-          zIndex: 1
-        }}
-      >
-        {children}
-      </div>
+      {/* Current Page - only shows during drift phase */}
+      {animationPhase !== 'complete' && animationPhase !== 'idle' && (
+        <div 
+          className={`
+            ${styles.pageWrapper} 
+            ${animationPhase === 'blackwhiteblur' ? styles.turnBlackWhiteBlur : ''}
+            ${animationPhase === 'drift' ? (transitionDirection === 'right' ? styles.driftLeft : styles.driftRight) : ''}
+          `}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            zIndex: 1
+          }}
+        >
+          {children}
+        </div>
+      )}
       
-      {/* New Page - slides in from correct direction */}
+      {/* New Page - only shows during drift phase */}
       {animationPhase === 'drift' && targetPageContent && (
         <div 
           className={`
@@ -65,6 +68,13 @@ const PageTransition = ({ children }) => {
           `}
         >
           {getPageComponent(targetPageContent)}
+        </div>
+      )}
+
+      {/* Final Static Page - no animations */}
+      {(animationPhase === 'idle' || animationPhase === 'complete') && (
+        <div className={styles.pageWrapper}>
+          {animationPhase === 'complete' ? getPageComponent(targetPageContent) : children}
         </div>
       )}
       

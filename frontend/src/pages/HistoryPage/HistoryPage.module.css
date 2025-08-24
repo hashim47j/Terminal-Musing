@@ -222,15 +222,21 @@
   .postsHeadingSection {
     top: 180px; /* Adjust for mobile hero height */
   }
-
   .postsSection {
     margin-top: 240px;
-    margin-left: 10vw;    /* Adds 10% margin left */
-    margin-right: 10vw;   /* Adds 10% margin right */
-    width: 80vw;          /* Explicitly sets width to 80% of viewport */
+    margin-left: 10vw;
+    margin-right: 10vw;
+    width: 80vw;
     padding: 0;
+    margin-bottom: 80px;  /* Add more bottom margin */
   }
 
+  .blogGridContainer {
+    height: auto;           /* Remove fixed height */
+    min-height: 60vh;       /* Use min-height instead */
+    overflow-y: visible;    /* Remove scroll on mobile */
+    padding-bottom: 40px;   /* Add bottom padding */
+  }
   .postsHeading {
     font-size: 1.5em;
   }
@@ -248,8 +254,8 @@
     gap: 25px 0px;
     padding-left: 2px;
     padding-right: 2px;
+    padding-bottom: 20px;   /* Add bottom padding to grid */
   }
-
   .blogCard {
     min-height: 180px;
     border-radius: 5px;

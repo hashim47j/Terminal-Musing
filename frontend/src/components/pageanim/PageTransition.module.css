@@ -1,10 +1,9 @@
+/* Remove debug colors and use normal timing again */
 .transitionContainer {
     position: relative;
     width: 100%;
     overflow: hidden;
     min-height: 100vh;
-    /* Add background to see what's happening */
-    background: rgba(255, 0, 0, 0.1); /* Light red debug */
   }
   
   .pageWrapper {
@@ -12,28 +11,27 @@
     position: relative;
     z-index: 1;
     will-change: opacity, filter, transform;
-    /* Add border to see the page movement */
-    border: 2px solid blue;
   }
   
   .pageWrapper.transitioning {
-    transition: none; /* Let animations handle everything */
+    transition: none;
   }
   
-  /* Debug: Make animations more visible */
+  /* IMPORTANT: These need to match your JS logic exactly */
   .pageWrapper.slideLeft {
     opacity: 0 !important;
-    animation: driftLeftAndFade 2000ms linear forwards; /* Slower + linear for debugging */
-    border: 2px solid red !important;
+    animation: driftLeftAndFade 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    /* Debug: add a temporary background color */
+    background-color: rgba(255, 0, 0, 0.2) !important; /* Red = sliding LEFT */
   }
   
   .pageWrapper.slideRight {
     opacity: 0 !important;
-    animation: driftRightAndFade 2000ms linear forwards; /* Slower + linear for debugging */
-    border: 2px solid green !important;
+    animation: driftRightAndFade 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    /* Debug: add a temporary background color */
+    background-color: rgba(0, 255, 0, 0.2) !important; /* Green = sliding RIGHT */
   }
   
-  /* Incoming pages */
   .incomingPage {
     position: absolute;
     top: 0;
@@ -41,45 +39,37 @@
     width: 100%;
     z-index: 2;
     will-change: opacity, filter, transform;
-    /* Add border to see incoming page */
-    border: 2px solid yellow;
   }
   
   .incomingPage.fromLeft {
-    transform: translateX(-50px) translateZ(0); /* More visible starting position */
+    transform: translateX(-50px) translateZ(0);
     opacity: 0;
     filter: blur(12px);
+    background-color: rgba(0, 0, 255, 0.2) !important; /* Blue = coming from LEFT */
   }
   
   .incomingPage.fromRight {
-    transform: translateX(50px) translateZ(0); /* More visible starting position */
+    transform: translateX(50px) translateZ(0);
     opacity: 0;
     filter: blur(12px);
+    background-color: rgba(255, 255, 0, 0.2) !important; /* Yellow = coming from RIGHT */
   }
   
   .incomingPage.slideInComplete {
-    animation: driftInFromBlur 2000ms linear forwards; /* Slower for debugging */
+    animation: driftInFromBlur 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
   }
   
-  /* EXAGGERATED drift animations for debugging */
+  /* Make the animations VERY different so we can see which is being used */
   @keyframes driftLeftAndFade {
     0% {
       opacity: 1;
       transform: translateX(0) translateZ(0);
       filter: grayscale(100%) brightness(1) blur(0px);
-      border-color: blue;
-    }
-    50% {
-      opacity: 0.5;
-      transform: translateX(-100px) translateZ(0); /* MUCH MORE visible drift */
-      filter: grayscale(100%) brightness(0.8) blur(4px);
-      border-color: orange;
     }
     100% {
       opacity: 0;
-      transform: translateX(-200px) translateZ(0); /* HUGE drift for visibility */
+      transform: translateX(-150px) translateZ(0); /* BIG LEFT movement */
       filter: grayscale(100%) brightness(0.6) blur(8px);
-      border-color: red;
     }
   }
   
@@ -88,19 +78,11 @@
       opacity: 1;
       transform: translateX(0) translateZ(0);
       filter: grayscale(100%) brightness(1) blur(0px);
-      border-color: blue;
-    }
-    50% {
-      opacity: 0.5;
-      transform: translateX(100px) translateZ(0); /* MUCH MORE visible drift */
-      filter: grayscale(100%) brightness(0.8) blur(4px);
-      border-color: orange;
     }
     100% {
       opacity: 0;
-      transform: translateX(200px) translateZ(0); /* HUGE drift for visibility */
+      transform: translateX(150px) translateZ(0); /* BIG RIGHT movement */
       filter: grayscale(100%) brightness(0.6) blur(8px);
-      border-color: green;
     }
   }
   
@@ -108,50 +90,11 @@
     0% {
       opacity: 0;
       filter: blur(12px);
-      border-color: yellow;
-    }
-    50% {
-      opacity: 0.5;
-      transform: translateX(25px) translateZ(0); /* Show some movement */
-      filter: blur(6px);
-      border-color: cyan;
     }
     100% {
       opacity: 1;
       transform: translateX(0) translateZ(0);
       filter: blur(0px);
-      border-color: lime;
-    }
-  }
-  
-  /* Mobile - no transitions */
-  @media (max-width: 768px) {
-    .pageWrapper {
-      transition: none !important;
-      transform: none !important;
-      position: relative !important;
-      opacity: 1 !important;
-      filter: none !important;
-      animation: none !important;
-      will-change: auto;
-      border: none !important;
-    }
-    
-    .incomingPage {
-      position: static !important;
-      transition: none !important;
-      transform: none !important;
-      opacity: 1 !important;
-      filter: none !important;
-      animation: none !important;
-      will-change: auto;
-      border: none !important;
-    }
-    
-    .transitionContainer {
-      overflow: visible;
-      min-height: auto;
-      background: none !important;
     }
   }
   

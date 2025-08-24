@@ -8,29 +8,26 @@ const PageTransition = ({ children }) => {
   const location = useLocation();
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   
-  const [animationPhase, setAnimationPhase] = useState('idle'); // 'idle', 'prepare', 'animate'
+  const [animationPhase, setAnimationPhase] = useState('idle');
 
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
-      console.log('🎬 Starting visual animation phases');
+      console.log('🎬 Animation direction:', transitionDirection);
       
-      // Phase 1: Prepare (position incoming page off-screen)
       setAnimationPhase('prepare');
       
-      // Phase 2: Animate (both pages slide simultaneously)
       setTimeout(() => {
-        console.log('🎬 Both pages now sliding');
+        console.log('🎬 Both pages sliding now');
         setAnimationPhase('animate');
       }, 50);
       
-      // Phase 3: Reset after animation
       setTimeout(() => {
         setAnimationPhase('idle');
       }, 650);
     } else {
       setAnimationPhase('idle');
     }
-  }, [isTransitioning, targetPageContent]);
+  }, [isTransitioning, targetPageContent, transitionDirection]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
@@ -39,15 +36,14 @@ const PageTransition = ({ children }) => {
   return (
     <div className={`${styles.transitionContainer} ${animationPhase === 'animate' ? styles.transitioning : ''}`}>
       
-      {/* Current Page (Philosophy) - MUST slide out */}
+      {/* Current Page - slides out in OPPOSITE direction of target button */}
       <div 
         className={`
           ${styles.pageWrapper} 
           ${animationPhase === 'animate' ? styles.transitioning : ''}
-          ${animationPhase === 'animate' ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
+          ${animationPhase === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
         `}
         style={{
-          // Force absolute positioning during animation to allow sliding
           position: animationPhase === 'animate' ? 'absolute' : 'relative',
           top: animationPhase === 'animate' ? 0 : 'auto',
           left: animationPhase === 'animate' ? 0 : 'auto',
@@ -58,12 +54,12 @@ const PageTransition = ({ children }) => {
         {children}
       </div>
       
-      {/* Target Page (History) - slides in */}
+      {/* Target Page - slides in from direction of button position */}
       {isTransitioning && targetPageContent && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${animationPhase === 'prepare' ? (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight) : ''}
+            ${animationPhase === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
             ${animationPhase === 'animate' ? styles.slideInComplete : ''}
           `}
         >

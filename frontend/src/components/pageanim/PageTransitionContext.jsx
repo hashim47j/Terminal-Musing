@@ -7,24 +7,37 @@ export const PageTransitionProvider = ({ children }) => {
   const [transitionDirection, setTransitionDirection] = useState('right');
   const [targetPageContent, setTargetPageContent] = useState(null);
 
-  const pageOrder = [
-    '/',
-    '/philosophy',
-    '/history', 
-    '/writings',
-    '/legal-social',
-    '/tech',
-    '/daily-thoughts'
+  // This represents the VISUAL order of buttons in your navbar
+  const navbarOrder = [
+    '/philosophy',    // Position 0 (leftmost)
+    '/history',       // Position 1  
+    '/writings',      // Position 2
+    '/legal-social',  // Position 3
+    '/tech',          // Position 4
+    '/daily-thoughts' // Position 5 (rightmost)
   ];
 
   const calculateDirection = (currentPath, targetPath) => {
-    const currentIndex = pageOrder.indexOf(currentPath);
-    const targetIndex = pageOrder.indexOf(targetPath);
+    if (targetPath === '/admin/login' || currentPath === '/admin/login') {
+      return 'none';
+    }
+
+    const currentIndex = navbarOrder.indexOf(currentPath);
+    const targetIndex = navbarOrder.indexOf(targetPath);
 
     if (currentIndex === -1 || targetIndex === -1) {
       return 'right';
     }
 
+    console.log('🎯 Button positions:', {
+      current: currentPath,
+      currentIndex,
+      target: targetPath, 
+      targetIndex
+    });
+
+    // If target is to the RIGHT of current → slide LEFT out, slide in from RIGHT
+    // If target is to the LEFT of current → slide RIGHT out, slide in from LEFT
     return targetIndex > currentIndex ? 'right' : 'left';
   };
 
@@ -42,21 +55,19 @@ export const PageTransitionProvider = ({ children }) => {
       return;
     }
 
-    console.log('🎬 Starting blocked animation:', currentPath, '→', targetPath, 'direction:', direction);
+    console.log('🎬 Animation direction:', direction);
+    console.log('📍 Current page slides:', direction === 'right' ? 'LEFT' : 'RIGHT');
+    console.log('📍 Target page slides from:', direction === 'right' ? 'RIGHT' : 'LEFT');
     
-    // Step 1: Block navigation and set up animation
     setTransitionDirection(direction);
     setIsTransitioning(true);
-    
-    // Step 2: Pre-load target page content (we'll fake this)
     setTargetPageContent(targetPath);
     
-    // Step 3: After animation completes, actually navigate
     setTimeout(() => {
       console.log('🚀 Animation done, now navigating');
       setIsTransitioning(false);
       setTargetPageContent(null);
-      navigationCallback(); // NOW actually navigate
+      navigationCallback();
     }, 650);
   };
 
@@ -83,7 +94,7 @@ export const PageTransitionProvider = ({ children }) => {
 export const usePageTransition = () => {
   const context = useContext(PageTransitionContext);
   if (!context) {
-    throw new Error('usePageTransition must be used within PageTransitionProvider');
+    throw new error('usePageTransition must be used within PageTransitionProvider');
   }
   return context;
 };

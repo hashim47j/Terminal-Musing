@@ -9,26 +9,28 @@
     width: 100%;
     position: relative;
     z-index: 1;
+    /* Add will-change for better performance */
+    will-change: transform, filter, opacity;
   }
   
   .pageWrapper.transitioning {
-    /* Slower slide, normal blur speed */
-    transition: transform 1000ms cubic-bezier(0.4, 0, 0.2, 1),
-                filter 400ms cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 800ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* Synchronized timing - all effects same duration */
+    transition: transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                filter 300ms ease-out,
+                opacity 600ms ease-out;
   }
   
-  /* Current page sliding out with gradual blur - more connected */
+  /* Current page sliding out - cleaner transforms */
   .pageWrapper.slideLeft {
-    transform: translateX(-80%) !important; /* Don't slide completely out */
-    filter: blur(12px) brightness(0.6) !important;
-    opacity: 0.3 !important;
+    transform: translateX(-75%) translateZ(0) !important; /* Add translateZ for GPU acceleration */
+    filter: blur(8px) brightness(0.7) !important;
+    opacity: 0.2 !important;
   }
   
   .pageWrapper.slideRight {
-    transform: translateX(80%) !important; /* Don't slide completely out */
-    filter: blur(12px) brightness(0.6) !important;
-    opacity: 0.3 !important;
+    transform: translateX(75%) translateZ(0) !important; /* Add translateZ for GPU acceleration */
+    filter: blur(8px) brightness(0.7) !important;
+    opacity: 0.2 !important;
   }
   
   .incomingPage {
@@ -37,52 +39,37 @@
     left: 0;
     width: 100%;
     z-index: 2;
-    /* Slower slide speed to keep pages connected longer */
-    transition: transform 1000ms cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 800ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* Synchronized timing */
+    transition: transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 600ms ease-out;
     filter: none;
     opacity: 1;
+    /* Add will-change for performance */
+    will-change: transform, opacity;
   }
   
-  /* Incoming page starting positions - less aggressive */
+  /* Incoming page starting positions - smoother */
   .incomingPage.fromLeft {
-    transform: translateX(-70%); /* Don't start completely off-screen */
-    opacity: 0.7;
+    transform: translateX(-65%) translateZ(0); /* GPU acceleration */
+    opacity: 0.8;
   }
   
   .incomingPage.fromRight {
-    transform: translateX(70%); /* Don't start completely off-screen */
-    opacity: 0.7;
+    transform: translateX(65%) translateZ(0); /* GPU acceleration */
+    opacity: 0.8;
   }
   
-  /* Incoming page sliding in - soft connection */
+  /* Incoming page sliding in */
   .incomingPage.slideInComplete {
-    transform: translateX(0);
+    transform: translateX(0) translateZ(0);
     opacity: 1;
   }
   
-  /* Add a subtle gradient overlay to create softer connection */
-  .incomingPage::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 20px;
-    height: 100%;
-    background: linear-gradient(to right, rgba(255,255,255,0.1), transparent);
-    z-index: -1;
-  }
-  
+  /* Remove the gradient overlays that might cause jitter */
+  .incomingPage::before,
   .pageWrapper.slideLeft::after,
   .pageWrapper.slideRight::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 20px;
-    height: 100%;
-    background: linear-gradient(to left, rgba(255,255,255,0.1), transparent);
-    z-index: 1;
+    display: none;
   }
   
   /* Mobile - no transitions */
@@ -93,6 +80,7 @@
       position: relative !important;
       opacity: 1 !important;
       filter: none !important;
+      will-change: auto;
     }
     
     .incomingPage {
@@ -100,6 +88,7 @@
       transition: none !important;
       transform: none !important;
       opacity: 1 !important;
+      will-change: auto;
     }
     
     .transitionContainer {

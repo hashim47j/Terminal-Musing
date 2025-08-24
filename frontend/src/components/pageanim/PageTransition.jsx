@@ -9,42 +9,28 @@ const PageTransition = ({ children }) => {
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   
   const [animationPhase, setAnimationPhase] = useState('idle');
-  const [showWindParticles, setShowWindParticles] = useState(false);
-
-  // Generate random particles for wind effect
-  const generateParticles = () => {
-    return Array.from({ length: 12 }, (_, i) => ({
-      id: i,
-      delay: Math.random() * 400,
-      size: Math.random() * 4 + 2,
-      startX: Math.random() * 100,
-      startY: Math.random() * 100,
-      endX: Math.random() * 200 - 50,
-      endY: Math.random() * 200 - 50,
-    }));
-  };
-
-  const [particles] = useState(generateParticles());
 
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
-      console.log('🌬️ Wind effect animation starting');
+      console.log('🎬 Starting smooth animation');
       
       setAnimationPhase('prepare');
-      setShowWindParticles(true);
       
-      setTimeout(() => {
-        console.log('🌪️ Wind blowing both pages');
-        setAnimationPhase('animate');
-      }, 50);
+      // Use requestAnimationFrame for smoother timing
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          console.log('🎬 Animation phase: sliding');
+          setAnimationPhase('animate');
+        }, 16); // One frame delay
+      });
       
+      // Clean reset timing
       setTimeout(() => {
+        console.log('🎬 Animation phase: reset');
         setAnimationPhase('idle');
-        setShowWindParticles(false);
-      }, 650);
+      }, 950);
     } else {
       setAnimationPhase('idle');
-      setShowWindParticles(false);
     }
   }, [isTransitioning, targetPageContent, transitionDirection]);
 
@@ -55,56 +41,7 @@ const PageTransition = ({ children }) => {
   return (
     <div className={`${styles.transitionContainer} ${animationPhase === 'animate' ? styles.transitioning : ''}`}>
       
-      {/* Wind particles effect */}
-      {showWindParticles && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-            zIndex: 4
-          }}
-        >
-          {particles.map((particle) => (
-            <div
-              key={particle.id}
-              style={{
-                position: 'absolute',
-                left: `${particle.startX}%`,
-                top: `${particle.startY}%`,
-                width: `${particle.size}px`,
-                height: `${particle.size}px`,
-                backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                borderRadius: '50%',
-                animation: `windParticle${transitionDirection === 'right' ? 'Left' : 'Right'} 600ms ease-out ${particle.delay}ms forwards`,
-                opacity: 0,
-              }}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Subtle wind overlay */}
-      {animationPhase === 'animate' && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.05) 100%)',
-            zIndex: 3,
-            pointerEvents: 'none',
-            animation: `windOverlay${transitionDirection === 'right' ? 'Left' : 'Right'} 600ms ease-out`
-          }}
-        />
-      )}
-      
-      {/* Current Page - blown away by wind */}
+      {/* Current Page - smooth blur and slide */}
       <div 
         className={`
           ${styles.pageWrapper} 
@@ -122,7 +59,7 @@ const PageTransition = ({ children }) => {
         {children}
       </div>
       
-      {/* Target Page - slides in fresh */}
+      {/* Target Page - smooth slide in */}
       {isTransitioning && targetPageContent && (
         <div 
           className={`

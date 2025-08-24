@@ -45,19 +45,19 @@ export const PageTransitionProvider = ({ children }) => {
       return;
     }
 
-    console.log('🌀 Connected blur transition:', direction);
+    console.log('🌀 Smooth blur transition:', direction);
     
     setTransitionDirection(direction);
     setIsTransitioning(true);
     setTargetPageContent(targetPath);
     
-    // Longer timeout for extended blur effect
+    // Cleaner timing - match CSS exactly
     setTimeout(() => {
-      console.log('🚀 Connected animation completed');
+      console.log('✨ Smooth transition completed');
       setIsTransitioning(false);
       setTargetPageContent(null);
       navigationCallback();
-    }, 1050); // Longer to match slower animation
+    }, 950); // Match the 900ms + 50ms buffer
   };
 
   const endTransition = () => {

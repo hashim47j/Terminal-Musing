@@ -19,91 +19,66 @@
   }
   
   /* Outgoing page - fades out with B&W effect (NO SLIDING) */
-  .pageWrapper.slideLeft,
-  .pageWrapper.slideRight {
-    /* Remove all transform - no physical movement */
-    transform: none !important;
-    /* Fade out while turning B&W */
-    opacity: 0 !important;
-    animation: fadeToBlackAndWhite 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  /* Outgoing page - scales down and fades to B&W */
+.pageWrapper.slideLeft,
+.pageWrapper.slideRight {
+  transform: scale(0.95) translateZ(0) !important;
+  opacity: 0 !important;
+  animation: scaleAndFadeToBlackWhite 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Incoming page - scales up and sharpens */
+.incomingPage.fromLeft,
+.incomingPage.fromRight {
+  transform: scale(1.05) translateZ(0);
+  opacity: 0;
+  filter: blur(12px);
+}
+
+.incomingPage.slideInComplete {
+  transform: scale(1) translateZ(0);
+  opacity: 1;
+  filter: blur(0px);
+  animation: scaleInFromBlur 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Scale animations */
+@keyframes scaleAndFadeToBlackWhite {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+    filter: grayscale(0%) brightness(1) blur(0px);
   }
-  
-  /* Subtle fade to B&W animation */
-  @keyframes fadeToBlackAndWhite {
-    0% {
-      opacity: 1;
-      filter: grayscale(0%) brightness(1) blur(0px);
-    }
-    10% {
-      opacity: 0.8;
-      filter: grayscale(60%) brightness(0.9) blur(2px);
-    }
-    30% {
-      opacity: 0.5;
-      filter: grayscale(100%) brightness(0.8) blur(4px);
-    }
-    70% {
-      opacity: 0.2;
-      filter: grayscale(100%) brightness(0.7) blur(6px);
-    }
-    100% {
-      opacity: 0;
-      filter: grayscale(100%) brightness(0.6) blur(8px);
-    }
+  30% {
+    opacity: 0.6;
+    transform: scale(0.98) translateZ(0);
+    filter: grayscale(100%) brightness(0.8) blur(4px);
   }
-  
-  .incomingPage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2;
-    /* No sliding - just opacity and filter transitions */
-    transition: opacity 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                filter 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: opacity, filter;
-  }
-  
-  /* Incoming page starting state - blurred and transparent (NO POSITIONING) */
-  .incomingPage.fromLeft,
-  .incomingPage.fromRight {
-    /* No sliding positioning - page stays in place */
-    transform: none;
+  100% {
     opacity: 0;
+    transform: scale(0.95) translateZ(0);
+    filter: grayscale(100%) brightness(0.6) blur(8px);
+  }
+}
+
+@keyframes scaleInFromBlur {
+  0% {
+    opacity: 0;
+    transform: scale(1.05) translateZ(0);
     filter: blur(12px);
   }
-  
-  /* Incoming page fading in - becomes crisp and visible */
-  .incomingPage.slideInComplete {
-    transform: none; /* No movement */
+  50% {
+    opacity: 0.7;
+    transform: scale(1.02) translateZ(0);
+    filter: blur(4px);
+  }
+  100% {
     opacity: 1;
+    transform: scale(1) translateZ(0);
     filter: blur(0px);
-    animation: fadeInFromBlur 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
-  
-  /* Fade in from blur animation */
-  @keyframes fadeInFromBlur {
-    0% {
-      opacity: 0;
-      filter: blur(12px);
-    }
-    20% {
-      opacity: 0.3;
-      filter: blur(8px);
-    }
-    50% {
-      opacity: 0.7;
-      filter: blur(4px);
-    }
-    80% {
-      opacity: 0.9;
-      filter: blur(1px);
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0px);
-    }
-  }
+}
+
   
   /* Mobile - no transitions */
   @media (max-width: 768px) {

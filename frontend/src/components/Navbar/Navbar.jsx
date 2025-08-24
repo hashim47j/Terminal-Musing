@@ -251,8 +251,15 @@ const Navbar = () => {
       toggleMenu();
     }
   
-    // Just start the transition - it handles everything
-    startPageTransition(path);
+    // Make sure startPageTransition is properly imported and defined
+    if (startPageTransition && typeof startPageTransition === 'function') {
+      startPageTransition(path, () => {
+        navigate(path);
+      });
+    } else {
+      // Fallback if transition system fails
+      navigate(path);
+    }
   };
   
 

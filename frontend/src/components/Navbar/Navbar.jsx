@@ -251,12 +251,10 @@ const Navbar = () => {
       toggleMenu();
     }
   
-    // Only use the transition system - it handles the navigation timing
-    startPageTransition(path, () => {
-      navigate(path);
-    });
-    
+    // Just start the transition - it handles everything
+    startPageTransition(path);
   };
+  
 
   return (
     <>

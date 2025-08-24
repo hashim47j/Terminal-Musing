@@ -6,8 +6,7 @@ const PageTransitionContext = createContext();
 export const PageTransitionProvider = ({ children }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState('right');
-  const [pendingPath, setPendingPath] = useState(null);
-  const [pendingCallback, setPendingCallback] = useState(null);
+  const [shouldBlockNavigation, setShouldBlockNavigation] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,7 +39,7 @@ export const PageTransitionProvider = ({ children }) => {
     return targetIndex > currentIndex ? 'right' : 'left';
   };
 
-  const startPageTransition = (targetPath, callback) => {
+  const startPageTransition = (targetPath) => {
     const currentPath = location.pathname;
     
     if (currentPath === targetPath || isTransitioning) {
@@ -50,27 +49,26 @@ export const PageTransitionProvider = ({ children }) => {
     const direction = calculateDirection(currentPath, targetPath);
     
     if (direction === 'none' || window.innerWidth <= 768) {
-      callback();
+      navigate(targetPath);
       return;
     }
 
-    console.log('🎬 Starting controlled transition:', currentPath, '→', targetPath);
+    console.log('🎬 Starting controlled transition:', currentPath, '→', targetPath, 'direction:', direction);
     
+    // Block navigation and set up animation
+    setShouldBlockNavigation(true);
     setTransitionDirection(direction);
     setIsTransitioning(true);
-    setPendingPath(targetPath);
-    setPendingCallback(() => callback);
 
-    // Navigate after a small delay to allow animation setup
+    // Navigate ONLY after we've set up the animation states
     setTimeout(() => {
-      callback();
-    }, 50);
+      navigate(targetPath);
+    }, 16); // One frame delay
   };
 
   const endTransition = () => {
     setIsTransitioning(false);
-    setPendingPath(null);
-    setPendingCallback(null);
+    setShouldBlockNavigation(false);
   };
 
   return (
@@ -78,7 +76,7 @@ export const PageTransitionProvider = ({ children }) => {
       value={{
         isTransitioning,
         transitionDirection,
-        pendingPath,
+        shouldBlockNavigation,
         startPageTransition,
         endTransition,
       }}

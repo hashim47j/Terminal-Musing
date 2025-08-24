@@ -1,81 +1,86 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import styles from './PageTransition.module.css';
+import { usePageTransition } from './PageTransitionContext';
 
-const usePageTransition = () => {
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState('right');
-  const [isMobile, setIsMobile] = useState(false);
+const PageTransition = ({ children }) => {
+  const location = useLocation();
+  const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
+  
+  const [displayedPage, setDisplayedPage] = useState(children);
+  const [previousPage, setPreviousPage] = useState(null);
+  const [animationState, setAnimationState] = useState('idle'); // 'idle', 'prepare', 'animate', 'complete'
+  const previousLocation = useRef(location.pathname);
 
-  // Define the page order for horizontal navigation
-  const pageOrder = [
-    '/',
-    '/philosophy',
-    '/history', 
-    '/writings',
-    '/legal-social',
-    '/tech',
-    '/daily-thoughts'
-  ];
-
-  // Check if device is mobile
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Calculate transition direction based on current and target pages
-  const calculateDirection = useCallback((currentPath, targetPath) => {
-    // Skip animation for mobile or admin page
-    if (isMobile || targetPath === '/admin/login' || currentPath === '/admin/login') {
-      return 'none';
+    if (location.pathname === previousLocation.current) {
+      return;
     }
 
-    // Handle blog post pages - they should slide from right
-    if (currentPath.startsWith('/blogs/') || targetPath.startsWith('/blogs/')) {
-      return currentPath.startsWith('/blogs/') ? 'left' : 'right';
+    if (isTransitioning) {
+      console.log('🎬 Route changed during transition, setting up animation');
+      
+      // Step 1: Keep the OLD page visible and prepare the NEW page
+      setAnimationState('prepare');
+      setPreviousPage(displayedPage); // Keep the old page
+      // Don't update displayedPage yet!
+      
+      // Step 2: Start the animation after one frame
+      setTimeout(() => {
+        setAnimationState('animate');
+        
+        // Step 3: Complete the animation
+        setTimeout(() => {
+          setDisplayedPage(children); // NOW show the new page
+          setPreviousPage(null);
+          setAnimationState('idle');
+          endTransition();
+          previousLocation.current = location.pathname;
+          console.log('✅ Animation completed');
+        }, 650);
+      }, 50);
+    } else {
+      // No animation - just update normally
+      setDisplayedPage(children);
+      previousLocation.current = location.pathname;
     }
+  }, [location.pathname, isTransitioning, children, displayedPage, endTransition]);
 
-    const currentIndex = pageOrder.indexOf(currentPath);
-    const targetIndex = pageOrder.indexOf(targetPath);
+  if (window.innerWidth <= 768) {
+    return <>{children}</>;
+  }
 
-    // If either page is not in our defined order, default to right
-    if (currentIndex === -1 || targetIndex === -1) {
-      return 'right';
-    }
-
-    // Determine direction based on index positions
-    return targetIndex > currentIndex ? 'right' : 'left';
-  }, [isMobile, pageOrder]);
-
-  // Start transition
-  const startTransition = useCallback((currentPath, targetPath) => {
-    const direction = calculateDirection(currentPath, targetPath);
-    
-    if (direction === 'none') {
-      return false; // No animation
-    }
-
-    setTransitionDirection(direction);
-    setIsTransitioning(true);
-    return true; // Animation will occur
-  }, [calculateDirection]);
-
-  // End transition
-  const endTransition = useCallback(() => {
-    setIsTransitioning(false);
-  }, []);
-
-  return {
-    isTransitioning,
-    transitionDirection,
-    isMobile,
-    startTransition,
-    endTransition
-  };
+  return (
+    <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
+      
+      {/* Show the OLD page during transition */}
+      {(animationState === 'idle' || animationState === 'prepare' || animationState === 'animate') && displayedPage && (
+        <div 
+          className={`
+            ${styles.pageWrapper} 
+            ${animationState === 'animate' ? styles.transitioning : ''}
+            ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
+          `}
+        >
+          {animationState === 'prepare' || animationState === 'animate' ? previousPage : displayedPage}
+        </div>
+      )}
+      
+      {/* Show the NEW page sliding in during animation */}
+      {(animationState === 'prepare' || animationState === 'animate') && children && (
+        <div 
+          className={`
+            ${styles.incomingPage}
+            ${animationState === 'prepare' ? (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight) : ''}
+            ${animationState === 'animate' ? styles.slideInComplete : ''}
+          `}
+        >
+          {children}
+        </div>
+      )}
+      
+    </div>
+  );
 };
 
-export default usePageTransition;
+export default PageTransition;

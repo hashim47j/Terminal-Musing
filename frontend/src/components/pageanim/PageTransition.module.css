@@ -18,7 +18,7 @@
     filter: grayscale(100%) brightness(0.9) blur(8px) !important;
   }
   
-  /* PHASE 2: Drift based on direction */
+  /* PHASE 2: Drift based on direction - THIS IS PERFECT */
   .driftLeft {
     transform: translateX(-30px) translateZ(0) !important;
     opacity: 0 !important;
@@ -31,42 +31,38 @@
     filter: grayscale(100%) brightness(0.6) blur(12px) !important;
   }
   
-  /* New page coming in */
+  /* New page coming in - FIXED: No movement, just appears */
   .incomingPage {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 2;
-    will-change: transform, opacity, filter;
+    will-change: opacity, filter;
   }
   
-  .fromLeft {
-    transform: translateX(-30px) translateZ(0);
-    opacity: 0;
-    filter: blur(15px);
-  }
-  
+  /* REMOVED: No starting position - appears in place */
+  .fromLeft,
   .fromRight {
-    transform: translateX(30px) translateZ(0);
     opacity: 0;
     filter: blur(15px);
+    /* NO transform - stays in final position */
   }
   
   .slideInFromBlur {
-    animation: clearIntoFocus 600ms ease-out forwards;
+    animation: subtleAppear 600ms ease-out forwards;
   }
   
-  /* New page clears into focus */
-  @keyframes clearIntoFocus {
+  /* New page subtly appears in place - blur → clear */
+  @keyframes subtleAppear {
     0% {
       opacity: 0;
       filter: blur(15px);
     }
     100% {
       opacity: 1;
-      transform: translateX(0) translateZ(0);
       filter: blur(0px);
+      /* No transform - stays in place */
     }
   }
   

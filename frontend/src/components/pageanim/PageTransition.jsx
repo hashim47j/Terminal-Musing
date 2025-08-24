@@ -8,13 +8,16 @@ const PageTransition = ({ children }) => {
   const location = useLocation();
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   
-  const [animationPhase, setAnimationPhase] = useState('idle'); // idle, blackwhiteblur, drift, complete
+  const [animationPhase, setAnimationPhase] = useState('idle');
+  const [finalContent, setFinalContent] = useState(children); // Store final content
   
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
-      console.log('🎬 Starting 2-phase animation, direction:', transitionDirection);
+      console.log('🎬 Starting animation, direction:', transitionDirection);
       
-      // PHASE 1: B&W + Blur together
+      // Store the target content for final rendering
+      setFinalContent(getPageComponent(targetPageContent));
+      
       setAnimationPhase('blackwhiteblur');
       
       setTimeout(() => {
@@ -22,14 +25,16 @@ const PageTransition = ({ children }) => {
         setAnimationPhase('drift');
         
         setTimeout(() => {
-          console.log('✅ Phase 3: Complete - no more animations');
-          setAnimationPhase('complete'); // NEW PHASE
+          console.log('✅ Animation complete - showing final content');
+          setAnimationPhase('idle');
         }, 600);
       }, 400);
-    } else {
+    } else if (!isTransitioning) {
+      // Update content when not transitioning
+      setFinalContent(children);
       setAnimationPhase('idle');
     }
-  }, [isTransitioning, targetPageContent, transitionDirection]);
+  }, [isTransitioning, targetPageContent, transitionDirection, children]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
@@ -38,43 +43,46 @@ const PageTransition = ({ children }) => {
   return (
     <div className={styles.transitionContainer}>
       
-      {/* Current Page - only shows during drift phase */}
-      {animationPhase !== 'complete' && animationPhase !== 'idle' && (
-        <div 
-          className={`
-            ${styles.pageWrapper} 
-            ${animationPhase === 'blackwhiteblur' ? styles.turnBlackWhiteBlur : ''}
-            ${animationPhase === 'drift' ? (transitionDirection === 'right' ? styles.driftLeft : styles.driftRight) : ''}
-          `}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            zIndex: 1
-          }}
-        >
-          {children}
-        </div>
-      )}
-      
-      {/* New Page - only shows during drift phase */}
-      {animationPhase === 'drift' && targetPageContent && (
-        <div 
-          className={`
-            ${styles.incomingPage}
-            ${styles.slideInFromBlur}
-            ${transitionDirection === 'right' ? styles.fromRight : styles.fromLeft}
-          `}
-        >
-          {getPageComponent(targetPageContent)}
-        </div>
+      {/* Show animation phases */}
+      {animationPhase !== 'idle' && (
+        <>
+          {/* Current Page - animating out */}
+          <div 
+            className={`
+              ${styles.pageWrapper} 
+              ${animationPhase === 'blackwhiteblur' ? styles.turnBlackWhiteBlur : ''}
+              ${animationPhase === 'drift' ? (transitionDirection === 'right' ? styles.driftLeft : styles.driftRight) : ''}
+            `}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              zIndex: 1
+            }}
+          >
+            {children}
+          </div>
+          
+          {/* New Page - appearing during drift */}
+          {animationPhase === 'drift' && (
+            <div 
+              className={`
+                ${styles.incomingPage}
+                ${styles.slideInFromBlur}
+                ${styles.fromLeft}
+              `}
+            >
+              {finalContent}
+            </div>
+          )}
+        </>
       )}
 
-      {/* Final Static Page - no animations */}
-      {(animationPhase === 'idle' || animationPhase === 'complete') && (
+      {/* Final static page - no animations */}
+      {animationPhase === 'idle' && (
         <div className={styles.pageWrapper}>
-          {animationPhase === 'complete' ? getPageComponent(targetPageContent) : children}
+          {finalContent}
         </div>
       )}
       

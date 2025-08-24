@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
-import usePageTransition from './usePageTransition';
+import usePageTransition from './usePageTransition.js'; // Added .js extension
 
 const PageTransition = ({ children }) => {
   const location = useLocation();

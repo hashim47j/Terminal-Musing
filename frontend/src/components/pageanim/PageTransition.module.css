@@ -17,17 +17,66 @@
                 filter 600ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  /* Current page sliding out with fade and grayscale */
+  /* Wind effect for outgoing pages */
   .pageWrapper.slideLeft {
-    transform: translateX(-100%) !important;
-    opacity: 0.3 !important; /* Fade out */
-    filter: grayscale(100%) brightness(0.7) !important; /* Black and white + darker */
+    transform: translateX(-100%) rotateY(-5deg) !important;
+    opacity: 0.1 !important;
+    filter: grayscale(100%) brightness(0.6) blur(2px) !important;
+    animation: windBlowLeft 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
   
   .pageWrapper.slideRight {
-    transform: translateX(100%) !important;
-    opacity: 0.3 !important; /* Fade out */
-    filter: grayscale(100%) brightness(0.7) !important; /* Black and white + darker */
+    transform: translateX(100%) rotateY(5deg) !important;
+    opacity: 0.1 !important;
+    filter: grayscale(100%) brightness(0.6) blur(2px) !important;
+    animation: windBlowRight 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  /* Wind animation keyframes */
+  @keyframes windBlowLeft {
+    0% {
+      transform: translateX(0) rotateY(0deg) scale(1);
+      opacity: 1;
+      filter: grayscale(0%) brightness(1) blur(0px);
+    }
+    30% {
+      transform: translateX(-20%) rotateY(-2deg) scale(0.98);
+      opacity: 0.8;
+      filter: grayscale(30%) brightness(0.9) blur(0.5px);
+    }
+    60% {
+      transform: translateX(-60%) rotateY(-4deg) scale(0.95);
+      opacity: 0.4;
+      filter: grayscale(70%) brightness(0.7) blur(1.5px);
+    }
+    100% {
+      transform: translateX(-100%) rotateY(-5deg) scale(0.92);
+      opacity: 0.1;
+      filter: grayscale(100%) brightness(0.6) blur(2px);
+    }
+  }
+  
+  @keyframes windBlowRight {
+    0% {
+      transform: translateX(0) rotateY(0deg) scale(1);
+      opacity: 1;
+      filter: grayscale(0%) brightness(1) blur(0px);
+    }
+    30% {
+      transform: translateX(20%) rotateY(2deg) scale(0.98);
+      opacity: 0.8;
+      filter: grayscale(30%) brightness(0.9) blur(0.5px);
+    }
+    60% {
+      transform: translateX(60%) rotateY(4deg) scale(0.95);
+      opacity: 0.4;
+      filter: grayscale(70%) brightness(0.7) blur(1.5px);
+    }
+    100% {
+      transform: translateX(100%) rotateY(5deg) scale(0.92);
+      opacity: 0.1;
+      filter: grayscale(100%) brightness(0.6) blur(2px);
+    }
   }
   
   .incomingPage {
@@ -45,23 +94,18 @@
   /* Incoming page starting positions */
   .incomingPage.fromLeft {
     transform: translateX(-100%);
-    opacity: 0.8; /* Start slightly transparent */
+    opacity: 0.7;
   }
   
   .incomingPage.fromRight {
     transform: translateX(100%);
-    opacity: 0.8; /* Start slightly transparent */
+    opacity: 0.7;
   }
   
   /* Incoming page sliding in */
   .incomingPage.slideInComplete {
     transform: translateX(0);
-    opacity: 1; /* Full opacity when in position */
-  }
-  
-  /* Prevent content jumping during transition */
-  .transitionContainer.transitioning {
-    position: relative;
+    opacity: 1;
   }
   
   /* Mobile - no transitions */
@@ -72,6 +116,7 @@
       position: relative !important;
       opacity: 1 !important;
       filter: none !important;
+      animation: none !important;
     }
     
     .incomingPage {
@@ -80,10 +125,64 @@
       transform: none !important;
       opacity: 1 !important;
     }
-    
-    .transitionContainer {
-      overflow: visible;
-      min-height: auto;
+  }
+  /* Add these to your PageTransition.module.css */
+
+@keyframes windParticleLeft {
+    0% {
+      opacity: 0;
+      transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    20% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-200px) translateY(-50px) rotate(-180deg);
+    }
+  }
+  
+  @keyframes windParticleRight {
+    0% {
+      opacity: 0;
+      transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    20% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(200px) translateY(-50px) rotate(180deg);
+    }
+  }
+  
+  @keyframes windOverlayLeft {
+    0% {
+      transform: translateX(0) skewX(0deg);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.3;
+      transform: translateX(-30px) skewX(-5deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-100px) skewX(-10deg);
+    }
+  }
+  
+  @keyframes windOverlayRight {
+    0% {
+      transform: translateX(0) skewX(0deg);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.3;
+      transform: translateX(30px) skewX(5deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100px) skewX(10deg);
     }
   }
   

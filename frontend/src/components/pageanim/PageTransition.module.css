@@ -10,20 +10,15 @@
     position: relative;
     z-index: 1;
     will-change: filter, transform, opacity;
-    transition: filter 200ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
+    transition: filter 400ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
   }
   
-  /* PHASE 1: Instant black and white */
-  .turnBlackWhite {
-    filter: grayscale(100%) brightness(1) !important;
-  }
-  
-  /* PHASE 2: Add blur while staying B&W */
-  .addBlur {
+  /* PHASE 1: B&W + Blur together */
+  .turnBlackWhiteBlur {
     filter: grayscale(100%) brightness(0.9) blur(8px) !important;
   }
   
-  /* PHASE 3: Drift with fade */
+  /* PHASE 2: Drift based on direction */
   .driftLeft {
     transform: translateX(-30px) translateZ(0) !important;
     opacity: 0 !important;

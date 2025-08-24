@@ -39,40 +39,36 @@ const PageTransition = ({ children }) => {
   }
 
   return (
-    <div className={`${styles.transitionContainer} ${animationPhase === 'animate' ? styles.transitioning : ''}`}>
+    <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
       
-      {/* Current Page - smooth blur and slide */}
-      <div 
-        className={`
-          ${styles.pageWrapper} 
-          ${animationPhase === 'animate' ? styles.transitioning : ''}
-          ${animationPhase === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
-        `}
-        style={{
-          position: animationPhase === 'animate' ? 'absolute' : 'relative',
-          top: animationPhase === 'animate' ? 0 : 'auto',
-          left: animationPhase === 'animate' ? 0 : 'auto',
-          width: animationPhase === 'animate' ? '100%' : 'auto',
-          zIndex: animationPhase === 'animate' ? 1 : 'auto'
-        }}
-      >
-        {children}
-      </div>
+      {/* Show the OLD page during transition */}
+      {(animationState === 'idle' || animationState === 'prepare' || animationState === 'animate') && displayedPage && (
+        <div 
+          className={`
+            ${styles.pageWrapper} 
+            ${animationState === 'animate' ? styles.transitioning : ''}
+            ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
+          `}
+        >
+          {animationState === 'prepare' || animationState === 'animate' ? previousPage : displayedPage}
+        </div>
+      )}
       
-      {/* Target Page - smooth slide in */}
-      {isTransitioning && targetPageContent && (
+      {/* Show the NEW page sliding in during animation */}
+      {(animationState === 'prepare' || animationState === 'animate') && children && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${animationPhase === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
-            ${animationPhase === 'animate' ? styles.slideInComplete : ''}
+            ${animationState === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
+            ${animationState === 'animate' ? styles.slideInComplete : ''}
           `}
         >
-          {getPageComponent(targetPageContent)}
+          {children}
         </div>
       )}
+      
     </div>
   );
-};
+};  
 
 export default PageTransition;

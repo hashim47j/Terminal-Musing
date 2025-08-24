@@ -9,7 +9,7 @@ const PageTransition = ({ children }) => {
   
   const [displayedPage, setDisplayedPage] = useState(children);
   const [previousPage, setPreviousPage] = useState(null);
-  const [animationState, setAnimationState] = useState('idle'); // Make sure this is defined
+  const [animationState, setAnimationState] = useState('idle');
   const previousLocation = useRef(location.pathname);
 
   useEffect(() => {
@@ -18,51 +18,61 @@ const PageTransition = ({ children }) => {
     }
 
     if (isTransitioning) {
-      console.log('🎬 Route changed during transition, setting up animation');
+      console.log('🎬 Starting animation, direction:', transitionDirection);
       
+      // Step 1: Prepare both pages
       setAnimationState('prepare');
       setPreviousPage(displayedPage);
       
-      setTimeout(() => {
-        setAnimationState('animate');
-        
-        setTimeout(() => {
-          setDisplayedPage(children);
-          setPreviousPage(null);
-          setAnimationState('idle');
-          endTransition();
-          previousLocation.current = location.pathname;
-          console.log('✅ Animation completed');
-        }, 900); // Match CSS timing
-      }, 50);
+      // Step 2: Force browser to render the preparation state
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          console.log('🎬 Animating now');
+          setAnimationState('animate');
+          
+          // Step 3: Complete animation
+          setTimeout(() => {
+            setDisplayedPage(children);
+            setPreviousPage(null);
+            setAnimationState('idle');
+            endTransition();
+            previousLocation.current = location.pathname;
+            console.log('✅ Animation completed');
+          }, 900);
+        });
+      });
     } else {
       setDisplayedPage(children);
       previousLocation.current = location.pathname;
     }
-  }, [location.pathname, isTransitioning, children, displayedPage, endTransition]);
+  }, [location.pathname, isTransitioning, children, displayedPage, endTransition, transitionDirection]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
   }
 
   return (
-    <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
+    <div className={`${styles.transitionContainer} ${animationState !== 'idle' ? styles.transitioning : ''}`}>
       
-      {/* Current/Previous page - slides out */}
-      {(animationState === 'idle' || animationState === 'prepare' || animationState === 'animate') && displayedPage && (
-        <div 
-          className={`
-            ${styles.pageWrapper} 
-            ${animationState === 'animate' ? styles.transitioning : ''}
-            ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
-          `}
-        >
-          {animationState === 'prepare' || animationState === 'animate' ? previousPage : displayedPage}
-        </div>
-      )}
+      {/* Old page - slides out */}
+      <div 
+        className={`
+          ${styles.pageWrapper} 
+          ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
+        `}
+        style={{
+          position: animationState !== 'idle' ? 'absolute' : 'relative',
+          top: 0,
+          left: 0,
+          width: '100%',
+          zIndex: 1
+        }}
+      >
+        {previousPage || displayedPage}
+      </div>
       
-      {/* Incoming page - slides in */}
-      {(animationState === 'prepare' || animationState === 'animate') && children && (
+      {/* New page - slides in */}
+      {animationState !== 'idle' && (
         <div 
           className={`
             ${styles.incomingPage}

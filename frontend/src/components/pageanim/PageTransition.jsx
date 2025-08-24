@@ -1,93 +1,139 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
 import { usePageTransition } from './PageTransitionContext';
+import getPageComponent from './PageMapper';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
-  const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
+  const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   
-  const [displayedPage, setDisplayedPage] = useState(children);
-  const [previousPage, setPreviousPage] = useState(null);
-  const [animationState, setAnimationState] = useState('idle');
-  const [animationKey, setAnimationKey] = useState(0); // FORCE ANIMATION RESTART
-  const previousLocation = useRef(location.pathname);
+  const [animationPhase, setAnimationPhase] = useState('idle');
+  const [showWindParticles, setShowWindParticles] = useState(false);
+
+  // Generate random particles for wind effect
+  const generateParticles = () => {
+    return Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      delay: Math.random() * 400,
+      size: Math.random() * 4 + 2,
+      startX: Math.random() * 100,
+      startY: Math.random() * 100,
+      endX: Math.random() * 200 - 50,
+      endY: Math.random() * 200 - 50,
+    }));
+  };
+
+  const [particles] = useState(generateParticles());
 
   useEffect(() => {
-    if (location.pathname === previousLocation.current) {
-      return;
-    }
-
-    if (isTransitioning) {
-      console.log('🎬 STARTING ANIMATION');
+    if (isTransitioning && targetPageContent) {
+      console.log('🌬️ Wind effect animation starting');
       
-      // FORCE NEW ANIMATION by changing key
-      setAnimationKey(prev => prev + 1);
+      setAnimationPhase('prepare');
+      setShowWindParticles(true);
       
-      setAnimationState('prepare');
-      setPreviousPage(displayedPage);
+      setTimeout(() => {
+        console.log('🌪️ Wind blowing both pages');
+        setAnimationPhase('animate');
+      }, 50);
       
-      // Use requestAnimationFrame to ensure proper timing
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          console.log('🎬 ANIMATE NOW');
-          setAnimationState('animate');
-          
-          setTimeout(() => {
-            console.log('🎬 COMPLETE');
-            setDisplayedPage(children);
-            setPreviousPage(null);
-            setAnimationState('idle');
-            endTransition();
-            previousLocation.current = location.pathname;
-          }, 900);
-        });
-      });
+      setTimeout(() => {
+        setAnimationPhase('idle');
+        setShowWindParticles(false);
+      }, 650);
     } else {
-      setDisplayedPage(children);
-      previousLocation.current = location.pathname;
+      setAnimationPhase('idle');
+      setShowWindParticles(false);
     }
-  }, [location.pathname, isTransitioning, children, displayedPage, endTransition]);
+  }, [isTransitioning, targetPageContent, transitionDirection]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
   }
 
   return (
-    <div className={styles.transitionContainer}>
+    <div className={`${styles.transitionContainer} ${animationPhase === 'animate' ? styles.transitioning : ''}`}>
       
-      {/* OLD PAGE - Force restart with key */}
-      <div 
-        key={`old-${animationKey}`} // FORCE RE-RENDER
-        className={`
-          ${styles.pageWrapper} 
-          ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
-        `}
-        style={{
-          position: animationState !== 'idle' ? 'absolute' : 'relative',
-          top: 0,
-          left: 0,
-          width: '100%',
-          zIndex: 1
-        }}
-      >
-        {previousPage || displayedPage}
-      </div>
-      
-      {/* NEW PAGE - Force restart with key */}
-      {animationState !== 'idle' && (
+      {/* Wind particles effect */}
+      {showWindParticles && (
         <div 
-          key={`new-${animationKey}`} // FORCE RE-RENDER
-          className={`
-            ${styles.incomingPage}
-            ${animationState === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
-            ${animationState === 'animate' ? styles.slideInComplete : ''}
-          `}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: 4
+          }}
         >
-          {children}
+          {particles.map((particle) => (
+            <div
+              key={particle.id}
+              style={{
+                position: 'absolute',
+                left: `${particle.startX}%`,
+                top: `${particle.startY}%`,
+                width: `${particle.size}px`,
+                height: `${particle.size}px`,
+                backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                borderRadius: '50%',
+                animation: `windParticle${transitionDirection === 'right' ? 'Left' : 'Right'} 600ms ease-out ${particle.delay}ms forwards`,
+                opacity: 0,
+              }}
+            />
+          ))}
         </div>
       )}
       
+      {/* Subtle wind overlay */}
+      {animationPhase === 'animate' && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.05) 100%)',
+            zIndex: 3,
+            pointerEvents: 'none',
+            animation: `windOverlay${transitionDirection === 'right' ? 'Left' : 'Right'} 600ms ease-out`
+          }}
+        />
+      )}
+      
+      {/* Current Page - blown away by wind */}
+      <div 
+        className={`
+          ${styles.pageWrapper} 
+          ${animationPhase === 'animate' ? styles.transitioning : ''}
+          ${animationPhase === 'animate' ? (transitionDirection === 'right' ? styles.slideLeft : styles.slideRight) : ''}
+        `}
+        style={{
+          position: animationPhase === 'animate' ? 'absolute' : 'relative',
+          top: animationPhase === 'animate' ? 0 : 'auto',
+          left: animationPhase === 'animate' ? 0 : 'auto',
+          width: animationPhase === 'animate' ? '100%' : 'auto',
+          zIndex: animationPhase === 'animate' ? 1 : 'auto'
+        }}
+      >
+        {children}
+      </div>
+      
+      {/* Target Page - slides in fresh */}
+      {isTransitioning && targetPageContent && (
+        <div 
+          className={`
+            ${styles.incomingPage}
+            ${animationPhase === 'prepare' ? (transitionDirection === 'right' ? styles.fromRight : styles.fromLeft) : ''}
+            ${animationPhase === 'animate' ? styles.slideInComplete : ''}
+          `}
+        >
+          {getPageComponent(targetPageContent)}
+        </div>
+      )}
     </div>
   );
 };

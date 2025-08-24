@@ -217,7 +217,11 @@
   }
 
   .postsSection {
-    margin-top: 240px; /* Hero (180px) + Heading (60px) = 240px */
+    margin-top: 240px;
+    margin-left: 10vw;    /* Adds 10% margin left */
+    margin-right: 10vw;   /* Adds 10% margin right */
+    width: 80vw;          /* Explicitly sets width to 80% of viewport */
+    padding: 0;
   }
 
   .postsHeading {

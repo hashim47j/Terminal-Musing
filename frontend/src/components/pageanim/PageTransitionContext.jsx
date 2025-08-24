@@ -1,12 +1,12 @@
-import React, { createContext, useState, useContext } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate, useLocation, useBlocker } from 'react-router-dom';
 
 const PageTransitionContext = createContext();
 
 export const PageTransitionProvider = ({ children }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState('right');
-  const [shouldBlockNavigation, setShouldBlockNavigation] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,6 +39,39 @@ export const PageTransitionProvider = ({ children }) => {
     return targetIndex > currentIndex ? 'right' : 'left';
   };
 
+  // Block ALL navigation when transitioning
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) => {
+      if (isTransitioning) {
+        return true; // Block navigation during transition
+      }
+      
+      if (pendingNavigation && currentLocation.pathname !== nextLocation.pathname) {
+        const direction = calculateDirection(currentLocation.pathname, nextLocation.pathname);
+        
+        if (direction === 'none' || window.innerWidth <= 768) {
+          return false; // Allow navigation
+        }
+        
+        // Start our custom transition
+        console.log('🚫 Blocking navigation to start animation');
+        setTransitionDirection(direction);
+        setIsTransitioning(true);
+        setPendingNavigation(nextLocation.pathname);
+        
+        // Allow navigation after animation setup
+        setTimeout(() => {
+          setIsTransitioning(false);
+          setPendingNavigation(null);
+        }, 50);
+        
+        return true; // Block initial navigation
+      }
+      
+      return false; // Don't block
+    }
+  );
+
   const startPageTransition = (targetPath) => {
     const currentPath = location.pathname;
     
@@ -53,22 +86,21 @@ export const PageTransitionProvider = ({ children }) => {
       return;
     }
 
-    console.log('🎬 Starting controlled transition:', currentPath, '→', targetPath, 'direction:', direction);
+    console.log('🎬 Starting blocked transition:', currentPath, '→', targetPath);
     
-    // Block navigation and set up animation
-    setShouldBlockNavigation(true);
+    setPendingNavigation(targetPath);
     setTransitionDirection(direction);
     setIsTransitioning(true);
 
-    // Navigate ONLY after we've set up the animation states
+    // Navigate after we're ready
     setTimeout(() => {
       navigate(targetPath);
-    }, 16); // One frame delay
+    }, 100);
   };
 
   const endTransition = () => {
     setIsTransitioning(false);
-    setShouldBlockNavigation(false);
+    setPendingNavigation(null);
   };
 
   return (
@@ -76,7 +108,7 @@ export const PageTransitionProvider = ({ children }) => {
       value={{
         isTransitioning,
         transitionDirection,
-        shouldBlockNavigation,
+        pendingNavigation,
         startPageTransition,
         endTransition,
       }}

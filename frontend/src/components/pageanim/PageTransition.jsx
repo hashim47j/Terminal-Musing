@@ -5,32 +5,34 @@ import { usePageTransition } from './PageTransitionContext';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
-  const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
+  const { isTransitioning, transitionDirection, pendingNavigation, endTransition } = usePageTransition();
   
   const [currentPage, setCurrentPage] = useState(children);
-  const [incomingPage, setIncomingPage] = useState(null);
-  const [animationPhase, setAnimationPhase] = useState('idle');
+  const [previousPage, setPreviousPage] = useState(null);
 
   useEffect(() => {
-    if (isTransitioning) {
-      console.log('🎬 Animation phase: starting');
-      setAnimationPhase('starting');
-      setIncomingPage(children);
-
+    if (isTransitioning && pendingNavigation) {
+      console.log('🎬 Animation: keeping old page, preparing new page');
+      
+      // Keep old page visible, prepare new page
+      setPreviousPage(currentPage);
+      
+      // Start animation after setup
       setTimeout(() => {
-        console.log('🎬 Animation phase: animating');
-        setAnimationPhase('animating');
+        console.log('🎬 Animation: both pages sliding');
         
+        // Complete animation
         setTimeout(() => {
-          console.log('🎬 Animation phase: completed');
           setCurrentPage(children);
-          setIncomingPage(null);
-          setAnimationPhase('idle');
+          setPreviousPage(null);
           endTransition();
+          console.log('✅ Animation completed');
         }, 650);
       }, 50);
+    } else if (!isTransitioning) {
+      setCurrentPage(children);
     }
-  }, [isTransitioning, children, endTransition]);
+  }, [isTransitioning, pendingNavigation, children, currentPage, endTransition]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
@@ -38,29 +40,26 @@ const PageTransition = ({ children }) => {
 
   return (
     <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
-      {/* Current Page */}
-      {currentPage && (
-        <div 
-          className={`
-            ${styles.pageWrapper} 
-            ${animationPhase === 'animating' ? styles.transitioning : ''}
-            ${animationPhase === 'animating' ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
-          `}
-        >
-          {currentPage}
-        </div>
-      )}
+      {/* Current/Previous Page */}
+      <div 
+        className={`
+          ${styles.pageWrapper} 
+          ${isTransitioning && previousPage ? styles.transitioning : ''}
+          ${isTransitioning && previousPage ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
+        `}
+      >
+        {isTransitioning && previousPage ? previousPage : currentPage}
+      </div>
       
-      {/* Incoming Page */}
-      {incomingPage && animationPhase !== 'idle' && (
+      {/* New Page sliding in */}
+      {isTransitioning && pendingNavigation && (
         <div 
           className={`
             ${styles.incomingPage}
-            ${animationPhase === 'starting' ? (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight) : ''}
-            ${animationPhase === 'animating' ? styles.slideInComplete : ''}
+            ${styles.slideInComplete}
           `}
         >
-          {incomingPage}
+          {children}
         </div>
       )}
     </div>

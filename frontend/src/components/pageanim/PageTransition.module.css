@@ -34,18 +34,16 @@
   }
   
   /* Gradual grayscale animation keyframes */
-  @keyframes gradualGrayscaleLeft {
+/* Black and white kicks in early - aggressive timing */
+@keyframes gradualGrayscaleLeft {
     0% {
       filter: grayscale(0%) brightness(1) blur(0px);
     }
+    10% {
+      filter: grayscale(60%) brightness(0.85) blur(2px);
+    }
     25% {
-      filter: grayscale(20%) brightness(0.95) blur(1px);
-    }
-    50% {
-      filter: grayscale(50%) brightness(0.85) blur(3px);
-    }
-    75% {
-      filter: grayscale(80%) brightness(0.75) blur(6px);
+      filter: grayscale(100%) brightness(0.7) blur(5px);
     }
     100% {
       filter: grayscale(100%) brightness(0.6) blur(8px);
@@ -56,14 +54,11 @@
     0% {
       filter: grayscale(0%) brightness(1) blur(0px);
     }
+    10% {
+      filter: grayscale(60%) brightness(0.85) blur(2px);
+    }
     25% {
-      filter: grayscale(20%) brightness(0.95) blur(1px);
-    }
-    50% {
-      filter: grayscale(50%) brightness(0.85) blur(3px);
-    }
-    75% {
-      filter: grayscale(80%) brightness(0.75) blur(6px);
+      filter: grayscale(100%) brightness(0.7) blur(5px);
     }
     100% {
       filter: grayscale(100%) brightness(0.6) blur(8px);

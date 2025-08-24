@@ -3,6 +3,8 @@
     width: 100%;
     overflow: hidden;
     min-height: 100vh;
+    /* Add background to see what's happening */
+    background: rgba(255, 0, 0, 0.1); /* Light red debug */
   }
   
   .pageWrapper {
@@ -10,87 +12,115 @@
     position: relative;
     z-index: 1;
     will-change: opacity, filter, transform;
+    /* Add border to see the page movement */
+    border: 2px solid blue;
   }
   
   .pageWrapper.transitioning {
-    transition: opacity 900ms cubic-bezier(0.33, 1, 0.68, 1),
-                filter 900ms cubic-bezier(0.33, 1, 0.68, 1),
-                transform 900ms cubic-bezier(0.33, 1, 0.68, 1);
+    transition: none; /* Let animations handle everything */
   }
   
-  /* Outgoing page drifts LEFT when moving to a page on the RIGHT */
+  /* Debug: Make animations more visible */
   .pageWrapper.slideLeft {
-    transform: translateX(-30px) translateZ(0) !important;
     opacity: 0 !important;
-    animation: driftLeftAndFade 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    animation: driftLeftAndFade 2000ms linear forwards; /* Slower + linear for debugging */
+    border: 2px solid red !important;
   }
   
-  /* Outgoing page drifts RIGHT when moving to a page on the LEFT */
   .pageWrapper.slideRight {
-    transform: translateX(30px) translateZ(0) !important;
     opacity: 0 !important;
-    animation: driftRightAndFade 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    animation: driftRightAndFade 2000ms linear forwards; /* Slower + linear for debugging */
+    border: 2px solid green !important;
   }
   
-  /* Incoming page comes from LEFT direction */
+  /* Incoming pages */
+  .incomingPage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+    will-change: opacity, filter, transform;
+    /* Add border to see incoming page */
+    border: 2px solid yellow;
+  }
+  
   .incomingPage.fromLeft {
-    transform: translateX(-20px) translateZ(0);
+    transform: translateX(-50px) translateZ(0); /* More visible starting position */
     opacity: 0;
     filter: blur(12px);
   }
   
-  /* Incoming page comes from RIGHT direction */
   .incomingPage.fromRight {
-    transform: translateX(20px) translateZ(0);
+    transform: translateX(50px) translateZ(0); /* More visible starting position */
     opacity: 0;
     filter: blur(12px);
   }
   
   .incomingPage.slideInComplete {
-    transform: translateX(0) translateZ(0);
-    opacity: 1;
-    filter: blur(0px);
-    animation: driftInFromBlur 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    animation: driftInFromBlur 2000ms linear forwards; /* Slower for debugging */
   }
   
-  /* INSTANT B&W + smooth drift LEFT */
+  /* EXAGGERATED drift animations for debugging */
   @keyframes driftLeftAndFade {
     0% {
       opacity: 1;
       transform: translateX(0) translateZ(0);
-      filter: grayscale(100%) brightness(1) blur(0px); /* INSTANT B&W */
+      filter: grayscale(100%) brightness(1) blur(0px);
+      border-color: blue;
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateX(-100px) translateZ(0); /* MUCH MORE visible drift */
+      filter: grayscale(100%) brightness(0.8) blur(4px);
+      border-color: orange;
     }
     100% {
       opacity: 0;
-      transform: translateX(-30px) translateZ(0);
+      transform: translateX(-200px) translateZ(0); /* HUGE drift for visibility */
       filter: grayscale(100%) brightness(0.6) blur(8px);
+      border-color: red;
     }
   }
   
-  /* INSTANT B&W + smooth drift RIGHT */
   @keyframes driftRightAndFade {
     0% {
       opacity: 1;
       transform: translateX(0) translateZ(0);
-      filter: grayscale(100%) brightness(1) blur(0px); /* INSTANT B&W */
+      filter: grayscale(100%) brightness(1) blur(0px);
+      border-color: blue;
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateX(100px) translateZ(0); /* MUCH MORE visible drift */
+      filter: grayscale(100%) brightness(0.8) blur(4px);
+      border-color: orange;
     }
     100% {
       opacity: 0;
-      transform: translateX(30px) translateZ(0);
+      transform: translateX(200px) translateZ(0); /* HUGE drift for visibility */
       filter: grayscale(100%) brightness(0.6) blur(8px);
+      border-color: green;
     }
   }
   
-  /* Smooth drift in from blur */
   @keyframes driftInFromBlur {
     0% {
       opacity: 0;
       filter: blur(12px);
+      border-color: yellow;
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateX(25px) translateZ(0); /* Show some movement */
+      filter: blur(6px);
+      border-color: cyan;
     }
     100% {
       opacity: 1;
       transform: translateX(0) translateZ(0);
       filter: blur(0px);
+      border-color: lime;
     }
   }
   
@@ -104,6 +134,7 @@
       filter: none !important;
       animation: none !important;
       will-change: auto;
+      border: none !important;
     }
     
     .incomingPage {
@@ -114,11 +145,13 @@
       filter: none !important;
       animation: none !important;
       will-change: auto;
+      border: none !important;
     }
     
     .transitionContainer {
       overflow: visible;
       min-height: auto;
+      background: none !important;
     }
   }
   

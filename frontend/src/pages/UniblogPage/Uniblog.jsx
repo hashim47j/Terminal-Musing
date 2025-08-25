@@ -185,33 +185,57 @@ const Uniblog = () => {
     return () => setPageTitle(null);
   }, [category, id, apiUrls.blog, apiUrls.views, setPageTitle, currentTheme.display]);
 
-  // Fetch comments
+  // ✅ FIXED: Fetch comments with proper variable and safety checks
   useEffect(() => {
-    if (!category || !id) return;
-
     const fetchComments = async () => {
       setCommentsLoading(true);
       try {
+        // ✅ FIX: Use apiUrls.comments instead of undefined commentsApiUrl
         const res = await fetch(apiUrls.comments);
         if (res.ok) {
           const data = await res.json();
+          
+          // ✅ DEBUG: Check what API returns
+          console.log('🔍 Comments API Response:', data);
+          console.log('🔍 Type:', typeof data);
+          console.log('🔍 Is Array:', Array.isArray(data));
+          
+          // ✅ Handle different response formats with safety checks
+          let commentsArray = [];
+          let statsData = null;
+          
+          if (Array.isArray(data)) {
+            // Direct array response (old format)
+            commentsArray = data;
+          } else if (data && typeof data === 'object') {
+            // Object response with comments property (new format)
+            commentsArray = Array.isArray(data.comments) ? data.comments : [];
+            statsData = data.stats || null;
+          } else {
+            // Fallback for unexpected formats
+            commentsArray = [];
+          }
+          
           setCommentsData({
-            comments: data.comments || [],
-            stats: data.stats || null
+            comments: commentsArray,
+            stats: statsData
           });
         } else {
+          console.log('🔍 Comments API Error:', res.status);
           setCommentsData({ comments: [], stats: null });
         }
       } catch (error) {
-        console.error('Comments fetch error:', error);
+        console.error('🔍 Comments fetch error:', error);
         setCommentsData({ comments: [], stats: null });
       } finally {
         setCommentsLoading(false);
       }
     };
 
-    fetchComments();
-  }, [category, id, apiUrls.comments]);
+    if (category && id) {
+      fetchComments();
+    }
+  }, [category, id, apiUrls.comments]); // ✅ Added correct dependency
 
   // Form handlers
   const formHandlers = useMemo(() => ({
@@ -282,7 +306,10 @@ const Uniblog = () => {
         const commentsRes = await fetch(apiUrls.comments);
         if (commentsRes.ok) {
           const data = await commentsRes.json();
-          setCommentsData({ comments: data.comments || [], stats: data.stats || null });
+          setCommentsData({ 
+            comments: Array.isArray(data) ? data : (data.comments || []), 
+            stats: data.stats || null 
+          });
         }
         
         setReplyForm({ name: '', email: '', comment: '' });
@@ -432,29 +459,32 @@ const Uniblog = () => {
           </div>
 
           <div className={styles.commentLayout}>
-            {/* Comments List */}
+            {/* ✅ FIXED: Comments List with proper safety checks */}
             <div className={styles.commentList}>
               {commentsLoading ? (
                 <div className={styles.commentsLoading}>
                   <p>Loading comments...</p>
                 </div>
-              ) : commentsData.comments.length === 0 ? (
-                <div className={styles.noComments}>
-                  <p>No comments yet. Be the first to share your thoughts!</p>
-                </div>
               ) : (
-                commentsData.comments.map((comment) => (
-                  <CommentBox
-                    key={comment.id}
-                    comment={comment}
-                    depth={0}
-                    onReply={handleReplyClick}
-                    isReplying={isReplying}
-                    replyForm={replyForm}
-                    setReplyForm={setReplyForm}
-                    handleReplySubmit={handleReplySubmit}
-                  />
-                ))
+                // ✅ Add explicit array check before mapping
+                Array.isArray(commentsData.comments) && commentsData.comments.length > 0 ? (
+                  commentsData.comments.map((comment) => (
+                    <CommentBox
+                      key={comment.id || `comment-${Math.random()}`}
+                      comment={comment}
+                      depth={0}
+                      onReply={handleReplyClick}
+                      isReplying={isReplying}
+                      replyForm={replyForm}
+                      setReplyForm={setReplyForm}
+                      handleReplySubmit={handleReplySubmit}
+                    />
+                  ))
+                ) : (
+                  <div className={styles.noComments}>
+                    <p>No comments yet. Be the first to share your thoughts!</p>
+                  </div>
+                )
               )}
             </div>
 

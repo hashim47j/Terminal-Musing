@@ -24,6 +24,8 @@ import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
 import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
 import { PageProvider } from './context/PageContext'; 
 import { PageTransitionProvider } from './components/pageanim/PageTransitionContext';
+import Uniblog from './pages/UniblogPgae/Uniblog';
+
 function App() {
   return (
     <PageTransitionProvider>
@@ -50,6 +52,7 @@ function App() {
             <Route path="/admin/dailythoughts/edit" element={<DailythoughtsUI />} />
             <Route path="/tech" element={<TechPage />} />
             <Route path="/blogs/tech/:id" element={<TechBlog />} />
+            <Route path="/blog/:category/:id" element={<Uniblog />} />
           </Routes>
         </PageTransition>
       </main>

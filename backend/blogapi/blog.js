@@ -12,8 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BLOGS_ROOT = path.join(__dirname, '..', 'blogs');
 
-// Configuration constants
-const VALID_CATEGORIES = ['history', 'philosophy', 'tech', 'lsconcern'];
+// ✅ UPDATED: Configuration constants - Added 'writings' category
+const VALID_CATEGORIES = ['history', 'philosophy', 'tech', 'lsconcern', 'writings'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB max blog size
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 

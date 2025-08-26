@@ -105,14 +105,6 @@ const HistoryPage = () => {
         />
       </section>
 
-      {/* Fixed Posts Heading */}
-      <div className={styles.postsHeadingSection}>
-        <h2 className={styles.postsHeading}>History Posts</h2>
-        <p className={styles.postsCount}>
-          {loading ? 'Loading...' : `${posts.length} post${posts.length !== 1 ? 's' : ''} available`}
-        </p>
-      </div>
-
       {/* Scrollable Posts Section */}
       <section className={styles.postsSection}>
         <div className={styles.blogGridContainer}>

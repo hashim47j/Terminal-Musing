@@ -25,6 +25,8 @@ import likeRoutes       from './dailythougthsapi/getlikes.js';
 
 import userviewAPI      from './ipapi/userviewapi.js';
 import ipLogger         from './ipapi/motherapi.js';
+import getApprovedRoutes from './dailythougthsapi/getapproved.js';
+
 
 // ─────────────── INIT ───────────────
 const app  = express();

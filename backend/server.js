@@ -65,8 +65,15 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ 
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }
+  limits: { 
+    fileSize: 10 * 1024 * 1024,     // 10MB file size
+    fieldSize: 10 * 1024 * 1024,    // 10MB field size (TEXT FIELDS!)
+    fieldNameSize: 1000,             // Field name length
+    fields: 100,                     // Number of non-file fields
+    parts: 100                       // Total parts (fields + files)
+  }
 });
+
 
 // ─────────────── /api/upload ───────────────
 app.post('/api/upload', upload.single('image'), (req, res) => {

@@ -195,19 +195,63 @@ const HistoryPage = () => {
                     </div>
                   </div>
               
-                  {/* ✅ Hover Overlay with staged animations */}
+                  {/* ✅ NEW: Updated hover overlay with new layout */}
                   {hoveredPostId === post.id && (
                     <div className={styles.hoverOverlay}>
-                      <div className={styles.overlayContent}>
-                        <p className={styles.excerpt}>{getExcerpt(post)}</p>
+                      {/* ✅ Subheading centered */}
+                      <div className={styles.subheadingContainer}>
+                        <p className={styles.hoverSubheading}>
+                          {post.subheading || post.title}
+                        </p>
+                      </div>
+              
+                      {/* ✅ Bottom info section */}
+                      <div className={styles.bottomInfo}>
+                        {/* ✅ Left side - Author, Date, Share */}
+                        <div className={styles.metaInfo}>
+                          <div className={styles.authorInfo}>
+                            <span className={styles.author}>
+                              {post.author || 'Terminal Musing'}
+                            </span>
+                            <span className={styles.date}>
+                              {new Date(post.date).toLocaleDateString('en-US', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })}
+                            </span>
+                          </div>
+                          <button 
+                            className={styles.shareBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Share functionality
+                              if (navigator.share) {
+                                navigator.share({
+                                  title: post.title,
+                                  text: post.subheading,
+                                  url: `/blog/history/${post.id}`
+                                });
+                              } else {
+                                // Fallback copy to clipboard
+                                navigator.clipboard.writeText(`${window.location.origin}/blog/history/${post.id}`);
+                                alert('Link copied to clipboard!');
+                              }
+                            }}
+                          >
+                            Share
+                          </button>
+                        </div>
+              
+                        {/* ✅ Right side - Read button */}
                         <button 
-                          className={styles.readNowBtn}
+                          className={styles.readBtn}
                           onClick={(e) => {
                             e.stopPropagation();
                             handlePostClick(post);
                           }}
                         >
-                          Read Now →
+                          Read
                         </button>
                       </div>
                     </div>

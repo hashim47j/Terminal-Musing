@@ -98,6 +98,7 @@
   padding: 24px 0 40px 0;
 }
 
+
 .blogCard {
   display: flex;
   flex-direction: row;
@@ -113,12 +114,12 @@
   cursor: pointer;
 }
 
-
 .blogCard:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ ENHANCED: Cover Image with expand animation */
 .coverImage {
   width: 38%;
   height: 100%;
@@ -128,6 +129,8 @@
   z-index: 1;
   transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
+
+/* ✅ Expanded state - covers full card without darkening */
 .expanded {
   width: 100% !important;
   position: absolute;
@@ -140,24 +143,30 @@
   transform: scale(1.05);
 }
 
+/* ✅ Hide content when hovering */
 .hiddenContent {
   opacity: 0;
   transform: translateX(20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.blurred {
-  filter: blur(4px);
-  transform: scale(1.02);
+.blogContent {
+  width: 62%;
+  padding: 18px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1;
 }
+
+/* ✅ NEW: Clean hover overlay - no backgrounds */
 .hoverOverlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(2px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -167,23 +176,7 @@
   animation: fadeInOverlay 0.4s ease 0.2s both;
 }
 
-.overlayContent {
-  text-align: center;
-  padding: 20px;
-  max-width: 85%;
-  animation: slideUpContent 0.5s ease 0.3s both;
-}
-
-
-.excerpt {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 25px;
-  color: #f0f0f0;
-  font-family: 'Roboto', sans-serif;
-  animation: fadeInText 0.4s ease 0.4s both;
-}
-
+/* ✅ NEW: Subheading container - centered */
 .subheadingContainer {
   flex: 1;
   display: flex;
@@ -195,120 +188,107 @@
 .hoverSubheading {
   font-size: 1.1rem;
   line-height: 1.4;
-  color: #222;
+  color: #fff;
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 15px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   animation: slideUpContent 0.5s ease 0.3s both;
 }
 
-.author {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #333;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 4px 12px;
-  border-radius: 4px;
-  backdrop-filter: blur(10px);
-}
-
-.bottomInfo {
+/* ✅ NEW: Fixed bottom elements - rigid positioning */
+.bottomFixed {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-end;
   animation: slideUpBottom 0.4s ease 0.4s both;
 }
 
-.metaInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ✅ NEW: Author name - far left */
+.authorName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-.authorInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-
-.date {
+/* ✅ NEW: Post date - left of center */
+.postDate {
   font-size: 0.85rem;
-  color: #666;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 4px 12px;
-  border-radius: 4px;
-  backdrop-filter: blur(10px);
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  margin-left: auto;
+  margin-right: 12px;
 }
 
-.shareBtn {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  color: #007bff;
-  border: 1px solid rgba(0, 123, 255, 0.3);
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 500;
+/* ✅ NEW: Share icon - right of center */
+.shareIcon {
+  background: none;
+  border: none;
+  color: #fff;
   cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
 }
 
-.shareBtn:hover {
-  background: rgba(0, 123, 255, 0.1);
-  border-color: #007bff;
-  transform: translateY(-1px);
+.shareIcon:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
 }
 
+.shareIcon svg {
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.8));
+}
+
+/* ✅ NEW: Read button - far right */
 .readBtn {
   background: rgba(0, 123, 255, 0.9);
-  backdrop-filter: blur(10px);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 4px; /* ✅ radius of 4 as requested */
-  font-size: 1rem;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .readBtn:hover {
   background: rgba(0, 91, 179, 0.95);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* ✅ NEW: Fade in animation */
+/* ✅ Animation keyframes */
 @keyframes fadeInOverlay {
   from {
     opacity: 0;
-    backdrop-filter: blur(0px);
   }
   to {
     opacity: 1;
-    backdrop-filter: blur(2px);
   }
 }
 
 @keyframes slideUpContent {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.9);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes fadeInText {
+@keyframes slideUpBottom {
   from {
     opacity: 0;
     transform: translateY(15px);
@@ -319,18 +299,7 @@
   }
 }
 
-@keyframes slideUpButton {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ✅ NEW: Loading, Error, and Empty states */
+/* ✅ Loading, Error, and Empty states */
 .loadingState, .errorState, .emptyState {
   grid-column: 1 / -1;
   text-align: center;
@@ -346,6 +315,11 @@
   height: 40px;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .retryBtn {

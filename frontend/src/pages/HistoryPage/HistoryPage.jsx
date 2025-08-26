@@ -195,7 +195,7 @@ const HistoryPage = () => {
                     </div>
                   </div>
               
-                  {/* ✅ NEW: Updated hover overlay with new layout */}
+                  {/* ✅ NEW: Simplified hover overlay with rigid bottom positioning */}
                   {hoveredPostId === post.id && (
                     <div className={styles.hoverOverlay}>
                       {/* ✅ Subheading centered */}
@@ -205,45 +205,45 @@ const HistoryPage = () => {
                         </p>
                       </div>
               
-                      {/* ✅ Bottom info section */}
-                      <div className={styles.bottomInfo}>
-                        {/* ✅ Left side - Author, Date, Share */}
-                        <div className={styles.metaInfo}>
-                          <div className={styles.authorInfo}>
-                            <span className={styles.author}>
-                              {post.author || 'Terminal Musing'}
-                            </span>
-                            <span className={styles.date}>
-                              {new Date(post.date).toLocaleDateString('en-US', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
-                            </span>
-                          </div>
-                          <button 
-                            className={styles.shareBtn}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Share functionality
-                              if (navigator.share) {
-                                navigator.share({
-                                  title: post.title,
-                                  text: post.subheading,
-                                  url: `/blog/history/${post.id}`
-                                });
-                              } else {
-                                // Fallback copy to clipboard
-                                navigator.clipboard.writeText(`${window.location.origin}/blog/history/${post.id}`);
-                                alert('Link copied to clipboard!');
-                              }
-                            }}
-                          >
-                            Share
-                          </button>
-                        </div>
+                      {/* ✅ Fixed bottom elements - rigid positioning */}
+                      <div className={styles.bottomFixed}>
+                        {/* ✅ Author name - far left */}
+                        <span className={styles.authorName}>
+                          {post.author || 'Terminal Musing'}
+                        </span>
               
-                        {/* ✅ Right side - Read button */}
+                        {/* ✅ Date - left of center */}
+                        <span className={styles.postDate}>
+                          {new Date(post.date).toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+              
+                        {/* ✅ Share icon - right of center */}
+                        <button 
+                          className={styles.shareIcon}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (navigator.share) {
+                              navigator.share({
+                                title: post.title,
+                                text: post.subheading,
+                                url: `/blog/history/${post.id}`
+                              });
+                            } else {
+                              navigator.clipboard.writeText(`${window.location.origin}/blog/history/${post.id}`);
+                              alert('Link copied to clipboard!');
+                            }
+                          }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                          </svg>
+                        </button>
+              
+                        {/* ✅ Read button - far right */}
                         <button 
                           className={styles.readBtn}
                           onClick={(e) => {

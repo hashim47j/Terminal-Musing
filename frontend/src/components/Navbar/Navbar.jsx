@@ -5,7 +5,7 @@ import { PageContext } from "../../context/PageContext.jsx";
 
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
-import { PageTransitionContext } from '../pageanim/PageTransitionContext'; 
+import { PageTransitionContext } from '../pageanim/PageTransitionContext';
 
 const Navbar = () => {
   // State for the new feature
@@ -35,7 +35,10 @@ const Navbar = () => {
   const navLinksRef = useRef(null);
   const location = useLocation();
   const currentPath = location.pathname;
-  const isBlogPostPage = currentPath.startsWith('/blogs/');
+  
+  // ✅ UPDATED: Enhanced blog post detection for unified routes
+  const isBlogPostPage = currentPath.startsWith('/blogs/') || currentPath.startsWith('/blog/');
+  
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
@@ -60,17 +63,32 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
-  // --- COMBINED: Unified Scroll Handler with Progress Tracking ---
+  // ✅ ENHANCED: Unified Scroll Handler with Better Progress Tracking
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // Calculate scroll progress for blog pages
+      // ✅ Enhanced scroll progress calculation for blog pages (including unified routes)
       if (isBlogPostPage) {
-        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
+        // More accurate progress calculation
+        const scrollTop = currentScrollY;
+        const docHeight = Math.max(
+          document.body.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.clientHeight,
+          document.documentElement.scrollHeight,
+          document.documentElement.offsetHeight
+        );
+        const winHeight = window.innerHeight;
+        const scrollableHeight = docHeight - winHeight;
         
-        setScrollProgress(Math.min(progress, 100));
+        if (scrollableHeight > 0) {
+          const progress = (scrollTop / scrollableHeight) * 100;
+          setScrollProgress(Math.min(Math.max(progress, 0), 100));
+        } else {
+          setScrollProgress(0);
+        }
+        
         setIsScrolled(currentScrollY > 50);
       } else {
         setScrollProgress(0);
@@ -81,22 +99,55 @@ const Navbar = () => {
       if (window.innerWidth > 768 && !isBlogPostPage) {
         setHide(currentScrollY > lastScrollY && currentScrollY > 50);
       } else {
-        setHide(false); 
+        setHide(false);
       }
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    // Throttled scroll handler for better performance
+    let ticking = false;
+    const throttledScrollHandler = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", throttledScrollHandler, { passive: true });
+    
+    // Initial calculation
+    handleScroll();
     
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", throttledScrollHandler);
     };
-  }, [isBlogPostPage, lastScrollY, scrollProgress]);
+  }, [isBlogPostPage, lastScrollY]);
 
+  // ✅ ENHANCED: Better page title detection for unified routes
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) {
       return pageTitle;
     }
+    
+    // Handle unified blog routes
+    if (currentPath.startsWith('/blog/')) {
+      const pathParts = currentPath.split('/');
+      if (pathParts.length >= 3) {
+        const category = pathParts[2];
+        switch (category) {
+          case 'history': return pageTitle || 'History';
+          case 'philosophy': return pageTitle || 'Philosophy';
+          case 'tech': return pageTitle || 'Technology';
+          case 'lsconcern': return pageTitle || 'Legal & Social';
+          default: return pageTitle || 'Blog Post';
+        }
+      }
+    }
+    
+    // Handle category routes and other pages
     switch (currentPath) {
       case "/": return "Terminal Musing";
       case "/philosophy": return "Philosophy";
@@ -106,7 +157,7 @@ const Navbar = () => {
       case "/tech": return "Tech";
       case "/daily-thoughts": return "Daily Thoughts";
       case "/admin/login": return "Author(s)";
-      default: return "";
+      default: return pageTitle || "";
     }
   };
   
@@ -147,13 +198,18 @@ const Navbar = () => {
     updateHighlight(activeLink);
   }, [currentPath]);
 
-  // Color detection effect
+  // ✅ ENHANCED: Color detection with support for unified blog routes
   useEffect(() => {
     const lightBackgroundPaths = [
       "/philosophy", "/history", "/writings", "/legal-social",
       "/tech", "/daily-thoughts"
     ];
-    const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path));
+    
+    // Check if current path or its parent category should have light background
+    const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path)) ||
+                               currentPath.startsWith('/blog/') || // All unified blog routes
+                               currentPath.startsWith('/blogs/'); // Legacy blog routes
+    
     const intersectingSensors = new Set();
 
     const observer = new IntersectionObserver(
@@ -256,8 +312,6 @@ const Navbar = () => {
       navigate(path);
     });
   };
-  
-  
 
   return (
     <>
@@ -284,13 +338,14 @@ const Navbar = () => {
           })
         }}
       >
-        {/* Progress fill overlay */}
+        {/* ✅ ENHANCED: Progress fill overlay with smoother animation */}
         {isBlogPostPage && (
           <div 
             className={styles.progressFill}
             style={{ 
               width: `${scrollProgress}%`,
-              opacity: isScrolled ? 0.3 : 0
+              opacity: isScrolled ? 0.3 : 0,
+              transition: 'width 0.1s ease-out, opacity 0.3s ease'
             }}
           />
         )}

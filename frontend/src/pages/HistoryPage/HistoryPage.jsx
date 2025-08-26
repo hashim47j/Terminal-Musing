@@ -10,6 +10,7 @@ const HistoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showFooter, setShowFooter] = useState(false);
+  const [hoveredPostId, setHoveredPostId] = useState(null); // ✅ NEW: Track hovered card
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -17,33 +18,27 @@ const HistoryPage = () => {
       setError('');
       
       try {
-        const res = await fetch('/api/blogs/history'); // ✅ Updated to match new API structure
+        const res = await fetch('/api/blogs/history');
         if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
         
         const data = await res.json();
-        
-        // ✅ CRITICAL: Ensure data is always an array before operations
-        console.log('🔍 History API Response:', data);
-        console.log('🔍 Is Array:', Array.isArray(data));
         
         let postsArray = [];
         if (Array.isArray(data)) {
           postsArray = data;
         } else if (data && Array.isArray(data.blogs)) {
-          // Handle if API returns {blogs: [...]}
           postsArray = data.blogs;
         } else {
           console.warn('⚠️ API returned unexpected format:', typeof data);
           postsArray = [];
         }
 
-        // ✅ Safe sorting with validation
         const sorted = postsArray
-          .filter(post => post && post.id && post.title) // Remove invalid posts
+          .filter(post => post && post.id && post.title)
           .sort((a, b) => {
             const dateA = new Date(a.date || 0);
             const dateB = new Date(b.date || 0);
-            return dateB - dateA; // Newest first
+            return dateB - dateA;
           });
           
         setPosts(sorted);
@@ -51,7 +46,7 @@ const HistoryPage = () => {
       } catch (err) {
         console.error('❌ Error fetching history blogs:', err);
         setError(`Failed to load history posts: ${err.message}`);
-        setPosts([]); // ✅ Ensure posts is always an array on error
+        setPosts([]);
       } finally {
         setLoading(false);
       }
@@ -77,9 +72,8 @@ const HistoryPage = () => {
     };
   }, []);
 
-  // ✅ Enhanced navigation to use unified route
   const handlePostClick = (post) => {
-    navigate(`/blog/history/${post.id}`); // ✅ Updated to unified route format
+    navigate(`/blog/history/${post.id}`);
   };
 
   const handleKeyDown = (e, post) => {
@@ -87,6 +81,22 @@ const HistoryPage = () => {
       e.preventDefault();
       handlePostClick(post);
     }
+  };
+
+  // ✅ NEW: Extract excerpt from blog content
+  const getExcerpt = (post) => {
+    if (!post.content || !Array.isArray(post.content)) return "Click to read this fascinating historical article...";
+    
+    const textBlocks = post.content
+      .filter(block => block.type === 'paragraph' && block.text)
+      .slice(0, 2)
+      .map(block => block.text.trim())
+      .join(' ');
+    
+    if (textBlocks && textBlocks.length > 150) {
+      return textBlocks.substring(0, 150) + '...';
+    }
+    return textBlocks || post.subheading || "Click to read this fascinating historical article...";
   };
 
   return (
@@ -136,12 +146,13 @@ const HistoryPage = () => {
                 <p>Check back soon for new historical insights and articles.</p>
               </div>
             ) : (
-              // ✅ Safe mapping with array check
               posts.map((post) => (
                 <article
                   key={post.id}
                   className={styles.blogCard}
                   onClick={() => handlePostClick(post)}
+                  onMouseEnter={() => setHoveredPostId(post.id)} // ✅ NEW: Set hovered state
+                  onMouseLeave={() => setHoveredPostId(null)}    // ✅ NEW: Clear hovered state
                   role="button"
                   tabIndex={0}
                   style={{ cursor: 'pointer' }}
@@ -152,7 +163,7 @@ const HistoryPage = () => {
                     <img 
                       src={post.coverImage} 
                       alt={`Cover for ${post.title}`} 
-                      className={styles.coverImage}
+                      className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.blurred : ''}`} // ✅ NEW: Conditional blur
                       loading="lazy"
                       onError={(e) => {
                         e.target.style.display = 'none';
@@ -160,8 +171,26 @@ const HistoryPage = () => {
                       }}
                     />
                   ) : (
-                    <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }}>
+                    <div className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.blurred : ''}`} style={{ backgroundColor: '#ccc' }}>
                       <span className={styles.noImageText}>No Image</span>
+                    </div>
+                  )}
+
+                  {/* ✅ NEW: Hover Overlay with Excerpt and Read Now Button */}
+                  {hoveredPostId === post.id && (
+                    <div className={styles.hoverOverlay}>
+                      <div className={styles.overlayContent}>
+                        <p className={styles.excerpt}>{getExcerpt(post)}</p>
+                        <button 
+                          className={styles.readNowBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePostClick(post);
+                          }}
+                        >
+                          Read Now →
+                        </button>
+                      </div>
                     </div>
                   )}
 

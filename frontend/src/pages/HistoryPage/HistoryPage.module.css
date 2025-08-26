@@ -58,8 +58,8 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   margin-top: 340px;
   background-position: center;
-  margin-left: 140px;
-  margin-right: 140px;
+  margin-left: 160px;
+  margin-right: 160px;
   margin-bottom: 40px;
   height: auto;
   width: auto;
@@ -107,8 +107,10 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
-  min-height: 180px;    /* Equal to grid-auto-rows */
-  height: 100%;         /* Fill grid row */
+  min-height: 180px;
+  height: 100%;
+  position: relative; /* ✅ NEW: Required for overlay positioning */
+  cursor: pointer;
 }
 
 .blogCard:hover {
@@ -116,11 +118,125 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ NEW: Blur effect for images on hover */
 .coverImage {
-  width: 38%;           /* Your image takes up less than half the card width */
+  width: 38%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+
+.blurred {
+  filter: blur(4px);
+  transform: scale(1.02);
+}
+.hoverOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  animation: fadeInOverlay 0.3s ease forwards;
+  z-index: 10;
+}
+
+.overlayContent {
+  text-align: center;
+  padding: 20px;
+  max-width: 80%;
+}
+
+.excerpt {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  color: #f0f0f0;
+  font-family: 'Roboto', sans-serif;
+}
+
+
+.readNowBtn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.readNowBtn:hover {
+  background: linear-gradient(135deg, #0056b3, #003d82);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+
+/* ✅ NEW: Fade in animation */
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ✅ NEW: Loading, Error, and Empty states */
+.loadingState, .errorState, .emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.retryBtn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.retryBtn:hover {
+  background-color: #0056b3;
 }
 
 .blogContent {

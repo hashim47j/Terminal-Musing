@@ -44,6 +44,20 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
+// ✅ ADD DEBUG LOGGING MIDDLEWARE
+app.use((req, res, next) => {
+  const contentLength = req.headers['content-length'] || 'unknown';
+  console.log(`📨 ${req.method} ${req.url} - Content-Length: ${contentLength} bytes`);
+  
+  // Log parsed body size after body-parser processes it
+  if (req.body && Object.keys(req.body).length > 0) {
+    const bodyStr = JSON.stringify(req.body);
+    console.log(`📦 Parsed body size: ${Buffer.byteLength(bodyStr, 'utf8')} bytes`);
+    console.log(`📋 Body keys: ${Object.keys(req.body).join(', ')}`);
+  }
+  next();
+});
+
 // ─────────────── STATIC FOLDERS ───────────────
 app.use('/blogs',   express.static(path.join(__dirname, 'blogs')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -36,7 +36,7 @@ const Navbar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   
-  // ✅ UPDATED: Enhanced blog post detection for unified routes
+  // ✅ Enhanced blog post detection for unified routes
   const isBlogPostPage = currentPath.startsWith('/blogs/') || currentPath.startsWith('/blog/');
   
   const brandWrapperRef = useRef(null);
@@ -63,32 +63,17 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
-  // ✅ ENHANCED: Unified Scroll Handler with Better Progress Tracking
+  // ✅ RESTORED: Simple and smooth scroll progress tracking (original implementation)
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // ✅ Enhanced scroll progress calculation for blog pages (including unified routes)
+      // Calculate scroll progress for blog pages
       if (isBlogPostPage) {
-        // More accurate progress calculation
-        const scrollTop = currentScrollY;
-        const docHeight = Math.max(
-          document.body.scrollHeight,
-          document.body.offsetHeight,
-          document.documentElement.clientHeight,
-          document.documentElement.scrollHeight,
-          document.documentElement.offsetHeight
-        );
-        const winHeight = window.innerHeight;
-        const scrollableHeight = docHeight - winHeight;
+        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
         
-        if (scrollableHeight > 0) {
-          const progress = (scrollTop / scrollableHeight) * 100;
-          setScrollProgress(Math.min(Math.max(progress, 0), 100));
-        } else {
-          setScrollProgress(0);
-        }
-        
+        setScrollProgress(Math.min(progress, 100));
         setIsScrolled(currentScrollY > 50);
       } else {
         setScrollProgress(0);
@@ -99,34 +84,18 @@ const Navbar = () => {
       if (window.innerWidth > 768 && !isBlogPostPage) {
         setHide(currentScrollY > lastScrollY && currentScrollY > 50);
       } else {
-        setHide(false);
+        setHide(false); 
       }
       setLastScrollY(currentScrollY);
     };
 
-    // Throttled scroll handler for better performance
-    let ticking = false;
-    const throttledScrollHandler = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", throttledScrollHandler, { passive: true });
-    
-    // Initial calculation
-    handleScroll();
+    window.addEventListener("scroll", handleScroll);
     
     return () => {
-      window.removeEventListener("scroll", throttledScrollHandler);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [isBlogPostPage, lastScrollY]);
 
-  // ✅ ENHANCED: Better page title detection for unified routes
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) {
       return pageTitle;
@@ -147,7 +116,6 @@ const Navbar = () => {
       }
     }
     
-    // Handle category routes and other pages
     switch (currentPath) {
       case "/": return "Terminal Musing";
       case "/philosophy": return "Philosophy";
@@ -198,17 +166,16 @@ const Navbar = () => {
     updateHighlight(activeLink);
   }, [currentPath]);
 
-  // ✅ ENHANCED: Color detection with support for unified blog routes
+  // Color detection effect
   useEffect(() => {
     const lightBackgroundPaths = [
       "/philosophy", "/history", "/writings", "/legal-social",
       "/tech", "/daily-thoughts"
     ];
     
-    // Check if current path or its parent category should have light background
     const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path)) ||
-                               currentPath.startsWith('/blog/') || // All unified blog routes
-                               currentPath.startsWith('/blogs/'); // Legacy blog routes
+                               currentPath.startsWith('/blog/') || 
+                               currentPath.startsWith('/blogs/');
     
     const intersectingSensors = new Set();
 
@@ -338,14 +305,13 @@ const Navbar = () => {
           })
         }}
       >
-        {/* ✅ ENHANCED: Progress fill overlay with smoother animation */}
+        {/* Progress fill overlay */}
         {isBlogPostPage && (
           <div 
             className={styles.progressFill}
             style={{ 
               width: `${scrollProgress}%`,
-              opacity: isScrolled ? 0.3 : 0,
-              transition: 'width 0.1s ease-out, opacity 0.3s ease'
+              opacity: isScrolled ? 0.3 : 0
             }}
           />
         )}

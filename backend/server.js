@@ -54,6 +54,22 @@ const uploadDir = path.join(__dirname, 'uploads');
 fs.ensureDirSync(uploadDir);
 
 // ─────────────── MULTER FOR IMAGES ───────────────
+
+// ✅ ADD ERROR HANDLER FOR UPLOAD LIMITS
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'File too large (max 10MB)' });
+    }
+    if (error.code === 'LIMIT_FIELD_VALUE') {
+      return res.status(400).json({ error: 'Field value too large (max 10MB)' });
+    }
+    return res.status(400).json({ error: `Upload error: ${error.message}` });
+  }
+  next(error);
+});
+
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {

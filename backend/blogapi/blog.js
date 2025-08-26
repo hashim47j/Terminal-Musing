@@ -178,10 +178,10 @@ router.post('/', writeRateLimit, async (req, res) => {
       return res.status(400).json({ error: 'Title must be a string under 200 characters' });
     }
 
-// ✅ UPDATED: Allow larger content (10MB)
-if (typeof blog.content !== 'string' || blog.content.length > 10000000) {
-  return res.status(400).json({ error: 'Content too large (max 10MB)' });
-}
+    // ✅ FIXED: Simple content validation (removed problematic Buffer.byteLength check)
+    if (!blog.content || (!Array.isArray(blog.content) && typeof blog.content !== 'string')) {
+      return res.status(400).json({ error: 'Invalid content format' });
+    }
 
     // Ensure directory exists
     const categoryDir = path.join(BLOGS_ROOT, category);

@@ -44,7 +44,6 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-
 // ─────────────── STATIC FOLDERS ───────────────
 app.use('/blogs',   express.static(path.join(__dirname, 'blogs')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -54,8 +53,28 @@ const uploadDir = path.join(__dirname, 'uploads');
 fs.ensureDirSync(uploadDir);
 
 // ─────────────── MULTER FOR IMAGES ───────────────
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const ts   = Date.now();
+    const ext  = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+    cb(null, `${base}-${ts}${ext}`);
+  }
+});
 
-// ✅ ADD ERROR HANDLER FOR UPLOAD LIMITS
+const upload = multer({ 
+  storage,
+  limits: { 
+    fileSize: 10 * 1024 * 1024,     // 10MB file size
+    fieldSize: 10 * 1024 * 1024,    // 10MB field size (TEXT FIELDS!)
+    fieldNameSize: 1000,             // Field name length
+    fields: 100,                     // Number of non-file fields
+    parts: 100                       // Total parts (fields + files)
+  }
+});
+
+// ✅ MOVE ERROR HANDLER AFTER MULTER SETUP
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
@@ -68,28 +87,6 @@ app.use((error, req, res, next) => {
   }
   next(error);
 });
-
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const ts   = Date.now();
-    const ext  = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext).replace(/\s+/g, '_');
-    cb(null, `${base}-${ts}${ext}`);
-  }
-});
-const upload = multer({ 
-  storage,
-  limits: { 
-    fileSize: 10 * 1024 * 1024,     // 10MB file size
-    fieldSize: 10 * 1024 * 1024,    // 10MB field size (TEXT FIELDS!)
-    fieldNameSize: 1000,             // Field name length
-    fields: 100,                     // Number of non-file fields
-    parts: 100                       // Total parts (fields + files)
-  }
-});
-
 
 // ─────────────── /api/upload ───────────────
 app.post('/api/upload', upload.single('image'), (req, res) => {

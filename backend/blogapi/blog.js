@@ -183,13 +183,6 @@ if (typeof blog.content !== 'string' || blog.content.length > 10000000) {
   return res.status(400).json({ error: 'Content too large (max 10MB)' });
 }
 
-const contentSize = Buffer.byteLength(JSON.stringify(blog.content), 'utf8');
-if (contentSize > 10 * 1024 * 1024) {
-  return res.status(400).json({ 
-    error: `Content too large (${Math.round(contentSize / 1024 / 1024)}MB, max 10MB)` 
-  });
-}
-
     // Ensure directory exists
     const categoryDir = path.join(BLOGS_ROOT, category);
     if (!(await dirExists(categoryDir))) {

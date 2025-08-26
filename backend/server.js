@@ -107,6 +107,7 @@ app.use('/api/dailythoughts',            dtapiRoutes);
 app.use('/api/dailythoughts/process',    processRoutes);
 app.use('/api/dailythoughts/manage',     manageRoutes);
 app.use('/api/dailythoughts/likes',      likeRoutes);
+app.use('/api/dailythoughts/approved',   getApprovedRoutes); 
 
 // ─────────────── GLOBAL / VISITOR TRACKING ───────
 app.use('/',    userviewAPI);

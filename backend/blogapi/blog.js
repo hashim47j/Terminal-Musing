@@ -17,18 +17,48 @@ const VALID_CATEGORIES = ['history', 'philosophy', 'tech', 'lsconcern'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB max blog size
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
-// Rate limiting for different operations
-const readRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Max 100 requests per window
-  message: { error: 'Too many read requests, please try again later.' }
+// ✅ FIXED: Secure rate limiting configuration
+const createSecureRateLimit = (windowMs, max, message) => rateLimit({
+  windowMs,
+  max,
+  message,
+  // ✅ Custom key generator strips ports to prevent bypass
+  keyGenerator: (req) => {
+    const ip = req.ip || req.socket.remoteAddress || req.connection.remoteAddress || '';
+    // Strip port numbers (e.g., "192.168.1.1:54321" -> "192.168.1.1")
+    return ip.replace(/:\d+[^:]*$/, '');
+  },
+  // ✅ Disable problematic validation checks
+  validate: {
+    trustProxy: false,           // Disable trust proxy validation
+    xForwardedForHeader: false,  // Disable X-Forwarded-For validation
+    ip: false                    // Disable IP validation
+  },
+  standardHeaders: true,  // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false,   // Disable X-RateLimit-* headers
+  handler: (req, res) => {
+    console.warn('🚨 Rate limit exceeded:', {
+      ip: req.ip,
+      url: req.originalUrl,
+      method: req.method,
+      userAgent: req.get('User-Agent')
+    });
+    res.status(429).json(typeof message === 'string' ? { error: message } : message);
+  }
 });
 
-const writeRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10, // Max 10 writes per window
-  message: { error: 'Too many write requests, please try again later.' }
-});
+// Rate limiting for different operations
+const readRateLimit = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  200, // Max 200 requests per window (increased for better UX)
+  { error: 'Too many read requests, please try again later.' }
+);
+
+const writeRateLimit = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  20, // Max 20 writes per window (increased slightly)
+  { error: 'Too many write requests, please try again later.' }
+);
 
 // Simple in-memory cache
 const cache = new Map();
@@ -255,7 +285,7 @@ router.get('/:category/:id', readRateLimit, async (req, res) => {
   }
 });
 
-// ===== GET: All blogs in category =====
+// ===== GET: All blogs in category (FIXED - Always returns array) =====
 router.get('/:category', readRateLimit, async (req, res) => {
   const startTime = Date.now();
   
@@ -282,7 +312,8 @@ router.get('/:category', readRateLimit, async (req, res) => {
       const categoryDir = path.join(BLOGS_ROOT, category);
       
       if (!(await dirExists(categoryDir))) {
-        return res.json({ blogs: [], category, count: 0, total: 0 });
+        // ✅ CRITICAL: Always return array, never object
+        return res.json([]);
       }
 
       const files = await fs.readdir(categoryDir);
@@ -323,7 +354,8 @@ router.get('/:category', readRateLimit, async (req, res) => {
       const aVal = a[sortField] || '';
       const bVal = b[sortField] || '';
       const comparison = order === 'asc' ? 
-        aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        aVal.localeCompare && bVal.localeCompare ? aVal.localeCompare(bVal) : 0 :
+        bVal.localeCompare && aVal.localeCompare ? bVal.localeCompare(aVal) : 0;
       return comparison;
     });
 
@@ -333,25 +365,20 @@ router.get('/:category', readRateLimit, async (req, res) => {
 
     console.log(`✅ Category blogs fetched: ${category} (${total} total, ${Date.now() - startTime}ms)`);
     
-    res.json({ 
-      blogs: paginatedBlogs,
-      category,
-      count: paginatedBlogs.length,
-      total,
-      limit: limitNum,
-      offset: offsetNum,
-      hasMore: offsetNum + limitNum < total
-    });
+    // ✅ CRITICAL: Always return array for frontend .map()
+    res.json(paginatedBlogs);
+    
   } catch (error) {
     console.error(`❌ Failed to fetch category blogs [${req.params.category}]:`, {
       error: error.message,
       duration: Date.now() - startTime
     });
-    res.status(500).json({ error: 'Failed to fetch category blogs' });
+    // ✅ CRITICAL: Always return array on error
+    res.status(500).json([]);
   }
 });
 
-// ===== GET: All blogs from all categories =====
+// ===== GET: All blogs from all categories (FIXED - Always returns array) =====
 router.get('/', readRateLimit, async (req, res) => {
   const startTime = Date.now();
   
@@ -421,7 +448,11 @@ router.get('/', readRateLimit, async (req, res) => {
     }
 
     // Sort by date (newest first)
-    filteredBlogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+    filteredBlogs.sort((a, b) => {
+      const dateA = new Date(a.date || 0);
+      const dateB = new Date(b.date || 0);
+      return dateB - dateA;
+    });
 
     // Apply pagination
     const limitNum = Math.min(parseInt(limit) || 50, 100);
@@ -431,22 +462,16 @@ router.get('/', readRateLimit, async (req, res) => {
 
     console.log(`✅ All blogs fetched (${total} total, ${Date.now() - startTime}ms)`);
     
-    res.json({ 
-      blogs: paginatedBlogs, 
-      totalCount: total,
-      categories: VALID_CATEGORIES,
-      count: paginatedBlogs.length,
-      limit: limitNum,
-      offset: offsetNum,
-      hasMore: offsetNum + limitNum < total,
-      cached: allBlogs === getFromCache(cacheKey)
-    });
+    // ✅ CRITICAL: Always return array for frontend .map()
+    res.json(paginatedBlogs);
+    
   } catch (error) {
     console.error('❌ Failed to fetch all blogs:', {
       error: error.message,
       duration: Date.now() - startTime
     });
-    res.status(500).json({ error: 'Failed to fetch all blogs' });
+    // ✅ CRITICAL: Always return array on error
+    res.status(500).json([]);
   }
 });
 
@@ -456,7 +481,12 @@ router.get('/health', (req, res) => {
     status: 'OK', 
     timestamp: new Date().toISOString(),
     cache: { size: cache.size, maxAge: CACHE_DURATION },
-    categories: VALID_CATEGORIES
+    categories: VALID_CATEGORIES,
+    rateLimit: {
+      readMax: 200,
+      writeMax: 20,
+      windowMs: 15 * 60 * 1000
+    }
   });
 });
 

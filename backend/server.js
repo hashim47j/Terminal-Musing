@@ -37,7 +37,7 @@ const __dirname  = path.dirname(__filename);
 const rootDir    = path.resolve(__dirname, '..');
 
 // ✅ CRITICAL FIX: Set trust proxy FIRST, before any middleware
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 // ─────────────── MIDDLEWARE ───────────────
 app.use(cors());

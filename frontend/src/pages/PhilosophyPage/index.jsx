@@ -8,6 +8,8 @@ import { useDarkMode } from '../../context/DarkModeContext';
 const PhilosophyPage = () => {
   const { darkMode } = useDarkMode();
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const navbarBgRef = useRef(null);
@@ -32,17 +34,64 @@ const PhilosophyPage = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
+      setError('');
+      
       try {
-        const res = await fetch('/api/blogs?category=philosophy');
+        const res = await fetch('/api/blogs/philosophy'); // ✅ Updated to match new API structure
+        if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
+        
         const data = await res.json();
-        setPosts(data);
+        
+        // ✅ CRITICAL: Ensure data is always an array before operations
+        console.log('🔍 Philosophy API Response:', data);
+        console.log('🔍 Is Array:', Array.isArray(data));
+        
+        let postsArray = [];
+        if (Array.isArray(data)) {
+          postsArray = data;
+        } else if (data && Array.isArray(data.blogs)) {
+          // Handle if API returns {blogs: [...]}
+          postsArray = data.blogs;
+        } else {
+          console.warn('⚠️ API returned unexpected format:', typeof data);
+          postsArray = [];
+        }
+
+        // ✅ Safe sorting and filtering
+        const sorted = postsArray
+          .filter(post => post && post.id && post.title) // Remove invalid posts
+          .sort((a, b) => {
+            const dateA = new Date(a.date || 0);
+            const dateB = new Date(b.date || 0);
+            return dateB - dateA; // Newest first
+          });
+          
+        setPosts(sorted);
+        
       } catch (err) {
-        console.error('❌ Error fetching blog previews:', err);
+        console.error('❌ Error fetching philosophy blogs:', err);
+        setError(`Failed to load philosophy posts: ${err.message}`);
+        setPosts([]); // ✅ Ensure posts is always an array on error
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPosts();
   }, []);
+
+  // ✅ Enhanced navigation to use unified route
+  const handlePostClick = (post) => {
+    navigate(`/blog/philosophy/${post.id}`); // ✅ Updated to unified route format
+  };
+
+  const handleKeyDown = (e, post) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handlePostClick(post);
+    }
+  };
 
   return (
     <div className={`${styles.philosophyPageContainer} ${darkMode ? styles.darkMode : ''}`}>
@@ -73,33 +122,84 @@ const PhilosophyPage = () => {
       </section>
 
       <section className={styles.postsSection}>
-        <h2 className={styles.postsHeading}>Posts</h2>
+        <div className={styles.postsHeader}>
+          <h2 className={styles.postsHeading}>Philosophy Posts</h2>
+          <p className={styles.postsCount}>
+            {loading ? 'Loading...' : `${posts.length} post${posts.length !== 1 ? 's' : ''} available`}
+          </p>
+        </div>
+        
         <div className={styles.postsGrid}>
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className={styles.postCard}
-              onClick={() => navigate(`/blogs/philosophy/${post.id}`)}
-              style={{ cursor: 'pointer' }}
-            >
-              {post.coverImage ? (
-                <img src={post.coverImage} alt={post.title} className={styles.postImage} />
-              ) : (
-                <div className={styles.postImage} style={{ backgroundColor: '#ccc' }} />
-              )}
-              <div className={styles.postContent}>
-                <h3 className={styles.postTitle}>{post.title}</h3>
-                <p className={styles.postDescription}>{post.subheading}</p>
-                <span className={styles.postTime}>
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </span>
-              </div>
+          {loading ? (
+            <div className={styles.loadingState}>
+              <div className={styles.spinner}></div>
+              <p>Loading philosophy posts...</p>
             </div>
-          ))}
+          ) : error ? (
+            <div className={styles.errorState}>
+              <h3>Oops! Something went wrong</h3>
+              <p style={{ color: 'red' }}>{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className={styles.retryBtn}
+              >
+                Try Again
+              </button>
+            </div>
+          ) : !Array.isArray(posts) || posts.length === 0 ? (
+            <div className={styles.emptyState}>
+              <h3>No Philosophy Posts Available</h3>
+              <p>Check back soon for new philosophical insights and discussions.</p>
+            </div>
+          ) : (
+            // ✅ Safe mapping with array check
+            posts.map((post) => (
+              <article
+                key={post.id}
+                className={styles.postCard}
+                onClick={() => handlePostClick(post)}
+                onKeyDown={(e) => handleKeyDown(e, post)}
+                style={{ cursor: 'pointer' }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Read article: ${post.title}`}
+              >
+                {post.coverImage ? (
+                  <img 
+                    src={post.coverImage} 
+                    alt={`Cover for ${post.title}`} 
+                    className={styles.postImage}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextElementSibling.style.display = 'block';
+                    }}
+                  />
+                ) : (
+                  <div className={styles.postImage} style={{ backgroundColor: '#ccc' }}>
+                    <span className={styles.noImageText}>No Image</span>
+                  </div>
+                )}
+                
+                <div className={styles.postContent}>
+                  <h3 className={styles.postTitle}>{post.title}</h3>
+                  {post.subheading && (
+                    <p className={styles.postDescription}>{post.subheading}</p>
+                  )}
+                  <div className={styles.postMeta}>
+                    <span className={styles.postTime}>
+                      {new Date(post.date).toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
+                    <span className={styles.categoryBadge}>Philosophy</span>
+                  </div>
+                </div>
+              </article>
+            ))
+          )}
         </div>
       </section>
     </div>

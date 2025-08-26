@@ -17,22 +17,48 @@ const VALID_CATEGORIES = ['history', 'philosophy', 'tech', 'lsconcern'];
 const viewsCache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-// Rate limiting configurations
-const readLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Allow more reads
-  message: { error: 'Too many view requests, please try again later.' },
-  standardHeaders: true,
-  legacyHeaders: false
+// ✅ FIXED: Secure rate limiting configuration (same pattern as blog.js and comments.js)
+const createSecureRateLimit = (windowMs, max, message) => rateLimit({
+  windowMs,
+  max,
+  message,
+  // ✅ Custom key generator strips ports to prevent bypass
+  keyGenerator: (req) => {
+    const ip = req.ip || req.socket.remoteAddress || req.connection.remoteAddress || '';
+    // Strip port numbers (e.g., "192.168.1.1:54321" -> "192.168.1.1")
+    return ip.replace(/:\d+[^:]*$/, '');
+  },
+  // ✅ Disable problematic validation checks
+  validate: {
+    trustProxy: false,           // Disable trust proxy validation
+    xForwardedForHeader: false,  // Disable X-Forwarded-For validation
+    ip: false                    // Disable IP validation
+  },
+  standardHeaders: true,  // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false,   // Disable X-RateLimit-* headers
+  handler: (req, res) => {
+    console.warn('🚨 Views rate limit exceeded:', {
+      ip: req.ip,
+      url: req.originalUrl,
+      method: req.method,
+      userAgent: req.get('User-Agent')
+    });
+    res.status(429).json(typeof message === 'string' ? { error: message } : message);
+  }
 });
 
-const writeLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Reasonable write limit
-  message: { error: 'Too many views being recorded, please try again later.' },
-  standardHeaders: true,
-  legacyHeaders: false
-});
+// Rate limiting configurations with secure setup
+const readLimiter = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  500, // Allow more reads for view tracking (increased from 300)
+  { error: 'Too many view requests, please try again later.' }
+);
+
+const writeLimiter = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  200, // Reasonable write limit for view tracking (increased from 100)
+  { error: 'Too many views being recorded, please try again later.' }
+);
 
 /**
  * Initialize views file safely
@@ -381,7 +407,12 @@ router.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     cache: { size: viewsCache.size, ttl: CACHE_TTL },
     validCategories: VALID_CATEGORIES,
-    viewsFile: viewsFile
+    viewsFile: viewsFile,
+    rateLimit: {
+      readMax: 500,
+      writeMax: 200,
+      windowMs: 15 * 60 * 1000
+    }
   });
 });
 

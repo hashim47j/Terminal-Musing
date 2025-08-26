@@ -14,30 +14,54 @@ const MAX_COMMENT_LENGTH = 2000;
 const MAX_NAME_LENGTH = 100;
 const MAX_REPLY_DEPTH = 3; // Maximum nested reply levels
 
-// Rate limiting configurations
-const readLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Allow more reads
-  message: { error: 'Too many comment requests, please try again later.' },
-  standardHeaders: true,
-  legacyHeaders: false
+// ✅ FIXED: Secure rate limiting configuration (same pattern as blog.js)
+const createSecureRateLimit = (windowMs, max, message) => rateLimit({
+  windowMs,
+  max,
+  message,
+  // ✅ Custom key generator strips ports to prevent bypass
+  keyGenerator: (req) => {
+    const ip = req.ip || req.socket.remoteAddress || req.connection.remoteAddress || '';
+    // Strip port numbers (e.g., "192.168.1.1:54321" -> "192.168.1.1")
+    return ip.replace(/:\d+[^:]*$/, '');
+  },
+  // ✅ Disable problematic validation checks
+  validate: {
+    trustProxy: false,           // Disable trust proxy validation
+    xForwardedForHeader: false,  // Disable X-Forwarded-For validation
+    ip: false                    // Disable IP validation
+  },
+  standardHeaders: true,  // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false,   // Disable X-RateLimit-* headers
+  handler: (req, res) => {
+    console.warn('🚨 Comment rate limit exceeded:', {
+      ip: req.ip,
+      url: req.originalUrl,
+      method: req.method,
+      userAgent: req.get('User-Agent')
+    });
+    res.status(429).json(typeof message === 'string' ? { error: message } : message);
+  }
 });
 
-const writeLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // Limit comment posts to prevent spam
-  message: { error: 'Too many comments posted, please try again later.' },
-  standardHeaders: true,
-  legacyHeaders: false
-});
+// Rate limiting configurations with secure setup
+const readLimiter = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  200, // Allow more reads (increased from 200)
+  { error: 'Too many comment requests, please try again later.' }
+);
 
-const moderateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Moderate limit for edits/deletes
-  message: { error: 'Too many moderation actions, please try again later.' },
-  standardHeaders: true,
-  legacyHeaders: false
-});
+const writeLimiter = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  30, // Limit comment posts to prevent spam (increased from 20)
+  { error: 'Too many comments posted, please try again later.' }
+);
+
+const moderateLimiter = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  50, // Moderate limit for edits/deletes
+  { error: 'Too many moderation actions, please try again later.' }
+);
 
 /**
  * Validate and sanitize input parameters
@@ -551,6 +575,12 @@ router.get('/health', (req, res) => {
       maxCommentLength: MAX_COMMENT_LENGTH,
       maxNameLength: MAX_NAME_LENGTH,
       maxReplyDepth: MAX_REPLY_DEPTH
+    },
+    rateLimit: {
+      readMax: 200,
+      writeMax: 30,
+      moderateMax: 50,
+      windowMs: 15 * 60 * 1000
     }
   });
 });

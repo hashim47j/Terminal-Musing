@@ -34,6 +34,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 const rootDir    = path.resolve(__dirname, '..');
 
+// ✅ CRITICAL FIX: Set trust proxy FIRST, before any middleware
+app.set('trust proxy', true);
+
 // ─────────────── MIDDLEWARE ───────────────
 app.use(cors());
 app.use(bodyParser.json({ limit: '2mb' }));
@@ -90,7 +93,7 @@ app.post('/api/admin/login', async (req, res) => {
 // - Unified blog routing (/api/blogs/category/id)  
 // - Threaded comments with replies
 // - Enhanced view tracking with statistics
-// - Rate limiting and input validation
+// - Rate limiting and input validation (✅ Fixed X-Forwarded-For error)
 // - Category-based theming support
 
 app.use('/api/blogs',      blogRoutes);      // ✅ Unified + robust
@@ -99,6 +102,7 @@ app.use('/api/views',      viewRoutes);      // ✅ Enhanced stats + caching
 
 // ─────────────── OTHER API ROUTES ───────────────
 app.use('/api/dashboard',                dashboardRoutes);
+// ✅ FIXED: Consistent daily thoughts API paths
 app.use('/api/dailythoughts',            dtapiRoutes);
 app.use('/api/dailythoughts/process',    processRoutes);
 app.use('/api/dailythoughts/manage',     manageRoutes);

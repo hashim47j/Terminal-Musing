@@ -105,6 +105,11 @@ const HistoryPage = () => {
         />
       </section>
 
+      {/* Fixed Posts Heading */}
+      <div className={styles.postsHeadingSection}>
+        <h2 className={styles.postsHeading}>History Posts</h2>
+      </div>
+
       {/* Scrollable Posts Section */}
       <section className={styles.postsSection}>
         <div className={styles.blogGridContainer}>

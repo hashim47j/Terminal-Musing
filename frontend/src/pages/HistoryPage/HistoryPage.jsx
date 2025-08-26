@@ -151,19 +151,20 @@ const HistoryPage = () => {
                   key={post.id}
                   className={styles.blogCard}
                   onClick={() => handlePostClick(post)}
-                  onMouseEnter={() => setHoveredPostId(post.id)} // ✅ NEW: Set hovered state
-                  onMouseLeave={() => setHoveredPostId(null)}    // ✅ NEW: Clear hovered state
+                  onMouseEnter={() => setHoveredPostId(post.id)}
+                  onMouseLeave={() => setHoveredPostId(null)}
                   role="button"
                   tabIndex={0}
                   style={{ cursor: 'pointer' }}
                   onKeyDown={(e) => handleKeyDown(e, post)}
                   aria-label={`Read article: ${post.title}`}
                 >
+                  {/* ✅ Cover Image with expand animation */}
                   {post.coverImage ? (
                     <img 
                       src={post.coverImage} 
                       alt={`Cover for ${post.title}`} 
-                      className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.blurred : ''}`} // ✅ NEW: Conditional blur
+                      className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`}
                       loading="lazy"
                       onError={(e) => {
                         e.target.style.display = 'none';
@@ -171,12 +172,30 @@ const HistoryPage = () => {
                       }}
                     />
                   ) : (
-                    <div className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.blurred : ''}`} style={{ backgroundColor: '#ccc' }}>
+                    <div className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`} style={{ backgroundColor: '#ccc' }}>
                       <span className={styles.noImageText}>No Image</span>
                     </div>
                   )}
-
-                  {/* ✅ NEW: Hover Overlay with Excerpt and Read Now Button */}
+              
+                  {/* ✅ Text content that gets hidden on hover */}
+                  <div className={`${styles.blogContent} ${hoveredPostId === post.id ? styles.hiddenContent : ''}`}>
+                    <h3 className={styles.blogTitle}>{post.title}</h3>
+                    {post.subheading && (
+                      <p className={styles.blogSubheading}>{post.subheading}</p>
+                    )}
+                    <div className={styles.blogMeta}>
+                      <span className={styles.blogTime}>
+                        {new Date(post.date).toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <span className={styles.categoryBadge}>History</span>
+                    </div>
+                  </div>
+              
+                  {/* ✅ Hover Overlay with staged animations */}
                   {hoveredPostId === post.id && (
                     <div className={styles.hoverOverlay}>
                       <div className={styles.overlayContent}>
@@ -193,23 +212,6 @@ const HistoryPage = () => {
                       </div>
                     </div>
                   )}
-
-                  <div className={styles.blogContent}>
-                    <h3 className={styles.blogTitle}>{post.title}</h3>
-                    {post.subheading && (
-                      <p className={styles.blogSubheading}>{post.subheading}</p>
-                    )}
-                    <div className={styles.blogMeta}>
-                      <span className={styles.blogTime}>
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </span>
-                      <span className={styles.categoryBadge}>History</span>
-                    </div>
-                  </div>
                 </article>
               ))
             )}

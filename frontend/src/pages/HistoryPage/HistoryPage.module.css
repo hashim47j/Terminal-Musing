@@ -109,9 +109,10 @@
   text-decoration: none;
   min-height: 180px;
   height: 100%;
-  position: relative; /* ✅ NEW: Required for overlay positioning */
+  position: relative;
   cursor: pointer;
 }
+
 
 .blogCard:hover {
   transform: translateY(-4px);
@@ -124,9 +125,28 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: filter 0.3s ease, transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+  transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
+.expanded {
+  width: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  filter: blur(4px) brightness(0.7);
+  transform: scale(1.05);
+}
+
+.hiddenContent {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
 
 .blurred {
   filter: blur(4px);
@@ -147,44 +167,47 @@
   align-items: center;
   justify-content: center;
   color: white;
-  opacity: 0;
-  animation: fadeInOverlay 0.3s ease forwards;
   z-index: 10;
+  animation: fadeInOverlay 0.4s ease 0.2s both;
 }
-
 .overlayContent {
   text-align: center;
   padding: 20px;
-  max-width: 80%;
+  max-width: 85%;
+  animation: slideUpContent 0.5s ease 0.3s both;
 }
+
 
 .excerpt {
   font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 20px;
+  line-height: 1.6;
+  margin-bottom: 25px;
   color: #f0f0f0;
   font-family: 'Roboto', sans-serif;
+  animation: fadeInText 0.4s ease 0.4s both;
 }
-
 
 .readNowBtn {
   background: linear-gradient(135deg, #007bff, #0056b3);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
+  padding: 12px 28px;
+  border-radius: 30px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 123, 255, 0.3);
   letter-spacing: 0.5px;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: slideUpButton 0.4s ease 0.5s both;
 }
 
 .readNowBtn:hover {
   background: linear-gradient(135deg, #0056b3, #003d82);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
 }
 
 
@@ -192,11 +215,44 @@
 @keyframes fadeInOverlay {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    backdrop-filter: blur(0px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    backdrop-filter: blur(2px);
+  }
+}
+
+@keyframes slideUpContent {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpButton {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -216,11 +272,6 @@
   height: 40px;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 .retryBtn {
@@ -245,6 +296,8 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1;
 }
 
 

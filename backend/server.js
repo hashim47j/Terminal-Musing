@@ -41,7 +41,9 @@ const rootDir    = path.resolve(__dirname, '..');
 
 // ─────────────── MIDDLEWARE ───────────────
 app.use(cors());
-app.use(bodyParser.json({ limit: '2mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
 
 // ─────────────── STATIC FOLDERS ───────────────
 app.use('/blogs',   express.static(path.join(__dirname, 'blogs')));

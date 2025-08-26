@@ -178,9 +178,11 @@ router.post('/', writeRateLimit, async (req, res) => {
       return res.status(400).json({ error: 'Title must be a string under 200 characters' });
     }
 
-    if (typeof blog.content !== 'string' || blog.content.length > 1000000) {
-      return res.status(400).json({ error: 'Content too large (max 1MB)' });
-    }
+// ✅ UPDATED: Allow larger content (10MB)
+if (typeof blog.content !== 'string' || blog.content.length > 10000000) {
+  return res.status(400).json({ error: 'Content too large (max 10MB)' });
+}
+
 
     // Ensure directory exists
     const categoryDir = path.join(BLOGS_ROOT, category);

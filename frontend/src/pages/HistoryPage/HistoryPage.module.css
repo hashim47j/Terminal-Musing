@@ -208,22 +208,27 @@
   animation: slideUpBottom 0.4s ease 0.4s both;
 }
 
+.authorDateContainer {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
 /* ✅ NEW: Author name - far left */
 .authorName {
   font-size: 0.9rem;
-  font-weight: 400; /* ✅ CHANGED: from 600 to 400 for normal weight */
-  font-family: 'Arial', sans-serif; /* ✅ ADDED: normal font family */
+  font-weight: 400;
+  font-family: 'Arial', sans-serif;
   color: #fff;
-  white-space: nowrap; /* ✅ ADDED: keep single line */
+  white-space: nowrap;
 }
 
 .postDate {
   font-size: 0.85rem;
-  font-family: 'Arial', sans-serif; /* ✅ ADDED: normal font family */
+  font-family: 'Arial', sans-serif;
   color: #fff;
-  margin-left: auto;
-  margin-right: 12px;
-  white-space: nowrap; /* ✅ ADDED: keep single line */
+  white-space: nowrap;
+  /* ✅ REMOVED: margin-left: auto; margin-right: 12px; */
 }
 
 /* ✅ NEW: Share icon - right of center */
@@ -384,13 +389,13 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
 
 /* ✅ NEW: Animated horizontal line */
 .separatorLine {
-  position: absolute;
-  bottom: 35px;
-  left: 20px;
+  position: relative; /* ✅ CHANGED: From absolute to relative */
+  /* Remove bottom, left positioning as it's now in leftContent */
   height: 1px;
   background: rgba(255, 255, 255, 0.6);
   width: 0%;
-  animation: expandLinePrecise 0.6s ease 0.4s forwards;
+  margin-bottom: 8px; /* ✅ NEW: Space between line and text */
+  animation: expandLineToDate 0.6s ease 0.4s forwards;
 }
 
 @keyframes expandLinePrecise {
@@ -398,7 +403,7 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
     width: 0%;
   }
   to {
-    width: calc(100% - 170px); /* ✅ Adjust this value based on right-side content width */
+    width: calc(100% - 160px); /* ✅ Adjust this value based on right-side content width */
   }
 }
 
@@ -408,9 +413,23 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   left: 20px;
   right: 20px;
   display: flex;
-  align-items: center;
+  align-items: flex-end; /* ✅ CHANGED: Align to bottom for different heights */
   justify-content: space-between;
-  animation: slideUpBottom 0.4s ease 0.5s both; /* ✅ Delayed to appear after line */
+  animation: slideUpBottom 0.4s ease 0.5s both;
+}
+
+.leftContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 8px; /* ✅ NEW: Push author and date further down */
+}
+
+/* ✅ NEW: Right side content (share, read) stays at original position */
+.rightContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* Gray Strip at Bottom */

@@ -51,17 +51,6 @@
 }
 
 /* Fixed Posts Heading - moved to be under posts section */
-.postsHeadingSection {
-  position: fixed;
-  top: 250px; 
-  left: 0;
-  right: 0;
-  background-color: transparent; /* ✅ CHANGED: Make transparent instead of #E4E4E4 */
-  z-index: 45;
-  padding: 20px 0;
-  text-align: center;
-}
-
 
 
 

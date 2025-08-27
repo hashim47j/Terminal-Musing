@@ -26,15 +26,16 @@
 .headerSection::after {
   content: '';
   position: absolute;
-  bottom: -25px; /* Moved further down */
-  left: 5%;     /* Wider spread */
-  right: 5%;    /* Wider spread */
-  height: 25px; /* Taller shadow */
+  bottom: -25px;
+  left: 5%;
+  right: 5%;
+  height: 25px;
   background: transparent;
-  box-shadow: 0 0 30px 10px var(--header-shadow-color); /* Bigger shadow */
+  box-shadow: 0 0 30px 10px var(--header-shadow-color);
   border-radius: 50%;
-  z-index: -1;
+  z-index: 10; /* ✅ CHANGED: Higher z-index to appear above other elements */
 }
+
 
 
 .heroImage {

@@ -393,17 +393,15 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   animation: expandLinePrecise 0.6s ease 0.4s forwards;
 }
 
-/* ✅ Calculate width based on postDate position */
 @keyframes expandLinePrecise {
   from {
     width: 0%;
   }
   to {
-    width: calc(100% - 180px); /* ✅ Adjust this value based on right-side content width */
+    width: calc(100% - 170px); /* ✅ Adjust this value based on right-side content width */
   }
 }
 
-/* ✅ Adjust bottom content positioning to accommodate line */
 .bottomFixed {
   position: absolute;
   bottom: 5px;

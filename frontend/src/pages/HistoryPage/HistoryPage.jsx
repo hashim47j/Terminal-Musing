@@ -63,7 +63,11 @@ const DynamicBackgroundShadow = () => {
     <>
       {/* Hidden image for color extraction */}
       <img
-  
+        ref={imgRef}
+        src={historyBackground}
+        alt="Background for color extraction"
+        crossOrigin="anonymous"
+        style={{ display: 'none' }}
       />
       {/* Header section with dynamic shadow */}
       <section ref={headerRef} className={styles.headerSection}>

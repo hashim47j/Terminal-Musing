@@ -26,12 +26,12 @@
 .headerSection::after {
   content: '';
   position: absolute;
-  bottom: -15px;
-  left: 10%;
-  right: 10%;
-  height: 15px;
+  bottom: -25px; /* Moved further down */
+  left: 5%;     /* Wider spread */
+  right: 5%;    /* Wider spread */
+  height: 25px; /* Taller shadow */
   background: transparent;
-  box-shadow: 0 0 20px 5px var(--header-shadow-color);
+  box-shadow: 0 0 30px 10px var(--header-shadow-color); /* Bigger shadow */
   border-radius: 50%;
   z-index: -1;
 }

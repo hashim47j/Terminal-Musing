@@ -204,6 +204,9 @@ const HistoryPage = () => {
                           {post.subheading || post.title}
                         </p>
                       </div>
+
+                      <div className={styles.separatorLine}></div>
+
               
                       {/* ✅ Fixed bottom elements - rigid positioning */}
                       <div className={styles.bottomFixed}>

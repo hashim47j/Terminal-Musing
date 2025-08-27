@@ -17,6 +17,7 @@ const AdminPage = () => {
   const [subheading, setSubheading] = useState('');
   const [body, setBody] = useState('');
   const [category, setCategory] = useState(categoryOptions[0].backend);
+  const [author, setAuthor] = useState(''); // ✅ NEW: Author state
   
   // Upload progress states
   const [coverImageUploading, setCoverImageUploading] = useState(false);
@@ -116,7 +117,7 @@ const AdminPage = () => {
         return null;
       }).filter(Boolean);
 
-      // ✅ Use backend-compatible category value
+      // ✅ Use backend-compatible category value and author
       const blogData = {
         id: blogId,
         title: title.trim(),
@@ -125,7 +126,7 @@ const AdminPage = () => {
         coverImage: coverImageUrl,
         content: contentBlocks,
         date: now.toISOString(),
-        author: 'Terminal Musing', // Add author field
+        author: author.trim() || 'Terminal Musing', // ✅ UPDATED: Use user input or fallback
       };
 
       console.log('📤 Publishing blog:', blogData);
@@ -146,6 +147,7 @@ const AdminPage = () => {
         setCoverImage(null);
         setSubheading('');
         setBody('');
+        setAuthor(''); // ✅ NEW: Reset author field
         setCategory(categoryOptions[0].backend);
         
         // Clear file inputs
@@ -223,6 +225,23 @@ const AdminPage = () => {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* ✅ NEW: Author Section */}
+        <div className={styles.fieldGroup}>
+          <label className={styles.fieldLabel}>
+            <span className={styles.labelText}>Author Name</span>
+            <span className={styles.fieldDescription}>Enter the author's name (optional - defaults to "Terminal Musing")</span>
+          </label>
+          <input
+            type="text"
+            className={styles.authorInput}
+            value={author}
+            placeholder="Enter author name..."
+            onChange={(e) => setAuthor(e.target.value)}
+            maxLength={100}
+          />
+          <div className={styles.charCount}>{author.length}/100</div>
         </div>
 
         {/* Cover Image Section */}

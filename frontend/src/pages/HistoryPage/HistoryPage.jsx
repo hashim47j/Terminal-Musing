@@ -13,7 +13,7 @@ const HistoryPage = () => {
   const [hoveredPostId, setHoveredPostId] = useState(null);
   
   // ✅ NEW: State for current logged-in author/admin
-  const [currentAuthor, setCurrentAuthor] = useState('Admin');
+  const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
 
   // ✅ NEW: Fetch current logged-in user/author info
   useEffect(() => {
@@ -36,12 +36,13 @@ const HistoryPage = () => {
                                userData.username || 
                                userData.displayName || 
                                userData.fullName ||
-                               'Admin';
+                               'Terminal Musing';
               setCurrentAuthor(authorName);
               console.log(`✅ Fetched author: ${authorName}`);
-              return;
+              return; // Exit on first successful fetch
             }
           } catch (err) {
+            // Continue to next endpoint if this one fails
             continue;
           }
         }
@@ -50,12 +51,12 @@ const HistoryPage = () => {
         const storedUser = localStorage.getItem('currentUser');
         if (storedUser) {
           const user = JSON.parse(storedUser);
-          setCurrentAuthor(user.name || user.username || 'Admin');
+          setCurrentAuthor(user.name || user.username || 'Terminal Musing');
         }
         
       } catch (err) {
         console.warn('⚠️ Failed to fetch current author, using default:', err);
-        setCurrentAuthor('Admin');
+        setCurrentAuthor('Terminal Musing');
       }
     };
 

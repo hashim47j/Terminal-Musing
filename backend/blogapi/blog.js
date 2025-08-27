@@ -22,17 +22,20 @@ const createSecureRateLimit = (windowMs, max, message) => rateLimit({
   windowMs,
   max,
   message,
+  // ✅ Custom key generator strips ports to prevent bypass
   keyGenerator: (req) => {
     const ip = req.ip || req.socket.remoteAddress || req.connection.remoteAddress || '';
+    // Strip port numbers (e.g., "192.168.1.1:54321" -> "192.168.1.1")
     return ip.replace(/:\d+[^:]*$/, '');
   },
+  // ✅ Disable problematic validation checks
   validate: {
-    trustProxy: false,
-    xForwardedForHeader: false,
-    ip: false
+    trustProxy: false,           // Disable trust proxy validation
+    xForwardedForHeader: false,  // Disable X-Forwarded-For validation
+    ip: false                    // Disable IP validation
   },
-  standardHeaders: true,
-  legacyHeaders: false,
+  standardHeaders: true,  // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false,   // Disable X-RateLimit-* headers
   handler: (req, res) => {
     console.warn('🚨 Rate limit exceeded:', {
       ip: req.ip,
@@ -106,6 +109,7 @@ const readJsonFile = async (filePath) => {
   try {
     const stats = await fs.stat(filePath);
     
+    // Check file size limit
     if (stats.size > MAX_FILE_SIZE) {
       throw new Error('File size exceeds limit');
     }
@@ -139,6 +143,7 @@ const getFromCache = (key) => {
 
 const setCache = (key, data) => {
   cache.set(key, { data, timestamp: Date.now() });
+  // Clean old cache entries
   if (cache.size > 1000) {
     const oldest = [...cache.entries()]
       .sort(([,a], [,b]) => a.timestamp - b.timestamp)
@@ -147,14 +152,14 @@ const setCache = (key, data) => {
   }
 };
 
-// ===== POST: Save blog (Enhanced with Author Field) =====
+// ===== POST: Save blog (Enhanced with Author Support) =====
 router.post('/', writeRateLimit, async (req, res) => {
   const startTime = Date.now();
   
   try {
     const blog = req.body;
 
-    // ✅ UPDATED: Validate required fields (author is now optional)
+    // Validate required fields
     if (!blog?.id || !blog?.category || !blog?.title || !blog?.content) {
       return res.status(400).json({ 
         error: 'Missing required fields', 
@@ -183,12 +188,12 @@ router.post('/', writeRateLimit, async (req, res) => {
       return res.status(400).json({ error: 'Title must be a string under 200 characters' });
     }
 
-    // ✅ NEW: Validate author field
+    // ✅ NEW: Validate author field if provided
     if (blog.author && (typeof blog.author !== 'string' || blog.author.length > 100)) {
       return res.status(400).json({ error: 'Author name must be a string under 100 characters' });
     }
 
-    // ✅ FIXED: Simple content validation
+    // ✅ FIXED: Simple content validation (removed problematic Buffer.byteLength check)
     if (!blog.content || (!Array.isArray(blog.content) && typeof blog.content !== 'string')) {
       return res.status(400).json({ error: 'Invalid content format' });
     }
@@ -330,12 +335,14 @@ router.get('/:category', readRateLimit, async (req, res) => {
       const categoryDir = path.join(BLOGS_ROOT, category);
       
       if (!(await dirExists(categoryDir))) {
+        // ✅ CRITICAL: Always return array, never object
         return res.json([]);
       }
 
       const files = await fs.readdir(categoryDir);
       blogs = [];
 
+      // Process files concurrently with limit
       const jsonFiles = files.filter(f => f.endsWith('.json'));
       const processFile = async (fileName) => {
         try {
@@ -364,11 +371,12 @@ router.get('/:category', readRateLimit, async (req, res) => {
         .filter(r => r.status === 'fulfilled' && r.value)
         .map(r => r.value);
 
+      // Cache the results
       setCache(cacheKey, blogs);
     }
 
     // Sort blogs
-    const validSortFields = ['date', 'title', 'updatedAt', 'author']; // ✅ NEW: Added author to sort fields
+    const validSortFields = ['date', 'title', 'updatedAt', 'author']; // ✅ NEW: Added author sorting
     const sortField = validSortFields.includes(sortBy) ? sortBy : 'date';
     
     blogs.sort((a, b) => {
@@ -386,6 +394,7 @@ router.get('/:category', readRateLimit, async (req, res) => {
 
     console.log(`✅ Category blogs fetched: ${category} (${total} total, ${Date.now() - startTime}ms)`);
     
+    // ✅ CRITICAL: Always return array for frontend .map()
     res.json(paginatedBlogs);
     
   } catch (error) {
@@ -393,6 +402,7 @@ router.get('/:category', readRateLimit, async (req, res) => {
       error: error.message,
       duration: Date.now() - startTime
     });
+    // ✅ CRITICAL: Always return array on error
     res.status(500).json([]);
   }
 });
@@ -411,6 +421,7 @@ router.get('/', readRateLimit, async (req, res) => {
     if (!allBlogs) {
       allBlogs = [];
       
+      // Process categories concurrently
       const processCategory = async (category) => {
         const categoryDir = path.join(BLOGS_ROOT, category);
         const blogs = [];
@@ -495,6 +506,7 @@ router.get('/', readRateLimit, async (req, res) => {
 
     console.log(`✅ All blogs fetched (${total} total, ${Date.now() - startTime}ms)`);
     
+    // ✅ CRITICAL: Always return array for frontend .map()
     res.json(paginatedBlogs);
     
   } catch (error) {
@@ -502,6 +514,7 @@ router.get('/', readRateLimit, async (req, res) => {
       error: error.message,
       duration: Date.now() - startTime
     });
+    // ✅ CRITICAL: Always return array on error
     res.status(500).json([]);
   }
 });

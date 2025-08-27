@@ -271,3 +271,40 @@
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: 0.85rem;
 }
+
+/* ✅ NEW: Author input styling */
+.authorInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+}
+
+.authorInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.authorInput::placeholder {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Responsive author input */
+@media (max-width: 768px) {
+  .authorInput {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .authorInput {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}

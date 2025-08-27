@@ -12,14 +12,25 @@ const HistoryPage = () => {
   const [showFooter, setShowFooter] = useState(false);
   const [hoveredPostId, setHoveredPostId] = useState(null);
   
-  // ✅ NEW: State for current logged-in author/admin
+  // ✅ State for current logged-in author/admin
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
 
-  // ✅ NEW: Fetch current logged-in user/author info
+  // ✅ Function to count words in content
+  const getWordCount = (content) => {
+    if (!content || !Array.isArray(content)) return 0;
+    
+    const textContent = content
+      .filter(block => block.type === 'paragraph' && block.text)
+      .map(block => block.text)
+      .join(' ');
+    
+    return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  // ✅ Fetch current logged-in user/author info
   useEffect(() => {
     const fetchCurrentAuthor = async () => {
       try {
-        // Try multiple possible endpoints for user info
         const endpoints = [
           '/api/user/me',
           '/api/admin/profile', 
@@ -39,15 +50,13 @@ const HistoryPage = () => {
                                'Terminal Musing';
               setCurrentAuthor(authorName);
               console.log(`✅ Fetched author: ${authorName}`);
-              return; // Exit on first successful fetch
+              return;
             }
           } catch (err) {
-            // Continue to next endpoint if this one fails
             continue;
           }
         }
         
-        // If all endpoints fail, try localStorage as fallback
         const storedUser = localStorage.getItem('currentUser');
         if (storedUser) {
           const user = JSON.parse(storedUser);
@@ -165,12 +174,9 @@ const HistoryPage = () => {
         />
       </section>
 
-      {/* ✅ UPDATED: Posts Heading with Author Welcome */}
+      {/* Fixed Posts Heading */}
       <div className={styles.postsHeadingSection}>
-        <div className={styles.headingContainer}>
-          <h2 className={styles.postsHeading}>History Posts</h2>
-          <p className={styles.authorWelcome}>Welcome, {currentAuthor}!</p>
-        </div>
+        <h2 className={styles.postsHeading}>History Posts</h2>
       </div>
 
       {/* Scrollable Posts Section */}
@@ -230,21 +236,28 @@ const HistoryPage = () => {
                     </div>
                   )}
               
-                  {/* Text content that gets hidden on hover */}
+                  {/* ✅ UPDATED: Text content - removed subheading, added fixed bottom layout */}
                   <div className={`${styles.blogContent} ${hoveredPostId === post.id ? styles.hiddenContent : ''}`}>
                     <h3 className={styles.blogTitle}>{post.title}</h3>
-                    {post.subheading && (
-                      <p className={styles.blogSubheading}>{post.subheading}</p>
-                    )}
-                    <div className={styles.blogMeta}>
-                      <span className={styles.blogTime}>
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </span>
-                      <span className={styles.categoryBadge}>History</span>
+                    
+                    {/* ✅ NEW: Fixed bottom content with line and meta info */}
+                    <div className={styles.cardBottomFixed}>
+                      <div className={styles.cardSeparatorLine}></div>
+                      <div className={styles.cardMetaRow}>
+                        <span className={styles.cardAuthor}>
+                          by {post.author || currentAuthor}
+                        </span>
+                        <span className={styles.cardDate}>
+                          {new Date(post.date).toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+                        <span className={styles.cardWordCount}>
+                          {getWordCount(post.content)} words
+                        </span>
+                      </div>
                     </div>
                   </div>
               

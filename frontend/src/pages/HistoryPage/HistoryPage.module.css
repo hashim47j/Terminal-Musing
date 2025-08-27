@@ -119,6 +119,45 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ NEW: Fixed bottom content for non-hover cards */
+.cardBottomFixed {
+  position: absolute;
+  bottom: 12px;
+  left: 18px;
+  right: 18px;
+}
+
+.cardSeparatorLine {
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.cardMetaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.8rem;
+}
+
+.cardAuthor {
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cardDate {
+  color: #999;
+  white-space: nowrap;
+}
+
+.cardWordCount {
+  color: #999;
+  white-space: nowrap;
+  margin-left: auto; /* Push to the right */
+}
+
 /* ✅ ENHANCED: Cover Image with expand animation */
 .coverImage {
   width: 38%;
@@ -152,12 +191,13 @@
 
 .blogContent {
   width: 62%;
-  padding: 18px 18px;
+  padding: 18px 18px 50px 18px; /* ✅ Added bottom padding for fixed content */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 1;
+  position: relative;
 }
 
 /* ✅ NEW: Clean hover overlay - no backgrounds */

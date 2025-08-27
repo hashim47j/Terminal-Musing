@@ -183,21 +183,23 @@
   align-items: flex-start;
   justify-content: flex-start;
   text-align: left;
-  padding-top: 20px;
+  padding-top: 15px; 
+  padding-left: 15px;
 }
 
 .hoverSubheading {
   font-size: 1.1rem;
   line-height: 1.4;
   color: #fff;
-  font-weight: 500;
+  font-weight: 400; /* ✅ CHANGED: from 500 to 400 for normal weight */
+  font-family: 'Arial', sans-serif; /* ✅ ADDED: normal font family */
   animation: slideUpContent 0.5s ease 0.3s both;
 }
 
 /* ✅ NEW: Fixed bottom elements - rigid positioning */
 .bottomFixed {
   position: absolute;
-  bottom: 10px;
+  bottom: 5px; /* ✅ CHANGED: from 10px to 5px */
   left: 20px;
   right: 20px;
   display: flex;
@@ -209,17 +211,19 @@
 /* ✅ NEW: Author name - far left */
 .authorName {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 400; /* ✅ CHANGED: from 600 to 400 for normal weight */
+  font-family: 'Arial', sans-serif; /* ✅ ADDED: normal font family */
   color: #fff;
-  
+  white-space: nowrap; /* ✅ ADDED: keep single line */
 }
 
-/* ✅ NEW: Post date - left of center */
 .postDate {
   font-size: 0.85rem;
+  font-family: 'Arial', sans-serif; /* ✅ ADDED: normal font family */
   color: #fff;
   margin-left: auto;
   margin-right: 12px;
+  white-space: nowrap; /* ✅ ADDED: keep single line */
 }
 
 /* ✅ NEW: Share icon - right of center */

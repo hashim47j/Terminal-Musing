@@ -85,7 +85,7 @@ const HistoryPage = () => {
 
   // ✅ NEW: Extract excerpt from blog content
   const getExcerpt = (post) => {
-    if (!post.content || !Array.isArray(post.content)) return "Click to read this fascinating historical article...";
+    if (!post.content || !Array.isArray(post.content)) return "";
     
     const textBlocks = post.content
       .filter(block => block.type === 'paragraph' && block.text)
@@ -96,7 +96,7 @@ const HistoryPage = () => {
     if (textBlocks && textBlocks.length > 150) {
       return textBlocks.substring(0, 150) + '...';
     }
-    return textBlocks || post.subheading || "Click to read this fascinating historical article...";
+    return textBlocks || post.subheading || "";
   };
 
   return (

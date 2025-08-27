@@ -15,7 +15,7 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
 
   // Convert RGB array to rgba string for CSS
   const shadowColor = color 
-    ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.6)` 
+    ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1.0)` 
     : 'rgba(0, 123, 255, 0.4)'; // fallback
 
   return (

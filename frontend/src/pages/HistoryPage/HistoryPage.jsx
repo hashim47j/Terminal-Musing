@@ -205,8 +205,6 @@ const HistoryPage = () => {
                         </p>
                       </div>
 
-                      <div className={styles.separatorLine}></div>
-
               
                 {/* ✅ Fixed bottom elements - split into left and right sections */}
                 <div className={styles.bottomFixed}>

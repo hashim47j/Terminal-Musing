@@ -9,11 +9,11 @@
 
 .headerSection {
   background-image: url('../../assets/history-background.png');
- 
+  background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;
-  padding: 0px 0px 0px;
+  padding: 40px 20px 60px;
   position: fixed;
   top: 0;
   left: 0;
@@ -29,7 +29,7 @@
   bottom: -40px;
   left: 0%;
   right: 0%;
-  height: 40px;
+  
   background: transparent;
   box-shadow: 0 0 40px 15px var(--header-shadow-color);
   z-index: 1;

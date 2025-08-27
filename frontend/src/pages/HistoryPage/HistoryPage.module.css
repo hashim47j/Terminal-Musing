@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #85525200;
+  background-color: #E4E4E4;
 }
 
 .headerSection {
@@ -32,7 +32,6 @@
   height: 40px; /* ✅ CHANGED: Taller shadow */
   background: transparent;
   box-shadow: 0 0 40px 15px var(--header-shadow-color); /* ✅ CHANGED: Bigger shadow */
-  border-radius: 0;
   z-index: 1; /* ✅ CHANGED: Relative to parent */
   pointer-events: none; /* ✅ ADDED: Don't interfere with clicks */
 }

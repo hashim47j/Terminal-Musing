@@ -1,8 +1,61 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useColorThief from 'use-color-thief';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
 import Footer from '../../components/Footer/Footer';
+
+// ✅ NEW: Dynamic Shadow Blog Card Component
+const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, children }) => {
+  const imgRef = useRef(null);
+  const { color } = useColorThief(imgRef, { 
+    format: 'rgb', 
+    quality: 10 
+  });
+
+  // Convert RGB array to rgba string for CSS
+  const shadowColor = color 
+    ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.6)` 
+    : 'rgba(0, 123, 255, 0.4)'; // fallback
+
+  return (
+    <article
+      className={styles.blogCard}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      role="button"
+      tabIndex={0}
+      style={{ 
+        cursor: 'pointer',
+        '--dynamic-shadow-color': shadowColor
+      }}
+      onKeyDown={onKeyDown}
+      aria-label={`Read article: ${post.title}`}
+    >
+      {/* Cover Image with expand animation */}
+      {post.coverImage ? (
+        <img 
+          ref={imgRef}
+          src={post.coverImage} 
+          alt={`Cover for ${post.title}`} 
+          className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`}
+          crossOrigin="anonymous"
+          loading="lazy"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextElementSibling.style.display = 'block';
+          }}
+        />
+      ) : (
+        <div className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`} style={{ backgroundColor: '#ccc' }}>
+          <span className={styles.noImageText}>No Image</span>
+        </div>
+      )}
+      {children}
+    </article>
+  );
+};
 
 const HistoryPage = () => {
   const navigate = useNavigate();
@@ -206,36 +259,15 @@ const HistoryPage = () => {
               </div>
             ) : (
               posts.map((post) => (
-                <article
+                <DynamicShadowBlogCard
                   key={post.id}
-                  className={styles.blogCard}
-                  onClick={() => handlePostClick(post)}
+                  post={post}
+                  hoveredPostId={hoveredPostId}
                   onMouseEnter={() => setHoveredPostId(post.id)}
                   onMouseLeave={() => setHoveredPostId(null)}
-                  role="button"
-                  tabIndex={0}
-                  style={{ cursor: 'pointer' }}
+                  onClick={() => handlePostClick(post)}
                   onKeyDown={(e) => handleKeyDown(e, post)}
-                  aria-label={`Read article: ${post.title}`}
                 >
-                  {/* Cover Image with expand animation */}
-                  {post.coverImage ? (
-                    <img 
-                      src={post.coverImage} 
-                      alt={`Cover for ${post.title}`} 
-                      className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`}
-                      loading="lazy"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextElementSibling.style.display = 'block';
-                      }}
-                    />
-                  ) : (
-                    <div className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`} style={{ backgroundColor: '#ccc' }}>
-                      <span className={styles.noImageText}>No Image</span>
-                    </div>
-                  )}
-              
                   {/* ✅ UPDATED: Text content - removed subheading, added fixed bottom layout */}
                   <div className={`${styles.blogContent} ${hoveredPostId === post.id ? styles.hiddenContent : ''}`}>
                     <h3 className={styles.blogTitle}>{post.title}</h3>
@@ -322,7 +354,7 @@ const HistoryPage = () => {
                       </div>
                     </div>
                   )}
-                </article>
+                </DynamicShadowBlogCard>
               ))
             )}
           </div>

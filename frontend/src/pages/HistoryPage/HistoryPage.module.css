@@ -100,6 +100,7 @@
 
 
 .blogCard {
+  --dynamic-shadow-color: rgba(0, 123, 255, 0.4);
   display: flex;
   flex-direction: row;
   background: #fff;
@@ -116,7 +117,10 @@
 
 .blogCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.1),
+    0 0 20px 8px var(--dynamic-shadow-color),
+    0 0 40px 15px var(--dynamic-shadow-color);
 }
 
 /* ✅ NEW: Fixed bottom content for non-hover cards */

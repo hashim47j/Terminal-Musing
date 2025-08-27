@@ -33,7 +33,7 @@
   background: transparent;
   box-shadow: 0 0 30px 10px var(--header-shadow-color);
   border-radius: 50%;
-  z-index: 10; /* ✅ CHANGED: Higher z-index to appear above other elements */
+  z-index: 50; /* ✅ CHANGED: Higher z-index to appear above other elements */
 }
 
 

@@ -7,29 +7,65 @@ import historyBackground from '../../assets/history-background.png'; // ✅ NEW:
 import Footer from '../../components/Footer/Footer';
 
 // ✅ NEW: Component to extract color from background image and apply dynamic shadow
+// ✅ Working Dynamic Background Shadow Component
 const DynamicBackgroundShadow = () => {
-  const backgroundImgRef = useRef(null);
   const headerRef = useRef(null);
-  const { color } = useColorThief(backgroundImgRef, { 
-    format: 'rgb', 
-    quality: 10 
-  });
+  const imgRef = useRef(null);
 
-  // Set CSS variable when color is extracted
   useEffect(() => {
-    if (color && headerRef.current) {
-      const shadowColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.6)`;
-      headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
+    const extractColorFromImage = () => {
+      if (!imgRef.current || !headerRef.current) return;
+
+      const img = imgRef.current;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      try {
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        let r = 0, g = 0, b = 0, count = 0;
+        
+        // Sample every 10th pixel for better performance
+        for (let i = 0; i < data.length; i += 4 * 10) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count++;
+        }
+        
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+
+        const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+        headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
+        
+        console.log('✅ Extracted background color:', shadowColor);
+      } catch (err) {
+        console.warn('⚠️ Could not extract color from background image:', err);
+      }
+    };
+
+    const img = imgRef.current;
+    if (img.complete) {
+      extractColorFromImage();
+    } else {
+      img.onload = extractColorFromImage;
     }
-  }, [color]);
+  }, []);
 
   return (
     <>
       {/* Hidden image for color extraction */}
       <img
-        ref={backgroundImgRef}
+        ref={imgRef}
         src={historyBackground}
-        alt="Background"
+        alt="Background for color extraction"
         crossOrigin="anonymous"
         style={{ display: 'none' }}
       />
@@ -44,6 +80,7 @@ const DynamicBackgroundShadow = () => {
     </>
   );
 };
+
 
 // ✅ Dynamic Shadow Blog Card Component
 const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, children }) => {

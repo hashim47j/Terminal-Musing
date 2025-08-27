@@ -394,7 +394,7 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   height: 1px;
   background: rgba(255, 255, 255, 0.8); /* ✅ CHANGED: Higher opacity */
   width: 80%;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   animation: expandLineToDate 0.6s ease 0.4s forwards;
 }
 
@@ -422,13 +422,14 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding-bottom: 10px; /* ✅ NEW: Push author and date further down */
+  padding-bottom: 8px; /* ✅ NEW: Push author and date further down */
 }
 
 /* ✅ NEW: Right side content (share, read) stays at original position */
 .rightContent {
   display: flex;
   align-items: center;
+  padding-bottom: 4px;
   gap: 12px;
 }
 

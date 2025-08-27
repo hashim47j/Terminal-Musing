@@ -20,6 +20,7 @@
   right: 0;
   z-index: 1;
   height: 260px;
+  box-shadow: 0 20px 30px -10px rgba(139, 69, 19, 0.4); /* Add colored shadow */
 }
 
 .heroImage {

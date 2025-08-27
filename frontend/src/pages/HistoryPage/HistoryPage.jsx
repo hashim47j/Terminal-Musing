@@ -5,6 +5,31 @@ import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
 import Footer from '../../components/Footer/Footer';
 
+const DynamicShadowHeroImage = () => {
+  const heroImageRef = useRef(null);
+  const { color } = useColorThief(heroImageRef, { 
+    format: 'rgb', 
+    quality: 10 
+  });
+
+  const shadowColor = color 
+    ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.8)` 
+    : 'rgba(139, 69, 19, 0.6)'; // fallback brown for history theme
+
+  return (
+    <img
+      ref={heroImageRef}
+      src={historyLight}
+      alt="Historical Illustration"
+      className={styles.heroImage}
+      crossOrigin="anonymous"
+      style={{ 
+        filter: `drop-shadow(0 15px 20px ${shadowColor})`
+      }}
+    />
+  );
+};
+
 // ✅ NEW: Dynamic Shadow Blog Card Component
 const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, children }) => {
   const imgRef = useRef(null);
@@ -220,6 +245,7 @@ const HistoryPage = () => {
 
       {/* Fixed Hero Section */}
       <section className={styles.headerSection}>
+      <DynamicShadowHeroImage />
         <img
           src={historyLight}
           alt="Historical Illustration"

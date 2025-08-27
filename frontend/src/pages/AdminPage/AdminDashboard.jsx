@@ -1,5 +1,3 @@
-// /frontend/src/pages/AdminPage/AdminDashboard.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AdminDashboard.module.css';
@@ -13,6 +11,11 @@ const AdminDashboard = () => {
   const [viewsByCategory, setViewsByCategory] = useState({});
   const [viewsPerPost, setViewsPerPost] = useState({});
   const [dailyRequests, setDailyRequests] = useState([]);
+  
+  // ✅ NEW: Author-related stats
+  const [postsByAuthor, setPostsByAuthor] = useState({});
+  const [totalAuthors, setTotalAuthors] = useState(0);
+  const [recentPosts, setRecentPosts] = useState([]);
 
   const [visitorStats, setVisitorStats] = useState({
     totalVisits: 0,
@@ -24,13 +27,22 @@ const AdminDashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
+  // ✅ UPDATED: Categories list with proper mapping
   const categories = [
     'Philosophy',
-    'History',
+    'History', 
     'Writings',
-    'Legal and Social Issues',
+    'Legal & Social Issues', // ✅ UPDATED: Better display name
     'Tech',
   ];
+
+  const categoryMapping = {
+    'Philosophy': 'philosophy',
+    'History': 'history',
+    'Writings': 'writings',
+    'Legal & Social Issues': 'lsconcern',
+    'Tech': 'tech'
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -45,6 +57,46 @@ const AdminDashboard = () => {
         setViewsPerPost(data.viewsPerPost ?? {});
       } catch (err) {
         console.error('❌ Failed to load dashboard stats:', err);
+      }
+    };
+
+    // ✅ NEW: Fetch author and recent posts statistics
+    const fetchBlogStats = async () => {
+      try {
+        const res = await fetch('/api/blogs');
+        if (!res.ok) throw new Error(`Failed with status ${res.status}`);
+        const blogs = await res.json();
+
+        if (Array.isArray(blogs)) {
+          // Calculate author statistics
+          const authorCounts = {};
+          let uniqueAuthors = new Set();
+
+          blogs.forEach(blog => {
+            const author = blog.author || 'Terminal Musing';
+            authorCounts[author] = (authorCounts[author] || 0) + 1;
+            uniqueAuthors.add(author);
+          });
+
+          setPostsByAuthor(authorCounts);
+          setTotalAuthors(uniqueAuthors.size);
+
+          // Get recent posts (last 5)
+          const sortedBlogs = blogs
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 5)
+            .map(blog => ({
+              id: blog.id,
+              title: blog.title,
+              category: blog.category,
+              author: blog.author || 'Terminal Musing',
+              date: new Date(blog.date).toLocaleDateString(),
+            }));
+
+          setRecentPosts(sortedBlogs);
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch blog stats:', err);
       }
     };
 
@@ -77,6 +129,7 @@ const AdminDashboard = () => {
     };
 
     fetchStats();
+    fetchBlogStats(); // ✅ NEW: Fetch blog statistics
     fetchDailyRequests();
     fetchVisitorStats();
   }, []);
@@ -104,114 +157,238 @@ const AdminDashboard = () => {
   };
 
   const getCount = (map, category) => {
-    return map?.[category.toLowerCase()] || 0;
+    const backendCategory = categoryMapping[category] || category.toLowerCase();
+    return map?.[backendCategory] || 0;
   };
 
   return (
     <div className={styles.dashboardContainer}>
       <div className={styles.header}>
-        <h1>Dashboard</h1>
+        <h1>📊 Admin Dashboard</h1>
         <button className={styles.postBtn} onClick={handlePostClick}>
-          Post Something?
+          ✍️ Create New Post
         </button>
       </div>
 
+      {/* ✅ ENHANCED: Top stats row */}
       <div className={styles.topRow}>
         <div className={styles.box}>
-          <h2>Total Posts</h2>
-          <p>{totalPosts}</p>
+          <h2>📝 Total Posts</h2>
+          <p className={styles.bigNumber}>{totalPosts}</p>
         </div>
         <div className={styles.box}>
-          <h2>Total Views</h2>
-          <p>{totalViews}</p>
+          <h2>👀 Total Views</h2>
+          <p className={styles.bigNumber}>{totalViews}</p>
+        </div>
+        <div className={styles.box}>
+          <h2>👥 Total Authors</h2>
+          <p className={styles.bigNumber}>{totalAuthors}</p>
+        </div>
+        <div className={styles.box}>
+          <h2>🌍 Unique Visitors</h2>
+          <p className={styles.bigNumber}>{visitorStats.uniqueIPs}</p>
         </div>
       </div>
 
+      <div className={styles.middleRow}>
+        <div className={styles.box}>
+          <h3>📊 Posts by Category</h3>
+          <div className={styles.statsList}>
+            {categories.map((cat) => (
+              <div key={cat} className={styles.statItem}>
+                <span className={styles.statLabel}>{cat}</span>
+                <span className={styles.statValue}>{getCount(postsByCategory, cat)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className={styles.box}>
+          <h3>📈 Views by Category</h3>
+          <div className={styles.statsList}>
+            {categories.map((cat) => (
+              <div key={cat} className={styles.statItem}>
+                <span className={styles.statLabel}>{cat}</span>
+                <span className={styles.statValue}>{getCount(viewsByCategory, cat)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ NEW: Author statistics */}
       <div className={styles.bottomRow}>
         <div className={styles.box}>
-          <h3>Posts by Category</h3>
-          {categories.map((cat) => (
-            <p key={cat}>{cat}: {getCount(postsByCategory, cat)}</p>
-          ))}
+          <h3>✍️ Posts by Author</h3>
+          <div className={styles.statsList}>
+            {Object.entries(postsByAuthor).length > 0 ? (
+              Object.entries(postsByAuthor)
+                .sort(([,a], [,b]) => b - a) // Sort by post count
+                .slice(0, 10) // Show top 10 authors
+                .map(([author, count]) => (
+                  <div key={author} className={styles.statItem}>
+                    <span className={styles.statLabel}>{author}</span>
+                    <span className={styles.statValue}>{count}</span>
+                  </div>
+                ))
+            ) : (
+              <p>No author data yet.</p>
+            )}
+          </div>
         </div>
+
+        {/* ✅ NEW: Recent posts */}
         <div className={styles.box}>
-          <h3>Views by Category</h3>
-          {categories.map((cat) => (
-            <p key={cat}>{cat}: {getCount(viewsByCategory, cat)}</p>
-          ))}
+          <h3>🕐 Recent Posts</h3>
+          <div className={styles.recentPostsList}>
+            {recentPosts.length > 0 ? (
+              recentPosts.map((post) => (
+                <div key={post.id} className={styles.recentPost}>
+                  <div className={styles.postTitle}>{post.title}</div>
+                  <div className={styles.postMeta}>
+                    <span className={styles.postAuthor}>by {post.author}</span>
+                    <span className={styles.postCategory}>{post.category}</span>
+                    <span className={styles.postDate}>{post.date}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No recent posts found.</p>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Views per post */}
       <div className={styles.box}>
-        <h3>Views per Post</h3>
-        {Object.entries(viewsPerPost).length > 0 ? (
-          Object.entries(viewsPerPost).map(([postId, count]) => (
-            <p key={postId}>{postId}: {count}</p>
-          ))
-        ) : (
-          <p>No view data yet.</p>
-        )}
+        <h3>📊 Top Performing Posts</h3>
+        <div className={styles.statsList}>
+          {Object.entries(viewsPerPost).length > 0 ? (
+            Object.entries(viewsPerPost)
+              .sort(([,a], [,b]) => b - a) // Sort by views descending
+              .slice(0, 10) // Show top 10
+              .map(([postId, count]) => (
+                <div key={postId} className={styles.statItem}>
+                  <span className={styles.statLabel}>{postId}</span>
+                  <span className={styles.statValue}>{count} views</span>
+                </div>
+              ))
+          ) : (
+            <p>No view data yet.</p>
+          )}
+        </div>
       </div>
 
+      {/* Visitor Stats */}
       <div className={styles.box}>
-        <h3>Visitor Stats</h3>
-        <p><strong>Total Visits:</strong> {visitorStats.totalVisits}</p>
-        <p><strong>Unique IPs:</strong> {visitorStats.uniqueIPs}</p>
-        <p><strong>OS Distribution:</strong></p>
-        <ul>
-          {Object.entries(visitorStats.osCounts).map(([os, count]) => (
-            <li key={os}>{os}: {count}</li>
-          ))}
-        </ul>
-        <p><strong>Browser Distribution:</strong></p>
-        <ul>
-          {Object.entries(visitorStats.browserCounts).map(([browser, count]) => (
-            <li key={browser}>{browser}: {count}</li>
-          ))}
-        </ul>
+        <h3>🌐 Visitor Analytics</h3>
+        <div className={styles.visitorStats}>
+          <div className={styles.statGroup}>
+            <h4>Total Visits: {visitorStats.totalVisits}</h4>
+            <h4>Unique IPs: {visitorStats.uniqueIPs}</h4>
+          </div>
+          
+          <div className={styles.distributionStats}>
+            <div className={styles.distributionGroup}>
+              <h4>🖥️ OS Distribution</h4>
+              <div className={styles.statsList}>
+                {Object.entries(visitorStats.osCounts).map(([os, count]) => (
+                  <div key={os} className={styles.statItem}>
+                    <span className={styles.statLabel}>{os}</span>
+                    <span className={styles.statValue}>{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className={styles.distributionGroup}>
+              <h4>🌐 Browser Distribution</h4>
+              <div className={styles.statsList}>
+                {Object.entries(visitorStats.browserCounts).map(([browser, count]) => (
+                  <div key={browser} className={styles.statItem}>
+                    <span className={styles.statLabel}>{browser}</span>
+                    <span className={styles.statValue}>{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* Daily Thoughts */}
       <div className={styles.box}>
-        <h3>Daily Thoughts Requests</h3>
-        {dailyRequests.length > 0 ? (
-          dailyRequests.map((req) => (
-            <p
-              key={req._id || req.id}
-              className={styles.clickableName}
-              onClick={() => {
-                setSelectedRequest(req);
-                setShowPopup(true);
-              }}
-            >
-              {req.name}
-            </p>
-          ))
-        ) : (
-          <p>No pending thoughts found.</p>
-        )}
+        <h3>💭 Daily Thoughts Requests ({dailyRequests.length})</h3>
+        <div className={styles.requestsList}>
+          {dailyRequests.length > 0 ? (
+            dailyRequests.map((req) => (
+              <div
+                key={req._id || req.id}
+                className={styles.requestItem}
+                onClick={() => {
+                  setSelectedRequest(req);
+                  setShowPopup(true);
+                }}
+              >
+                <div className={styles.requestName}>{req.name}</div>
+                <div className={styles.requestPreview}>
+                  {req.content?.substring(0, 100)}...
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No pending thoughts found.</p>
+          )}
+        </div>
       </div>
 
+      {/* Popup Modal */}
       {showPopup && selectedRequest && (
         <div className={styles.popupOverlay} onClick={() => setShowPopup(false)}>
           <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
-            <h2>{selectedRequest.name}</h2>
-            <p><strong>Author:</strong> {selectedRequest.authorName || selectedRequest.name}</p>
-            <p><strong>Thought:</strong><br />{selectedRequest.content}</p>
-            <p><strong>Email:</strong> {selectedRequest.contact}</p>
-            {selectedRequest.social && (
-              <p><strong>Social:</strong> {selectedRequest.social}</p>
-            )}
-            <div className={styles.popupActions}>
-              <button className={styles.approveBtn} onClick={() => handleApprove(selectedRequest.id)}>
-                Approve
+            <div className={styles.popupHeader}>
+              <h2>{selectedRequest.name}</h2>
+              <button 
+                className={styles.closeBtn}
+                onClick={() => setShowPopup(false)}
+              >
+                ✕
               </button>
-              <button className={styles.editBtn} onClick={handleEdit}>Edit</button>
+            </div>
+            
+            <div className={styles.popupContent}>
+              <div className={styles.popupField}>
+                <strong>Author:</strong> {selectedRequest.authorName || selectedRequest.name}
+              </div>
+              <div className={styles.popupField}>
+                <strong>Thought:</strong>
+                <p>{selectedRequest.content}</p>
+              </div>
+              <div className={styles.popupField}>
+                <strong>Email:</strong> {selectedRequest.contact}
+              </div>
+              {selectedRequest.social && (
+                <div className={styles.popupField}>
+                  <strong>Social:</strong> {selectedRequest.social}
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.popupActions}>
+              <button 
+                className={styles.approveBtn} 
+                onClick={() => handleApprove(selectedRequest.id)}
+              >
+                ✅ Approve
+              </button>
+              <button className={styles.editBtn} onClick={handleEdit}>
+                ✏️ Edit
+              </button>
             </div>
           </div>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default AdminDashboard;

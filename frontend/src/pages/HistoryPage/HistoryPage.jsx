@@ -3,34 +3,49 @@ import { useNavigate } from 'react-router-dom';
 import useColorThief from 'use-color-thief';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
+import historyBackground from '../../assets/history-background.png'; // ✅ NEW: Import background image
 import Footer from '../../components/Footer/Footer';
 
-const DynamicShadowHeroImage = () => {
-  const heroImageRef = useRef(null);
-  const { color } = useColorThief(heroImageRef, { 
+// ✅ NEW: Component to extract color from background image and apply dynamic shadow
+const DynamicBackgroundShadow = () => {
+  const backgroundImgRef = useRef(null);
+  const headerRef = useRef(null);
+  const { color } = useColorThief(backgroundImgRef, { 
     format: 'rgb', 
     quality: 10 
   });
 
-  const shadowColor = color 
-    ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.8)` 
-    : 'rgba(139, 69, 19, 0.6)'; // fallback brown for history theme
+  // Set CSS variable when color is extracted
+  useEffect(() => {
+    if (color && headerRef.current) {
+      const shadowColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.6)`;
+      headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
+    }
+  }, [color]);
 
   return (
-    <img
-      ref={heroImageRef}
-      src={historyLight}
-      alt="Historical Illustration"
-      className={styles.heroImage}
-      crossOrigin="anonymous"
-      style={{ 
-        filter: `drop-shadow(0 15px 20px ${shadowColor})`
-      }}
-    />
+    <>
+      {/* Hidden image for color extraction */}
+      <img
+        ref={backgroundImgRef}
+        src={historyBackground}
+        alt="Background"
+        crossOrigin="anonymous"
+        style={{ display: 'none' }}
+      />
+      {/* Header section with dynamic shadow */}
+      <section ref={headerRef} className={styles.headerSection}>
+        <img
+          src={historyLight}
+          alt="Historical Illustration"
+          className={styles.heroImage}
+        />
+      </section>
+    </>
   );
 };
 
-// ✅ NEW: Dynamic Shadow Blog Card Component
+// ✅ Dynamic Shadow Blog Card Component
 const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, children }) => {
   const imgRef = useRef(null);
   const { color } = useColorThief(imgRef, { 
@@ -243,15 +258,8 @@ const HistoryPage = () => {
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
-      {/* Fixed Hero Section */}
-      <section className={styles.headerSection}>
-      <DynamicShadowHeroImage />
-        <img
-          src={historyLight}
-          alt="Historical Illustration"
-          className={styles.heroImage}
-        />
-      </section>
+      {/* ✅ UPDATED: Fixed Hero Section with dynamic background shadow */}
+      <DynamicBackgroundShadow />
 
       {/* Fixed Posts Heading */}
       <div className={styles.postsHeadingSection}>

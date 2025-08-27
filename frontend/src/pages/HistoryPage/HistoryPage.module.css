@@ -394,7 +394,7 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   height: 1px;
   background: rgba(255, 255, 255, 0.8); /* ✅ CHANGED: Higher opacity */
   width: 60%;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   animation: expandLineToDate 0.6s ease 0.4s forwards;
 }
 
@@ -403,7 +403,7 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
     width: 0%;
   }
   to {
-    width: 60%;
+    width: 80%;
   }
 }
 

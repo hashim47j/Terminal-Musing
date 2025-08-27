@@ -183,8 +183,8 @@
   align-items: flex-start;
   justify-content: flex-start;
   text-align: left;
-  padding-top: 1px; 
-  padding-left: 1px;
+  padding-top: -2px; 
+  padding-left: -2px;
 }
 
 .hoverSubheading {

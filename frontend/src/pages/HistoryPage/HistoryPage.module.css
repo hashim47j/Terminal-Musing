@@ -4,12 +4,12 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #a80a0a;
+  background-color: #E4E4E4;
 }
 
 .headerSection {
   background-image: url('../../assets/history-background.png');
-  background-size: auto; 
+  background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;

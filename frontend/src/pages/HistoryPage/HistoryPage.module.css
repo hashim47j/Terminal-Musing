@@ -26,14 +26,14 @@
 .headerSection::after {
   content: '';
   position: absolute;
-  bottom: -40px; /* ✅ CHANGED: Further down */
+  bottom: -40px;
   left: 0%;
   right: 0%;
-  height: 40px; /* ✅ CHANGED: Taller shadow */
+  height: 40px;
   background: transparent;
-  box-shadow: 0 0 40px 15px var(--header-shadow-color); /* ✅ CHANGED: Bigger shadow */
-  z-index: 1; /* ✅ CHANGED: Relative to parent */
-  pointer-events: none; /* ✅ ADDED: Don't interfere with clicks */
+  box-shadow: 0 0 40px 15px var(--header-shadow-color);
+  z-index: 1;
+  pointer-events: none;
 }
 
 

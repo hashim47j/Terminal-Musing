@@ -18,23 +18,25 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1;
+  z-index: 50; /* ✅ CHANGED: Much higher z-index */
   height: 260px;
-  --header-shadow-color: rgba(139, 69, 19, 0.4); /* Default fallback */
+  --header-shadow-color: rgba(139, 69, 19, 0.4);
 }
 
 .headerSection::after {
   content: '';
   position: absolute;
-  bottom: -25px;
-  left: 5%;
-  right: 5%;
-  height: 25px;
+  bottom: -40px; /* ✅ CHANGED: Further down */
+  left: 0%;
+  right: 0%;
+  height: 40px; /* ✅ CHANGED: Taller shadow */
   background: transparent;
-  box-shadow: 0 0 30px 10px var(--header-shadow-color);
+  box-shadow: 0 0 40px 15px var(--header-shadow-color); /* ✅ CHANGED: Bigger shadow */
   border-radius: 50%;
-  z-index: 50; /* ✅ CHANGED: Higher z-index to appear above other elements */
+  z-index: 1; /* ✅ CHANGED: Relative to parent */
+  pointer-events: none; /* ✅ ADDED: Don't interfere with clicks */
 }
+
 
 
 
@@ -56,7 +58,7 @@
   left: 0;
   right: 0;
   background-color: #E4E4E4;
-  z-index: 5;
+  z-index: 45;
   padding: 20px 0;
   text-align: center;
 }

@@ -117,7 +117,7 @@
 
 .blogCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 25px -4px var(--dynamic-shadow-color);
+  box-shadow: 0 28px 30px -8px var(--dynamic-shadow-color);
 }
 
 /* ✅ NEW: Fixed bottom content for non-hover cards */

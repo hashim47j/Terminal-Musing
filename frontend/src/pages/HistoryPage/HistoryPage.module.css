@@ -388,22 +388,22 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
 }
 
 /* ✅ NEW: Animated horizontal line */
+/* ✅ FIXED: Make separator line visible */
 .separatorLine {
-  position: relative; /* ✅ CHANGED: From absolute to relative */
-  /* Remove bottom, left positioning as it's now in leftContent */
+  position: relative;
   height: 1px;
-  background: rgba(255, 255, 255, 0.6);
-  width: 0%;
-  margin-bottom: 8px; /* ✅ NEW: Space between line and text */
+  background: rgba(255, 255, 255, 0.8); /* ✅ CHANGED: Higher opacity */
+  width: 60%;
+  margin-bottom: 8px;
   animation: expandLineToDate 0.6s ease 0.4s forwards;
 }
 
-@keyframes expandLinePrecise {
+@keyframes expandLineToDate {
   from {
     width: 0%;
   }
   to {
-    width: calc(100% - 160px); /* ✅ Adjust this value based on right-side content width */
+    width: 60%;
   }
 }
 

@@ -305,23 +305,26 @@ const HistoryPage = () => {
 
       {/* Scrollable Posts Section */}
       <section className={styles.postsSection}>
-        <div className={styles.blogGridContainer}>
-          <div className={styles.blogGrid}>
-            {loading ? (
-              <div className={styles.loadingState}>
-                <div className={styles.spinner}></div>
-                <p>Loading history posts...</p>
-              </div>
-            ) : error ? (
-              <div className={styles.errorState}>
-                <h3>Oops! Something went wrong</h3>
-                <p style={{ color: 'red' }}>{error}</p>
-                <button 
-                  onClick={() => window.location.reload()} 
-                  className={styles.retryBtn}
-                >
-                  Try Again
-                </button>
+  {/* Heading at the top of posts section */}
+  <h2 className={styles.postsHeading}>History Posts</h2>
+  
+  <div className={styles.blogGridContainer}>
+    <div className={styles.blogGrid}>
+      {loading ? (
+        <div className={styles.loadingState}>
+          <div className={styles.spinner}></div>
+          <p>Loading history posts...</p>
+        </div>
+      ) : error ? (
+        <div className={styles.errorState}>
+          <h3>Oops! Something went wrong</h3>
+          <p style={{ color: 'red' }}>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className={styles.retryBtn}
+          >
+            Try Again
+          </button>
               </div>
             ) : !Array.isArray(posts) || posts.length === 0 ? (
               <div className={styles.emptyState}>

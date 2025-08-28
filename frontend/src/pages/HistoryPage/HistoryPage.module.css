@@ -20,7 +20,7 @@
   right: 0;
   z-index: 50; /* ✅ CHANGED: Much higher z-index */
   height: 260px;
-  --header-shadow-color: rgba(139, 69, 19, 0.4);
+  --header-shadow-color: rgba(82, 73, 68, 0);
 }
 
 .headerSection::after {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './Uniblog.module.css';
 import { useDarkMode } from '../../context/DarkModeContext';
@@ -144,6 +144,10 @@ const Uniblog = () => {
   const [isReplying, setIsReplying] = useState(null);
   const [viewCount, setViewCount] = useState(0);
 
+  // ✅ NEW: Scroll animation state
+  const heroRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
   const currentTheme = useMemo(() => THEMES[category] || THEMES.history, [category]);
   
   const apiUrls = useMemo(() => ({
@@ -151,6 +155,30 @@ const Uniblog = () => {
     comments: `/api/comments/${category}/${id}`,
     views: `/api/views/${category}/${id}`
   }), [category, id]);
+
+  // ✅ NEW: Scroll effect for blur animation
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (!heroRef.current) return;
+          
+          const heroHeight = heroRef.current.offsetHeight;
+          const scrolled = window.scrollY;
+          const progress = Math.min(scrolled / (heroHeight * 0.5), 1);
+          
+          setScrollProgress(progress);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Fetch blog and track views
   useEffect(() => {
@@ -185,34 +213,24 @@ const Uniblog = () => {
     return () => setPageTitle(null);
   }, [category, id, apiUrls.blog, apiUrls.views, setPageTitle, currentTheme.display]);
 
-  // ✅ FIXED: Fetch comments with proper variable and safety checks
+  // Fetch comments with proper variable and safety checks
   useEffect(() => {
     const fetchComments = async () => {
       setCommentsLoading(true);
       try {
-        // ✅ FIX: Use apiUrls.comments instead of undefined commentsApiUrl
         const res = await fetch(apiUrls.comments);
         if (res.ok) {
           const data = await res.json();
           
-          // ✅ DEBUG: Check what API returns
-          console.log('🔍 Comments API Response:', data);
-          console.log('🔍 Type:', typeof data);
-          console.log('🔍 Is Array:', Array.isArray(data));
-          
-          // ✅ Handle different response formats with safety checks
           let commentsArray = [];
           let statsData = null;
           
           if (Array.isArray(data)) {
-            // Direct array response (old format)
             commentsArray = data;
           } else if (data && typeof data === 'object') {
-            // Object response with comments property (new format)
             commentsArray = Array.isArray(data.comments) ? data.comments : [];
             statsData = data.stats || null;
           } else {
-            // Fallback for unexpected formats
             commentsArray = [];
           }
           
@@ -221,11 +239,9 @@ const Uniblog = () => {
             stats: statsData
           });
         } else {
-          console.log('🔍 Comments API Error:', res.status);
           setCommentsData({ comments: [], stats: null });
         }
       } catch (error) {
-        console.error('🔍 Comments fetch error:', error);
         setCommentsData({ comments: [], stats: null });
       } finally {
         setCommentsLoading(false);
@@ -235,7 +251,7 @@ const Uniblog = () => {
     if (category && id) {
       fetchComments();
     }
-  }, [category, id, apiUrls.comments]); // ✅ Added correct dependency
+  }, [category, id, apiUrls.comments]);
 
   // Form handlers
   const formHandlers = useMemo(() => ({
@@ -302,7 +318,6 @@ const Uniblog = () => {
       });
 
       if (res.ok) {
-        // Refresh comments to get updated structure
         const commentsRes = await fetch(apiUrls.comments);
         if (commentsRes.ok) {
           const data = await commentsRes.json();
@@ -397,9 +412,15 @@ const Uniblog = () => {
     <div className={`${styles.blogPageOuterContainer} ${styles[currentTheme.name]} ${darkMode ? styles.darkMode : ''}`}>
       <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '200px', pointerEvents: 'none', zIndex: -1 }} />
 
-      {/* Hero Section */}
+      {/* ✅ UPDATED: Hero Section with blur animation */}
       {blog.coverImage && (
-        <section className={styles.heroSection}>
+        <section 
+          ref={heroRef} 
+          className={styles.heroSection}
+          style={{
+            '--scroll-progress': scrollProgress,
+          }}
+        >
           <div className={styles.heroImageWrapper}>
             <img
               src={blog.coverImage}
@@ -410,14 +431,24 @@ const Uniblog = () => {
             />
             <div className={styles.heroGrain} />
             <div className={styles.heroOverlay} />
+            
+            {/* ✅ NEW: Animated blur overlay */}
+            <div className={styles.heroBlurOverlay} />
           </div>
-          <div className={styles.heroContent}>
+          
+          <div 
+            className={styles.heroContent}
+            style={{
+              transform: `translateY(${scrollProgress * 50}px)`,
+              opacity: 1 - (scrollProgress * 0.7),
+            }}
+          >
             <div className={styles.categoryBadge}>{currentTheme.display}</div>
             <h1 className={styles.title}>{blog.title}</h1>
             {subtitle && <p className={styles.subheadingText}>{subtitle}</p>}
             <div className={styles.metaInfo}>
               <p className={styles.date}>{metaText}</p>
-              {viewCount > 0 && <p className={styles.viewCount}>{viewCount} views</p>}
+              {/* ✅ REMOVED: Views count */}
             </div>
           </div>
         </section>
@@ -425,32 +456,28 @@ const Uniblog = () => {
 
       {/* Main Content */}
       <div className={styles.mainContentWrapper}>
-  <section className={styles.postContentSection}>
-    {!blog.coverImage && (
-      <>
-        <div className={`${styles.titleLine} ${styles[currentTheme.name]}`}></div>
-        <div className={styles.categoryBadge}>{currentTheme.display}</div>
-        <h1 className={styles.contentTitle}>{blog.title}</h1>
-        {/* ✅ COMPLETELY REMOVED: No subtitle anywhere in content section */}
-        <div className={styles.contentMeta}>
-          <p className={styles.contentDate}>{metaText}</p>
-          {viewCount > 0 && <p className={styles.contentViews}>{viewCount} views</p>}
-        </div>
-      </>
-    )}
-    
-    <div className={styles.contentBodyPlaceholder}>
-  <BlogRenderer content={blog.content?.filter(block => {
-    // Skip paragraph blocks that match the subtitle
-    if (block.type === 'paragraph' && block.text === subtitle) {
-      return false;
-    }
-    return true;
-  }) || blog.content} />
-</div>
-
-  </section>
-
+        <section className={styles.postContentSection}>
+          {!blog.coverImage && (
+            <>
+              <div className={`${styles.titleLine} ${styles[currentTheme.name]}`}></div>
+              <div className={styles.categoryBadge}>{currentTheme.display}</div>
+              <h1 className={styles.contentTitle}>{blog.title}</h1>
+              <div className={styles.contentMeta}>
+                <p className={styles.contentDate}>{metaText}</p>
+                {/* ✅ REMOVED: Views from non-cover image version too */}
+              </div>
+            </>
+          )}
+          
+          <div className={styles.contentBodyPlaceholder}>
+            <BlogRenderer content={blog.content?.filter(block => {
+              if (block.type === 'paragraph' && block.text === subtitle) {
+                return false;
+              }
+              return true;
+            }) || blog.content} />
+          </div>
+        </section>
 
         {/* Comments Section */}
         <section className={styles.commentSection}>
@@ -467,14 +494,12 @@ const Uniblog = () => {
           </div>
 
           <div className={styles.commentLayout}>
-            {/* ✅ FIXED: Comments List with proper safety checks */}
             <div className={styles.commentList}>
               {commentsLoading ? (
                 <div className={styles.commentsLoading}>
                   <p>Loading comments...</p>
                 </div>
               ) : (
-                // ✅ Add explicit array check before mapping
                 Array.isArray(commentsData.comments) && commentsData.comments.length > 0 ? (
                   commentsData.comments.map((comment) => (
                     <CommentBox
@@ -496,7 +521,6 @@ const Uniblog = () => {
               )}
             </div>
 
-            {/* Comment Form */}
             <div className={styles.commentFormContainer}>
               <form className={styles.commentForm} onSubmit={handleSubmit}>
                 <h3>Share your thoughts</h3>

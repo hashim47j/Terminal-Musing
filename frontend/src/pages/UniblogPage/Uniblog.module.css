@@ -342,11 +342,11 @@
   
   /* Comments */
   .commentSection {
-    display: block; /* ✅ CHANGED: from flex to block layout */
-    margin-left: 4%; /* ✅ NEW: Left margin for positioning */
-    margin-right: 4%; /* ✅ NEW: Right margin for balance */
-    padding-top: 40px; /* ✅ INCREASED: More space from content */
-    max-width: 1200px; /* ✅ NEW: Maximum width constraint */
+    display: block;
+    margin-left: 2%; /* ✅ REDUCED: from 4% to 2% for more width */
+    margin-right: 2%; /* ✅ REDUCED: from 4% to 2% for more width */
+    padding-top: 40px;
+    max-width: none; /* ✅ REMOVED: No max-width constraint */
   }
 
 /* ✅ UPDATED: Comment section header with larger font */
@@ -377,16 +377,16 @@
 /* ✅ UPDATED: Comment layout - single column */
 .commentLayout {
   display: flex;
-  flex-direction: row; /* ✅ CHANGED: Side by side layout */
-  gap: 40px;
-  align-items: flex-start; /* ✅ NEW: Align to top */
+  flex-direction: row;
+  gap: 30px; /* ✅ REDUCED: from 40px to 30px for more content space */
+  align-items: flex-start;
 }
 
 /* ✅ UPDATED: Comment list with better spacing */
 .commentList {
-  flex: 2; /* ✅ NEW: Takes 2/3 of the width */
+  flex: 3; /* ✅ INCREASED: from 2 to 3 (takes 3/4 of width) */
   padding: 0;
-  margin-bottom: 0; /* ✅ REMOVED: No bottom margin */
+  margin-bottom: 0;
 }
 
 /* ✅ UPDATED: Comment boxes with improved styling */
@@ -470,15 +470,15 @@
 
 /* ✅ UPDATED: Comment form container */
 .commentFormContainer {
-  flex: 1; /* ✅ NEW: Takes 1/3 of the width */
-  margin-top: 0; /* ✅ CHANGED: No top margin */
-  padding: 30px;
-  background: #fafbfc; /* ✅ SAME: Same as comment section background */
+  flex: 1; /* ✅ KEPT: 1/4 of the width */
+  margin-top: 0;
+  padding: 25px; /* ✅ REDUCED: from 30px to 25px for more space */
+  background: #fafbfc;
   border-radius: 12px;
   border: 1px solid #e9ecef;
-  align-self: flex-start; /* ✅ NEW: Stick to top */
-  position: sticky; /* ✅ NEW: Sticky positioning */
-  top: 20px; /* ✅ NEW: Offset from top */
+  align-self: flex-start;
+  position: sticky;
+  top: 20px;
 }
 
 /* ✅ UPDATED: Comment form styling */

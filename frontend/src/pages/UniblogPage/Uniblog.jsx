@@ -440,7 +440,13 @@ const Uniblog = () => {
     )}
     
     <div className={styles.contentBodyPlaceholder}>
-  <BlogRenderer content={blog.content} subtitle={subtitle} />
+  <BlogRenderer content={blog.content?.filter(block => {
+    // Skip paragraph blocks that match the subtitle
+    if (block.type === 'paragraph' && block.text === subtitle) {
+      return false;
+    }
+    return true;
+  }) || blog.content} />
 </div>
 
   </section>

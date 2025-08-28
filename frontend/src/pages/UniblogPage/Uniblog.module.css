@@ -534,12 +534,15 @@
     .date,
     .contentDate {
       font-size: 0.85em;
-    }
-    .contentBodyPlaceholder {
-      min-height: 40vh;
-      padding: 15px;
-      font-size: 1em;
-    }
+      @media (max-width: 768px) {
+        .contentBodyPlaceholder {
+          margin-left: 8%; /* ✅ REDUCED: from 25% to 8% for more width */
+          margin-right: 4%; /* ✅ REDUCED: from 8% to 4% for more width */
+          min-height: 40vh;
+          padding: 15px;
+          font-size: 1em;
+        }
+      }
     .commentBox {
       padding: 12px 15px;
     }
@@ -569,7 +572,10 @@
       font-size: 1.5em;
     }
     .contentBodyPlaceholder {
+      margin-left: 4%; /* ✅ FURTHER REDUCED: from 8% to 4% for maximum width on small screens */
+      margin-right: 2%; /* ✅ FURTHER REDUCED: from 4% to 2% for maximum width */
       min-height: 35vh;
+      padding: 12px; /* ✅ SLIGHTLY REDUCED: padding for more content space */
     }
     .commentBox {
       padding: 10px 12px;

@@ -562,11 +562,12 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
     padding: 0;
   }
   .blogGridContainer {
-    /* ✅ CHANGED: Remove top padding since heading is now sticky above */
-    height: auto;
-    min-height: 60vh;
-    overflow-y: visible;
-    padding: 0 20px 40px 20px; /* Removed top padding */
+    /* ✅ FIXED: This should be the scrollable part, not including the heading */
+    height: 50vh; /* Fixed height for scrolling */
+    overflow-y: auto; /* Enable scrolling */
+    padding: 0 20px 40px 20px; 
+    scrollbar-width: thin;
+    scrollbar-color: #999 transparent;
   }
 
   .blogGrid {
@@ -578,17 +579,20 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
     font-size: 1.09em;
   }
 
-
   .postsHeading {
-    font-size: 1.8em; /* Slightly larger for better visibility */
-    /* ✅ FIXED: Make heading non-scrollable by positioning it outside the scrollable container */
-    position: sticky;
-    top: 0;
-    background-color: #ecebeb;
-    z-index: 5;
+    font-size: 1.8em; 
+    font-weight: 700;
+    text-align: center;
+    color: #333;
     margin: 0;
     padding: 30px 0 20px 0;
+    font-family: 'Playfair Display', serif;
+    /* ✅ FIXED: Make it truly fixed at the top of posts section */
+    position: static; /* Reset to normal flow, not sticky */
+    background-color: #ecebeb;
+    z-index: 5;
   }
+
   .blogTitle {
     font-size: 1.09em;
   }

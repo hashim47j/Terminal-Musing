@@ -444,8 +444,7 @@
 /* ✅ UPDATED: Reply button styling */
 .replyBtn {
   font-size: 0.9rem; /* ✅ INCREASED: Larger button */
-  background: #f8f9fa; /* ✅ NEW: Light background */
-  border: 1px solid #e9ecef; /* ✅ NEW: Subtle border */
+  background-color: #414040;
   color: #6c757d;
   cursor: pointer;
   padding: 8px 16px; /* ✅ NEW: Button-like padding */
@@ -559,7 +558,7 @@
 .postBtn {
   margin-top: 25px; /* ✅ INCREASED: More space */
   padding: 14px 32px; /* ✅ INCREASED: Larger button */
-  background-color: #414040; /* ✅ UPDATED: Blue color */
+  background-color: #414040;
   color: white;
   border: none;
   border-radius: 8px; /* ✅ INCREASED: More rounded */

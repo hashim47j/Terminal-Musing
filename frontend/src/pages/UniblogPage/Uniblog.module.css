@@ -485,6 +485,7 @@
 .commentForm {
   display: flex;
   flex-direction: column;
+  background-color: #bbbbbb;
   padding: 0; /* ✅ REMOVED: No extra padding */
   margin: 0; /* ✅ REMOVED: No extra margin */
 }

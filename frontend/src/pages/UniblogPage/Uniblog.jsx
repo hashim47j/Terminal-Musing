@@ -440,8 +440,9 @@ const Uniblog = () => {
     )}
     
     <div className={styles.contentBodyPlaceholder}>
-      <BlogRenderer content={blog.content} />
-    </div>
+  <BlogRenderer content={blog.content} subtitle={subtitle} />
+</div>
+
   </section>
 
 

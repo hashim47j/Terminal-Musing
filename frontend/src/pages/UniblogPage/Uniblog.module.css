@@ -473,7 +473,7 @@
   flex: 1; /* ✅ KEPT: 1/4 of the width */
   margin-top: 0;
   padding: 25px; /* ✅ REDUCED: from 30px to 25px for more space */
-  background: #fafbfc;
+  background: #bbbbbb;
   border-radius: 12px;
   border: 1px solid #e9ecef;
   align-self: flex-start;
@@ -522,7 +522,7 @@
   width: 100%;
   padding: 14px 16px; /* ✅ INCREASED: More padding */
   font-size: 1.0rem; /* ✅ INCREASED: Larger text */
-  border: 2px solid #e9ecef; /* ✅ UPDATED: Thicker border */
+  border: 1px solid #e9ecef; /* ✅ UPDATED: Thicker border */
   border-radius: 8px; /* ✅ INCREASED: More rounded */
   background-color: #ffffff;
   font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */

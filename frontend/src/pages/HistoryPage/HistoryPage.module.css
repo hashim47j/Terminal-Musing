@@ -9,7 +9,7 @@
 
 .headerSection {
   background-image: url('../../assets/history-background.png');
-  background-size: cover; 
+  background-size: auto; 
   background-position: center;
   background-repeat: no-repeat;
   text-align: center;

@@ -377,15 +377,16 @@
 /* ✅ UPDATED: Comment layout - single column */
 .commentLayout {
   display: flex;
-  flex-direction: column; /* ✅ CHANGED: Stack vertically */
+  flex-direction: row; /* ✅ CHANGED: Side by side layout */
   gap: 40px;
+  align-items: flex-start; /* ✅ NEW: Align to top */
 }
 
 /* ✅ UPDATED: Comment list with better spacing */
 .commentList {
-  width: 100%; /* ✅ CHANGED: Full width */
-  padding: 0; /* ✅ REMOVED: No padding */
-  margin-bottom: 20px;
+  flex: 2; /* ✅ NEW: Takes 2/3 of the width */
+  padding: 0;
+  margin-bottom: 0; /* ✅ REMOVED: No bottom margin */
 }
 
 /* ✅ UPDATED: Comment boxes with improved styling */
@@ -469,12 +470,15 @@
 
 /* ✅ UPDATED: Comment form container */
 .commentFormContainer {
-  width: 100%; /* ✅ CHANGED: Full width */
-  margin-top: 20px;
-  padding: 30px; /* ✅ INCREASED: More padding */
-  background: #fafbfc; /* ✅ NEW: Light background */
-  border-radius: 12px; /* ✅ NEW: Rounded container */
-  border: 1px solid #e9ecef; /* ✅ NEW: Subtle border */
+  flex: 1; /* ✅ NEW: Takes 1/3 of the width */
+  margin-top: 0; /* ✅ CHANGED: No top margin */
+  padding: 30px;
+  background: #fafbfc; /* ✅ SAME: Same as comment section background */
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  align-self: flex-start; /* ✅ NEW: Stick to top */
+  position: sticky; /* ✅ NEW: Sticky positioning */
+  top: 20px; /* ✅ NEW: Offset from top */
 }
 
 /* ✅ UPDATED: Comment form styling */

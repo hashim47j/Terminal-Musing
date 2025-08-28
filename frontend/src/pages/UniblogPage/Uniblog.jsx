@@ -431,7 +431,7 @@ const Uniblog = () => {
               <div className={`${styles.titleLine} ${styles[currentTheme.name]}`}></div>
               <div className={styles.categoryBadge}>{currentTheme.display}</div>
               <h1 className={styles.contentTitle}>{blog.title}</h1>
-              {subtitle && <p className={styles.contentSubtitle}>{subtitle}</p>}
+            
               <div className={styles.contentMeta}>
                 <p className={styles.contentDate}>{metaText}</p>
                 {viewCount > 0 && <p className={styles.contentViews}>{viewCount} views</p>}

@@ -501,11 +501,12 @@
 /* ✅ UPDATED: Form group styling */
 .formGroup {
   margin-bottom: 20px; /* ✅ INCREASED: More space between fields */
-  background-color: #2c2c2c;
+  background-color: #bbbbbb;
 }
 
 .commentForm label {
   margin-bottom: 8px; /* ✅ INCREASED: More space */
+  background-color: #8a8888;
   font-size: 0.95rem;
   font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
   color: #495057; /* ✅ UPDATED: Better contrast */

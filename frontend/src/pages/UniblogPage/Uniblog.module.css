@@ -559,8 +559,8 @@
 .postBtn {
   margin-top: 25px; /* ✅ INCREASED: More space */
   padding: 14px 32px; /* ✅ INCREASED: Larger button */
-  background-color: #4a90e2; /* ✅ UPDATED: Blue color */
-  color: black;
+  background-color: #000000; /* ✅ UPDATED: Blue color */
+  color: white;
   border: none;
   border-radius: 8px; /* ✅ INCREASED: More rounded */
   cursor: pointer;
@@ -569,7 +569,7 @@
   font-weight: 600; /* ✅ INCREASED: Bold text */
   transition: all 0.3s ease;
   align-self: flex-start; /* ✅ CHANGED: Left aligned */
-  border: 2px solid #4a90e2; /* ✅ NEW: Matching border */
+  border: 2px solid #000000; /* ✅ NEW: Matching border */
 }
 
 .postBtn:hover {

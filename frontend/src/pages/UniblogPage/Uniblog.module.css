@@ -604,18 +604,27 @@
       min-height: 50vh;
       padding: 20px;
     }
-    .commentSection {
-      flex-direction: column;
-      padding-top: 0;
+  
+    /* ✅ UPDATED: Comment layout changes for mobile */
+    .commentLayout {
+      flex-direction: column-reverse; /* ✅ NEW: Reverse order - form first, comments second */
       gap: 30px;
     }
-    .commentList,
-    .commentForm {
+    
+    .commentList {
+      flex: none; /* ✅ Reset flex */
+      order: 2; /* ✅ NEW: Comments go second */
       padding-left: 0;
       padding-right: 0;
     }
-    .commentForm {
+    
+    .commentFormContainer {
+      flex: none; /* ✅ Reset flex */
+      position: static; /* ✅ Remove sticky on mobile */
+      order: 1; /* ✅ NEW: Form goes first */
       width: 100%;
+      padding-left: 0;
+      padding-right: 0;
     }
   }
   
@@ -629,17 +638,30 @@
     .date,
     .contentDate {
       font-size: 0.85em;
-      @media (max-width: 768px) {
-        .contentBodyPlaceholder {
-          margin-left: 8%; /* ✅ REDUCED: from 25% to 8% for more width */
-          margin-right: 4%; /* ✅ REDUCED: from 8% to 4% for more width */
-          min-height: 40vh;
-          padding: 15px;
-          font-size: 1em;
-        }
-      }
+    }
+    
+    .contentBodyPlaceholder {
+      margin-left: 8%; /* ✅ REDUCED: from 25% to 8% for more width */
+      margin-right: 4%; /* ✅ REDUCED: from 8% to 4% for more width */
+      min-height: 40vh;
+      padding: 15px;
+      font-size: 1em;
+    }
+  
+    /* ✅ UPDATED: Comment section mobile styling */
+    .commentSection {
+      margin-left: 1%; /* ✅ Even smaller margins on mobile */
+      margin-right: 1%;
+      padding-top: 30px;
+    }
+    
+    .commentSectionHeader h3 {
+      font-size: 1.8em; /* ✅ Smaller on mobile */
+    }
+    
     .commentBox {
-      padding: 12px 15px;
+      padding: 16px 18px; /* ✅ UPDATED: Better mobile padding */
+      margin-bottom: 20px;
     }
     .commentBox strong {
       font-size: 0.95rem;
@@ -647,8 +669,14 @@
     .commentMeta, .commentBox p, .replyBtn {
       font-size: 0.8rem;
     }
+    
+    .commentFormContainer {
+      padding: 20px; /* ✅ UPDATED: Mobile form padding */
+      margin-bottom: 30px; /* ✅ NEW: Space between form and comments */
+    }
+    
     .commentForm h3 {
-      font-size: 1.5em;
+      font-size: 1.6rem; /* ✅ UPDATED: Mobile form heading size */
     }
     .commentForm label, .commentForm input, .commentForm textarea {
       font-size: 0.9em;
@@ -672,14 +700,31 @@
       min-height: 35vh;
       padding: 12px; /* ✅ SLIGHTLY REDUCED: padding for more content space */
     }
+  
+    /* ✅ UPDATED: Small mobile adjustments */
+    .commentSection {
+      margin-left: 0.5%;
+      margin-right: 0.5%;
+    }
+    
+    .commentSectionHeader h3 {
+      font-size: 1.6em;
+    }
+    
     .commentBox {
-      padding: 10px 12px;
+      padding: 14px 16px; /* ✅ UPDATED: Small mobile padding */
     }
     .commentBox strong, .commentMeta, .commentBox p, .replyBtn {
       font-size: 0.75rem;
     }
+    
+    .commentFormContainer {
+      padding: 16px; /* ✅ UPDATED: Small mobile form padding */
+      margin-bottom: 25px; /* ✅ NEW: Space between form and comments */
+    }
+    
     .commentForm h3 {
       font-size: 1.3em;
     }
   }
-}
+  

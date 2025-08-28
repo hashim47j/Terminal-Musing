@@ -11,10 +11,11 @@ import Footer from '../../components/Footer/Footer';
 const DynamicBackgroundShadow = () => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const extractColorFromImage = () => {
-      if (!imgRef.current || !headerRef.current) return;
+      if (!imgRef.current || !headerRef.current || !imageLoaded) return;
 
       const img = imgRef.current;
       const canvas = document.createElement('canvas');
@@ -51,23 +52,31 @@ const DynamicBackgroundShadow = () => {
       }
     };
 
-    const img = imgRef.current;
-    if (img.complete) {
+    // ✅ Only extract color after image is loaded
+    if (imageLoaded) {
       extractColorFromImage();
-    } else {
-      img.onload = extractColorFromImage;
     }
-  }, []);
+  }, [imageLoaded]); // ✅ Depend on imageLoaded state
+
+  const handleImageLoad = () => {
+    console.log('✅ Background image fully loaded');
+    setImageLoaded(true);
+  };
 
   return (
     <>
-      {/* Hidden image for color extraction */}
+      {/* Hidden image for color extraction with onLoad event */}
       <img
         ref={imgRef}
         src={historyBackground}
         alt="Background for color extraction"
         crossOrigin="anonymous"
         style={{ display: 'none' }}
+        onLoad={handleImageLoad} // ✅ Wait for image to load
+        onError={() => {
+          console.warn('⚠️ Background image failed to load');
+          setImageLoaded(false);
+        }}
       />
       {/* Header section with dynamic shadow */}
       <section ref={headerRef} className={styles.headerSection}>

@@ -559,7 +559,7 @@
 .postBtn {
   margin-top: 25px; /* ✅ INCREASED: More space */
   padding: 14px 32px; /* ✅ INCREASED: Larger button */
-  background-color: #000000; /* ✅ UPDATED: Blue color */
+  background-color: #5a5a5a; /* ✅ UPDATED: Blue color */
   color: white;
   border: none;
   border-radius: 8px; /* ✅ INCREASED: More rounded */

@@ -11,7 +11,6 @@ const THEMES = {
   tech: { name: 'tech', display: 'Technology' },
   lsconcern: { name: 'lsconcern', display: 'Legal & Social' }
 };
-
 const CommentBox = React.memo(({ comment, depth = 0, onReply, isReplying, replyForm, setReplyForm, handleReplySubmit }) => {
   const [showReplies, setShowReplies] = useState(true);
   
@@ -157,6 +156,7 @@ const Uniblog = () => {
   }), [category, id]);
 
   // ✅ NEW: Scroll effect for blur animation
+  // ✅ UPDATED: Scroll effect for bottom-to-top blur animation
   useEffect(() => {
     let ticking = false;
     
@@ -432,15 +432,16 @@ const Uniblog = () => {
             <div className={styles.heroGrain} />
             <div className={styles.heroOverlay} />
             
-            {/* ✅ NEW: Animated blur overlay */}
+            {/* ✅ UPDATED: Bottom blur overlay that moves upward */}
             <div className={styles.heroBlurOverlay} />
           </div>
           
+          {/* ✅ UPDATED: Content positioned at middle-bottom */}
           <div 
             className={styles.heroContent}
             style={{
-              transform: `translateY(${scrollProgress * 50}px)`,
-              opacity: 1 - (scrollProgress * 0.7),
+              transform: `translateY(${scrollProgress * 30}px)`,
+              opacity: 1 - (scrollProgress * 0.6),
             }}
           >
             <div className={styles.categoryBadge}>{currentTheme.display}</div>
@@ -448,11 +449,11 @@ const Uniblog = () => {
             {subtitle && <p className={styles.subheadingText}>{subtitle}</p>}
             <div className={styles.metaInfo}>
               <p className={styles.date}>{metaText}</p>
-              {/* ✅ REMOVED: Views count */}
             </div>
           </div>
         </section>
       )}
+
 
       {/* Main Content */}
       <div className={styles.mainContentWrapper}>

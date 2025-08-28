@@ -228,23 +228,23 @@
 
   .heroBlurOverlay {
     position: absolute;
-    top: calc(var(--scroll-progress, 0) * 50%);
+    bottom: calc(var(--scroll-progress, 0) * 50%);
     left: 0;
     width: 100%;
     height: calc(50% - (var(--scroll-progress, 0) * 25%));
     z-index: 5;
     pointer-events: none;
-    backdrop-filter: blur(calc(10px * (1 - var(--scroll-progress, 0))));
-    -webkit-backdrop-filter: blur(calc(10px * (1 - var(--scroll-progress, 0))));
-    background: rgba(255, 255, 255, calc(0.1 * (1 - var(--scroll-progress, 0))));
+    backdrop-filter: blur(calc(12px * (1 - var(--scroll-progress, 0))));
+    -webkit-backdrop-filter: blur(calc(12px * (1 - var(--scroll-progress, 0))));
+    background: rgba(0, 0, 0, calc(0.15 * (1 - var(--scroll-progress, 0))));
     transition: all 0.1s ease-out;
   }
   
   .heroContent {
     position: absolute;
-    top: 35%;
+    bottom: 25%; /* ✅ CHANGED: Positioned in lower portion of hero */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%); /* ✅ CHANGED: Only horizontal centering */
     z-index: 6;
     color: white;
     width: 80%;

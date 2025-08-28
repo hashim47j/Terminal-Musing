@@ -425,24 +425,25 @@ const Uniblog = () => {
 
       {/* Main Content */}
       <div className={styles.mainContentWrapper}>
-        <section className={styles.postContentSection}>
-          {!blog.coverImage && (
-            <>
-              <div className={`${styles.titleLine} ${styles[currentTheme.name]}`}></div>
-              <div className={styles.categoryBadge}>{currentTheme.display}</div>
-              <h1 className={styles.contentTitle}>{blog.title}</h1>
-            
-              <div className={styles.contentMeta}>
-                <p className={styles.contentDate}>{metaText}</p>
-                {viewCount > 0 && <p className={styles.contentViews}>{viewCount} views</p>}
-              </div>
-            </>
-          )}
-          
-          <div className={styles.contentBodyPlaceholder}>
-            <BlogRenderer content={blog.content} />
-          </div>
-        </section>
+  <section className={styles.postContentSection}>
+    {!blog.coverImage && (
+      <>
+        <div className={`${styles.titleLine} ${styles[currentTheme.name]}`}></div>
+        <div className={styles.categoryBadge}>{currentTheme.display}</div>
+        <h1 className={styles.contentTitle}>{blog.title}</h1>
+        {/* ✅ COMPLETELY REMOVED: No subtitle anywhere in content section */}
+        <div className={styles.contentMeta}>
+          <p className={styles.contentDate}>{metaText}</p>
+          {viewCount > 0 && <p className={styles.contentViews}>{viewCount} views</p>}
+        </div>
+      </>
+    )}
+    
+    <div className={styles.contentBodyPlaceholder}>
+      <BlogRenderer content={blog.content} />
+    </div>
+  </section>
+
 
         {/* Comments Section */}
         <section className={styles.commentSection}>

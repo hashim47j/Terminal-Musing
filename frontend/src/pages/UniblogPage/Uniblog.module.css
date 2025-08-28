@@ -234,17 +234,17 @@
     height: calc(50% - (var(--scroll-progress, 0) * 25%));
     z-index: 5;
     pointer-events: none;
-    backdrop-filter: blur(calc(12px * (1 - var(--scroll-progress, 0))));
-    -webkit-backdrop-filter: blur(calc(12px * (1 - var(--scroll-progress, 0))));
-    background: rgba(0, 0, 0, calc(0.15 * (1 - var(--scroll-progress, 0))));
+    backdrop-filter: blur(calc(6px * (1 - var(--scroll-progress, 0)))); /* ✅ REDUCED: from 12px to 6px */
+    -webkit-backdrop-filter: blur(calc(6px * (1 - var(--scroll-progress, 0)))); /* ✅ REDUCED: from 12px to 6px */
+    background: rgba(0, 0, 0, calc(0.1 * (1 - var(--scroll-progress, 0)))); /* ✅ REDUCED: from 0.15 to 0.1 */
     transition: all 0.1s ease-out;
   }
   
   .heroContent {
     position: absolute;
-    bottom: 25%; /* ✅ CHANGED: Positioned in lower portion of hero */
+    bottom: 8%; /* ✅ CHANGED: Moved to bottom center */
     left: 50%;
-    transform: translateX(-50%); /* ✅ CHANGED: Only horizontal centering */
+    transform: translateX(-50%);
     z-index: 6;
     color: white;
     width: 80%;

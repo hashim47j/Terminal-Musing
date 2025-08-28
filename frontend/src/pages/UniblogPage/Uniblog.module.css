@@ -506,7 +506,7 @@
 
 .commentForm label {
   margin-bottom: 8px; /* ✅ INCREASED: More space */
-  background-color: #8a8888;
+  background-color: #bbbbbb;
   font-size: 0.95rem;
   font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
   color: #495057; /* ✅ UPDATED: Better contrast */
@@ -527,6 +527,7 @@
   background-color: #ffffff;
   font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
   box-sizing: border-box;
+  background-color: #adabab;
   color: #333333;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }

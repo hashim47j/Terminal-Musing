@@ -472,7 +472,7 @@
 
 .spinner {
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #007bff;
+  border-top: 3px solid #484848;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -485,7 +485,7 @@
 .retryBtn {
   margin-top: 15px;
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #181818;
   color: white;
   border: none;
   border-radius: 6px;

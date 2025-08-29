@@ -401,15 +401,6 @@
   transition: box-shadow 0.3s ease; /* ✅ NEW: Smooth hover effect */
 }
 
-.commentBox:active {
-  border-color: #464646; /* Blue border when pressed */
-  
-  transform: scale(0.98); /* Slight shrink effect */
-}
-.commentBox:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* ✅ NEW: Enhanced shadow on hover */
-}
-
 /* ✅ UPDATED: Comment header styling */
 .commentHeader {
   display: flex;
@@ -539,7 +530,7 @@
 
 .commentForm input:focus,
 .commentForm textarea:focus {
-  border-color: #4a90e2; /* ✅ UPDATED: Blue focus color */
+  border-color: #505050; /* ✅ UPDATED: Blue focus color */
   outline: none;
   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1); /* ✅ NEW: Focus glow */
 }

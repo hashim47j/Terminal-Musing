@@ -647,8 +647,8 @@
   
     /* ✅ UPDATED: Comment section mobile styling */
     .commentSection {
-      margin-left: 1%; /* ✅ Even smaller margins on mobile */
-      margin-right: 1%;
+      margin-left: 5%; /* ✅ Even smaller margins on mobile */
+      margin-right: 5%;
       padding-top: 30px;
     }
     
@@ -657,7 +657,7 @@
     }
     
     .commentBox {
-      padding: 20px; /* ✅ UPDATED: Better mobile padding */
+      padding: 16px 18px; /* ✅ UPDATED: Better mobile padding */
       margin-bottom: 20px;
     }
     .commentBox strong {

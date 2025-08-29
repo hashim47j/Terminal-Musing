@@ -124,11 +124,27 @@ const DynamicShadowBlogCard = ({
     e.stopPropagation();
     
     if (isMobile) {
-      // Mobile: Toggle animation + shadow
       const newActiveId = post.id === activeCardId ? null : post.id;
+      
+      // ✅ FORCE IMMEDIATE VISUAL UPDATE - before React state update
+      if (cardRef.current) {
+        if (newActiveId === post.id) {
+          // Show animation + shadow immediately
+          cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
+          cardRef.current.style.transform = 'translateY(-4px)';
+          cardRef.current.style.boxShadow = `0 22px 27px -8px ${shadowColor}`;
+          cardRef.current.style.webkitBoxShadow = `0 22px 27px -8px ${shadowColor}`;
+        } else {
+          // Hide animation + shadow immediately
+          cardRef.current.style.transform = 'none';
+          cardRef.current.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
+          cardRef.current.style.webkitBoxShadow = '0 5px 15px rgba(0,0,0,0.05)';
+        }
+      }
+      
+      // Update React state after visual change
       setActiveCardId(newActiveId);
     } else {
-      // Desktop: Navigate immediately
       onClick();
     }
   };

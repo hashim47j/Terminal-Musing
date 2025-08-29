@@ -111,7 +111,23 @@
   height: 100%;
   position: relative;
   cursor: pointer;
+  -webkit-appearance: none; /* ✅ NEW: Fix iOS shadow issues */
+  -webkit-tap-highlight-color: transparent; /* ✅ NEW: Remove tap highlight */
 }
+
+.blogCard.mobileExpanded {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color);
+  -webkit-box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color); /* ✅ NEW: Safari prefix */
+}
+
+.blogCard:active,
+.blogCard.mobileExpanded {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color) !important;
+  -webkit-box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color) !important;
+}
+
 
 .blogCard:hover {
   transform: translateY(-4px);
@@ -433,6 +449,7 @@
     flex-direction: row;
     min-height: 120px;
     height: 100%;
+
   }
   
   .coverImage {

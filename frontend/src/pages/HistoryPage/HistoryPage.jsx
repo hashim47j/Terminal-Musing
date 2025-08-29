@@ -123,59 +123,13 @@ const DynamicShadowBlogCard = ({
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('🔍 Card clicked:', post.id, 'Current activeCardId:', activeCardId);
-    console.log('🔍 Is mobile:', isMobile);
-    console.log('🔍 Shadow color:', shadowColor);
-    console.log('🔍 Image loaded:', imageLoaded);
+    console.log('🔍 Card clicked:', post.id);
     
     if (isMobile) {
       const newActiveId = post.id === activeCardId ? null : post.id;
-      console.log('🔍 New activeCardId will be:', newActiveId);
-      
-      if (cardRef.current) {
-        console.log('✅ cardRef exists');
-        
-        if (newActiveId === post.id) {
-          console.log('🎯 EXPANDING CARD - Setting shadow and animation');
-          
-          // Set CSS custom property
-          cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
-          console.log('✅ CSS variable set to:', shadowColor);
-          
-          // Set transform
-          cardRef.current.style.transform = 'translateY(-4px)';
-          console.log('✅ Transform applied');
-          
-          // Set box-shadow directly
-          const shadowValue = `0 22px 27px -8px ${shadowColor}`;
-          cardRef.current.style.boxShadow = shadowValue;
-          cardRef.current.style.webkitBoxShadow = shadowValue;
-          console.log('✅ Box shadow set to:', shadowValue);
-          
-          // Check if styles were actually applied
-          console.log('🔍 Computed styles after setting:');
-          const computedStyles = window.getComputedStyle(cardRef.current);
-          console.log('  - Transform:', computedStyles.transform);
-          console.log('  - Box Shadow:', computedStyles.boxShadow);
-          console.log('  - CSS Variable:', computedStyles.getPropertyValue('--dynamic-shadow-color'));
-          
-        } else {
-          console.log('🎯 COLLAPSING CARD - Removing shadow and animation');
-          cardRef.current.style.transform = 'none';
-          cardRef.current.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
-          cardRef.current.style.webkitBoxShadow = '0 5px 15px rgba(0,0,0,0.05)';
-          console.log('✅ Styles reset');
-        }
-      } else {
-        console.log('❌ cardRef is null!');
-      }
-      
-      // Update React state
       setActiveCardId(newActiveId);
       console.log('✅ State updated to:', newActiveId);
-      
     } else {
-      console.log('🖥️ Desktop mode - navigating');
       onClick();
     }
   };
@@ -317,6 +271,7 @@ const DynamicShadowBlogCard = ({
 
 
 const HistoryPage = () => {
+  const containerRef = useRef(null); 
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -329,16 +284,13 @@ const HistoryPage = () => {
     // ✅ ADD: Outside click detection
     useEffect(() => {
       const handleClickOutside = (event) => {
-        // Only clear if clicking outside the entire blog grid container
         if (containerRef.current && !containerRef.current.contains(event.target)) {
           setActiveCardId(null);
         }
       };
   
       document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
   
 
@@ -458,6 +410,8 @@ const HistoryPage = () => {
 
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>History Posts</h2>
+
+        <div ref={containerRef} className={styles.blogGridContainer}></div>
         
         <div className={styles.blogGridContainer}>
           <div className={styles.blogGrid}>

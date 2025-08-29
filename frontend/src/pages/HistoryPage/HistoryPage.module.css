@@ -557,7 +557,7 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   
   .postsSection {
     /* ✅ FIXED: Increase width and reduce horizontal margins */
-    margin: 130px 5vw 80px 5vw; /* Changed from 10vw to 5vw for wider section */
+    margin: 160px 5vw 80px 5vw; /* Changed from 10vw to 5vw for wider section */
     width: 90vw; /* Changed from 80vw to 90vw for more width */
     padding: 0;
   }

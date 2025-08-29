@@ -6,7 +6,6 @@ import historyLight from '../../assets/history-hero.png';
 import historyBackground from '../../assets/history-background.png';
 import Footer from '../../components/Footer/Footer';
 
-// Dynamic Background Shadow Component
 const DynamicBackgroundShadow = () => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
@@ -43,10 +42,8 @@ const DynamicBackgroundShadow = () => {
 
         const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
         headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
-        
-        console.log('✅ Extracted background color:', shadowColor);
       } catch (err) {
-        console.warn('⚠️ Could not extract color from background image:', err);
+        console.warn('Could not extract color from background image:', err);
       }
     };
 
@@ -56,7 +53,6 @@ const DynamicBackgroundShadow = () => {
   }, [imageLoaded]);
 
   const handleImageLoad = () => {
-    console.log('✅ Background image fully loaded');
     setImageLoaded(true);
   };
 
@@ -69,10 +65,7 @@ const DynamicBackgroundShadow = () => {
         crossOrigin="anonymous"
         style={{ display: 'none' }}
         onLoad={handleImageLoad}
-        onError={() => {
-          console.warn('⚠️ Background image failed to load');
-          setImageLoaded(false);
-        }}
+        onError={() => setImageLoaded(false)}
       />
       <section ref={headerRef} className={styles.headerSection}>
         <img
@@ -85,14 +78,12 @@ const DynamicBackgroundShadow = () => {
   );
 };
 
-// ✅ Updated Dynamic Shadow Blog Card Component with Mobile Two-Step Interaction
 const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, currentAuthor, getWordCount }) => {
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false); // ✅ NEW: Track expanded state on mobile
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   
-  // Detect mobile device
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
@@ -115,31 +106,27 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
     setImageLoaded(true);
   };
 
-  // ✅ NEW: Handle mobile card click differently
   const handleCardClick = (e) => {
     e.preventDefault();
     
     if (isMobile) {
-      // On mobile: just expand the card, don't navigate
       setIsExpanded(!isExpanded);
     } else {
-      // On desktop: navigate immediately (existing behavior)
       onClick();
     }
   };
 
-  // ✅ NEW: Handle read button click for navigation
   const handleReadButtonClick = (e) => {
-    e.stopPropagation(); // Prevent card click
-    onClick(); // Navigate to blog post
+    e.stopPropagation();
+    onClick();
   };
 
   return (
     <article
       className={`${styles.blogCard} ${isExpanded ? styles.mobileExpanded : ''}`}
       onClick={handleCardClick}
-      onMouseEnter={!isMobile ? onMouseEnter : undefined} // Only on desktop
-      onMouseLeave={!isMobile ? onMouseLeave : undefined} // Only on desktop
+      onMouseEnter={!isMobile ? onMouseEnter : undefined}
+      onMouseLeave={!isMobile ? onMouseLeave : undefined}
       role="button"
       tabIndex={0}
       style={{ 
@@ -149,7 +136,6 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
       onKeyDown={onKeyDown}
       aria-label={`${isExpanded ? 'Expanded' : 'Read'} article: ${post.title}`}
     >
-      {/* Cover Image */}
       {post.coverImage ? (
         <img 
           ref={imgRef}
@@ -178,7 +164,6 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
         </div>
       )}
 
-      {/* Regular Content */}
       <div className={`${styles.blogContent} ${
         ((hoveredPostId === post.id && !isMobile) || (isMobile && isExpanded)) 
           ? styles.hiddenContent 
@@ -206,7 +191,6 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
         </div>
       </div>
 
-      {/* Hover/Expanded Overlay */}
       {((!isMobile && hoveredPostId === post.id) || (isMobile && isExpanded)) && (
         <div className={styles.hoverOverlay}>
           <div className={styles.subheadingContainer}>
@@ -254,7 +238,6 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
                 </svg>
               </button>
 
-              {/* ✅ UPDATED: Read button now handles navigation */}
               <button 
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
@@ -274,9 +257,7 @@ const HistoryPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showFooter, setShowFooter] = useState(false);
   const [hoveredPostId, setHoveredPostId] = useState(null);
-  
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
 
   const getWordCount = (content) => {
@@ -311,7 +292,6 @@ const HistoryPage = () => {
                                userData.fullName ||
                                'Terminal Musing';
               setCurrentAuthor(authorName);
-              console.log(`✅ Fetched author: ${authorName}`);
               return;
             }
           } catch (err) {
@@ -326,7 +306,6 @@ const HistoryPage = () => {
         }
         
       } catch (err) {
-        console.warn('⚠️ Failed to fetch current author, using default:', err);
         setCurrentAuthor('Terminal Musing');
       }
     };
@@ -351,7 +330,6 @@ const HistoryPage = () => {
         } else if (data && Array.isArray(data.blogs)) {
           postsArray = data.blogs;
         } else {
-          console.warn('⚠️ API returned unexpected format:', typeof data);
           postsArray = [];
         }
 
@@ -366,7 +344,6 @@ const HistoryPage = () => {
         setPosts(sorted);
         
       } catch (err) {
-        console.error('❌ Error fetching history blogs:', err);
         setError(`Failed to load history posts: ${err.message}`);
         setPosts([]);
       } finally {
@@ -375,23 +352,6 @@ const HistoryPage = () => {
     };
 
     fetchPosts();
-  }, []);
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const blogContainer = document.querySelector(`.${styles.blogGridContainer}`);
-      if (blogContainer) {
-        const rect = blogContainer.getBoundingClientRect();
-        const isOutsidePosts = e.clientY < rect.top - 100 || e.clientY > rect.bottom + 100;
-        setShowFooter(isOutsidePosts);
-      }
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
   }, []);
 
   const handlePostClick = (post) => {
@@ -460,12 +420,6 @@ const HistoryPage = () => {
       </section>
 
       <div className={styles.grayStrip}></div>
-
-      {showFooter && (
-        <div className={styles.footerContainer}>
-          <Footer />
-        </div>
-      )}
     </div>
   );
 };

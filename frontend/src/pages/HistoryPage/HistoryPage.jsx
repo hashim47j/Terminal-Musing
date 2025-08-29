@@ -95,6 +95,7 @@ const DynamicShadowBlogCard = ({
   const cardRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [shadowColor, setShadowColor] = useState('rgba(0, 123, 255, 0.4)'); // Default fallback
   
   useEffect(() => {
     const checkMobile = () => {
@@ -110,15 +111,23 @@ const DynamicShadowBlogCard = ({
     quality: 10 
   });
 
-  const shadowColor = (imageLoaded && color) 
-    ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.9)` 
-    : 'rgba(0, 123, 255, 0.4)';
+  // Update shadow color immediately when color is extracted
+  useEffect(() => {
+    if (imageLoaded && color && Array.isArray(color) && color.length >= 3) {
+      const newShadowColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.9)`;
+      setShadowColor(newShadowColor);
+      
+      // Update CSS variable immediately
+      if (cardRef.current) {
+        cardRef.current.style.setProperty('--dynamic-shadow-color', newShadowColor);
+      }
+    }
+  }, [imageLoaded, color]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
 
-  // ✅ COMPLETELY SEPARATE MOBILE LOGIC
   const handleCardClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -129,23 +138,32 @@ const DynamicShadowBlogCard = ({
       const newActiveId = post.id === activeCardId ? null : post.id;
       setActiveCardId(newActiveId);
       console.log('✅ State updated to:', newActiveId);
+      
+      // Force shadow color update on mobile click
+      if (cardRef.current && newActiveId === post.id) {
+        cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
+      }
     } else {
       onClick();
     }
   };
-  
 
-  // ✅ READ BUTTON: Always navigates (mobile + desktop)
   const handleReadButtonClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    onClick(); // Always navigate, don't toggle animation
+    onClick();
   };
 
-  // ✅ SEPARATE STATES: Desktop uses hover, Mobile uses activeCardId
   const isHovered = !isMobile && hoveredPostId === post.id;
   const isMobileActive = isMobile && activeCardId === post.id;
   const isActive = isHovered || isMobileActive;
+
+  // Apply shadow color immediately when component mounts or updates
+  useEffect(() => {
+    if (cardRef.current) {
+      cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
+    }
+  }, [shadowColor, isMobileActive]);
 
   return (
     <article
@@ -158,7 +176,7 @@ const DynamicShadowBlogCard = ({
       tabIndex={0}
       style={{ 
         cursor: 'pointer',
-        '--dynamic-shadow-color': shadowColor
+        '--dynamic-shadow-color': shadowColor // Ensure it's always set
       }}
       onKeyDown={onKeyDown}
       aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
@@ -254,7 +272,6 @@ const DynamicShadowBlogCard = ({
                 </svg>
               </button>
 
-              {/* ✅ READ BUTTON: Always navigates */}
               <button 
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
@@ -268,6 +285,7 @@ const DynamicShadowBlogCard = ({
     </article>
   );
 };
+
 
 
 const HistoryPage = () => {

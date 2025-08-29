@@ -394,12 +394,18 @@
   padding: 20px 24px; /* ✅ INCREASED: More padding */
   margin-bottom: 24px; /* ✅ INCREASED: More space between comments */
   border: 1px solid #d0d0d0; /* ✅ UPDATED: Lighter border */
+  
   border-radius: 8px; /* ✅ INCREASED: More rounded corners */
   margin-left: 0%; /* ✅ CHANGED: Removed left margin */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* ✅ NEW: Subtle shadow */
   transition: box-shadow 0.3s ease; /* ✅ NEW: Smooth hover effect */
 }
 
+.commentBox:active {
+  border-color: #4a90e2; /* Blue border when pressed */
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); /* Enhanced shadow */
+  transform: scale(0.98); /* Slight shrink effect */
+}
 .commentBox:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* ✅ NEW: Enhanced shadow on hover */
 }

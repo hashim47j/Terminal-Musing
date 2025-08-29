@@ -123,23 +123,37 @@
 }
 
 /* ✅ UPDATED: Ensure shadows work on mobile */
+
+/* Touch devices */
 @media (hover: none) and (pointer: coarse) {
   .blogCard:hover {
     transform: none !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+    box-shadow: none !important;
   }
   
   .blogCard:active {
-    transform: none !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+    transform: translateY(-4px);
+    box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color);
   }
   
-  .blogCard.mobileExpanded {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color) !important;
-    -webkit-box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color) !important;
+  .blogCard:active .coverImage.expanded {
+    width: 100% !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    filter: blur(4px);
+    transform: scale(1.05);
+  }
+  
+  .blogCard:active .hiddenContent {
+    opacity: 0;
+    transform: translateX(20px);
   }
 }
+
 
 .cardBottomFixed {
   position: absolute;

@@ -542,9 +542,10 @@
 @media (max-width: 768px) {
   .blogCard.mobileExpanded {
     transform: translateY(-4px) !important;
-    box-shadow: 0 22px 27px -8px rgba(0, 123, 255, 0.4) !important;
-    -webkit-box-shadow: 0 22px 27px -8px rgba(0, 123, 255, 0.4) !important;
+    box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0, 0, 0, 0.3)) !important;
+    -webkit-box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0, 0, 0, 0.3)) !important;
   }
+}
 
 
 

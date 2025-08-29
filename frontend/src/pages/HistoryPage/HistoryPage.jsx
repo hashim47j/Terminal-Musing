@@ -1,19 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useColorThief from 'use-color-thief';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
 import historyBackground from '../../assets/history-background.png';
 import Footer from '../../components/Footer/Footer';
+
 
 const DynamicBackgroundShadow = () => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+
   useEffect(() => {
     const extractColorFromImage = () => {
       if (!imgRef.current || !headerRef.current || !imageLoaded) return;
+
 
       const img = imgRef.current;
       const canvas = document.createElement('canvas');
@@ -40,6 +42,7 @@ const DynamicBackgroundShadow = () => {
         g = Math.floor(g / count);
         b = Math.floor(b / count);
 
+
         const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
         headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
       } catch (err) {
@@ -47,14 +50,17 @@ const DynamicBackgroundShadow = () => {
       }
     };
 
+
     if (imageLoaded) {
       extractColorFromImage();
     }
   }, [imageLoaded]);
 
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
+
 
   return (
     <>
@@ -78,8 +84,8 @@ const DynamicBackgroundShadow = () => {
   );
 };
 
-// ✅ UPDATED: Enhanced card component with exclusive mobile selection
-const DynamicShadowBlogCard = ({ 
+
+const BlogCard = ({ 
   post, 
   hoveredPostId, 
   onMouseEnter, 
@@ -91,11 +97,7 @@ const DynamicShadowBlogCard = ({
   activeCardId,
   setActiveCardId
 }) => {
-  const imgRef = useRef(null);
-  const cardRef = useRef(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [extractedColor, setExtractedColor] = useState(null);
   
   useEffect(() => {
     const checkMobile = () => {
@@ -106,40 +108,15 @@ const DynamicShadowBlogCard = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const { color } = useColorThief(imgRef, { 
-    format: 'rgb', 
-    quality: 10 
-  });
-
-  // Store extracted color immediately
-  useEffect(() => {
-    if (imageLoaded && color && Array.isArray(color) && color.length >= 3) {
-      setExtractedColor(color);
-    }
-  }, [imageLoaded, color]);
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
 
   const handleCardClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Prevent rapid double clicks
-    if (e.detail > 1) return;
-    
     console.log('🔍 Card clicked:', post.id);
     
     if (isMobile) {
       const newActiveId = post.id === activeCardId ? null : post.id;
-      
-      // Apply shadow color BEFORE state update for immediate effect
-      if (cardRef.current && extractedColor) {
-        const shadowColor = `rgba(${extractedColor[0]}, ${extractedColor[1]}, ${extractedColor[2]}, 0.9)`;
-        cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
-      }
-      
       setActiveCardId(newActiveId);
       console.log('✅ State updated to:', newActiveId);
     } else {
@@ -147,49 +124,38 @@ const DynamicShadowBlogCard = ({
     }
   };
 
+
   const handleReadButtonClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
     onClick();
   };
 
+
   const isHovered = !isMobile && hoveredPostId === post.id;
   const isMobileActive = isMobile && activeCardId === post.id;
   const isActive = isHovered || isMobileActive;
 
-  // Calculate shadow color with fallback
-  const shadowColor = extractedColor && imageLoaded
-    ? `rgba(${extractedColor[0]}, ${extractedColor[1]}, ${extractedColor[2]}, 0.9)`
-    : 'rgba(0, 123, 255, 0.4)';
 
   return (
     <article
-      ref={cardRef}
       className={`${styles.blogCard} ${isMobileActive ? styles.mobileExpanded : ''}`}
       onClick={handleCardClick}
       onMouseEnter={!isMobile ? onMouseEnter : undefined}
       onMouseLeave={!isMobile ? onMouseLeave : undefined}
       role="button"
       tabIndex={0}
-      style={{ 
-        cursor: 'pointer',
-        '--dynamic-shadow-color': shadowColor
-      }}
+      style={{ cursor: 'pointer' }}
       onKeyDown={onKeyDown}
       aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
     >
-      {/* Rest of your JSX remains the same */}
       {post.coverImage ? (
         <img 
-          ref={imgRef}
           src={post.coverImage} 
           alt={`Cover for ${post.title}`} 
           className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
-          crossOrigin="anonymous"
           loading="lazy"
-          onLoad={handleImageLoad}
           onError={(e) => {
-            setImageLoaded(false);
             e.target.style.display = 'none';
           }}
         />
@@ -200,7 +166,7 @@ const DynamicShadowBlogCard = ({
         </div>
       )}
 
-      {/* Rest of your component JSX stays exactly the same */}
+
       <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
         <h3 className={styles.blogTitle}>{post.title}</h3>
         
@@ -224,6 +190,7 @@ const DynamicShadowBlogCard = ({
         </div>
       </div>
 
+
       {isActive && (
         <div className={styles.hoverOverlay}>
           <div className={styles.subheadingContainer}>
@@ -231,6 +198,7 @@ const DynamicShadowBlogCard = ({
               {post.subheading || post.title}
             </p>
           </div>
+
 
           <div className={styles.bottomFixed}>
             <div className={styles.leftContent}>
@@ -248,6 +216,7 @@ const DynamicShadowBlogCard = ({
                 </span>
               </div>
             </div>
+
 
             <div className={styles.rightContent}>
               <button 
@@ -271,6 +240,7 @@ const DynamicShadowBlogCard = ({
                 </svg>
               </button>
 
+
               <button 
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
@@ -286,7 +256,6 @@ const DynamicShadowBlogCard = ({
 };
 
 
-
 const HistoryPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();
@@ -295,21 +264,20 @@ const HistoryPage = () => {
   const [error, setError] = useState('');
   const [hoveredPostId, setHoveredPostId] = useState(null);
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
+  const [activeCardId, setActiveCardId] = useState(null);
 
-  const [activeCardId, setActiveCardId] = useState(null); // ✅ NEW: Track active card on mobile
 
-    // ✅ ADD: Outside click detection
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (containerRef.current && !containerRef.current.contains(event.target)) {
-          setActiveCardId(null);
-        }
-      };
-  
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setActiveCardId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
 
   const getWordCount = (content) => {
     if (!content || !Array.isArray(content)) return 0;
@@ -321,6 +289,7 @@ const HistoryPage = () => {
     
     return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
+
 
   useEffect(() => {
     const fetchCurrentAuthor = async () => {
@@ -364,6 +333,7 @@ const HistoryPage = () => {
     fetchCurrentAuthor();
   }, []);
 
+
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
@@ -405,9 +375,11 @@ const HistoryPage = () => {
     fetchPosts();
   }, []);
 
+
   const handlePostClick = (post) => {
     navigate(`/blog/history/${post.id}`);
   };
+
 
   const handleKeyDown = (e, post) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -415,6 +387,7 @@ const HistoryPage = () => {
       handlePostClick(post);
     }
   };
+
 
   return (
     <div className={styles.historyPageContainer}>
@@ -428,9 +401,7 @@ const HistoryPage = () => {
       <section className={styles.postsSection}>
         <h2 className={styles.postsHeading}>History Posts</h2>
 
-        <div ref={containerRef} className={styles.blogGridContainer}></div>
-        
-        <div className={styles.blogGridContainer}>
+        <div ref={containerRef} className={styles.blogGridContainer}>
           <div className={styles.blogGrid}>
             {loading ? (
               <div className={styles.loadingState}>
@@ -455,7 +426,7 @@ const HistoryPage = () => {
               </div>
             ) : (
               posts.map((post) => (
-                <DynamicShadowBlogCard
+                <BlogCard
                   key={post.id}
                   post={post}
                   hoveredPostId={hoveredPostId}
@@ -465,8 +436,8 @@ const HistoryPage = () => {
                   onKeyDown={(e) => handleKeyDown(e, post)}
                   currentAuthor={currentAuthor}
                   getWordCount={getWordCount}
-                  activeCardId={activeCardId}           // ✅ NEW: Pass active card state
-                  setActiveCardId={setActiveCardId}     // ✅ NEW: Pass setter function
+                  activeCardId={activeCardId}
+                  setActiveCardId={setActiveCardId}
                 />
               ))
             )}

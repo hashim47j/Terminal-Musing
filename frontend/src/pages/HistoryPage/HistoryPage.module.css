@@ -18,7 +18,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50; /* ✅ CHANGED: Much higher z-index */
+  z-index: 50;
   height: 260px;
   --header-shadow-color: rgba(82, 73, 68, 0);
 }
@@ -29,15 +29,11 @@
   bottom: 5px;
   left: 0%;
   right: 0%;
-  
   background: transparent;
   box-shadow: 0 0 40px 15px var(--header-shadow-color);
   z-index: 1;
   pointer-events: none;
 }
-
-
-
 
 .heroImage {
   position: relative;
@@ -49,10 +45,6 @@
   margin: 0 auto;
   z-index: 2;
 }
-
-/* Fixed Posts Heading - moved to be under posts section */
-
-
 
 .postsSection {
   background-color: #ecebeb;
@@ -99,14 +91,13 @@
 
 .blogGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);  /* 3 columns always on desktop */
-  grid-auto-rows: 180px;                  /* Set row height for uniformly sized cards */
-  gap: 48px 32px;                         /* adjust gap as needed */
-  max-width: 1100px;                      /* adapt to your layout */
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 180px;
+  gap: 48px 32px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 24px 0 40px 0;
 }
-
 
 .blogCard {
   --dynamic-shadow-color: rgba(0, 123, 255, 0.4);
@@ -129,7 +120,12 @@
   box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color);
 }
 
-/* ✅ NEW: Fixed bottom content for non-hover cards */
+/* ✅ NEW: Mobile expanded state */
+.blogCard.mobileExpanded {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color);
+}
+
 .cardBottomFixed {
   position: absolute;
   bottom: 12px;
@@ -165,10 +161,9 @@
 .cardWordCount {
   color: #999;
   white-space: nowrap;
-  margin-left: auto; /* Push to the right */
+  margin-left: auto;
 }
 
-/* ✅ ENHANCED: Cover Image with expand animation */
 .coverImage {
   width: 38%;
   height: 100%;
@@ -179,7 +174,6 @@
   transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
-/* ✅ Expanded state - covers full card without darkening */
 .expanded {
   width: 100% !important;
   position: absolute;
@@ -192,7 +186,6 @@
   transform: scale(1.05);
 }
 
-/* ✅ Hide content when hovering */
 .hiddenContent {
   opacity: 0;
   transform: translateX(20px);
@@ -210,7 +203,6 @@
   position: relative;
 }
 
-/* ✅ NEW: Clean hover overlay - no backgrounds */
 .hoverOverlay {
   position: absolute;
   top: 0;
@@ -226,7 +218,6 @@
   animation: fadeInOverlay 0.4s ease 0.2s both;
 }
 
-/* ✅ NEW: Subheading container - centered */
 .subheadingContainer {
   flex: 1;
   display: flex;
@@ -241,15 +232,14 @@
   font-size: 1.1rem;
   line-height: 1.4;
   color: #fff;
-  font-weight: 400; /* ✅ CHANGED: from 500 to 400 for normal weight */
-  font-family: 'Arial', sans-serif; /* ✅ ADDED: normal font family */
+  font-weight: 400;
+  font-family: 'Arial', sans-serif;
   animation: slideUpContent 0.5s ease 0.3s both;
 }
 
-/* ✅ NEW: Fixed bottom elements - rigid positioning */
 .bottomFixed {
   position: absolute;
-  bottom: 5px; /* ✅ CHANGED: from 10px to 5px */
+  bottom: 5px;
   left: 20px;
   right: 20px;
   display: flex;
@@ -264,7 +254,6 @@
   align-items: baseline;
 }
 
-/* ✅ NEW: Author name - far left */
 .authorName {
   font-size: 0.9rem;
   font-weight: 400;
@@ -278,10 +267,8 @@
   font-family: 'Arial', sans-serif;
   color: #fff;
   white-space: nowrap;
-  /* ✅ REMOVED: margin-left: auto; margin-right: 12px; */
 }
 
-/* ✅ NEW: Share icon - right of center */
 .shareIcon {
   background: none;
   border: none;
@@ -303,15 +290,14 @@
 }
 
 .shareIcon svg {
-filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
+  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
 }
 
-/* ✅ NEW: Read button - far right */
 .readBtn {
-  background: rgba(255, 255, 255, 0.2); /* ✅ CHANGED: Semi-transparent background */
-  backdrop-filter: blur(10px); /* ✅ ADDED: Blur effect */
-  -webkit-backdrop-filter: blur(10px); /* ✅ ADDED: Safari support */
-  border: 1px solid rgba(255, 255, 255, 0.3); /* ✅ ADDED: Subtle border */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
   padding: 8px 10px;
   border-radius: 4px;
@@ -319,26 +305,22 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* ✅ CHANGED: Subtle shadow */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .readBtn:hover {
-  background: rgba(255, 255, 255, 0.3); /* ✅ CHANGED: More opacity on hover */
-  backdrop-filter: blur(15px); /* ✅ ADDED: More blur on hover */
-  -webkit-backdrop-filter: blur(15px); /* ✅ ADDED: Safari support */
-  border-color: rgba(255, 255, 255, 0.4); /* ✅ ADDED: Brighter border on hover */
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* ✅ CHANGED: Enhanced shadow */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* ✅ Animation keyframes */
+/* Animation keyframes */
 @keyframes fadeInOverlay {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideUpContent {
@@ -363,7 +345,6 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   }
 }
 
-/* ✅ Loading, Error, and Empty states */
 .loadingState, .errorState, .emptyState {
   grid-column: 1 / -1;
   text-align: center;
@@ -402,28 +383,14 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   background-color: #0056b3;
 }
 
-.blogContent {
-  width: 62%;
-  padding: 18px 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 1;
-}
-
-
-
 .blogTitle {
   font-size: 1.4em;
   font-weight: 600;
   margin-bottom: 8px;
   color: #111;
   line-height: 1.3;
-  flex-grow: 1; /* ✅ Take available space */
+  flex-grow: 1;
 }
-
-
 
 .blogTime {
   font-size: 0.85em;
@@ -434,45 +401,27 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   margin-top: auto;
 }
 
-/* ✅ NEW: Animated horizontal line */
-/* ✅ FIXED: Make separator line visible */
 .separatorLine {
   position: relative;
   height: 1px;
-  background: rgba(255, 255, 255, 0.8); /* ✅ CHANGED: Higher opacity */
+  background: rgba(255, 255, 255, 0.8);
   width: 80%;
   margin-bottom: 2px;
   animation: expandLineToDate 0.6s ease 0.4s forwards;
 }
 
 @keyframes expandLineToDate {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 80%;
-  }
-}
-
-.bottomFixed {
-  position: absolute;
-  bottom: 5px;
-  left: 20px;
-  right: 20px;
-  display: flex;
-  align-items: flex-end; /* ✅ CHANGED: Align to bottom for different heights */
-  justify-content: space-between;
-  animation: slideUpBottom 0.4s ease 0.5s both;
+  from { width: 0%; }
+  to { width: 80%; }
 }
 
 .leftContent {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding-bottom: 8px; /* ✅ NEW: Push author and date further down */
+  padding-bottom: 8px;
 }
 
-/* ✅ NEW: Right side content (share, read) stays at original position */
 .rightContent {
   display: flex;
   align-items: center;
@@ -480,14 +429,12 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   gap: 0px;
 }
 
-/* Gray Strip at Bottom */
 .grayStrip {
   background-color: #929292;
   height: 5vh;
   width: 100%;
 }
 
-/* Animated Footer */
 .footerContainer {
   position: fixed;
   bottom: 0;
@@ -502,8 +449,7 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   transform: translateY(0);
 }
 
-/* Responsive */
-/* Tablet */
+/* ✅ UPDATED: Mobile responsive with hero content at bottom center */
 @media (max-width: 768px) {
   .blogGridContainer {
     padding: 20px 25px 35px 25px;
@@ -536,9 +482,53 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   .postsHeading {
     font-size: 2em;
   }
+
+  /* ✅ NEW: Hero content positioned at bottom center */
+  .heroContent {
+    position: absolute !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: auto !important;
+    width: 90% !important;
+    max-width: 600px !important;
+    text-align: center !important;
+    padding: 15px 20px !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+  }
+
+  .heroContent .title {
+    font-size: 2.0em !important;
+    margin-bottom: 0.1em !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .heroContent .subheadingText {
+    font-size: 1.2em !important;
+    margin-bottom: 10px !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .heroContent .date {
+    font-size: 0.9em !important;
+    margin-bottom: 0 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .heroContent .categoryBadge {
+    background: rgba(255, 255, 255, 0.2) !important;
+    padding: 4px 12px !important;
+    border-radius: 20px !important;
+    font-size: 0.8em !important;
+    margin-bottom: 10px !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+  }
 }
 
-/* Mobile */
 @media (max-width: 480px) {
   .headerSection {
     padding: 36px 8px 48px;
@@ -552,19 +542,15 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
     left: var(--hero-x, 8px);
     top: var(--hero-y, 15px);
   }
-
- 
   
   .postsSection {
-    /* ✅ FIXED: Increase width and reduce horizontal margins */
-    margin: 190px 5vw 100px 5vw; /* Changed from 10vw to 5vw for wider section */
-    width: 90vw; /* Changed from 80vw to 90vw for more width */
-    padding-bottom: 50px;
+    margin: 190px 5vw 80px 5vw;
+    width: 90vw;
   }
+  
   .blogGridContainer {
-    /* ✅ FIXED: This should be the scrollable part, not including the heading */
-    height: 50vh; /* Fixed height for scrolling */
-    overflow-y: auto; /* Enable scrolling */
+    height: 50vh;
+    overflow-y: auto;
     padding: 0 20px 40px 20px; 
     scrollbar-width: thin;
     scrollbar-color: #999 transparent;
@@ -572,7 +558,7 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
 
   .blogGrid {
     gap: 25px 0px;
-    padding: 0; /* No top padding needed */
+    padding: 0;
   }
   
   .blogTitle {
@@ -587,20 +573,11 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
     margin: 0;
     padding: 10px 0 20px 0;
     font-family: 'Playfair Display', serif;
-    /* ✅ FIXED: Make it truly fixed at the top of posts section */
-    position: static; /* Reset to normal flow, not sticky */
+    position: static;
     background-color: #ecebeb;
     z-index: 5;
   }
 
-  .blogTitle {
-    font-size: 1.09em;
-  }
-
-  .blogSubheading {
-    font-size: 0.86em;
-    margin-bottom: 10px;
-  }
   .blogCard {
     min-height: 180px;
     border-radius: 5px;
@@ -609,41 +586,59 @@ filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
   .blogContent {
     padding: 14px 11px;
   }
+
+  /* ✅ UPDATED: Smaller mobile hero content */
+  .heroContent {
+    bottom: 15px !important;
+    width: 95% !important;
+    padding: 12px 16px !important;
+  }
+
+  .heroContent .title {
+    font-size: 1.6em !important;
+  }
+
+  .heroContent .subheadingText {
+    font-size: 1.0em !important;
+  }
+
+  .heroContent .date {
+    font-size: 0.8em !important;
+  }
+
+  /* ✅ UPDATED: Read button emphasis on mobile */
+  .readBtn {
+    font-size: 1.0rem !important;
+    padding: 10px 16px !important;
+    font-weight: 700 !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #333 !important;
+    border: 2px solid rgba(255, 255, 255, 1) !important;
+  }
+  
+  .readBtn:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    transform: scale(1.05) !important;
+  }
 }
-/* ✅ NEW: Enable card animations on touch devices */
+
+/* ✅ Touch device interactions */
 @media (hover: none) and (pointer: coarse) {
-  /* Disable default hover on touch devices */
   .blogCard:hover {
     transform: none !important;
     box-shadow: none !important;
   }
   
-  /* Enable animation on touch/tap */
   .blogCard:active {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color);
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
   }
   
-  /* Keep expanded image effect on touch */
-  .blogCard:active .coverImage.expanded {
-    width: 100% !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    filter: blur(4px);
-    transform: scale(1.05);
-  }
-  
-  .blogCard:active .hiddenContent {
-    opacity: 0;
-    transform: translateX(20px);
+  .blogCard.mobileExpanded {
+    transition: all 0.3s ease;
   }
 }
 
-/* ✅ Keep hover for desktop devices */
 @media (hover: hover) and (pointer: fine) {
   .blogCard:hover {
     transform: translateY(-4px);

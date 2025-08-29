@@ -651,7 +651,6 @@
       margin-right: 5%;
       padding-top: 30px;
     }
-    
     .commentSectionHeader h3 {
       font-size: 1.8em; /* ✅ Smaller on mobile */
     }
@@ -700,8 +699,8 @@
   
     /* ✅ UPDATED: Small mobile adjustments */
     .commentSection {
-      margin-left: 0.5%;
-      margin-right: 0.5%;
+      margin-left: 5%;
+      margin-right: 5%;
     }
     
     .commentSectionHeader h3 {

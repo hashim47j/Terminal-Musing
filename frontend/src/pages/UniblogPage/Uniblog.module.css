@@ -657,7 +657,7 @@
     }
     
     .commentBox {
-      padding: 16px 18px; /* ✅ UPDATED: Better mobile padding */
+      padding: 20px; /* ✅ UPDATED: Better mobile padding */
       margin-bottom: 20px;
     }
     .commentBox strong {
@@ -709,7 +709,7 @@
     }
     
     .commentBox {
-      padding: 14px 14px; /* ✅ UPDATED: Small mobile padding */
+      padding: 14px 16px; /* ✅ UPDATED: Small mobile padding */
     }
     .commentBox strong, .commentMeta, .commentBox p, .replyBtn {
       font-size: 0.75rem;

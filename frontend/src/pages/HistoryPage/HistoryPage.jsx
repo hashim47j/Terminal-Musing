@@ -123,31 +123,63 @@ const DynamicShadowBlogCard = ({
     e.preventDefault();
     e.stopPropagation();
     
+    console.log('🔍 Card clicked:', post.id, 'Current activeCardId:', activeCardId);
+    console.log('🔍 Is mobile:', isMobile);
+    console.log('🔍 Shadow color:', shadowColor);
+    console.log('🔍 Image loaded:', imageLoaded);
+    
     if (isMobile) {
       const newActiveId = post.id === activeCardId ? null : post.id;
+      console.log('🔍 New activeCardId will be:', newActiveId);
       
-      // ✅ FORCE IMMEDIATE VISUAL UPDATE - before React state update
       if (cardRef.current) {
+        console.log('✅ cardRef exists');
+        
         if (newActiveId === post.id) {
-          // Show animation + shadow immediately
+          console.log('🎯 EXPANDING CARD - Setting shadow and animation');
+          
+          // Set CSS custom property
           cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
+          console.log('✅ CSS variable set to:', shadowColor);
+          
+          // Set transform
           cardRef.current.style.transform = 'translateY(-4px)';
-          cardRef.current.style.boxShadow = `0 22px 27px -8px ${shadowColor}`;
-          cardRef.current.style.webkitBoxShadow = `0 22px 27px -8px ${shadowColor}`;
+          console.log('✅ Transform applied');
+          
+          // Set box-shadow directly
+          const shadowValue = `0 22px 27px -8px ${shadowColor}`;
+          cardRef.current.style.boxShadow = shadowValue;
+          cardRef.current.style.webkitBoxShadow = shadowValue;
+          console.log('✅ Box shadow set to:', shadowValue);
+          
+          // Check if styles were actually applied
+          console.log('🔍 Computed styles after setting:');
+          const computedStyles = window.getComputedStyle(cardRef.current);
+          console.log('  - Transform:', computedStyles.transform);
+          console.log('  - Box Shadow:', computedStyles.boxShadow);
+          console.log('  - CSS Variable:', computedStyles.getPropertyValue('--dynamic-shadow-color'));
+          
         } else {
-          // Hide animation + shadow immediately
+          console.log('🎯 COLLAPSING CARD - Removing shadow and animation');
           cardRef.current.style.transform = 'none';
           cardRef.current.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
           cardRef.current.style.webkitBoxShadow = '0 5px 15px rgba(0,0,0,0.05)';
+          console.log('✅ Styles reset');
         }
+      } else {
+        console.log('❌ cardRef is null!');
       }
       
-      // Update React state after visual change
+      // Update React state
       setActiveCardId(newActiveId);
+      console.log('✅ State updated to:', newActiveId);
+      
     } else {
+      console.log('🖥️ Desktop mode - navigating');
       onClick();
     }
   };
+  
 
   // ✅ READ BUTTON: Always navigates (mobile + desktop)
   const handleReadButtonClick = (e) => {

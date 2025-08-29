@@ -636,15 +636,12 @@
       max-width: 600px !important;
       text-align: center !important;
       padding: 15px 20px !important;
-      border-radius: 8px !important;
-      backdrop-filter: blur(5px) !important;
-      -webkit-backdrop-filter: blur(5px) !important;
       z-index: 6 !important;
     }
 
     .heroContent .title {
       font-size: 2.0em !important;
-      margin-bottom: 0.1em !important;
+      margin-bottom: 0.5em !important;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7) !important;
       color: white !important;
     }

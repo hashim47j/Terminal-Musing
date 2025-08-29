@@ -125,34 +125,14 @@
 /* ✅ UPDATED: Ensure shadows work on mobile */
 
 /* Touch devices */
+/* ✅ FIXED: Only disable hover, let React handle everything else */
 @media (hover: none) and (pointer: coarse) {
   .blogCard:hover {
     transform: none !important;
     box-shadow: none !important;
   }
-  
-  .blogCard:active {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color);
-  }
-  
-  .blogCard:active .coverImage.expanded {
-    width: 100% !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    filter: blur(4px);
-    transform: scale(1.05);
-  }
-  
-  .blogCard:active .hiddenContent {
-    opacity: 0;
-    transform: translateX(20px);
-  }
 }
+
 
 
 .cardBottomFixed {

@@ -402,8 +402,8 @@
 }
 
 .commentBox:active {
-  border-color: #4a90e2; /* Blue border when pressed */
-  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); /* Enhanced shadow */
+  border-color: #464646; /* Blue border when pressed */
+  
   transform: scale(0.98); /* Slight shrink effect */
 }
 .commentBox:hover {

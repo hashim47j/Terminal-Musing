@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import useColorThief from 'use-color-thief';
 import styles from './HistoryPage.module.css';
 import historyLight from '../../assets/history-hero.png';
-import historyBackground from '../../assets/history-background.png'; // ✅ NEW: Import background image
+import historyBackground from '../../assets/history-background.png';
 import Footer from '../../components/Footer/Footer';
 
-// ✅ NEW: Component to extract color from background image and apply dynamic shadow
-// ✅ Working Dynamic Background Shadow Component
+// Dynamic Background Shadow Component
 const DynamicBackgroundShadow = () => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
@@ -31,7 +30,6 @@ const DynamicBackgroundShadow = () => {
         
         let r = 0, g = 0, b = 0, count = 0;
         
-        // Sample every 10th pixel for better performance
         for (let i = 0; i < data.length; i += 4 * 10) {
           r += data[i];
           g += data[i + 1];
@@ -52,11 +50,10 @@ const DynamicBackgroundShadow = () => {
       }
     };
 
-    // ✅ Only extract color after image is loaded
     if (imageLoaded) {
       extractColorFromImage();
     }
-  }, [imageLoaded]); // ✅ Depend on imageLoaded state
+  }, [imageLoaded]);
 
   const handleImageLoad = () => {
     console.log('✅ Background image fully loaded');
@@ -65,20 +62,18 @@ const DynamicBackgroundShadow = () => {
 
   return (
     <>
-      {/* Hidden image for color extraction with onLoad event */}
       <img
         ref={imgRef}
         src={historyBackground}
         alt="Background for color extraction"
         crossOrigin="anonymous"
         style={{ display: 'none' }}
-        onLoad={handleImageLoad} // ✅ Wait for image to load
+        onLoad={handleImageLoad}
         onError={() => {
           console.warn('⚠️ Background image failed to load');
           setImageLoaded(false);
         }}
       />
-      {/* Header section with dynamic shadow */}
       <section ref={headerRef} className={styles.headerSection}>
         <img
           src={historyLight}
@@ -90,26 +85,61 @@ const DynamicBackgroundShadow = () => {
   );
 };
 
-
-// ✅ Dynamic Shadow Blog Card Component
-const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, children }) => {
+// ✅ Updated Dynamic Shadow Blog Card Component with Mobile Two-Step Interaction
+const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, currentAuthor, getWordCount }) => {
   const imgRef = useRef(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // ✅ NEW: Track expanded state on mobile
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { color } = useColorThief(imgRef, { 
     format: 'rgb', 
     quality: 10 
   });
 
-  // Convert RGB array to rgba string for CSS
-  const shadowColor = color 
+  const shadowColor = (imageLoaded && color) 
     ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.9)` 
-    : 'rgba(0, 123, 255, 0.4)'; // fallback
+    : 'rgba(0, 123, 255, 0.4)';
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  // ✅ NEW: Handle mobile card click differently
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    
+    if (isMobile) {
+      // On mobile: just expand the card, don't navigate
+      setIsExpanded(!isExpanded);
+    } else {
+      // On desktop: navigate immediately (existing behavior)
+      onClick();
+    }
+  };
+
+  // ✅ NEW: Handle read button click for navigation
+  const handleReadButtonClick = (e) => {
+    e.stopPropagation(); // Prevent card click
+    onClick(); // Navigate to blog post
+  };
 
   return (
     <article
-      className={styles.blogCard}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      className={`${styles.blogCard} ${isExpanded ? styles.mobileExpanded : ''}`}
+      onClick={handleCardClick}
+      onMouseEnter={!isMobile ? onMouseEnter : undefined} // Only on desktop
+      onMouseLeave={!isMobile ? onMouseLeave : undefined} // Only on desktop
       role="button"
       tabIndex={0}
       style={{ 
@@ -117,28 +147,124 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
         '--dynamic-shadow-color': shadowColor
       }}
       onKeyDown={onKeyDown}
-      aria-label={`Read article: ${post.title}`}
+      aria-label={`${isExpanded ? 'Expanded' : 'Read'} article: ${post.title}`}
     >
-      {/* Cover Image with expand animation */}
+      {/* Cover Image */}
       {post.coverImage ? (
         <img 
           ref={imgRef}
           src={post.coverImage} 
           alt={`Cover for ${post.title}`} 
-          className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`}
+          className={`${styles.coverImage} ${
+            (hoveredPostId === post.id && !isMobile) || (isMobile && isExpanded) 
+              ? styles.expanded 
+              : ''
+          }`}
           crossOrigin="anonymous"
           loading="lazy"
+          onLoad={handleImageLoad}
           onError={(e) => {
+            setImageLoaded(false);
             e.target.style.display = 'none';
-            e.target.nextElementSibling.style.display = 'block';
           }}
         />
       ) : (
-        <div className={`${styles.coverImage} ${hoveredPostId === post.id ? styles.expanded : ''}`} style={{ backgroundColor: '#ccc' }}>
+        <div className={`${styles.coverImage} ${
+          (hoveredPostId === post.id && !isMobile) || (isMobile && isExpanded) 
+            ? styles.expanded 
+            : ''
+        }`} style={{ backgroundColor: '#ccc' }}>
           <span className={styles.noImageText}>No Image</span>
         </div>
       )}
-      {children}
+
+      {/* Regular Content */}
+      <div className={`${styles.blogContent} ${
+        ((hoveredPostId === post.id && !isMobile) || (isMobile && isExpanded)) 
+          ? styles.hiddenContent 
+          : ''
+      }`}>
+        <h3 className={styles.blogTitle}>{post.title}</h3>
+        
+        <div className={styles.cardBottomFixed}>
+          <div className={styles.cardSeparatorLine}></div>
+          <div className={styles.cardMetaRow}>
+            <span className={styles.cardAuthor}>
+              by {post.author || currentAuthor}
+            </span>
+            <span className={styles.cardDate}>
+              {new Date(post.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
+            <span className={styles.cardWordCount}>
+              {getWordCount(post.content)} words
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Hover/Expanded Overlay */}
+      {((!isMobile && hoveredPostId === post.id) || (isMobile && isExpanded)) && (
+        <div className={styles.hoverOverlay}>
+          <div className={styles.subheadingContainer}>
+            <p className={styles.hoverSubheading}>
+              {post.subheading || post.title}
+            </p>
+          </div>
+
+          <div className={styles.bottomFixed}>
+            <div className={styles.leftContent}>
+              <div className={styles.separatorLine}></div>
+              <div className={styles.authorDateContainer}>
+                <span className={styles.authorName}>
+                  {post.author || currentAuthor}
+                </span>
+                <span className={styles.postDate}>
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.rightContent}>
+              <button 
+                className={styles.shareIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (navigator.share) {
+                    navigator.share({
+                      title: post.title,
+                      text: post.subheading,
+                      url: `/blog/history/${post.id}`
+                    });
+                  } else {
+                    navigator.clipboard.writeText(`${window.location.origin}/blog/history/${post.id}`);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                </svg>
+              </button>
+
+              {/* ✅ UPDATED: Read button now handles navigation */}
+              <button 
+                className={styles.readBtn}
+                onClick={handleReadButtonClick}
+              >
+                Read
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </article>
   );
 };
@@ -151,10 +277,8 @@ const HistoryPage = () => {
   const [showFooter, setShowFooter] = useState(false);
   const [hoveredPostId, setHoveredPostId] = useState(null);
   
-  // ✅ State for current logged-in author/admin
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
 
-  // ✅ Function to count words in content
   const getWordCount = (content) => {
     if (!content || !Array.isArray(content)) return 0;
     
@@ -166,7 +290,6 @@ const HistoryPage = () => {
     return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
 
-  // ✅ Fetch current logged-in user/author info
   useEffect(() => {
     const fetchCurrentAuthor = async () => {
       try {
@@ -282,21 +405,6 @@ const HistoryPage = () => {
     }
   };
 
-  const getExcerpt = (post) => {
-    if (!post.content || !Array.isArray(post.content)) return "";
-    
-    const textBlocks = post.content
-      .filter(block => block.type === 'paragraph' && block.text)
-      .slice(0, 2)
-      .map(block => block.text.trim())
-      .join(' ');
-    
-    if (textBlocks && textBlocks.length > 150) {
-      return textBlocks.substring(0, 150) + '...';
-    }
-    return textBlocks || post.subheading || "";
-  };
-
   return (
     <div className={styles.historyPageContainer}>
       <div
@@ -304,36 +412,28 @@ const HistoryPage = () => {
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
-      {/* ✅ UPDATED: Fixed Hero Section with dynamic background shadow */}
       <DynamicBackgroundShadow />
 
-      {/* Fixed Posts Heading */}
-      <div className={styles.postsHeadingSection}>
-        <h2 className={styles.postsHeading}>History Posts</h2>
-      </div>
-
-      {/* Scrollable Posts Section */}
       <section className={styles.postsSection}>
-  {/* Heading at the top of posts section */}
-  <h2 className={styles.postsHeading}>History Posts</h2>
-  
-  <div className={styles.blogGridContainer}>
-    <div className={styles.blogGrid}>
-      {loading ? (
-        <div className={styles.loadingState}>
-          <div className={styles.spinner}></div>
-          <p>Loading history posts...</p>
-        </div>
-      ) : error ? (
-        <div className={styles.errorState}>
-          <h3>Oops! Something went wrong</h3>
-          <p style={{ color: 'red' }}>{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className={styles.retryBtn}
-          >
-            Try Again
-          </button>
+        <h2 className={styles.postsHeading}>History Posts</h2>
+        
+        <div className={styles.blogGridContainer}>
+          <div className={styles.blogGrid}>
+            {loading ? (
+              <div className={styles.loadingState}>
+                <div className={styles.spinner}></div>
+                <p>Loading history posts...</p>
+              </div>
+            ) : error ? (
+              <div className={styles.errorState}>
+                <h3>Oops! Something went wrong</h3>
+                <p style={{ color: 'red' }}>{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className={styles.retryBtn}
+                >
+                  Try Again
+                </button>
               </div>
             ) : !Array.isArray(posts) || posts.length === 0 ? (
               <div className={styles.emptyState}>
@@ -350,104 +450,17 @@ const HistoryPage = () => {
                   onMouseLeave={() => setHoveredPostId(null)}
                   onClick={() => handlePostClick(post)}
                   onKeyDown={(e) => handleKeyDown(e, post)}
-                >
-                  {/* ✅ UPDATED: Text content - removed subheading, added fixed bottom layout */}
-                  <div className={`${styles.blogContent} ${hoveredPostId === post.id ? styles.hiddenContent : ''}`}>
-                    <h3 className={styles.blogTitle}>{post.title}</h3>
-                    
-                    {/* ✅ NEW: Fixed bottom content with line and meta info */}
-                    <div className={styles.cardBottomFixed}>
-                      <div className={styles.cardSeparatorLine}></div>
-                      <div className={styles.cardMetaRow}>
-                        <span className={styles.cardAuthor}>
-                          by {post.author || currentAuthor}
-                        </span>
-                        <span className={styles.cardDate}>
-                          {new Date(post.date).toLocaleDateString('en-US', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
-                        </span>
-                        <span className={styles.cardWordCount}>
-                          {getWordCount(post.content)} words
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-              
-                  {/* Hover overlay with bottom positioning */}
-                  {hoveredPostId === post.id && (
-                    <div className={styles.hoverOverlay}>
-                      <div className={styles.subheadingContainer}>
-                        <p className={styles.hoverSubheading}>
-                          {post.subheading || post.title}
-                        </p>
-                      </div>
-
-                      <div className={styles.bottomFixed}>
-                        <div className={styles.leftContent}>
-                          <div className={styles.separatorLine}></div>
-                          <div className={styles.authorDateContainer}>
-                            <span className={styles.authorName}>
-                              {post.author || currentAuthor}
-                            </span>
-                            <span className={styles.postDate}>
-                              {new Date(post.date).toLocaleDateString('en-US', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className={styles.rightContent}>
-                          <button 
-                            className={styles.shareIcon}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (navigator.share) {
-                                navigator.share({
-                                  title: post.title,
-                                  text: post.subheading,
-                                  url: `/blog/history/${post.id}`
-                                });
-                              } else {
-                                navigator.clipboard.writeText(`${window.location.origin}/blog/history/${post.id}`);
-                                alert('Link copied to clipboard!');
-                              }
-                            }}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
-                            </svg>
-                          </button>
-
-                          <button 
-                            className={styles.readBtn}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handlePostClick(post);
-                            }}
-                          >
-                            Read
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </DynamicShadowBlogCard>
+                  currentAuthor={currentAuthor}
+                  getWordCount={getWordCount}
+                />
               ))
             )}
           </div>
         </div>
       </section>
 
-      {/* Gray Strip at Bottom */}
       <div className={styles.grayStrip}></div>
 
-      {/* Footer */}
       {showFooter && (
         <div className={styles.footerContainer}>
           <Footer />

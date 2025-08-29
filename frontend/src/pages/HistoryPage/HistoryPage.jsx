@@ -119,23 +119,18 @@ const DynamicShadowBlogCard = ({
   };
 
   // ✅ UPDATED: Mobile card click with exclusive selection
-  const handleCardClick = (e) => {
-    e.preventDefault();
-    
-    if (isMobile) {
-      const newActiveId = post.id === activeCardId ? null : post.id;
-      
-      // ✅ FIX: Force immediate shadow update before state change
-      if (newActiveId === post.id && cardRef.current) {
-        cardRef.current.style.boxShadow = `0 18px 35px -8px ${shadowColor}`;
-        cardRef.current.style.transform = 'translateY(-4px)';
-      }
-      
-      setActiveCardId(newActiveId);
-    } else {
-      onClick();
-    }
-  };
+// ✅ FIXED: Clean click handler - no direct style manipulation
+const handleCardClick = (e) => {
+  e.preventDefault();
+  
+  if (isMobile) {
+    const newActiveId = post.id === activeCardId ? null : post.id;
+    setActiveCardId(newActiveId);
+  } else {
+    onClick();
+  }
+};
+
 
   const handleReadButtonClick = (e) => {
     e.stopPropagation();

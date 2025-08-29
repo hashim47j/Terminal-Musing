@@ -88,8 +88,8 @@ const DynamicShadowBlogCard = ({
   onKeyDown, 
   currentAuthor, 
   getWordCount,
-  activeCardId,        // ✅ NEW: Currently active card ID on mobile
-  setActiveCardId      // ✅ NEW: Function to set active card
+  activeCardId,
+  setActiveCardId
 }) => {
   const imgRef = useRef(null);
   const cardRef = useRef(null);
@@ -118,32 +118,37 @@ const DynamicShadowBlogCard = ({
     setImageLoaded(true);
   };
 
-  // ✅ UPDATED: Mobile card click with exclusive selection
-// ✅ FIXED: Clean click handler - no direct style manipulation
-const handleCardClick = (e) => {
-  e.preventDefault();
-  
-  if (isMobile) {
-    const newActiveId = post.id === activeCardId ? null : post.id;
-    setActiveCardId(newActiveId);
-  } else {
-    onClick();
-  }
-};
-
-
-  const handleReadButtonClick = (e) => {
+  // ✅ COMPLETELY SEPARATE MOBILE LOGIC
+  const handleCardClick = (e) => {
+    e.preventDefault();
     e.stopPropagation();
-    onClick();
+    
+    if (isMobile) {
+      // Mobile: Toggle animation + shadow
+      const newActiveId = post.id === activeCardId ? null : post.id;
+      setActiveCardId(newActiveId);
+    } else {
+      // Desktop: Navigate immediately
+      onClick();
+    }
   };
 
-  // ✅ NEW: Determine if this card is currently active
-  const isActive = isMobile ? activeCardId === post.id : hoveredPostId === post.id;
+  // ✅ READ BUTTON: Always navigates (mobile + desktop)
+  const handleReadButtonClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onClick(); // Always navigate, don't toggle animation
+  };
+
+  // ✅ SEPARATE STATES: Desktop uses hover, Mobile uses activeCardId
+  const isHovered = !isMobile && hoveredPostId === post.id;
+  const isMobileActive = isMobile && activeCardId === post.id;
+  const isActive = isHovered || isMobileActive;
 
   return (
     <article
       ref={cardRef}
-      className={`${styles.blogCard} ${isActive ? styles.mobileExpanded : ''}`}
+      className={`${styles.blogCard} ${isMobileActive ? styles.mobileExpanded : ''}`}
       onClick={handleCardClick}
       onMouseEnter={!isMobile ? onMouseEnter : undefined}
       onMouseLeave={!isMobile ? onMouseLeave : undefined}
@@ -171,7 +176,8 @@ const handleCardClick = (e) => {
           }}
         />
       ) : (
-        <div className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} style={{ backgroundColor: '#ccc' }}>
+        <div className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} 
+             style={{ backgroundColor: '#ccc' }}>
           <span className={styles.noImageText}>No Image</span>
         </div>
       )}
@@ -246,6 +252,7 @@ const handleCardClick = (e) => {
                 </svg>
               </button>
 
+              {/* ✅ READ BUTTON: Always navigates */}
               <button 
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
@@ -259,6 +266,7 @@ const handleCardClick = (e) => {
     </article>
   );
 };
+
 
 const HistoryPage = () => {
   const navigate = useNavigate();

@@ -225,14 +225,13 @@
   z-index: 10;
   padding: 20px;
   animation: fadeInOverlay 0.4s ease 0.2s both;
-  pointer-events: none; /* ✅ ADD THIS - let clicks pass through to main card */
+  pointer-events: none; /* ✅ Let clicks pass through */
 }
 
 /* ✅ ADD THIS - re-enable pointer events for interactive buttons */
 .shareIcon, .readBtn {
-  pointer-events: auto; /* Re-enable clicks for buttons */
+  pointer-events: auto; /* ✅ Re-enable for interactions */
 }
-
 .subheadingContainer {
   flex: 1;
   display: flex;
@@ -358,8 +357,10 @@
   align-items: center;
   padding-bottom: 4px;
   gap: 0px;
-  pointer-events: auto; /* ✅ ADD THIS */
+  pointer-events: auto; /* ✅ Re-enable for buttons */
 }
+
+
 .grayStrip {
   background-color: #929292;
   height: 5vh;

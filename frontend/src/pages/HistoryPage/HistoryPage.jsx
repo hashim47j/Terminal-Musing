@@ -123,10 +123,16 @@ const DynamicShadowBlogCard = ({
     e.preventDefault();
     
     if (isMobile) {
-      // Toggle: if same card clicked, deactivate; else activate this card
-      setActiveCardId(post.id === activeCardId ? null : post.id);
+      const newActiveId = post.id === activeCardId ? null : post.id;
+      
+      // ✅ FIX: Force immediate shadow update before state change
+      if (newActiveId === post.id && cardRef.current) {
+        cardRef.current.style.boxShadow = `0 18px 35px -8px ${shadowColor}`;
+        cardRef.current.style.transform = 'translateY(-4px)';
+      }
+      
+      setActiveCardId(newActiveId);
     } else {
-      // Desktop: navigate immediately
       onClick();
     }
   };

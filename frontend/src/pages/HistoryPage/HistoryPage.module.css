@@ -98,7 +98,7 @@
 }
 
 .blogCard {
-  --dynamic-shadow-color: rgba(0, 123, 255, 0.4); /* Default fallback */
+  --dynamic-shadow-color: rgba(0, 123, 255, 0.4);
   display: flex;
   flex-direction: row;
   background: #fff;
@@ -113,16 +113,20 @@
   cursor: pointer;
   -webkit-appearance: none;
   -webkit-tap-highlight-color: transparent;
+  /* Add these for better mobile performance */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .blogCard.mobileExpanded {
   transform: translateY(-4px) !important;
   box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color) !important;
   -webkit-box-shadow: 0 22px 27px -8px var(--dynamic-shadow-color) !important;
-  transition: all 0.3s ease !important;
-  /* Force immediate shadow update */
-  animation: mobileCardExpand 0.3s ease forwards !important;
+  transition: all 0.2s ease-out !important; /* Faster transition */
+  will-change: transform, box-shadow; /* Force GPU acceleration */
 }
+
 
 @keyframes mobileCardExpand {
   0% { 

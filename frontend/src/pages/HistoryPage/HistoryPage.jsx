@@ -95,7 +95,7 @@ const DynamicShadowBlogCard = ({
   const cardRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [shadowColor, setShadowColor] = useState('rgba(0, 123, 255, 0.4)'); // Default fallback
+  const [extractedColor, setExtractedColor] = useState(null);
   
   useEffect(() => {
     const checkMobile = () => {
@@ -111,16 +111,10 @@ const DynamicShadowBlogCard = ({
     quality: 10 
   });
 
-  // Update shadow color immediately when color is extracted
+  // Store extracted color immediately
   useEffect(() => {
     if (imageLoaded && color && Array.isArray(color) && color.length >= 3) {
-      const newShadowColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.9)`;
-      setShadowColor(newShadowColor);
-      
-      // Update CSS variable immediately
-      if (cardRef.current) {
-        cardRef.current.style.setProperty('--dynamic-shadow-color', newShadowColor);
-      }
+      setExtractedColor(color);
     }
   }, [imageLoaded, color]);
 
@@ -132,17 +126,22 @@ const DynamicShadowBlogCard = ({
     e.preventDefault();
     e.stopPropagation();
     
+    // Prevent rapid double clicks
+    if (e.detail > 1) return;
+    
     console.log('🔍 Card clicked:', post.id);
     
     if (isMobile) {
       const newActiveId = post.id === activeCardId ? null : post.id;
-      setActiveCardId(newActiveId);
-      console.log('✅ State updated to:', newActiveId);
       
-      // Force shadow color update on mobile click
-      if (cardRef.current && newActiveId === post.id) {
+      // Apply shadow color BEFORE state update for immediate effect
+      if (cardRef.current && extractedColor) {
+        const shadowColor = `rgba(${extractedColor[0]}, ${extractedColor[1]}, ${extractedColor[2]}, 0.9)`;
         cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
       }
+      
+      setActiveCardId(newActiveId);
+      console.log('✅ State updated to:', newActiveId);
     } else {
       onClick();
     }
@@ -158,12 +157,10 @@ const DynamicShadowBlogCard = ({
   const isMobileActive = isMobile && activeCardId === post.id;
   const isActive = isHovered || isMobileActive;
 
-  // Apply shadow color immediately when component mounts or updates
-  useEffect(() => {
-    if (cardRef.current) {
-      cardRef.current.style.setProperty('--dynamic-shadow-color', shadowColor);
-    }
-  }, [shadowColor, isMobileActive]);
+  // Calculate shadow color with fallback
+  const shadowColor = extractedColor && imageLoaded
+    ? `rgba(${extractedColor[0]}, ${extractedColor[1]}, ${extractedColor[2]}, 0.9)`
+    : 'rgba(0, 123, 255, 0.4)';
 
   return (
     <article
@@ -176,11 +173,12 @@ const DynamicShadowBlogCard = ({
       tabIndex={0}
       style={{ 
         cursor: 'pointer',
-        '--dynamic-shadow-color': shadowColor // Ensure it's always set
+        '--dynamic-shadow-color': shadowColor
       }}
       onKeyDown={onKeyDown}
       aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
     >
+      {/* Rest of your JSX remains the same */}
       {post.coverImage ? (
         <img 
           ref={imgRef}
@@ -202,6 +200,7 @@ const DynamicShadowBlogCard = ({
         </div>
       )}
 
+      {/* Rest of your component JSX stays exactly the same */}
       <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
         <h3 className={styles.blogTitle}>{post.title}</h3>
         

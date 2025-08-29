@@ -78,10 +78,22 @@ const DynamicBackgroundShadow = () => {
   );
 };
 
-const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave, onClick, onKeyDown, currentAuthor, getWordCount }) => {
+// ✅ UPDATED: Enhanced card component with exclusive mobile selection
+const DynamicShadowBlogCard = ({ 
+  post, 
+  hoveredPostId, 
+  onMouseEnter, 
+  onMouseLeave, 
+  onClick, 
+  onKeyDown, 
+  currentAuthor, 
+  getWordCount,
+  activeCardId,        // ✅ NEW: Currently active card ID on mobile
+  setActiveCardId      // ✅ NEW: Function to set active card
+}) => {
   const imgRef = useRef(null);
+  const cardRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
@@ -106,12 +118,15 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
     setImageLoaded(true);
   };
 
+  // ✅ UPDATED: Mobile card click with exclusive selection
   const handleCardClick = (e) => {
     e.preventDefault();
     
     if (isMobile) {
-      setIsExpanded(!isExpanded);
+      // Toggle: if same card clicked, deactivate; else activate this card
+      setActiveCardId(post.id === activeCardId ? null : post.id);
     } else {
+      // Desktop: navigate immediately
       onClick();
     }
   };
@@ -121,9 +136,13 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
     onClick();
   };
 
+  // ✅ NEW: Determine if this card is currently active
+  const isActive = isMobile ? activeCardId === post.id : hoveredPostId === post.id;
+
   return (
     <article
-      className={`${styles.blogCard} ${isExpanded ? styles.mobileExpanded : ''}`}
+      ref={cardRef}
+      className={`${styles.blogCard} ${isActive ? styles.mobileExpanded : ''}`}
       onClick={handleCardClick}
       onMouseEnter={!isMobile ? onMouseEnter : undefined}
       onMouseLeave={!isMobile ? onMouseLeave : undefined}
@@ -134,18 +153,14 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
         '--dynamic-shadow-color': shadowColor
       }}
       onKeyDown={onKeyDown}
-      aria-label={`${isExpanded ? 'Expanded' : 'Read'} article: ${post.title}`}
+      aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
     >
       {post.coverImage ? (
         <img 
           ref={imgRef}
           src={post.coverImage} 
           alt={`Cover for ${post.title}`} 
-          className={`${styles.coverImage} ${
-            (hoveredPostId === post.id && !isMobile) || (isMobile && isExpanded) 
-              ? styles.expanded 
-              : ''
-          }`}
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
           crossOrigin="anonymous"
           loading="lazy"
           onLoad={handleImageLoad}
@@ -155,20 +170,12 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
           }}
         />
       ) : (
-        <div className={`${styles.coverImage} ${
-          (hoveredPostId === post.id && !isMobile) || (isMobile && isExpanded) 
-            ? styles.expanded 
-            : ''
-        }`} style={{ backgroundColor: '#ccc' }}>
+        <div className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} style={{ backgroundColor: '#ccc' }}>
           <span className={styles.noImageText}>No Image</span>
         </div>
       )}
 
-      <div className={`${styles.blogContent} ${
-        ((hoveredPostId === post.id && !isMobile) || (isMobile && isExpanded)) 
-          ? styles.hiddenContent 
-          : ''
-      }`}>
+      <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
         <h3 className={styles.blogTitle}>{post.title}</h3>
         
         <div className={styles.cardBottomFixed}>
@@ -191,7 +198,7 @@ const DynamicShadowBlogCard = ({ post, hoveredPostId, onMouseEnter, onMouseLeave
         </div>
       </div>
 
-      {((!isMobile && hoveredPostId === post.id) || (isMobile && isExpanded)) && (
+      {isActive && (
         <div className={styles.hoverOverlay}>
           <div className={styles.subheadingContainer}>
             <p className={styles.hoverSubheading}>
@@ -258,6 +265,7 @@ const HistoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hoveredPostId, setHoveredPostId] = useState(null);
+  const [activeCardId, setActiveCardId] = useState(null); // ✅ NEW: Track active card on mobile
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
 
   const getWordCount = (content) => {
@@ -412,6 +420,8 @@ const HistoryPage = () => {
                   onKeyDown={(e) => handleKeyDown(e, post)}
                   currentAuthor={currentAuthor}
                   getWordCount={getWordCount}
+                  activeCardId={activeCardId}           // ✅ NEW: Pass active card state
+                  setActiveCardId={setActiveCardId}     // ✅ NEW: Pass setter function
                 />
               ))
             )}

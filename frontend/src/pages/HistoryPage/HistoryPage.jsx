@@ -185,7 +185,8 @@ const BlogCard = ({
       tabIndex={0}
       style={{
         cursor: 'pointer',
-        '--card-shadow-color': isActive ? shadowColor : 'rgba(0, 0, 0, 0)',
+        '--card-shadow-color': (isHovered || isMobileActive) ? shadowColor : 'rgba(0, 0, 0, 0)',
+
       }}
       onKeyDown={onKeyDown}
       aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}

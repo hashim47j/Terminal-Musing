@@ -274,8 +274,25 @@ const HistoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hoveredPostId, setHoveredPostId] = useState(null);
-  const [activeCardId, setActiveCardId] = useState(null); // ✅ NEW: Track active card on mobile
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
+
+  const [activeCardId, setActiveCardId] = useState(null); // ✅ NEW: Track active card on mobile
+
+    // ✅ ADD: Outside click detection
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        // Only clear if clicking outside the entire blog grid container
+        if (containerRef.current && !containerRef.current.contains(event.target)) {
+          setActiveCardId(null);
+        }
+      };
+  
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, []);
+  
 
   const getWordCount = (content) => {
     if (!content || !Array.isArray(content)) return 0;

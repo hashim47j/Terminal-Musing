@@ -593,12 +593,6 @@
 }
 
 
-@media (hover: hover) and (pointer: fine) {
-  .blogCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 27px -8px rgba(0, 123, 255, 0.4);
-  }
-}
 
 .blogCard {
   position: relative;

@@ -102,7 +102,7 @@
 
 .postsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 40px 30px;
   max-width: 1300px;
   margin: 0 auto;
@@ -120,6 +120,8 @@
   text-decoration: none;
   min-height: 180px;
   height: 100%;
+  width: 100%;
+  max-width: 450px;
   position: relative;
   cursor: pointer;
   -webkit-appearance: none;

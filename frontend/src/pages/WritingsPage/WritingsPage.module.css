@@ -124,10 +124,12 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
-  cursor: pointer;
   min-height: 180px;
   height: 100%;
+  width: 100%;
+  max-width: 450px;
   position: relative;
+  cursor: pointer;
   -webkit-appearance: none;
   -webkit-tap-highlight-color: transparent;
 }

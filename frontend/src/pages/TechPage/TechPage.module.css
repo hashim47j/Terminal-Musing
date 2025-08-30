@@ -111,18 +111,21 @@
   padding: 24px 0 40px 0;
 }
 
+
+
 .blogCard {
-  background-color: #fff;
+  background-color: #ffffff;
   display: flex;
   flex-direction: row;
-  border-radius: 7px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 5px 18px rgba(0,60,120,0.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
-  border: 1px solid #d8e0ec;
   min-height: 180px;
   height: 100%;
+  width: 100%;
+  max-width: 450px;
   position: relative;
   cursor: pointer;
   -webkit-appearance: none;

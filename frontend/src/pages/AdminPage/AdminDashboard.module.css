@@ -1,144 +1,466 @@
 .dashboardContainer {
-    padding: 60px 40px;
-    background: #f7f7f5;
-    min-height: 100vh;
-    font-family: 'Playfair Display', serif;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 50px;
-  }
-  
-  .header h1 {
-    font-size: 3rem;
-    font-weight: 500;
-  }
-  
-  .postBtn {
-    background: #e6e6e6;
-    border: none;
-    padding: 10px 16px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    font-family: inherit;
-  }
-  
-  .topRow, .bottomRow {
-    display: flex;
-    justify-content: space-between;
-    gap: 40px;
-    margin-bottom: 40px;
-  }
-  
-  .box {
-    background: #ececec;
-    padding: 25px 30px;
-    flex: 1;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  }
-  
-  .box h2, .box h3 {
-    margin-bottom: 20px;
-    font-size: 1.6rem;
-  }
-  
-  .box p {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-  }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .topRow, .bottomRow {
-      flex-direction: column;
-    }
-  }
-  .clickableName {
-    color: #1a1a1a;
-    cursor: pointer;
-    margin-bottom: 10px;
-    text-decoration: underline;
-    font-weight: 500;
-    transition: color 0.2s ease;
-  }
-  
-  .clickableName:hover {
-    color: #0077cc;
-  }
-  
-  .popupOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.1);
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .popupCard {
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 12px;
-    padding: 30px 35px;
-    width: 450px;
-    max-width: 90%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    animation: fadeInPop 0.3s ease;
-    font-family: 'Playfair Display', serif;
-  }
+  padding: 60px 40px;
+  background: #f7f7f5;
+  min-height: 100vh;
+  font-family: 'Playfair Display', serif;
+}
 
-  .popupCard h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.8rem;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.header h1 {
+  font-size: 3rem;
+  font-weight: 500;
+}
+
+/* ✅ NEW: Header buttons container */
+.headerButtons {
+  display: flex;
+  gap: 15px;
+}
+
+.postBtn, .allBlogsBtn {
+  background: #e6e6e6;
+  border: none;
+  padding: 10px 16px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: background 0.3s ease;
+}
+
+.postBtn:hover, .allBlogsBtn:hover {
+  background: #d4d4d4;
+}
+
+.topRow, .bottomRow, .middleRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.box {
+  background: #ececec;
+  padding: 25px 30px;
+  flex: 1;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.box h2, .box h3 {
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+}
+
+.box p {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.bigNumber {
+  font-size: 2.5rem !important;
+  font-weight: bold;
+  color: #333;
+}
+
+.statsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.statLabel {
+  font-weight: 500;
+}
+
+.statValue {
+  font-weight: bold;
+  color: #555;
+}
+
+.recentPostsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recentPost {
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border-left: 4px solid #ccc;
+}
+
+.postTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.postMeta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.postAuthor {
+  font-style: italic;
+}
+
+.postCategory {
+  background: #e0e0e0;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.postDate {
+  color: #999;
+}
+
+.visitorStats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.statGroup {
+  display: flex;
+  gap: 30px;
+}
+
+.distributionStats {
+  display: flex;
+  gap: 40px;
+}
+
+.distributionGroup {
+  flex: 1;
+}
+
+.requestsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.requestItem {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.requestItem:hover {
+  background: #f0f0f0;
+}
+
+.requestName {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.requestPreview {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* ✅ NEW: All Blogs Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalCard {
+  background: white;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  font-family: 'Playfair Display', serif;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+  border-bottom: 1px solid #eee;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.modalContent {
+  padding: 20px 30px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.blogsList {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.categorySection {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.categoryTitle {
+  background: #f5f5f5;
+  padding: 15px 20px;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.blogsInCategory {
+  padding: 10px;
+}
+
+.blogItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s ease;
+}
+
+.blogItem:hover {
+  background: #f9f9f9;
+}
+
+.blogItem:last-child {
+  border-bottom: none;
+}
+
+.blogInfo {
+  flex: 1;
+}
+
+.blogTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.blogMeta {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.deleteBtn {
+  background: #ff4444;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+  margin-left: 15px;
+}
+
+.deleteBtn:hover {
+  background: #cc0000;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.closeBtn:hover {
+  color: #333;
+}
+
+/* Existing popup styles */
+.clickableName {
+  color: #1a1a1a;
+  cursor: pointer;
+  margin-bottom: 10px;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.clickableName:hover {
+  color: #0077cc;
+}
+
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popupCard {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  padding: 30px 35px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInPop 0.3s ease;
+  font-family: 'Playfair Display', serif;
+}
+
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.popupCard h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.popupContent {
+  margin-bottom: 20px;
+}
+
+.popupField {
+  margin-bottom: 15px;
+}
+
+.popupField strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.popupField p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.popupActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.approveBtn,
+.editBtn {
+  padding: 10px 18px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.3s;
+}
+
+.approveBtn {
+  background-color: #4CAF50;
+  color: white;
+}
+.approveBtn:hover {
+  background-color: #45a045;
+}
+
+.editBtn {
+  background-color: #444;
+  color: white;
+}
+.editBtn:hover {
+  background-color: #222;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .topRow, .bottomRow, .middleRow {
+    flex-direction: column;
   }
   
-  .popupCard p {
-    margin-bottom: 12px;
-    font-size: 1.05rem;
+  .headerButtons {
+    flex-direction: column;
   }
   
-  
-  .popupButtons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
+  .modalCard {
+    width: 95%;
+    max-height: 90vh;
   }
   
-  .approveBtn,
-  .editBtn {
-    padding: 10px 18px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.3s;
+  .distributionStats {
+    flex-direction: column;
+    gap: 20px;
   }
   
-  .approveBtn {
-    background-color: #4CAF50;
-    color: white;
+  .statGroup {
+    flex-direction: column;
+    gap: 10px;
   }
-  .approveBtn:hover {
-    background-color: #45a045;
+}
+
+@keyframes fadeInPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  
-  .editBtn {
-    background-color: #444;
-    color: white;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  .editBtn:hover {
-    background-color: #222;
-  }
-  
+}

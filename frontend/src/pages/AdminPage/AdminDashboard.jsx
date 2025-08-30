@@ -12,7 +12,7 @@ const AdminDashboard = () => {
   const [viewsPerPost, setViewsPerPost] = useState({});
   const [dailyRequests, setDailyRequests] = useState([]);
   
-  // ✅ NEW: Author-related stats
+  // Author-related stats
   const [postsByAuthor, setPostsByAuthor] = useState({});
   const [totalAuthors, setTotalAuthors] = useState(0);
   const [recentPosts, setRecentPosts] = useState([]);
@@ -26,13 +26,18 @@ const AdminDashboard = () => {
 
   const [showPopup, setShowPopup] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  
+  // ✅ NEW: All Blogs Modal States
+  const [showAllBlogsModal, setShowAllBlogsModal] = useState(false);
+  const [allBlogs, setAllBlogs] = useState({});
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState(false);
 
-  // ✅ UPDATED: Categories list with proper mapping
+  // Categories list with proper mapping
   const categories = [
     'Philosophy',
     'History', 
     'Writings',
-    'Legal & Social Issues', // ✅ UPDATED: Better display name
+    'Legal & Social Issues',
     'Tech',
   ];
 
@@ -42,6 +47,15 @@ const AdminDashboard = () => {
     'Writings': 'writings',
     'Legal & Social Issues': 'lsconcern',
     'Tech': 'tech'
+  };
+
+  // Reverse mapping for display
+  const displayCategoryMapping = {
+    'philosophy': 'Philosophy',
+    'history': 'History',
+    'writings': 'Writings',
+    'lsconcern': 'Legal & Social Issues',
+    'tech': 'Tech'
   };
 
   useEffect(() => {
@@ -60,7 +74,6 @@ const AdminDashboard = () => {
       }
     };
 
-    // ✅ NEW: Fetch author and recent posts statistics
     const fetchBlogStats = async () => {
       try {
         const res = await fetch('/api/blogs');
@@ -129,13 +142,99 @@ const AdminDashboard = () => {
     };
 
     fetchStats();
-    fetchBlogStats(); // ✅ NEW: Fetch blog statistics
+    fetchBlogStats();
     fetchDailyRequests();
     fetchVisitorStats();
   }, []);
 
+  // ✅ NEW: Fetch all blogs for the modal
+  const fetchAllBlogs = async () => {
+    setIsLoadingBlogs(true);
+    try {
+      const res = await fetch('/api/blogs');
+      if (!res.ok) throw new Error(`Failed with status ${res.status}`);
+      const blogs = await res.json();
+
+      if (Array.isArray(blogs)) {
+        // Group blogs by category
+        const groupedBlogs = {};
+        blogs.forEach(blog => {
+          const category = blog.category || 'uncategorized';
+          if (!groupedBlogs[category]) {
+            groupedBlogs[category] = [];
+          }
+          groupedBlogs[category].push({
+            id: blog.id,
+            title: blog.title,
+            author: blog.author || 'Terminal Musing',
+            date: new Date(blog.date || blog.updatedAt).toLocaleDateString(),
+            category: blog.category
+          });
+        });
+
+        // Sort blogs within each category by date (newest first)
+        Object.keys(groupedBlogs).forEach(category => {
+          groupedBlogs[category].sort((a, b) => new Date(b.date) - new Date(a.date));
+        });
+
+        setAllBlogs(groupedBlogs);
+      }
+    } catch (err) {
+      console.error('❌ Failed to fetch all blogs:', err);
+      setAllBlogs({});
+    } finally {
+      setIsLoadingBlogs(false);
+    }
+  };
+
+  // ✅ NEW: Handle blog deletion
+  const handleDeleteBlog = async (category, blogId, blogTitle) => {
+    if (!window.confirm(`Are you sure you want to delete "${blogTitle}"?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/blogs/${category}/${blogId}`, {
+        method: 'DELETE'
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to delete blog: ${res.status}`);
+      }
+
+      const result = await res.json();
+      console.log('✅ Blog deleted:', result);
+
+      // Remove the blog from the local state
+      setAllBlogs(prev => {
+        const updated = { ...prev };
+        if (updated[category]) {
+          updated[category] = updated[category].filter(blog => blog.id !== blogId);
+          // Remove category if empty
+          if (updated[category].length === 0) {
+            delete updated[category];
+          }
+        }
+        return updated;
+      });
+
+      // Refresh stats
+      window.location.reload(); // Simple way to refresh all data
+
+    } catch (err) {
+      console.error('❌ Failed to delete blog:', err);
+      alert('Failed to delete blog. Please try again.');
+    }
+  };
+
   const handlePostClick = () => navigate('/admin/');
   const handleEdit = () => navigate('/admin/dailythoughts/edit');
+
+  // ✅ NEW: Handle All Blogs modal
+  const handleAllBlogsClick = () => {
+    setShowAllBlogsModal(true);
+    fetchAllBlogs();
+  };
 
   const handleApprove = async (id) => {
     if (!id) return console.error('❌ No ID provided for approval');
@@ -165,12 +264,17 @@ const AdminDashboard = () => {
     <div className={styles.dashboardContainer}>
       <div className={styles.header}>
         <h1>📊 Admin Dashboard</h1>
-        <button className={styles.postBtn} onClick={handlePostClick}>
-          ✍️ Create New Post
-        </button>
+        <div className={styles.headerButtons}>
+          <button className={styles.postBtn} onClick={handlePostClick}>
+            ✍️ Create New Post
+          </button>
+          <button className={styles.allBlogsBtn} onClick={handleAllBlogsClick}>
+            📚 All Blogs
+          </button>
+        </div>
       </div>
 
-      {/* ✅ ENHANCED: Top stats row */}
+      {/* Top stats row */}
       <div className={styles.topRow}>
         <div className={styles.box}>
           <h2>📝 Total Posts</h2>
@@ -215,15 +319,15 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* ✅ NEW: Author statistics */}
+      {/* Author statistics */}
       <div className={styles.bottomRow}>
         <div className={styles.box}>
           <h3>✍️ Posts by Author</h3>
           <div className={styles.statsList}>
             {Object.entries(postsByAuthor).length > 0 ? (
               Object.entries(postsByAuthor)
-                .sort(([,a], [,b]) => b - a) // Sort by post count
-                .slice(0, 10) // Show top 10 authors
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10)
                 .map(([author, count]) => (
                   <div key={author} className={styles.statItem}>
                     <span className={styles.statLabel}>{author}</span>
@@ -236,7 +340,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* ✅ NEW: Recent posts */}
+        {/* Recent posts */}
         <div className={styles.box}>
           <h3>🕐 Recent Posts</h3>
           <div className={styles.recentPostsList}>
@@ -264,8 +368,8 @@ const AdminDashboard = () => {
         <div className={styles.statsList}>
           {Object.entries(viewsPerPost).length > 0 ? (
             Object.entries(viewsPerPost)
-              .sort(([,a], [,b]) => b - a) // Sort by views descending
-              .slice(0, 10) // Show top 10
+              .sort(([,a], [,b]) => b - a)
+              .slice(0, 10)
               .map(([postId, count]) => (
                 <div key={postId} className={styles.statItem}>
                   <span className={styles.statLabel}>{postId}</span>
@@ -341,7 +445,64 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Popup Modal */}
+      {/* ✅ NEW: All Blogs Modal */}
+      {showAllBlogsModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowAllBlogsModal(false)}>
+          <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>📚 All Published Blogs</h2>
+              <button 
+                className={styles.closeBtn}
+                onClick={() => setShowAllBlogsModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className={styles.modalContent}>
+              {isLoadingBlogs ? (
+                <div className={styles.loading}>Loading blogs...</div>
+              ) : (
+                <div className={styles.blogsList}>
+                  {Object.keys(allBlogs).length > 0 ? (
+                    Object.entries(allBlogs).map(([category, blogs]) => (
+                      <div key={category} className={styles.categorySection}>
+                        <h3 className={styles.categoryTitle}>
+                          {displayCategoryMapping[category] || category} ({blogs.length})
+                        </h3>
+                        <div className={styles.blogsInCategory}>
+                          {blogs.map((blog) => (
+                            <div key={`${category}-${blog.id}`} className={styles.blogItem}>
+                              <div className={styles.blogInfo}>
+                                <div className={styles.blogTitle}>{blog.title}</div>
+                                <div className={styles.blogMeta}>
+                                  <span>by {blog.author}</span>
+                                  <span>{blog.date}</span>
+                                </div>
+                              </div>
+                              <button
+                                className={styles.deleteBtn}
+                                onClick={() => handleDeleteBlog(category, blog.id, blog.title)}
+                                title="Delete this blog"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No blogs found.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup Modal for Daily Thoughts */}
       {showPopup && selectedRequest && (
         <div className={styles.popupOverlay} onClick={() => setShowPopup(false)}>
           <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>

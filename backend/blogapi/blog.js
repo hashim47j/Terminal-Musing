@@ -6,29 +6,33 @@ import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import sanitize from 'sanitize-filename';
 
+
 const router = express.Router();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BLOGS_ROOT = path.join(__dirname, '..', 'blogs');
 
-// ✅ UPDATED: Configuration constants - Added 'writings' category
+
+// Configuration constants
 const VALID_CATEGORIES = ['history', 'philosophy', 'tech', 'lsconcern', 'writings'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB max blog size
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
-// ✅ FIXED: Secure rate limiting configuration
+
+// Secure rate limiting configuration
 const createSecureRateLimit = (windowMs, max, message) => rateLimit({
   windowMs,
   max,
   message,
-  // ✅ Custom key generator strips ports to prevent bypass
+  // Custom key generator strips ports to prevent bypass
   keyGenerator: (req) => {
     const ip = req.ip || req.socket.remoteAddress || req.connection.remoteAddress || '';
     // Strip port numbers (e.g., "192.168.1.1:54321" -> "192.168.1.1")
     return ip.replace(/:\d+[^:]*$/, '');
   },
-  // ✅ Disable problematic validation checks
+  // Disable problematic validation checks
   validate: {
     trustProxy: false,           // Disable trust proxy validation
     xForwardedForHeader: false,  // Disable X-Forwarded-For validation
@@ -47,21 +51,33 @@ const createSecureRateLimit = (windowMs, max, message) => rateLimit({
   }
 });
 
+
 // Rate limiting for different operations
 const readRateLimit = createSecureRateLimit(
   15 * 60 * 1000, // 15 minutes
-  200, // Max 200 requests per window (increased for better UX)
+  200, // Max 200 requests per window
   { error: 'Too many read requests, please try again later.' }
 );
 
+
 const writeRateLimit = createSecureRateLimit(
   15 * 60 * 1000, // 15 minutes
-  20, // Max 20 writes per window (increased slightly)
+  20, // Max 20 writes per window
   { error: 'Too many write requests, please try again later.' }
 );
 
+
+// ✅ NEW: Delete rate limiting (stricter than write)
+const deleteRateLimit = createSecureRateLimit(
+  15 * 60 * 1000, // 15 minutes
+  10, // Max 10 deletes per window (more restrictive)
+  { error: 'Too many delete requests, please try again later.' }
+);
+
+
 // Simple in-memory cache
 const cache = new Map();
+
 
 /**
  * Normalize and validate category parameter
@@ -72,6 +88,7 @@ const normalizeCategory = (category) => {
   return VALID_CATEGORIES.includes(normalized) ? normalized : null;
 };
 
+
 /**
  * Sanitize and validate blog ID
  */
@@ -81,14 +98,16 @@ const sanitizeId = (id) => {
   return sanitized.length > 0 && sanitized.length <= 100 ? sanitized : null;
 };
 
+
 /**
- * ✅ NEW: Sanitize and validate author name
+ * Sanitize and validate author name
  */
 const sanitizeAuthor = (author) => {
   if (!author || typeof author !== 'string') return 'Terminal Musing'; // Default author
   const sanitized = author.trim().replace(/[<>]/g, ''); // Remove dangerous characters
   return sanitized.length > 0 && sanitized.length <= 100 ? sanitized : 'Terminal Musing';
 };
+
 
 /**
  * Async helper to safely check if directory exists
@@ -101,6 +120,20 @@ const dirExists = async (dirPath) => {
     return false;
   }
 };
+
+
+/**
+ * ✅ NEW: Async helper to safely check if file exists
+ */
+const fileExists = async (filePath) => {
+  try {
+    const stats = await fs.stat(filePath);
+    return stats.isFile();
+  } catch {
+    return false;
+  }
+};
+
 
 /**
  * Async helper to safely read and parse JSON file
@@ -127,10 +160,12 @@ const readJsonFile = async (filePath) => {
   }
 };
 
+
 /**
  * Cache management
  */
 const getCacheKey = (category, id = null) => id ? `${category}:${id}` : `${category}:list`;
+
 
 const getFromCache = (key) => {
   const cached = cache.get(key);
@@ -140,6 +175,7 @@ const getFromCache = (key) => {
   cache.delete(key);
   return null;
 };
+
 
 const setCache = (key, data) => {
   cache.set(key, { data, timestamp: Date.now() });
@@ -152,7 +188,21 @@ const setCache = (key, data) => {
   }
 };
 
-// ===== POST: Save blog (Enhanced with Author Support) =====
+
+/**
+ * ✅ NEW: Clear all related cache entries for a blog
+ */
+const clearBlogCache = (category, id) => {
+  // Clear specific blog cache
+  cache.delete(getCacheKey(category, id));
+  // Clear category list cache
+  cache.delete(getCacheKey(category));
+  // Clear all blogs cache
+  cache.delete('all:blogs');
+};
+
+
+// ===== POST: Save blog =====
 router.post('/', writeRateLimit, async (req, res) => {
   const startTime = Date.now();
   
@@ -170,7 +220,7 @@ router.post('/', writeRateLimit, async (req, res) => {
     // Validate and sanitize inputs
     const category = normalizeCategory(blog.category);
     const sanitizedId = sanitizeId(blog.id);
-    const sanitizedAuthor = sanitizeAuthor(blog.author); // ✅ NEW: Sanitize author
+    const sanitizedAuthor = sanitizeAuthor(blog.author);
 
     if (!category) {
       return res.status(400).json({ 
@@ -188,12 +238,12 @@ router.post('/', writeRateLimit, async (req, res) => {
       return res.status(400).json({ error: 'Title must be a string under 200 characters' });
     }
 
-    // ✅ NEW: Validate author field if provided
+    // Validate author field if provided
     if (blog.author && (typeof blog.author !== 'string' || blog.author.length > 100)) {
       return res.status(400).json({ error: 'Author name must be a string under 100 characters' });
     }
 
-    // ✅ FIXED: Simple content validation (removed problematic Buffer.byteLength check)
+    // Simple content validation
     if (!blog.content || (!Array.isArray(blog.content) && typeof blog.content !== 'string')) {
       return res.status(400).json({ error: 'Invalid content format' });
     }
@@ -210,7 +260,7 @@ router.post('/', writeRateLimit, async (req, res) => {
       ...blog,
       id: sanitizedId,
       category,
-      author: sanitizedAuthor, // ✅ NEW: Include sanitized author
+      author: sanitizedAuthor,
       updatedAt: new Date().toISOString(),
       version: blog.version ? blog.version + 1 : 1
     };
@@ -218,9 +268,7 @@ router.post('/', writeRateLimit, async (req, res) => {
     await fs.writeFile(blogPath, JSON.stringify(blogData, null, 2));
 
     // Clear related cache
-    cache.delete(getCacheKey(category));
-    cache.delete(getCacheKey(category, sanitizedId));
-    cache.delete('all:blogs');
+    clearBlogCache(category, sanitizedId);
 
     console.log(`✅ Blog saved successfully: ${category}/${sanitizedId} by ${sanitizedAuthor} (${Date.now() - startTime}ms)`);
     
@@ -228,7 +276,7 @@ router.post('/', writeRateLimit, async (req, res) => {
       message: 'Blog saved successfully', 
       id: sanitizedId,
       category,
-      author: sanitizedAuthor, // ✅ NEW: Return author in response
+      author: sanitizedAuthor,
       path: blogPath 
     });
   } catch (error) {
@@ -240,6 +288,76 @@ router.post('/', writeRateLimit, async (req, res) => {
     res.status(500).json({ error: 'Failed to save blog' });
   }
 });
+
+
+// ===== DELETE: Delete blog post =====
+router.delete('/:category/:id', deleteRateLimit, async (req, res) => {
+  const startTime = Date.now();
+  
+  try {
+    const category = normalizeCategory(req.params.category);
+    const id = sanitizeId(req.params.id);
+
+    if (!category) {
+      return res.status(400).json({ 
+        error: 'Invalid category',
+        validCategories: VALID_CATEGORIES 
+      });
+    }
+
+    if (!id) {
+      return res.status(400).json({ error: 'Invalid blog ID' });
+    }
+
+    const categoryDir = path.join(BLOGS_ROOT, category);
+    const blogPath = path.join(categoryDir, `${id}.json`);
+
+    // Check if file exists before attempting to delete
+    if (!(await fileExists(blogPath))) {
+      return res.status(404).json({ 
+        error: 'Blog post not found',
+        category,
+        id 
+      });
+    }
+
+    // Optional: Read blog data before deletion for logging/response
+    let blogData = null;
+    try {
+      blogData = await readJsonFile(blogPath);
+    } catch (error) {
+      console.warn(`⚠️ Could not read blog before deletion: ${category}/${id}`, error.message);
+    }
+
+    // Delete the file
+    await fs.unlink(blogPath);
+
+    // Clear related cache
+    clearBlogCache(category, id);
+
+    console.log(`✅ Blog deleted successfully: ${category}/${id} ${blogData?.author ? `by ${blogData.author}` : ''} (${Date.now() - startTime}ms)`);
+    
+    res.json({ 
+      message: 'Blog deleted successfully', 
+      id,
+      category,
+      deletedAt: new Date().toISOString(),
+      ...(blogData && { 
+        title: blogData.title,
+        author: blogData.author 
+      })
+    });
+
+  } catch (error) {
+    console.error(`❌ Failed to delete blog [${req.params.category}/${req.params.id}]:`, {
+      error: error.message,
+      stack: error.stack,
+      duration: Date.now() - startTime
+    });
+    res.status(500).json({ error: 'Failed to delete blog' });
+  }
+});
+
 
 // ===== GET: Individual blog post =====
 router.get('/:category/:id', readRateLimit, async (req, res) => {
@@ -274,7 +392,7 @@ router.get('/:category/:id', readRateLimit, async (req, res) => {
     blog.category = category;
     blog.id = id;
     
-    // ✅ NEW: Ensure author field exists with fallback
+    // Ensure author field exists with fallback
     if (!blog.author) {
       blog.author = 'Terminal Musing';
     }
@@ -308,13 +426,14 @@ router.get('/:category/:id', readRateLimit, async (req, res) => {
   }
 });
 
-// ===== GET: All blogs in category (FIXED - Always returns array) =====
+
+// ===== GET: All blogs in category =====
 router.get('/:category', readRateLimit, async (req, res) => {
   const startTime = Date.now();
   
   try {
     const category = normalizeCategory(req.params.category);
-    const { limit = 50, offset = 0, sortBy = 'date', order = 'desc' } = req.query;
+    const { limit = 50, offset = 0 } = req.query;
 
     if (!category) {
       return res.status(400).json({ 
@@ -335,14 +454,13 @@ router.get('/:category', readRateLimit, async (req, res) => {
       const categoryDir = path.join(BLOGS_ROOT, category);
       
       if (!(await dirExists(categoryDir))) {
-        // ✅ CRITICAL: Always return array, never object
         return res.json([]);
       }
 
       const files = await fs.readdir(categoryDir);
       blogs = [];
 
-      // Process files concurrently with limit
+      // Process files concurrently
       const jsonFiles = files.filter(f => f.endsWith('.json'));
       const processFile = async (fileName) => {
         try {
@@ -351,7 +469,7 @@ router.get('/:category', readRateLimit, async (req, res) => {
           blog.category = category;
           blog.id = path.basename(fileName, '.json');
           
-          // ✅ NEW: Ensure author field exists with fallback
+          // Ensure author field exists with fallback
           if (!blog.author) {
             blog.author = 'Terminal Musing';
           }
@@ -375,17 +493,11 @@ router.get('/:category', readRateLimit, async (req, res) => {
       setCache(cacheKey, blogs);
     }
 
-    // Sort blogs
-    const validSortFields = ['date', 'title', 'updatedAt', 'author']; // ✅ NEW: Added author sorting
-    const sortField = validSortFields.includes(sortBy) ? sortBy : 'date';
-    
+    // Sort by date (newest first)
     blogs.sort((a, b) => {
-      const aVal = a[sortField] || '';
-      const bVal = b[sortField] || '';
-      const comparison = order === 'asc' ? 
-        aVal.localeCompare && bVal.localeCompare ? aVal.localeCompare(bVal) : 0 :
-        bVal.localeCompare && aVal.localeCompare ? bVal.localeCompare(aVal) : 0;
-      return comparison;
+      const dateA = new Date(a.date || 0);
+      const dateB = new Date(b.date || 0);
+      return dateB - dateA;
     });
 
     // Apply pagination
@@ -394,7 +506,6 @@ router.get('/:category', readRateLimit, async (req, res) => {
 
     console.log(`✅ Category blogs fetched: ${category} (${total} total, ${Date.now() - startTime}ms)`);
     
-    // ✅ CRITICAL: Always return array for frontend .map()
     res.json(paginatedBlogs);
     
   } catch (error) {
@@ -402,17 +513,17 @@ router.get('/:category', readRateLimit, async (req, res) => {
       error: error.message,
       duration: Date.now() - startTime
     });
-    // ✅ CRITICAL: Always return array on error
     res.status(500).json([]);
   }
 });
 
-// ===== GET: All blogs from all categories (FIXED - Always returns array) =====
+
+// ===== GET: All blogs from all categories =====
 router.get('/', readRateLimit, async (req, res) => {
   const startTime = Date.now();
   
   try {
-    const { limit = 50, offset = 0, categories, search, author } = req.query; // ✅ NEW: Added author filter
+    const { limit = 50, offset = 0, categories } = req.query;
     
     // Check cache
     const cacheKey = 'all:blogs';
@@ -437,7 +548,7 @@ router.get('/', readRateLimit, async (req, res) => {
               blog.category = category;
               blog.id = path.basename(fileName, '.json');
               
-              // ✅ NEW: Ensure author field exists with fallback
+              // Ensure author field exists with fallback
               if (!blog.author) {
                 blog.author = 'Terminal Musing';
               }
@@ -462,32 +573,13 @@ router.get('/', readRateLimit, async (req, res) => {
       setCache(cacheKey, allBlogs);
     }
 
-    // Apply filters
+    // Apply category filter only
     let filteredBlogs = allBlogs;
 
-    // Category filter
     if (categories) {
       const categoryList = categories.split(',').map(c => c.trim().toLowerCase());
       filteredBlogs = filteredBlogs.filter(blog => 
         categoryList.includes(blog.category)
-      );
-    }
-
-    // ✅ NEW: Author filter
-    if (author) {
-      const authorFilter = author.toLowerCase();
-      filteredBlogs = filteredBlogs.filter(blog =>
-        blog.author?.toLowerCase().includes(authorFilter)
-      );
-    }
-
-    // Search filter
-    if (search) {
-      const searchTerm = search.toLowerCase();
-      filteredBlogs = filteredBlogs.filter(blog =>
-        blog.title?.toLowerCase().includes(searchTerm) ||
-        blog.content?.toLowerCase().includes(searchTerm) ||
-        blog.author?.toLowerCase().includes(searchTerm) // ✅ NEW: Search by author too
       );
     }
 
@@ -506,7 +598,6 @@ router.get('/', readRateLimit, async (req, res) => {
 
     console.log(`✅ All blogs fetched (${total} total, ${Date.now() - startTime}ms)`);
     
-    // ✅ CRITICAL: Always return array for frontend .map()
     res.json(paginatedBlogs);
     
   } catch (error) {
@@ -514,10 +605,10 @@ router.get('/', readRateLimit, async (req, res) => {
       error: error.message,
       duration: Date.now() - startTime
     });
-    // ✅ CRITICAL: Always return array on error
     res.status(500).json([]);
   }
 });
+
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -529,9 +620,11 @@ router.get('/health', (req, res) => {
     rateLimit: {
       readMax: 200,
       writeMax: 20,
+      deleteMax: 10, // ✅ NEW: Delete rate limit info
       windowMs: 15 * 60 * 1000
     }
   });
 });
+
 
 export default router;

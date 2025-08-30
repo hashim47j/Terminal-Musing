@@ -115,7 +115,7 @@
   flex-direction: row;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  /*box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);*/
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
   min-height: 180px;

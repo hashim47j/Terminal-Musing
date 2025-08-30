@@ -3,6 +3,8 @@
   min-height: 100vh;
   font-family: 'Playfair Display', serif;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .headerSection {
@@ -12,12 +14,28 @@
   background-repeat: no-repeat;
   text-align: center;
   padding: 60px 20px 100px;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 280px;
+  --header-shadow-color: rgba(82, 73, 68, 0);
   overflow: visible;
-  position: relative;
 }
 
-/* Kant image: positioned relative and adjustable */
+.headerSection::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 0%;
+  right: 0%;
+  background: transparent;
+  box-shadow: 0 0 40px 15px var(--header-shadow-color);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .kantSapereAudeImage {
   width: 240px;
   height: auto;
@@ -25,14 +43,23 @@
   margin: 0 auto;
   position: relative;
   transition: left 0.25s ease, top 0.25s ease;
-  left: var(--kant-x, 0px)!important;
+  left: var(--kant-x, 0px) !important;
   top: var(--kant-y, 25px) !important;
+  z-index: 2;
 }
 
-/* --- Posts Section --- */
 .postsSection {
   background-color: #f8f7f3;
-  padding: 60px 5% 80px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin: 260px 160px 40px 160px;
+  height: auto;
+  width: auto;
+  flex: 1;
+  padding: 0 5%;
+}
+
+.postsHeader {
+  padding: 60px 0 30px 0;
 }
 
 .postsHeading {
@@ -40,7 +67,37 @@
   color: #1d1d1d;
   font-weight: 600;
   text-align: center;
-  margin-bottom: 50px;
+  margin: 0;
+  padding-bottom: 10px;
+}
+
+.postsCount {
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.blogGridContainer {
+  height: 50vh;
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #999 transparent;
+}
+
+.blogGridContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.blogGridContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.blogGridContainer::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 3px;
 }
 
 .postsGrid {
@@ -49,6 +106,7 @@
   gap: 40px 30px;
   max-width: 1300px;
   margin: 0 auto;
+  padding: 24px 0 40px 0;
 }
 
 .postCard {
@@ -59,25 +117,68 @@
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  min-height: 180px;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.postCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+.postCard.mobileExpanded {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0,0,0,0.3)) !important;
+  -webkit-box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0,0,0,0.3)) !important;
+  transition: all 0.2s ease-out !important;
+  will-change: transform, box-shadow;
+}
+
+/* Touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .postCard:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
 }
 
 .postImage {
   width: 50%;
+  height: 100%;
   object-fit: cover;
-  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+  transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.expanded {
+  width: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  filter: blur(4px);
+  transform: scale(1.05);
+}
+
+.hiddenContent {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .postContent {
-  padding: 20px 18px;
+  width: 50%;
+  padding: 20px 18px 50px 18px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  width: 50%;
+  justify-content: flex-start;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1;
+  position: relative;
 }
 
 .postTitle {
@@ -85,6 +186,8 @@
   font-weight: 600;
   margin-bottom: 8px;
   color: #111;
+  line-height: 1.3;
+  flex-grow: 1;
 }
 
 .postDescription {
@@ -95,24 +198,283 @@
   font-family: 'Roboto', sans-serif;
 }
 
+.cardBottomFixed {
+  position: absolute;
+  bottom: 12px;
+  left: 18px;
+  right: 18px;
+}
+
+.cardSeparatorLine {
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.cardMetaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.8rem;
+}
+
 .postTime {
   font-size: 0.85em;
   color: #999;
-  text-align: left;
-  border-top: 1px solid #1d1d1d;
-  padding-top: 6px;
-  margin-top: auto;
+  white-space: nowrap;
 }
 
-/* Responsive tweaks */
+.categoryBadge {
+  background-color: #1d1d1d;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.hoverOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #333;
+  z-index: 10;
+  padding: 20px;
+  animation: fadeInOverlay 0.4s ease 0.2s both;
+  pointer-events: none;
+}
+
+.shareIcon, .readBtn {
+  pointer-events: auto;
+}
+
+.subheadingContainer {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  padding-top: -2px;
+  padding-left: -2px;
+}
+
+.hoverSubheading {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: #fff;
+  font-weight: 400;
+  font-family: 'Arial', sans-serif;
+  animation: slideUpContent 0.5s ease 0.3s both;
+}
+
+.bottomFixed {
+  position: absolute;
+  bottom: 5px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideUpBottom 0.4s ease 0.4s both;
+}
+
+.authorDateContainer {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.authorName {
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.postDateOverlay {
+  font-size: 0.85rem;
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.shareIcon {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  margin-left: 8px;
+}
+
+.shareIcon:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.readBtn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.readBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.separatorLine {
+  position: relative;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.8);
+  width: 80%;
+  margin-bottom: 2px;
+  animation: expandLineToDate 0.6s ease 0.4s forwards;
+}
+
+.leftContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 8px;
+}
+
+.rightContent {
+  display: flex;
+  align-items: center;
+  padding-bottom: 4px;
+  gap: 0px;
+  pointer-events: auto;
+}
+
+.loadingState, .errorState, .emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #484848;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+.retryBtn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #1d1d1d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.retryBtn:hover {
+  background-color: #333;
+}
+
+/* Animation keyframes */
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpContent {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUpBottom {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes expandLineToDate {
+  from { width: 0%; }
+  to { width: 80%; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Tablet */
 @media (max-width: 768px) {
+  .postCard.mobileExpanded {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0, 0, 0, 0.3)) !important;
+    -webkit-box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0, 0, 0, 0.3)) !important;
+  }
+
+  .postsSection {
+    margin: 260px 5vw 40px 5vw;
+    width: 90vw;
+  }
+
+  .blogGridContainer {
+    padding: 20px 25px 35px 25px;
+    height: 50vh;
+  }
+
+  .postsGrid {
+    grid-template-columns: 1fr;
+    gap: 32px 0;
+    padding: 0;
+  }
+
   .postCard {
     flex-direction: column;
+    min-height: 180px;
+    height: 100%;
   }
 
   .postImage,
   .postContent {
     width: 100%;
+  }
+
+  .postImage {
+    height: 120px;
+    min-height: 120px;
+  }
+
+  .postContent {
+    padding: 15px 12px;
   }
 
   .postsHeading {
@@ -125,24 +487,36 @@
     padding: 34px 6px 34px;
     background-size: 220%;
     background-position: 55% 25%;
-    min-height: 200px;
+    height: 200px;
   }
 
   .kantSapereAudeImage {
-    width: 180px; /* Smaller Kant image */
-    left: var(--kant-x-mobile, 20px)!important;
-    top: var(--kant-y-mobile, 30px)!important;
+    width: 180px;
+    left: var(--kant-x-mobile, 20px) !important;
+    top: var(--kant-y-mobile, 30px) !important;
+  }
+
+  .postsSection {
+    margin: 210px 5vw 80px 5vw;
+    width: 90vw;
+  }
+
+  .blogGridContainer {
+    height: 50vh;
+    overflow-y: auto;
+    padding: 0 20px 40px 20px;
+    scrollbar-width: thin;
+    scrollbar-color: #999 transparent;
+  }
+
+  .postsGrid {
+    gap: 18px 0px;
+    padding: 0;
   }
 
   .postsHeading {
     font-size: 1.5em;
     margin-bottom: 28px;
-  }
-
-  .postsGrid {
-    gap: 18px 0px;
-    padding-left: 2px;
-    padding-right: 2px;
   }
 
   .postCard {
@@ -172,7 +546,13 @@
 
   .postTime {
     font-size: 0.8em;
-    padding-top: 3px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .postCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px var(--card-shadow-color, rgba(0,0,0,0.15));
   }
 }
 
@@ -194,6 +574,10 @@
   color: #ffffff;
 }
 
+.darkMode .postsCount {
+  color: #aaa;
+}
+
 .darkMode .postCard {
   background-color: #2a2a2a;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
@@ -209,5 +593,24 @@
 
 .darkMode .postTime {
   color: #aaaaaa;
-  border-top: 1px solid #444;
+}
+
+.darkMode .cardSeparatorLine {
+  background-color: #444;
+}
+
+.darkMode .categoryBadge {
+  background-color: #555;
+}
+
+.darkMode .loadingState, .darkMode .errorState, .darkMode .emptyState {
+  color: #aaa;
+}
+
+.darkMode .retryBtn {
+  background-color: #444;
+}
+
+.darkMode .retryBtn:hover {
+  background-color: #666;
 }

@@ -1,13 +1,303 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './WritingsPage.module.css';
 import writingsHero from '../../assets/writings-hero.png';
+import writingsBackground from '../../assets/Wrting-background.png';
+
+const DynamicBackgroundShadow = () => {
+  const headerRef = useRef(null);
+  const imgRef = useRef(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    const extractColorFromImage = () => {
+      if (!imgRef.current || !headerRef.current || !imageLoaded) return;
+
+      const img = imgRef.current;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      try {
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        let r = 0, g = 0, b = 0, count = 0;
+        
+        for (let i = 0; i < data.length; i += 4 * 10) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count++;
+        }
+        
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+
+        const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+        headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
+      } catch (err) {
+        console.warn('Could not extract color from background image:', err);
+      }
+    };
+
+    if (imageLoaded) {
+      extractColorFromImage();
+    }
+  }, [imageLoaded]);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  return (
+    <>
+      <img
+        ref={imgRef}
+        src={writingsBackground}
+        alt="Background for color extraction"
+        crossOrigin="anonymous"
+        style={{ display: 'none' }}
+        onLoad={handleImageLoad}
+        onError={() => setImageLoaded(false)}
+      />
+      <section ref={headerRef} className={styles.headerSection}>
+        <img
+          src={writingsHero}
+          alt="Writings Hero"
+          className={styles.heroImage}
+        />
+      </section>
+    </>
+  );
+};
+
+const WritingsCard = ({ 
+  post, 
+  hoveredPostId, 
+  onMouseEnter, 
+  onMouseLeave, 
+  onClick, 
+  onKeyDown,
+  activeCardId,
+  setActiveCardId
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0)');
+  const cardRef = useRef(null);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const extractColorFromImage = () => {
+    if (!imgRef.current || !cardRef.current || !imageLoaded) return;
+
+    const img = imgRef.current;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+
+    try {
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      let r = 0, g = 0, b = 0, count = 0;
+
+      for (let i = 0; i < data.length; i += 4 * 10) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count++;
+      }
+
+      r = Math.floor(r / count);
+      g = Math.floor(g / count);
+      b = Math.floor(b / count);
+
+      const shadow = `rgba(${r}, ${g}, ${b}, 0.6)`;
+      setShadowColor(shadow);
+    } catch (err) {
+      console.warn('Could not extract color from card image:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (imageLoaded) extractColorFromImage();
+  }, [imageLoaded]);
+
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isMobile) {
+      const newActiveId = post.id === activeCardId ? null : post.id;
+      setActiveCardId(newActiveId);
+    } else {
+      onClick();
+    }
+  };
+
+  const handleReadButtonClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onClick();
+  };
+
+  const isHovered = !isMobile && hoveredPostId === post.id;
+  const isMobileActive = isMobile && activeCardId === post.id;
+  const isActive = isHovered || isMobileActive;
+
+  return (
+    <article
+      ref={cardRef}
+      className={`${styles.blogCard} ${isMobileActive ? styles.mobileExpanded : ''}`}
+      onClick={handleCardClick}
+      onMouseEnter={!isMobile ? onMouseEnter : undefined}
+      onMouseLeave={!isMobile ? onMouseLeave : undefined}
+      role="button"
+      tabIndex={0}
+      style={{
+        cursor: 'pointer',
+        '--card-shadow-color': (isHovered || isMobileActive) ? shadowColor : 'rgba(0, 0, 0, 0)',
+      }}
+      onKeyDown={onKeyDown}
+      aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
+    >
+      {post.coverImage ? (
+        <img
+          ref={imgRef}
+          src={post.coverImage}
+          alt={`Cover for ${post.title}`}
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
+          loading="lazy"
+          onLoad={() => setImageLoaded(true)}
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
+      ) : (
+        <div
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} 
+          style={{ backgroundColor: '#ccc' }}
+        >
+          <span className={styles.noImageText}>No Image</span>
+        </div>
+      )}
+
+      <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
+        <h3 className={styles.blogTitle}>{post.title}</h3>
+        {post.subheading && (
+          <p className={styles.blogSubheading}>{post.subheading}</p>
+        )}
+
+        <div className={styles.cardBottomFixed}>
+          <div className={styles.cardSeparatorLine}></div>
+          <div className={styles.cardMetaRow}>
+            <span className={styles.blogTime}>
+              {new Date(post.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
+            <span className={styles.categoryBadge}>Writings</span>
+          </div>
+        </div>
+      </div>
+
+      {isActive && (
+        <div className={styles.hoverOverlay}>
+          <div className={styles.subheadingContainer}>
+            <p className={styles.hoverSubheading}>
+              {post.subheading || post.title}
+            </p>
+          </div>
+
+          <div className={styles.bottomFixed}>
+            <div className={styles.leftContent}>
+              <div className={styles.separatorLine}></div>
+              <div className={styles.authorDateContainer}>
+                <span className={styles.authorName}>Writings</span>
+                <span className={styles.blogDateOverlay}>
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.rightContent}>
+              <button
+                className={styles.shareIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (navigator.share) {
+                    navigator.share({
+                      title: post.title,
+                      text: post.subheading,
+                      url: `/blog/writings/${post.id}`
+                    });
+                  } else {
+                    navigator.clipboard.writeText(`${window.location.origin}/blog/writings/${post.id}`);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                </svg>
+              </button>
+
+              <button 
+                className={styles.readBtn}
+                onClick={handleReadButtonClick}
+              >
+                Read
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </article>
+  );
+};
 
 const WritingsPage = () => {
+  const containerRef = useRef(null);
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [hoveredPostId, setHoveredPostId] = useState(null);
+  const [activeCardId, setActiveCardId] = useState(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setActiveCardId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -15,53 +305,43 @@ const WritingsPage = () => {
       setError('');
       
       try {
-        // ✅ Updated to use 'writings' category (matches VALID_CATEGORIES in API)
         const res = await fetch('/api/blogs/writings');
         if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
         
         const data = await res.json();
         
-        // ✅ CRITICAL: Ensure data is always an array before operations
-        console.log('🔍 Writings API Response:', data);
-        console.log('🔍 Is Array:', Array.isArray(data));
-        
         let postsArray = [];
         if (Array.isArray(data)) {
           postsArray = data;
         } else if (data && Array.isArray(data.blogs)) {
-          // Handle if API returns {blogs: [...]}
           postsArray = data.blogs;
         } else {
-          console.warn('⚠️ API returned unexpected format:', typeof data);
           postsArray = [];
         }
 
-        // ✅ Safe sorting with validation
         const sorted = postsArray
-          .filter(post => post && post.id && post.title) // Remove invalid posts
+          .filter(post => post && post.id && post.title)
           .sort((a, b) => {
             const dateA = new Date(a.date || 0);
             const dateB = new Date(b.date || 0);
-            return dateB - dateA; // Newest first
+            return dateB - dateA;
           });
           
         setPosts(sorted);
         
       } catch (err) {
-        console.error('❌ Error fetching writings blogs:', err);
         setError(`Failed to load writings posts: ${err.message}`);
-        setPosts([]); // ✅ Ensure posts is always an array on error
+        setPosts([]);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchPosts();
   }, []);
 
-  // ✅ Enhanced navigation to use unified route
   const handlePostClick = (post) => {
-    navigate(`/blog/writings/${post.id}`); // ✅ Updated to unified route format
+    navigate(`/blog/writings/${post.id}`);
   };
 
   const handleKeyDown = (e, post) => {
@@ -73,15 +353,13 @@ const WritingsPage = () => {
 
   return (
     <div className={styles.writingsPageContainer}>
-      {/* navbar background detector */}
-      <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, height: 80, width: '100%' }} />
+      <div 
+        data-navbar-bg-detect 
+        style={{ position: 'absolute', top: 0, height: 80, width: '100%' }} 
+      />
 
-      {/* Hero */}
-      <section className={styles.headerSection}>
-        <img src={writingsHero} alt="Writings Hero" className={styles.heroImage} />
-      </section>
+      <DynamicBackgroundShadow />
 
-      {/* Posts */}
       <div className={styles.mainContentWrapper}>
         <section className={styles.postsSection}>
           <div className={styles.postsHeader}>
@@ -91,77 +369,45 @@ const WritingsPage = () => {
             </p>
           </div>
 
-          <div className={styles.blogGrid}>
-            {loading ? (
-              <div className={styles.loadingState}>
-                <div className={styles.spinner}></div>
-                <p>Loading writings...</p>
-              </div>
-            ) : error ? (
-              <div className={styles.errorState}>
-                <h3>Oops! Something went wrong</h3>
-                <p style={{ color: 'red' }}>{error}</p>
-                <button 
-                  onClick={() => window.location.reload()} 
-                  className={styles.retryBtn}
-                >
-                  Try Again
-                </button>
-              </div>
-            ) : !Array.isArray(posts) || posts.length === 0 ? (
-              <div className={styles.emptyState}>
-                <h3>No Writings Available</h3>
-                <p>Check back soon for new poems, stories, and creative works.</p>
-              </div>
-            ) : (
-              // ✅ Safe mapping with array check
-              posts.map((post) => (
-                <article
-                  key={post.id}
-                  className={styles.blogCard}
-                  role="button"
-                  tabIndex={0}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => handlePostClick(post)}
-                  onKeyDown={(e) => handleKeyDown(e, post)}
-                  aria-label={`Read article: ${post.title}`}
-                >
-                  {post.coverImage ? (
-                    <img 
-                      src={post.coverImage} 
-                      alt={`Cover for ${post.title}`} 
-                      className={styles.coverImage}
-                      loading="lazy"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextElementSibling.style.display = 'block';
-                      }}
-                    />
-                  ) : (
-                    <div className={styles.coverImage} style={{ backgroundColor: '#ccc' }}>
-                      <span className={styles.noImageText}>No Image</span>
-                    </div>
-                  )}
-
-                  <div className={styles.blogContent}>
-                    <h3 className={styles.blogTitle}>{post.title}</h3>
-                    {post.subheading && (
-                      <p className={styles.blogSubheading}>{post.subheading}</p>
-                    )}
-                    <div className={styles.blogMeta}>
-                      <span className={styles.blogTime}>
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </span>
-                      <span className={styles.categoryBadge}>Writings</span>
-                    </div>
-                  </div>
-                </article>
-              ))
-            )}
+          <div ref={containerRef} className={styles.blogGridContainer}>
+            <div className={styles.blogGrid}>
+              {loading ? (
+                <div className={styles.loadingState}>
+                  <div className={styles.spinner}></div>
+                  <p>Loading writings...</p>
+                </div>
+              ) : error ? (
+                <div className={styles.errorState}>
+                  <h3>Oops! Something went wrong</h3>
+                  <p style={{ color: 'red' }}>{error}</p>
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    className={styles.retryBtn}
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : !Array.isArray(posts) || posts.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <h3>No Writings Available</h3>
+                  <p>Check back soon for new poems, stories, and creative works.</p>
+                </div>
+              ) : (
+                posts.map((post) => (
+                  <WritingsCard
+                    key={post.id}
+                    post={post}
+                    hoveredPostId={hoveredPostId}
+                    onMouseEnter={() => setHoveredPostId(post.id)}
+                    onMouseLeave={() => setHoveredPostId(null)}
+                    onClick={() => handlePostClick(post)}
+                    onKeyDown={(e) => handleKeyDown(e, post)}
+                    activeCardId={activeCardId}
+                    setActiveCardId={setActiveCardId}
+                  />
+                ))
+              )}
+            </div>
           </div>
         </section>
       </div>

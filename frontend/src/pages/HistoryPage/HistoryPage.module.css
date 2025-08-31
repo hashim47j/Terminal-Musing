@@ -179,7 +179,7 @@
 .cardMetaRow {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 8px;
   font-size: 0.8rem;
 }
 
@@ -309,7 +309,7 @@
   right: 20px;
   display: flex;
   align-items: center;
-  gap: 1px;
+  justify-content: space-between;
   animation: slideUpBottom 0.4s ease 0.4s both;
 }
 
@@ -497,7 +497,7 @@
 
 
 .retryBtn:hover {
-  background-color: #0056b3;
+  background-color: #2c2c2c;
 }
 
 

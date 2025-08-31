@@ -485,9 +485,9 @@
   }
 
   .kantSapereAudeImage {
-    width: 120px;
-    left: var(--kant-x, 8px);
-    top: var(--kant-y, 15px);
+    width: 180px;
+    left: var(--kant-x-mobile, 20px) !important;
+    top: var(--kant-y-mobile, 30px) !important;
   }
   
   .postsSection {

@@ -482,12 +482,13 @@
     background-position: 45% center;
     height: 180px;
   }
-
+  
   .heroImage {
-    width: 120px;
-    left: var(--hero-x, 8px);
-    top: var(--hero-y, 15px);
+    width: 160px;
+    left: var(--hero-x-mobile, 215px) !important;
+    top: var(--hero-y-mobile, 100px) !important;
   }
+
   
   .postsSection {
     margin: 190px 5vw 80px 5vw;

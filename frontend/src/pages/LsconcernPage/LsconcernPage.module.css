@@ -487,9 +487,10 @@
   }
 
   .heroImage {
-    width: 120px;
-    left: var(--hero-x, 8px);
-    top: var(--hero-y, 15px);
+    width: 200px;
+    max-width: 90vw;
+    left: var(--hero-x-mobile, 25px);
+    top: var(--hero-y-mobile, 20px);
   }
   
   .postsSection {

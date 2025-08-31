@@ -655,7 +655,7 @@
 }
 
 .cardMetaRow {
-  gap: 20px; /* Increase from original 8px to 20px for more spacing */
+  gap: 5px; /* Increase from original 8px to 20px for more spacing */
 }
 
 

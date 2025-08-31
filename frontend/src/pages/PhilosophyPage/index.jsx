@@ -228,10 +228,10 @@ const BlogCard = ({
       </div>
 
       {isActive && (
-        <div className={styles.hoverOverlay}>
-          <div className={styles.subheadingContainer}>
-            <p className={styles.hoverSubheading}>
-              {post.title}
+  <div className={styles.hoverOverlay}>
+  <div className={styles.subheadingContainer}>
+    <p className={styles.hoverSubheading}>
+      {post.subheading || post.title}
             </p>
           </div>
 

@@ -326,7 +326,6 @@
 .authorName {
   font-size: 0.9rem;
   font-weight: 400;
-  font-family: 'Arial', sans-serif;
   color: #fff;
   white-space: nowrap;
 }
@@ -335,7 +334,6 @@
 
 .postDate {
   font-size: 0.85rem;
-  font-family: 'Arial', sans-serif;
   color: #fff;
   white-space: nowrap;
 }

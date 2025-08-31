@@ -55,9 +55,9 @@
 
 
 .postsSection {
-  background-color: #f8f7f3;
+  background-color: #ecebeb;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  margin: 260px 160px 40px 160px;
+  margin: 235px 160px 40px 160px;
   height: auto;
   width: auto;
   flex: 1;
@@ -120,18 +120,16 @@
 
 
 .blogCard {
-  background-color: #ffffff;
   display: flex;
   flex-direction: row;
+  background: #fff;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
   min-height: 180px;
   height: 100%;
-  width: 100%;
-  max-width: 450px;
   position: relative;
   cursor: pointer;
   -webkit-appearance: none;

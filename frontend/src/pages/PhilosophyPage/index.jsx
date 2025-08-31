@@ -209,9 +209,7 @@ const PhilosophyCard = ({
 
       <div className={`${styles.postContent} ${isActive ? styles.hiddenContent : ''}`}>
         <h3 className={styles.postTitle}>{post.title}</h3>
-        {post.subheading && (
-          <p className={styles.postDescription}>{post.subheading}</p>
-        )}
+        
 
         <div className={styles.cardBottomFixed}>
           <div className={styles.cardSeparatorLine}></div>
@@ -229,8 +227,11 @@ const PhilosophyCard = ({
 
       {isActive && (
         <div className={styles.hoverOverlay}>
-          
-
+          <div className={styles.subheadingContainer}>
+            <p className={styles.hoverSubheading}>
+              {post.subheading || post.title}
+            </p>
+          </div>
 
           <div className={styles.bottomFixed}>
             <div className={styles.leftContent}>

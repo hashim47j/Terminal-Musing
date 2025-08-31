@@ -72,24 +72,21 @@ const DynamicBackgroundShadow = ({ darkMode }) => {
           src={darkMode ? kantDark : kantLight}
           alt="Immanuel Kant and Sapere Aude"
           className={styles.kantSapereAudeImage}
-          style={{
-            left: 'var(--kant-x, 0px)',
-            top: 'var(--kant-y, 25px)',
-            position: 'relative',
-          }}
         />
       </section>
     </>
   );
 };
 
-const PhilosophyCard = ({ 
+const BlogCard = ({ 
   post, 
   hoveredPostId, 
   onMouseEnter, 
   onMouseLeave, 
   onClick, 
-  onKeyDown,
+  onKeyDown, 
+  currentAuthor, 
+  getWordCount,
   activeCardId,
   setActiveCardId
 }) => {
@@ -173,7 +170,7 @@ const PhilosophyCard = ({
   return (
     <article
       ref={cardRef}
-      className={`${styles.postCard} ${isMobileActive ? styles.mobileExpanded : ''}`}
+      className={`${styles.blogCard} ${isMobileActive ? styles.mobileExpanded : ''}`}
       onClick={handleCardClick}
       onMouseEnter={!isMobile ? onMouseEnter : undefined}
       onMouseLeave={!isMobile ? onMouseLeave : undefined}
@@ -191,7 +188,7 @@ const PhilosophyCard = ({
           ref={imgRef}
           src={post.coverImage}
           alt={`Cover for ${post.title}`}
-          className={`${styles.postImage} ${isActive ? styles.expanded : ''}`}
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
           loading="lazy"
           onLoad={() => setImageLoaded(true)}
           onError={(e) => {
@@ -200,26 +197,31 @@ const PhilosophyCard = ({
         />
       ) : (
         <div
-          className={`${styles.postImage} ${isActive ? styles.expanded : ''}`} 
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} 
           style={{ backgroundColor: '#ccc' }}
         >
           <span className={styles.noImageText}>No Image</span>
         </div>
       )}
 
-      <div className={`${styles.postContent} ${isActive ? styles.hiddenContent : ''}`}>
-        <h3 className={styles.postTitle}>{post.title}</h3>
-        
+      <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
+        <h3 className={styles.blogTitle}>{post.title}</h3>
 
         <div className={styles.cardBottomFixed}>
           <div className={styles.cardSeparatorLine}></div>
           <div className={styles.cardMetaRow}>
-            <span className={styles.postTime}>
+            <span className={styles.cardAuthor}>
+              by {post.author || currentAuthor}
+            </span>
+            <span className={styles.cardDate}>
               {new Date(post.date).toLocaleDateString('en-US', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
               })}
+            </span>
+            <span className={styles.cardWordCount}>
+              {getWordCount(post.content)} words
             </span>
           </div>
         </div>
@@ -229,7 +231,7 @@ const PhilosophyCard = ({
         <div className={styles.hoverOverlay}>
           <div className={styles.subheadingContainer}>
             <p className={styles.hoverSubheading}>
-              {post.subheading || post.title}
+              {post.title}
             </p>
           </div>
 
@@ -237,8 +239,10 @@ const PhilosophyCard = ({
             <div className={styles.leftContent}>
               <div className={styles.separatorLine}></div>
               <div className={styles.authorDateContainer}>
-                <span className={styles.authorName}>Philosophy</span>
-                <span className={styles.postDateOverlay}>
+                <span className={styles.authorName}>
+                  {post.author || currentAuthor}
+                </span>
+                <span className={styles.postDate}>
                   {new Date(post.date).toLocaleDateString('en-US', {
                     day: 'numeric',
                     month: 'short',
@@ -256,7 +260,7 @@ const PhilosophyCard = ({
                   if (navigator.share) {
                     navigator.share({
                       title: post.title,
-                      text: post.subheading,
+                      text: post.title,
                       url: `/blog/philosophy/${post.id}`
                     });
                   } else {
@@ -286,12 +290,13 @@ const PhilosophyCard = ({
 
 const PhilosophyPage = () => {
   const { darkMode } = useDarkMode();
-  const containerRef = useRef(null);
+  const containerRef = useRef(null); 
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hoveredPostId, setHoveredPostId] = useState(null);
+  const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
   const [activeCardId, setActiveCardId] = useState(null);
 
   useEffect(() => {
@@ -303,6 +308,59 @@ const PhilosophyPage = () => {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const getWordCount = (content) => {
+    if (!content || !Array.isArray(content)) return 0;
+    
+    const textContent = content
+      .filter(block => block.type === 'paragraph' && block.text)
+      .map(block => block.text)
+      .join(' ');
+    
+    return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  useEffect(() => {
+    const fetchCurrentAuthor = async () => {
+      try {
+        const endpoints = [
+          '/api/user/me',
+          '/api/admin/profile', 
+          '/api/auth/user',
+          '/api/current-user'
+        ];
+        
+        for (const endpoint of endpoints) {
+          try {
+            const res = await fetch(endpoint);
+            if (res.ok) {
+              const userData = await res.json();
+              const authorName = userData.name || 
+                               userData.username || 
+                               userData.displayName || 
+                               userData.fullName ||
+                               'Terminal Musing';
+              setCurrentAuthor(authorName);
+              return;
+            }
+          } catch (err) {
+            continue;
+          }
+        }
+        
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          setCurrentAuthor(user.name || user.username || 'Terminal Musing');
+        }
+        
+      } catch (err) {
+        setCurrentAuthor('Terminal Musing');
+      }
+    };
+
+    fetchCurrentAuthor();
   }, []);
 
   useEffect(() => {
@@ -358,29 +416,19 @@ const PhilosophyPage = () => {
   };
 
   return (
-    <div className={`${styles.philosophyPageContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.philosophyPageContainer}>
       <div
         data-navbar-bg-detect
-        style={{
-          position: 'absolute',
-          top: 0,
-          height: '80px',
-          width: '100%',
-        }}
+        style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
       <DynamicBackgroundShadow darkMode={darkMode} />
 
       <section className={styles.postsSection}>
-        <div className={styles.postsHeader}>
-          <h2 className={styles.postsHeading}>Philosophy Posts</h2>
-          <p className={styles.postsCount}>
-            {loading ? 'Loading...' : `${posts.length} post${posts.length !== 1 ? '' : ''} `}
-          </p>
-        </div>
-        
+        <h2 className={styles.postsHeading}>Philosophy Posts</h2>
+
         <div ref={containerRef} className={styles.blogGridContainer}>
-          <div className={styles.postsGrid}>
+          <div className={styles.blogGrid}>
             {loading ? (
               <div className={styles.loadingState}>
                 <div className={styles.spinner}></div>
@@ -400,11 +448,11 @@ const PhilosophyPage = () => {
             ) : !Array.isArray(posts) || posts.length === 0 ? (
               <div className={styles.emptyState}>
                 <h3>No Philosophy Posts Available</h3>
-                <p></p>
+                <p>Check back soon for new philosophical insights and articles.</p>
               </div>
             ) : (
               posts.map((post) => (
-                <PhilosophyCard
+                <BlogCard
                   key={post.id}
                   post={post}
                   hoveredPostId={hoveredPostId}
@@ -412,6 +460,8 @@ const PhilosophyPage = () => {
                   onMouseLeave={() => setHoveredPostId(null)}
                   onClick={() => handlePostClick(post)}
                   onKeyDown={(e) => handleKeyDown(e, post)}
+                  currentAuthor={currentAuthor}
+                  getWordCount={getWordCount}
                   activeCardId={activeCardId}
                   setActiveCardId={setActiveCardId}
                 />
@@ -420,6 +470,8 @@ const PhilosophyPage = () => {
           </div>
         </div>
       </section>
+
+      <div className={styles.grayStrip}></div>
     </div>
   );
 };

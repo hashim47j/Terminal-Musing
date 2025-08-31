@@ -223,18 +223,14 @@ const PhilosophyCard = ({
                 year: 'numeric',
               })}
             </span>
-            <span className={styles.categoryBadge}>Philosophy</span>
           </div>
         </div>
       </div>
 
       {isActive && (
         <div className={styles.hoverOverlay}>
-          <div className={styles.subheadingContainer}>
-            <p className={styles.hoverSubheading}>
-              {post.subheading || post.title}
-            </p>
-          </div>
+          
+
 
           <div className={styles.bottomFixed}>
             <div className={styles.leftContent}>

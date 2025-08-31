@@ -309,7 +309,7 @@
   right: 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  
   animation: slideUpBottom 0.4s ease 0.4s both;
 }
 
@@ -419,7 +419,7 @@
 .leftContent {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   padding-bottom: 8px;
 }
 

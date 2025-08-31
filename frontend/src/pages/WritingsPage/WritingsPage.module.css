@@ -244,7 +244,6 @@
   line-height: 1.4;
   color: #fff;
   font-weight: 400;
-  font-family: 'Arial', sans-serif;
   animation: slideUpContent 0.5s ease 0.3s both;
 }
 
@@ -268,14 +267,12 @@
 .authorName {
   font-size: 0.9rem;
   font-weight: 400;
-  font-family: 'Arial', sans-serif;
   color: #fff;
   white-space: nowrap;
 }
 
 .postDate {
   font-size: 0.85rem;
-  font-family: 'Arial', sans-serif;
   color: #fff;
   white-space: nowrap;
 }
@@ -535,6 +532,10 @@
   .blogContent {
     padding: 14px 11px;
   }
+}
+
+.cardMetaRow {
+  gap: 20px;
 }
 
 @media (hover: hover) and (pointer: fine) {

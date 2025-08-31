@@ -482,8 +482,8 @@
   
   .heroImage {
     width: 160px;
-    left: var(--hero-x-mobile, 215px) !important;
-    top: var(--hero-y-mobile, 100px) !important;
+    left: var(--hero-x, 8px);
+    top: var(--hero-y, 15px);
   }
 
   

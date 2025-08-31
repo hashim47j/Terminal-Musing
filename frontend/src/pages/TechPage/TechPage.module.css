@@ -37,13 +37,14 @@
 
 .heroImage {
   position: relative;
-  left: var(--hero-x, -45px);
-  top: var(--hero-y, 8px);
-  width: 160px;
+  left: var(--tech-x, 0px);
+  top: var(--tech-y, 25px);
+  width: 300px;
   height: auto;
   display: block;
   margin: 0 auto;
   z-index: 2;
+  transition: left 0.25s ease, top 0.25s ease;
 }
 
 .postsSection {

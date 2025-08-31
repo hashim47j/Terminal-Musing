@@ -378,7 +378,7 @@ const PhilosophyPage = () => {
         <div className={styles.postsHeader}>
           <h2 className={styles.postsHeading}>Philosophy Posts</h2>
           <p className={styles.postsCount}>
-            {loading ? 'Loading...' : `${posts.length} post${posts.length !== 1 ? 's' : ''} available`}
+            {loading ? 'Loading...' : `${posts.length} post${posts.length !== 1 ? '' : ''} `}
           </p>
         </div>
         
@@ -403,7 +403,7 @@ const PhilosophyPage = () => {
             ) : !Array.isArray(posts) || posts.length === 0 ? (
               <div className={styles.emptyState}>
                 <h3>No Philosophy Posts Available</h3>
-                <p>Check back soon for new philosophical insights and discussions.</p>
+                <p></p>
               </div>
             ) : (
               posts.map((post) => (

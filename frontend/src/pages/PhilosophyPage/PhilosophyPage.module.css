@@ -36,13 +36,14 @@
 }
 
 .kantSapereAudeImage {
-  position: relative;
-  left: var(--kant-x, 0px);
-  top: var(--kant-y, 8px);
-  width: 160px;
+  width: 240px;
   height: auto;
   display: block;
   margin: 0 auto;
+  position: relative;
+  transition: left 0.25s ease, top 0.25s ease;
+  left: var(--kant-x, 0px) !important;
+  top: var(--kant-y, 25px) !important;
   z-index: 2;
 }
 

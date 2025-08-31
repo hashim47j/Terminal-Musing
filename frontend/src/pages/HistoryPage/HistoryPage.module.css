@@ -296,7 +296,7 @@
   line-height: 1.4;
   color: #fff;
   font-weight: 400;
-  font-family: 'Arial', sans-serif;
+  
   animation: slideUpContent 0.5s ease 0.3s both;
 }
 
@@ -655,7 +655,7 @@
 }
 
 .cardMetaRow {
-  gap: 5px; /* Increase from original 8px to 20px for more spacing */
+  gap: 20px; /* Increase from original 8px to 20px for more spacing */
 }
 
 

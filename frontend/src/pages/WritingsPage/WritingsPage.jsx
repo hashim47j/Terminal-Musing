@@ -76,13 +76,15 @@ const DynamicBackgroundShadow = () => {
   );
 };
 
-const WritingsCard = ({ 
+const BlogCard = ({ 
   post, 
   hoveredPostId, 
   onMouseEnter, 
   onMouseLeave, 
   onClick, 
-  onKeyDown,
+  onKeyDown, 
+  currentAuthor, 
+  getWordCount,
   activeCardId,
   setActiveCardId
 }) => {
@@ -101,6 +103,7 @@ const WritingsCard = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Function to extract average color for shadows
   const extractColorFromImage = () => {
     if (!imgRef.current || !cardRef.current || !imageLoaded) return;
 
@@ -201,21 +204,23 @@ const WritingsCard = ({
 
       <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
         <h3 className={styles.blogTitle}>{post.title}</h3>
-        {post.subheading && (
-          <p className={styles.blogSubheading}>{post.subheading}</p>
-        )}
 
         <div className={styles.cardBottomFixed}>
           <div className={styles.cardSeparatorLine}></div>
           <div className={styles.cardMetaRow}>
-            <span className={styles.blogTime}>
+            <span className={styles.cardAuthor}>
+              by {post.author || currentAuthor}
+            </span>
+            <span className={styles.cardDate}>
               {new Date(post.date).toLocaleDateString('en-US', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
               })}
             </span>
-            <span className={styles.categoryBadge}>Writings</span>
+            <span className={styles.cardWordCount}>
+              {getWordCount(post.content)} words
+            </span>
           </div>
         </div>
       </div>
@@ -232,8 +237,10 @@ const WritingsCard = ({
             <div className={styles.leftContent}>
               <div className={styles.separatorLine}></div>
               <div className={styles.authorDateContainer}>
-                <span className={styles.authorName}>Writings</span>
-                <span className={styles.blogDateOverlay}>
+                <span className={styles.authorName}>
+                  {post.author || currentAuthor}
+                </span>
+                <span className={styles.postDate}>
                   {new Date(post.date).toLocaleDateString('en-US', {
                     day: 'numeric',
                     month: 'short',
@@ -280,12 +287,13 @@ const WritingsCard = ({
 };
 
 const WritingsPage = () => {
-  const containerRef = useRef(null);
+  const containerRef = useRef(null); 
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hoveredPostId, setHoveredPostId] = useState(null);
+  const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
   const [activeCardId, setActiveCardId] = useState(null);
 
   useEffect(() => {
@@ -297,6 +305,59 @@ const WritingsPage = () => {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const getWordCount = (content) => {
+    if (!content || !Array.isArray(content)) return 0;
+    
+    const textContent = content
+      .filter(block => block.type === 'paragraph' && block.text)
+      .map(block => block.text)
+      .join(' ');
+    
+    return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  useEffect(() => {
+    const fetchCurrentAuthor = async () => {
+      try {
+        const endpoints = [
+          '/api/user/me',
+          '/api/admin/profile', 
+          '/api/auth/user',
+          '/api/current-user'
+        ];
+        
+        for (const endpoint of endpoints) {
+          try {
+            const res = await fetch(endpoint);
+            if (res.ok) {
+              const userData = await res.json();
+              const authorName = userData.name || 
+                               userData.username || 
+                               userData.displayName || 
+                               userData.fullName ||
+                               'Terminal Musing';
+              setCurrentAuthor(authorName);
+              return;
+            }
+          } catch (err) {
+            continue;
+          }
+        }
+        
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          setCurrentAuthor(user.name || user.username || 'Terminal Musing');
+        }
+        
+      } catch (err) {
+        setCurrentAuthor('Terminal Musing');
+      }
+    };
+
+    fetchCurrentAuthor();
   }, []);
 
   useEffect(() => {
@@ -353,64 +414,61 @@ const WritingsPage = () => {
 
   return (
     <div className={styles.writingsPageContainer}>
-      <div 
-        data-navbar-bg-detect 
-        style={{ position: 'absolute', top: 0, height: 80, width: '100%' }} 
+      <div
+        data-navbar-bg-detect
+        style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
       <DynamicBackgroundShadow />
 
-      <div className={styles.mainContentWrapper}>
-        <section className={styles.postsSection}>
-          <div className={styles.postsHeader}>
-            <h2 className={styles.postsHeading}>Writings</h2>
-            <p className={styles.postsCount}>
-              {loading ? 'Loading...' : `${posts.length} post${posts.length !== 1 ? 's' : ''} available`}
-            </p>
-          </div>
+      <section className={styles.postsSection}>
+        <h2 className={styles.postsHeading}>Writings</h2>
 
-          <div ref={containerRef} className={styles.blogGridContainer}>
-            <div className={styles.blogGrid}>
-              {loading ? (
-                <div className={styles.loadingState}>
-                  <div className={styles.spinner}></div>
-                  <p>Loading writings...</p>
-                </div>
-              ) : error ? (
-                <div className={styles.errorState}>
-                  <h3>Oops! Something went wrong</h3>
-                  <p style={{ color: 'red' }}>{error}</p>
-                  <button 
-                    onClick={() => window.location.reload()} 
-                    className={styles.retryBtn}
-                  >
-                    Try Again
-                  </button>
-                </div>
-              ) : !Array.isArray(posts) || posts.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <h3>No Writings Available</h3>
-                  <p>Check back soon for new poems, stories, and creative works.</p>
-                </div>
-              ) : (
-                posts.map((post) => (
-                  <WritingsCard
-                    key={post.id}
-                    post={post}
-                    hoveredPostId={hoveredPostId}
-                    onMouseEnter={() => setHoveredPostId(post.id)}
-                    onMouseLeave={() => setHoveredPostId(null)}
-                    onClick={() => handlePostClick(post)}
-                    onKeyDown={(e) => handleKeyDown(e, post)}
-                    activeCardId={activeCardId}
-                    setActiveCardId={setActiveCardId}
-                  />
-                ))
-              )}
-            </div>
+        <div ref={containerRef} className={styles.blogGridContainer}>
+          <div className={styles.blogGrid}>
+            {loading ? (
+              <div className={styles.loadingState}>
+                <div className={styles.spinner}></div>
+                <p>Loading writings...</p>
+              </div>
+            ) : error ? (
+              <div className={styles.errorState}>
+                <h3>Oops! Something went wrong</h3>
+                <p style={{ color: 'red' }}>{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className={styles.retryBtn}
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : !Array.isArray(posts) || posts.length === 0 ? (
+              <div className={styles.emptyState}>
+                <h3>No Writings Available</h3>
+                <p>Check back soon for new poems, stories, and creative works.</p>
+              </div>
+            ) : (
+              posts.map((post) => (
+                <BlogCard
+                  key={post.id}
+                  post={post}
+                  hoveredPostId={hoveredPostId}
+                  onMouseEnter={() => setHoveredPostId(post.id)}
+                  onMouseLeave={() => setHoveredPostId(null)}
+                  onClick={() => handlePostClick(post)}
+                  onKeyDown={(e) => handleKeyDown(e, post)}
+                  currentAuthor={currentAuthor}
+                  getWordCount={getWordCount}
+                  activeCardId={activeCardId}
+                  setActiveCardId={setActiveCardId}
+                />
+              ))
+            )}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      <div className={styles.grayStrip}></div>
     </div>
   );
 };

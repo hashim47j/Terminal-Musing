@@ -130,6 +130,7 @@
   text-decoration: none;
   min-height: 180px;
   height: 100%;
+  width: auto;
   position: relative;
   cursor: pointer;
   -webkit-appearance: none;

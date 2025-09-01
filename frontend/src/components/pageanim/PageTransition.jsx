@@ -8,15 +8,15 @@ const PageTransition = ({ children }) => {
   const location = useLocation();
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   const [animationPhase, setAnimationPhase] = useState('idle');
-  const [finalContent, setFinalContent] = useState(children);
+  const [currentContent, setCurrentContent] = useState(children); // What's currently displayed
+  const [newContent, setNewContent] = useState(null); // What's coming in
 
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
       console.log('🎬 Starting animation, direction:', transitionDirection);
       
-      // Store the target content for final rendering
-      setFinalContent(getPageComponent(targetPageContent));
-      
+      // Prepare the new content but don't show it yet
+      setNewContent(getPageComponent(targetPageContent));
       setAnimationPhase('blackwhiteblur');
       
       setTimeout(() => {
@@ -24,19 +24,17 @@ const PageTransition = ({ children }) => {
         setAnimationPhase('drift');
         
         setTimeout(() => {
-          console.log('✅ Animation complete - showing final content');
-          // FIX: Set animation phase to idle BEFORE updating content
-          setAnimationPhase('complete');
-          
-          // Small delay to ensure clean transition
-          setTimeout(() => {
-            setAnimationPhase('idle');
-          }, 50);
+          console.log('✅ Animation complete');
+          // Now switch to the new content and clean up
+          setCurrentContent(getPageComponent(targetPageContent));
+          setNewContent(null);
+          setAnimationPhase('idle');
         }, 600);
       }, 400);
     } else if (!isTransitioning) {
-      // Update content when not transitioning
-      setFinalContent(children);
+      // When not transitioning, just update current content
+      setCurrentContent(children);
+      setNewContent(null);
       setAnimationPhase('idle');
     }
   }, [isTransitioning, targetPageContent, transitionDirection, children]);
@@ -48,8 +46,8 @@ const PageTransition = ({ children }) => {
   return (
     <div className={styles.transitionContainer}>
       
-      {/* Show animation phases */}
-      {(animationPhase === 'blackwhiteblur' || animationPhase === 'drift') && (
+      {/* During animation phases */}
+      {animationPhase !== 'idle' && (
         <>
           {/* Current Page - animating out */}
           <div 
@@ -66,11 +64,11 @@ const PageTransition = ({ children }) => {
               zIndex: 1
             }}
           >
-            {children}
+            {currentContent}
           </div>
           
           {/* New Page - appearing during drift */}
-          {animationPhase === 'drift' && (
+          {animationPhase === 'drift' && newContent && (
             <div 
               className={`
                 ${styles.incomingPage}
@@ -79,16 +77,16 @@ const PageTransition = ({ children }) => {
               `}
               style={{ zIndex: 2 }}
             >
-              {finalContent}
+              {newContent}
             </div>
           )}
         </>
       )}
 
-      {/* Final static page - no animations - ONLY show when completely idle */}
+      {/* Final static page - only when idle */}
       {animationPhase === 'idle' && (
         <div className={styles.pageWrapper}>
-          {finalContent}
+          {currentContent}
         </div>
       )}
       

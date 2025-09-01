@@ -20,14 +20,11 @@ export const PageTransitionProvider = ({ children }) => {
     if (targetPath === '/admin/login' || currentPath === '/admin/login') {
       return 'none';
     }
-
     const currentIndex = navbarOrder.indexOf(currentPath);
     const targetIndex = navbarOrder.indexOf(targetPath);
-
     if (currentIndex === -1 || targetIndex === -1) {
       return 'right';
     }
-
     return targetIndex > currentIndex ? 'right' : 'left';
   };
 
@@ -37,27 +34,26 @@ export const PageTransitionProvider = ({ children }) => {
     if (currentPath === targetPath || isTransitioning) {
       return;
     }
-
     const direction = calculateDirection(currentPath, targetPath);
     
     if (direction === 'none' || window.innerWidth <= 768) {
       navigationCallback();
       return;
     }
-
-    console.log('🌀 Smooth blur transition:', direction);
+    
+    console.log('🌀 Framer Motion enhanced transition:', direction);
     
     setTransitionDirection(direction);
     setIsTransitioning(true);
     setTargetPageContent(targetPath);
     
-    // Cleaner timing - match CSS exactly
+    // Slightly longer timeout to let Framer Motion finish smoothly
     setTimeout(() => {
-      console.log('✨ Smooth transition completed');
+      console.log('✨ Framer Motion transition completed');
       setIsTransitioning(false);
       setTargetPageContent(null);
       navigationCallback();
-    }, 950); // Match the 900ms + 50ms buffer
+    }, 1050); // Increased by 100ms for smoother completion
   };
 
   const endTransition = () => {

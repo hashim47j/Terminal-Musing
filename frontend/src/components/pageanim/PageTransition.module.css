@@ -3,7 +3,6 @@
   width: 100%;
   overflow: hidden;
   min-height: 100vh;
-  /* Prevent any flash of content */
   backface-visibility: hidden;
 }
 
@@ -12,101 +11,33 @@
   position: relative;
   z-index: 1;
   will-change: filter, transform, opacity;
-  transition: filter 400ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
-  /* Ensure smooth rendering */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  /* Remove CSS transitions - Framer Motion handles this now */
 }
 
-/* Add transition state to prevent flicker */
-.transitioning {
-  pointer-events: none; /* Prevent interaction during transition */
-}
-
-/* PHASE 1: B&W + Blur together */
+/* Keep your visual styles but remove transitions */
 .turnBlackWhiteBlur {
-  filter: grayscale(100%) blur(8px) !important;
+  /* Framer Motion will handle the filter animation */
 }
 
-/* PHASE 2: Drift - REMOVED brightness filters */
 .driftLeft {
-  transform: translateX(-30px) translateZ(0) !important;
-  opacity: 0 !important;
-  filter: grayscale(100%) blur(12px) !important;
+  /* Framer Motion will handle transform and opacity */
 }
 
 .driftRight {
-  transform: translateX(30px) translateZ(0) !important;
-  opacity: 0 !important;
-  filter: grayscale(100%) blur(12px) !important;
+  /* Framer Motion will handle transform and opacity */
 }
 
-/* Slide animations for version 2 */
-.slideLeft {
-  transform: translateX(-100px) translateZ(0) !important;
-  opacity: 0 !important;
-}
-
-.slideRight {
-  transform: translateX(100px) translateZ(0) !important;
-  opacity: 0 !important;
-}
-
-/* New page coming in */
 .incomingPage {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 2;
-  will-change: opacity, filter, transform;
+  will-change: opacity, filter;
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
-.fromLeft {
-  opacity: 0;
-  transform: translateX(-100px) translateZ(0);
-  filter: blur(5px);
-}
-
-.fromRight {
-  opacity: 0;
-  transform: translateX(100px) translateZ(0);
-  filter: blur(5px);
-}
-
-.slideInComplete {
-  animation: slideInClean 600ms ease-out forwards;
-}
-
-/* Clean slide-in animation */
-@keyframes slideInClean {
-  0% {
-    opacity: 0;
-    transform: translateX(-100px) translateZ(0);
-    filter: blur(5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) translateZ(0);
-    filter: blur(0px);
-  }
-}
-
-/* Clean appear animation */
-@keyframes subtleAppear {
-  0% {
-    opacity: 0;
-    filter: blur(15px);
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0px);
-  }
-}
-
-/* Mobile - ensure no transitions */
+/* Mobile - ensure no animations */
 @media (max-width: 768px) {
   .pageWrapper {
     transition: none !important;

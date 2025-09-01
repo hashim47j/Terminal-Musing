@@ -1,83 +1,125 @@
 .transitionContainer {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    min-height: 100vh;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  min-height: 100vh;
+  /* Prevent any flash of content */
+  backface-visibility: hidden;
+}
+
+.pageWrapper {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  will-change: filter, transform, opacity;
+  transition: filter 400ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
+  /* Ensure smooth rendering */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Add transition state to prevent flicker */
+.transitioning {
+  pointer-events: none; /* Prevent interaction during transition */
+}
+
+/* PHASE 1: B&W + Blur together */
+.turnBlackWhiteBlur {
+  filter: grayscale(100%) blur(8px) !important;
+}
+
+/* PHASE 2: Drift - REMOVED brightness filters */
+.driftLeft {
+  transform: translateX(-30px) translateZ(0) !important;
+  opacity: 0 !important;
+  filter: grayscale(100%) blur(12px) !important;
+}
+
+.driftRight {
+  transform: translateX(30px) translateZ(0) !important;
+  opacity: 0 !important;
+  filter: grayscale(100%) blur(12px) !important;
+}
+
+/* Slide animations for version 2 */
+.slideLeft {
+  transform: translateX(-100px) translateZ(0) !important;
+  opacity: 0 !important;
+}
+
+.slideRight {
+  transform: translateX(100px) translateZ(0) !important;
+  opacity: 0 !important;
+}
+
+/* New page coming in */
+.incomingPage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  will-change: opacity, filter, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.fromLeft {
+  opacity: 0;
+  transform: translateX(-100px) translateZ(0);
+  filter: blur(5px);
+}
+
+.fromRight {
+  opacity: 0;
+  transform: translateX(100px) translateZ(0);
+  filter: blur(5px);
+}
+
+.slideInComplete {
+  animation: slideInClean 600ms ease-out forwards;
+}
+
+/* Clean slide-in animation */
+@keyframes slideInClean {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px) translateZ(0);
+    filter: blur(5px);
   }
-  
-  .pageWrapper {
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    will-change: filter, transform, opacity;
-    transition: filter 400ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
+    filter: blur(0px);
   }
-  
-  /* PHASE 1: B&W + Blur together */
-  .turnBlackWhiteBlur {
-    filter: grayscale(100%) blur(8px) !important;
-  }
-  
-  /* PHASE 2: Drift - REMOVED brightness filters */
-  .driftLeft {
-    transform: translateX(-30px) translateZ(0) !important;
-    opacity: 0 !important;
-    filter: grayscale(100%) blur(12px) !important;
-  }
-  
-  .driftRight {
-    transform: translateX(30px) translateZ(0) !important;
-    opacity: 0 !important;
-    filter: grayscale(100%) blur(12px) !important;
-  }
-  
-  /* New page coming in */
-  .incomingPage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2;
-    will-change: opacity, filter;
-  }
-  
-  .fromLeft,
-  .fromRight {
+}
+
+/* Clean appear animation */
+@keyframes subtleAppear {
+  0% {
     opacity: 0;
     filter: blur(15px);
   }
-  
-  .slideInFromBlur {
-    animation: subtleAppear 600ms ease-out forwards;
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* Mobile - ensure no transitions */
+@media (max-width: 768px) {
+  .pageWrapper {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
   }
   
-  /* Clean appear animation */
-  @keyframes subtleAppear {
-    0% {
-      opacity: 0;
-      filter: blur(15px);
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0px);
-    }
+  .incomingPage {
+    position: static !important;
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
   }
-  
-  /* Mobile */
-  @media (max-width: 768px) {
-    .pageWrapper {
-      transition: none !important;
-      transform: none !important;
-      opacity: 1 !important;
-      filter: none !important;
-    }
-    
-    .incomingPage {
-      position: static !important;
-      animation: none !important;
-      transform: none !important;
-      opacity: 1 !important;
-      filter: none !important;
-    }
-  }
-  
+}

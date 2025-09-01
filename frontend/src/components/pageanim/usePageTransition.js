@@ -53,7 +53,7 @@ const PageTransition = ({ children }) => {
   return (
     <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
       
-      {/* Show the OLD page during transition */}
+      {/* Show the OLD page only during prepare and animate phases */}
       {(animationState === 'prepare' || animationState === 'animate') && previousPage && (
         <div 
           className={`
@@ -65,14 +65,14 @@ const PageTransition = ({ children }) => {
           {previousPage}
         </div>
       )}
-
-      {/* Show the new page ONLY when idle */}
+  
+      {/* Show the NEW page only during idle phase */}
       {animationState === 'idle' && displayedPage && (
         <div className={styles.pageWrapper}>
           {displayedPage}
         </div>
       )}
-      
+  
       {/* Show the NEW page sliding in during animation */}
       {(animationState === 'prepare' || animationState === 'animate') && children && (
         <div 
@@ -88,6 +88,7 @@ const PageTransition = ({ children }) => {
       
     </div>
   );
+  
 };
 
 export default PageTransition;

@@ -25,10 +25,10 @@ const PageTransition = ({ children }) => {
         
         setTimeout(() => {
           console.log('✅ Animation complete - showing final content');
-          // THE ONLY FIX: Don't set idle immediately, wait one more frame
+          // Small delay to prevent flicker
           setTimeout(() => {
             setAnimationPhase('idle');
-          }, 16); // One frame delay to prevent flicker
+          }, 50); // Slightly longer delay
         }, 600);
       }, 400);
     } else if (!isTransitioning) {
@@ -84,7 +84,7 @@ const PageTransition = ({ children }) => {
 
       {/* Final static page - no animations */}
       {animationPhase === 'idle' && (
-        <div className={styles.pageWrapper} style={{ opacity: 1 }}>
+        <div className={styles.pageWrapper}>
           {finalContent}
         </div>
       )}

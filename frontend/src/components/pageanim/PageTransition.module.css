@@ -3,8 +3,6 @@
   width: 100%;
   overflow: hidden;
   min-height: 100vh;
-  /* Prevent any layout shift */
-  contain: layout style paint;
 }
 
 .pageWrapper {
@@ -12,25 +10,60 @@
   position: relative;
   z-index: 1;
   will-change: filter, transform, opacity;
-  /* Prevent flicker with GPU acceleration */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  transition: filter 400ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
 }
 
+/* PHASE 1: B&W + Blur together */
+.turnBlackWhiteBlur {
+  filter: grayscale(100%) blur(8px) !important;
+}
+
+/* PHASE 2: Drift */
+.driftLeft {
+  transform: translateX(-30px) translateZ(0) !important;
+  opacity: 0 !important;
+  filter: grayscale(100%) blur(12px) !important;
+}
+
+.driftRight {
+  transform: translateX(30px) translateZ(0) !important;
+  opacity: 0 !important;
+  filter: grayscale(100%) blur(12px) !important;
+}
+
+/* New page coming in */
 .incomingPage {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
+  z-index: 2;
   will-change: opacity, filter;
-  /* GPU acceleration */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
-/* Mobile - ensure no animations */
+.fromLeft,
+.fromRight {
+  opacity: 0;
+  filter: blur(15px);
+}
+
+.slideInFromBlur {
+  animation: subtleAppear 600ms ease-out forwards;
+}
+
+/* Clean appear animation */
+@keyframes subtleAppear {
+  0% {
+    opacity: 0;
+    filter: blur(15px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .pageWrapper {
     transition: none !important;

@@ -41,20 +41,21 @@ export const PageTransitionProvider = ({ children }) => {
       return;
     }
     
-    console.log('🌀 Framer Motion enhanced transition:', direction);
+    console.log('🌀 Smooth blur transition:', direction); // Fixed log message
     
     setTransitionDirection(direction);
     setIsTransitioning(true);
     setTargetPageContent(targetPath);
     
-    // Slightly longer timeout to let Framer Motion finish smoothly
+    // Back to original timing
     setTimeout(() => {
-      console.log('✨ Framer Motion transition completed');
+      console.log('✨ Smooth transition completed');
       setIsTransitioning(false);
       setTargetPageContent(null);
       navigationCallback();
-    }, 1050); // Increased by 100ms for smoother completion
+    }, 1050); // Keep the 1050ms timing
   };
+  
 
   const endTransition = () => {
     setIsTransitioning(false);

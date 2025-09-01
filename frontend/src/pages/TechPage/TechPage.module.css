@@ -48,7 +48,7 @@
 }
 
 .postsSection {
-  background-color: #ecebeb;
+  background-color: #ffffffcb;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   margin: 235px 160px 40px 160px;
   height: auto;
@@ -354,7 +354,7 @@
 }
 
 .grayStrip {
-  background-color: #86859a;
+  background-color: #929292;
   height: 5vh;
   width: 100%;
 }
@@ -519,7 +519,7 @@
     padding: 10px 0 20px 0;
     font-family: 'Playfair Display', serif;
     position: static;
-    background-color: #ffffffd2;
+    background-color: #ffffffcb;
     z-index: 5;
   }
 

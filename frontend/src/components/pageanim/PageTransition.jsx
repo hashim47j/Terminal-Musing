@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './PageTransition.module.css';
@@ -10,26 +10,43 @@ const PageTransition = ({ children }) => {
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   const [animationPhase, setAnimationPhase] = useState('idle');
   const [finalContent, setFinalContent] = useState(children);
+  const [shouldRender, setShouldRender] = useState(true);
 
-  useEffect(() => {
+  // Use useLayoutEffect to prevent flicker
+  useLayoutEffect(() => {
     if (isTransitioning && targetPageContent) {
       console.log('🎬 Starting Framer Motion enhanced animation, direction:', transitionDirection);
       
-      setFinalContent(getPageComponent(targetPageContent));
-      setAnimationPhase('blackwhiteblur');
+      // Pre-load the content
+      const newContent = getPageComponent(targetPageContent);
+      setFinalContent(newContent);
+      setShouldRender(false); // Hide current content immediately
       
+      // Start animation phases
       setTimeout(() => {
-        console.log('🌊 Phase 2: Drifting');
-        setAnimationPhase('drift');
+        setShouldRender(true);
+        setAnimationPhase('blackwhiteblur');
         
         setTimeout(() => {
-          console.log('✅ Animation complete - showing final content');
-          setAnimationPhase('idle');
-        }, 600);
-      }, 400);
+          console.log('🌊 Phase 2: Drifting');
+          setAnimationPhase('drift');
+          
+          setTimeout(() => {
+            console.log('✅ Animation complete - showing final content');
+            setAnimationPhase('complete');
+            
+            // Ensure clean transition to final state
+            setTimeout(() => {
+              setAnimationPhase('idle');
+              setShouldRender(true);
+            }, 16); // One frame delay
+          }, 600);
+        }, 400);
+      }, 16); // One frame delay
     } else if (!isTransitioning) {
       setFinalContent(children);
       setAnimationPhase('idle');
+      setShouldRender(true);
     }
   }, [isTransitioning, targetPageContent, transitionDirection, children]);
 
@@ -39,28 +56,25 @@ const PageTransition = ({ children }) => {
 
   return (
     <div className={styles.transitionContainer}>
-      <AnimatePresence mode="wait">
-        {/* Animation phases with Framer Motion wrapper */}
-        {animationPhase !== 'idle' && (
+      <AnimatePresence mode="wait" initial={false}>
+        {/* Animation phases */}
+        {animationPhase !== 'idle' && shouldRender && (
           <motion.div
-            key="animating-content"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 1 }}
-            transition={{ duration: 0 }}
+            key={`animating-${location.pathname}`}
+            initial={false}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            style={{ position: 'absolute', width: '100%', top: 0, left: 0 }}
           >
             {/* Current Page - animating out */}
             <motion.div 
-              className={`
-                ${styles.pageWrapper} 
-                ${animationPhase === 'blackwhiteblur' ? styles.turnBlackWhiteBlur : ''}
-                ${animationPhase === 'drift' ? (transitionDirection === 'right' ? styles.driftLeft : styles.driftRight) : ''}
-              `}
+              className={`${styles.pageWrapper}`}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 width: '100%',
-                zIndex: 1
+                zIndex: animationPhase === 'drift' ? 1 : 2
               }}
               animate={{
                 filter: animationPhase === 'blackwhiteblur' 
@@ -86,7 +100,13 @@ const PageTransition = ({ children }) => {
             {animationPhase === 'drift' && (
               <motion.div 
                 className={styles.incomingPage}
-                style={{ zIndex: 2 }}
+                style={{ 
+                  zIndex: 2,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%'
+                }}
                 initial={{ 
                   opacity: 0, 
                   filter: 'blur(15px)' 
@@ -106,14 +126,14 @@ const PageTransition = ({ children }) => {
           </motion.div>
         )}
 
-        {/* Final static page - only when idle */}
+        {/* Final static page - ONLY when completely idle */}
         {animationPhase === 'idle' && (
           <motion.div
             key={`static-${location.pathname}`}
             className={styles.pageWrapper}
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0 }}
+            style={{ position: 'relative', zIndex: 1 }}
           >
             {finalContent}
           </motion.div>

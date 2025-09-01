@@ -3,7 +3,8 @@
   width: 100%;
   overflow: hidden;
   min-height: 100vh;
-  backface-visibility: hidden;
+  /* Prevent any layout shift */
+  contain: layout style paint;
 }
 
 .pageWrapper {
@@ -11,20 +12,10 @@
   position: relative;
   z-index: 1;
   will-change: filter, transform, opacity;
-  /* Remove CSS transitions - Framer Motion handles this now */
-}
-
-/* Keep your visual styles but remove transitions */
-.turnBlackWhiteBlur {
-  /* Framer Motion will handle the filter animation */
-}
-
-.driftLeft {
-  /* Framer Motion will handle transform and opacity */
-}
-
-.driftRight {
-  /* Framer Motion will handle transform and opacity */
+  /* Prevent flicker with GPU acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .incomingPage {
@@ -32,9 +23,11 @@
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 2;
   will-change: opacity, filter;
+  /* GPU acceleration */
+  transform: translateZ(0);
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Mobile - ensure no animations */

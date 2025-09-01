@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #fdf7ea;
+  background-color: #f7ebe1;
 }
 
 .headerSection {
@@ -46,7 +46,7 @@
 }
 
 .postsSection {
-  background-color: #ecebeb;
+  background-color: #ffffff67;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   margin: 235px 160px 40px 160px;
   height: auto;
@@ -352,7 +352,7 @@
 }
 
 .grayStrip {
-  background-color: #dcd6c3;
+  background-color: #c4a569;
   height: 5vh;
   width: 100%;
 }

@@ -146,7 +146,7 @@
 .cardMetaRow {
   display: flex;
   align-items: baseline;
-  gap: 1px;
+  gap: 0px;
   font-size: 0.8rem;
 }
 

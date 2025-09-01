@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #E4E4E4;
+  background-color: #f4f0e8;
 }
 
 .headerSection {
@@ -48,7 +48,7 @@
 }
 
 .postsSection {
-  background-color: #ecebeb;
+  background-color: #ffffff60;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   margin: 235px 160px 40px 160px;
   height: auto;
@@ -101,7 +101,7 @@
 .blogCard {
   display: flex;
   flex-direction: row;
-  background: #fff;
+  background: #ffffff80;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
@@ -356,7 +356,7 @@
 }
 
 .grayStrip {
-  background-color: #929292;
+  background-color: #c9b591;
   height: 5vh;
   width: 100%;
 }

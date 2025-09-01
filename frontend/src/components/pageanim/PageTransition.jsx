@@ -9,19 +9,15 @@ const PageTransition = ({ children }) => {
   const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
   const [animationPhase, setAnimationPhase] = useState('idle');
   const [finalContent, setFinalContent] = useState(children);
-  const [isAnimationComplete, setIsAnimationComplete] = useState(true);
+  const [hidePreviousPage, setHidePreviousPage] = useState(false);
 
   useEffect(() => {
     if (isTransitioning && targetPageContent) {
       console.log('🎬 Starting animation, direction:', transitionDirection);
       
-      // STEP 1: Hide the final content completely
-      setIsAnimationComplete(false);
-      
-      // STEP 2: Prepare the new content
+      // Store the target content for final rendering
       setFinalContent(getPageComponent(targetPageContent));
       
-      // STEP 3: Start blur phase
       setAnimationPhase('blackwhiteblur');
       
       setTimeout(() => {
@@ -29,22 +25,25 @@ const PageTransition = ({ children }) => {
         setAnimationPhase('drift');
         
         setTimeout(() => {
-          console.log('✅ Animation complete');
+          console.log('✅ Animation complete - showing final content');
           
-          // STEP 4: Clean transition - hide animation, show final content
-          setAnimationPhase('idle');
+          // HIDE the previous page completely before showing final content
+          setHidePreviousPage(true);
           
-          // STEP 5: Wait one more frame, then show final content
           setTimeout(() => {
-            setIsAnimationComplete(true);
-          }, 16);
+            setAnimationPhase('idle');
+            // Reset after animation is done
+            setTimeout(() => {
+              setHidePreviousPage(false);
+            }, 50);
+          }, 100); // Longer delay to ensure clean transition
         }, 600);
       }, 400);
     } else if (!isTransitioning) {
-      // No animation - update normally
+      // Update content when not transitioning
       setFinalContent(children);
       setAnimationPhase('idle');
-      setIsAnimationComplete(true);
+      setHidePreviousPage(false);
     }
   }, [isTransitioning, targetPageContent, transitionDirection, children]);
 
@@ -55,7 +54,7 @@ const PageTransition = ({ children }) => {
   return (
     <div className={styles.transitionContainer}>
       
-      {/* Show animation phases - ONLY when animation is running */}
+      {/* Show animation phases */}
       {animationPhase !== 'idle' && (
         <>
           {/* Current Page - animating out */}
@@ -70,7 +69,10 @@ const PageTransition = ({ children }) => {
               top: 0,
               left: 0,
               width: '100%',
-              zIndex: 2
+              zIndex: 1,
+              // MAKE IT FULLY TRANSPARENT when we're about to show final content
+              opacity: hidePreviousPage ? 0 : 1,
+              visibility: hidePreviousPage ? 'hidden' : 'visible'
             }}
           >
             {children}
@@ -84,7 +86,7 @@ const PageTransition = ({ children }) => {
                 ${styles.slideInFromBlur}
                 ${styles.fromLeft}
               `}
-              style={{ zIndex: 3 }}
+              style={{ zIndex: 2 }}
             >
               {finalContent}
             </div>
@@ -92,9 +94,9 @@ const PageTransition = ({ children }) => {
         </>
       )}
 
-      {/* Final static page - ONLY show when animation is completely done */}
-      {animationPhase === 'idle' && isAnimationComplete && (
-        <div className={styles.pageWrapper} style={{ zIndex: 1 }}>
+      {/* Final static page - no animations */}
+      {animationPhase === 'idle' && (
+        <div className={styles.pageWrapper}>
           {finalContent}
         </div>
       )}

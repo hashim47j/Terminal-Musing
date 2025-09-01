@@ -1,119 +1,94 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './PageTransition.module.css';
 import { usePageTransition } from './PageTransitionContext';
+import getPageComponent from './PageMapper';
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
-  const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
-  const [displayedPage, setDisplayedPage] = useState(children);
-  const [previousPage, setPreviousPage] = useState(null);
-  const [animationState, setAnimationState] = useState('idle');
-  const previousLocation = useRef(location.pathname);
-  const isCleaningUp = useRef(false); // Prevent multiple cleanups
+  const { isTransitioning, transitionDirection, targetPageContent } = usePageTransition();
+  const [animationPhase, setAnimationPhase] = useState('idle');
+  const [finalContent, setFinalContent] = useState(children);
 
   useEffect(() => {
-    if (location.pathname === previousLocation.current || isCleaningUp.current) {
-      return;
-    }
-
-    if (isTransitioning) {
-      console.log('🎬 Route changed during transition, setting up animation');
+    if (isTransitioning && targetPageContent) {
+      console.log('🎬 Starting animation, direction:', transitionDirection);
       
-      isCleaningUp.current = false;
+      // Store the target content for final rendering
+      setFinalContent(getPageComponent(targetPageContent));
       
-      // Step 1: Prepare animation
-      setAnimationState('prepare');
-      setPreviousPage(displayedPage);
+      setAnimationPhase('blackwhiteblur');
       
-      // Step 2: Start animation
-      const animateTimeout = setTimeout(() => {
-        if (!isCleaningUp.current) {
-          setAnimationState('animate');
+      setTimeout(() => {
+        console.log('🌊 Phase 2: Drifting');
+        setAnimationPhase('drift');
+        
+        setTimeout(() => {
+          console.log('✅ Animation complete - showing final content');
+          // FIX: Set animation phase to idle BEFORE updating content
+          setAnimationPhase('complete');
           
-          // Step 3: Complete animation with atomic state updates
-          const completeTimeout = setTimeout(() => {
-            if (!isCleaningUp.current) {
-              isCleaningUp.current = true;
-              
-              // Atomic state update - all at once to prevent flicker
-              setAnimationState('idle');
-              setDisplayedPage(children);
-              setPreviousPage(null);
-              endTransition();
-              previousLocation.current = location.pathname;
-              
-              // Reset cleanup flag after a small delay
-              setTimeout(() => {
-                isCleaningUp.current = false;
-              }, 50);
-              
-              console.log('✅ Animation completed cleanly');
-            }
-          }, 650);
-
-          return () => clearTimeout(completeTimeout);
-        }
-      }, 50);
-
-      return () => clearTimeout(animateTimeout);
-    } else {
-      // No animation - just update normally
-      setDisplayedPage(children);
-      previousLocation.current = location.pathname;
+          // Small delay to ensure clean transition
+          setTimeout(() => {
+            setAnimationPhase('idle');
+          }, 50);
+        }, 600);
+      }, 400);
+    } else if (!isTransitioning) {
+      // Update content when not transitioning
+      setFinalContent(children);
+      setAnimationPhase('idle');
     }
-  }, [location.pathname, isTransitioning, children, displayedPage, endTransition]);
-
-  // Clean exit if component unmounts during transition
-  useEffect(() => {
-    return () => {
-      isCleaningUp.current = true;
-    };
-  }, []);
+  }, [isTransitioning, targetPageContent, transitionDirection, children]);
 
   if (window.innerWidth <= 768) {
     return <>{children}</>;
   }
 
   return (
-    <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
+    <div className={styles.transitionContainer}>
       
-      {/* Current/Old page */}
-      {animationState !== 'idle' && previousPage && (
-        <div 
-          className={`
-            ${styles.pageWrapper} 
-            ${styles.transitioning}
-            ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
-          `}
-          style={{
-            zIndex: animationState === 'animate' ? 1 : 2
-          }}
-        >
-          {previousPage}
-        </div>
-      )}
-      
-      {/* New page sliding in */}
-      {animationState !== 'idle' && children && (
-        <div 
-          className={`
-            ${styles.incomingPage}
-            ${animationState === 'prepare' ? (transitionDirection === 'right' ? styles.fromLeft : styles.fromRight) : ''}
-            ${animationState === 'animate' ? styles.slideInComplete : ''}
-          `}
-          style={{
-            zIndex: animationState === 'animate' ? 2 : 1
-          }}
-        >
-          {children}
-        </div>
+      {/* Show animation phases */}
+      {(animationPhase === 'blackwhiteblur' || animationPhase === 'drift') && (
+        <>
+          {/* Current Page - animating out */}
+          <div 
+            className={`
+              ${styles.pageWrapper} 
+              ${animationPhase === 'blackwhiteblur' ? styles.turnBlackWhiteBlur : ''}
+              ${animationPhase === 'drift' ? (transitionDirection === 'right' ? styles.driftLeft : styles.driftRight) : ''}
+            `}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              zIndex: 1
+            }}
+          >
+            {children}
+          </div>
+          
+          {/* New Page - appearing during drift */}
+          {animationPhase === 'drift' && (
+            <div 
+              className={`
+                ${styles.incomingPage}
+                ${styles.slideInFromBlur}
+                ${styles.fromLeft}
+              `}
+              style={{ zIndex: 2 }}
+            >
+              {finalContent}
+            </div>
+          )}
+        </>
       )}
 
-      {/* Final settled page - only show when idle */}
-      {animationState === 'idle' && (
+      {/* Final static page - no animations - ONLY show when completely idle */}
+      {animationPhase === 'idle' && (
         <div className={styles.pageWrapper}>
-          {displayedPage}
+          {finalContent}
         </div>
       )}
       

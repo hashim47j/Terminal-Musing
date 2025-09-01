@@ -354,7 +354,7 @@
 }
 
 .grayStrip {
-  background-color: #929292;
+  background-color: #86859a;
   height: 5vh;
   width: 100%;
 }
@@ -519,7 +519,7 @@
     padding: 10px 0 20px 0;
     font-family: 'Playfair Display', serif;
     position: static;
-    background-color: #ecebeb;
+    background-color: #ffffffd2;
     z-index: 5;
   }
 

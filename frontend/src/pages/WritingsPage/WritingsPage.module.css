@@ -38,7 +38,7 @@
   position: relative;
   left: var(--hero-x, -45px);
   top: var(--hero-y, 8px);
-  width: 160px;
+  width: 180px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -146,7 +146,7 @@
 .cardMetaRow {
   display: flex;
   align-items: baseline;
-  gap: 1px !important;
+  gap: 1.5px !important;
   font-size: 0.8rem;
 }
 

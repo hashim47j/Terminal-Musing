@@ -32,11 +32,11 @@ const PageTransition = ({ children }) => {
         // Step 3: Complete the animation
         setTimeout(() => {
           setDisplayedPage(children); // NOW show the new page
-          setPreviousPage(null);
-          setAnimationState('idle');
+          setPreviousPage(null);      // Remove previous page immediately
+          setAnimationState('idle');  // End animation state
           endTransition();
           previousLocation.current = location.pathname;
-          console.log('✅ Animation completed');
+          console.log('✅ Animation completed: previousPage removed');
         }, 650);
       }, 50);
     } else {
@@ -54,7 +54,7 @@ const PageTransition = ({ children }) => {
     <div className={`${styles.transitionContainer} ${isTransitioning ? styles.transitioning : ''}`}>
       
       {/* Show the OLD page during transition */}
-      {(animationState === 'idle' || animationState === 'prepare' || animationState === 'animate') && displayedPage && (
+      {(animationState === 'prepare' || animationState === 'animate') && previousPage && (
         <div 
           className={`
             ${styles.pageWrapper} 
@@ -62,7 +62,14 @@ const PageTransition = ({ children }) => {
             ${animationState === 'animate' ? (transitionDirection === 'right' ? styles.slideRight : styles.slideLeft) : ''}
           `}
         >
-          {animationState === 'prepare' || animationState === 'animate' ? previousPage : displayedPage}
+          {previousPage}
+        </div>
+      )}
+
+      {/* Show the new page ONLY when idle */}
+      {animationState === 'idle' && displayedPage && (
+        <div className={styles.pageWrapper}>
+          {displayedPage}
         </div>
       )}
       

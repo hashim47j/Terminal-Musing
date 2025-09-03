@@ -111,22 +111,66 @@ const Navbar = () => {
           case 'philosophy': return pageTitle || 'Philosophy';
           case 'tech': return pageTitle || 'Technology';
           case 'lsconcern': return pageTitle || 'Legal & Social';
+          case 'writings': return pageTitle || 'Writings';
           default: return pageTitle || 'Blog Post';
         }
       }
     }
     
+    // Handle category pages - NEW: Support both old and new routes
+    const categoryMappings = {
+      '/philosophy': 'Philosophy',
+      '/blog/philosophy': 'Philosophy',
+      '/history': 'History', 
+      '/blog/history': 'History',
+      '/writings': 'Writings',
+      '/blog/writings': 'Writings',
+      '/legal-social': 'Legal & Social Concerns',
+      '/blog/lsconcern': 'Legal & Social Concerns',
+      '/tech': 'Tech',
+      '/blog/tech': 'Tech'
+    };
+    
+    if (categoryMappings[currentPath]) {
+      return categoryMappings[currentPath];
+    }
+    
     switch (currentPath) {
       case "/": return "Terminal Musing";
-      case "/philosophy": return "Philosophy";
-      case "/history": return "History";
-      case "/writings": return "Writings";
-      case "/legal-social": return "Legal & Social Concerns";
-      case "/tech": return "Tech";
       case "/daily-thoughts": return "Daily Thoughts";
       case "/admin/login": return "Author(s)";
       default: return pageTitle || "";
     }
+  };
+
+  // ✅ Helper function to get the active nav link path
+  const getActiveNavPath = () => {
+    // For unified blog category pages, map back to the nav link path
+    if (currentPath.startsWith('/blog/')) {
+      const pathParts = currentPath.split('/');
+      if (pathParts.length >= 3) {
+        const category = pathParts[2];
+        switch (category) {
+          case 'philosophy': return '/blog/philosophy';
+          case 'history': return '/blog/history';
+          case 'tech': return '/blog/tech';
+          case 'lsconcern': return '/blog/lsconcern';
+          case 'writings': return '/blog/writings';
+          default: return currentPath;
+        }
+      }
+    }
+    
+    // Handle legacy redirects - map old paths to new nav paths
+    const legacyMappings = {
+      '/philosophy': '/blog/philosophy',
+      '/history': '/blog/history', 
+      '/tech': '/blog/tech',
+      '/legal-social': '/blog/lsconcern',
+      '/writings': '/blog/writings'
+    };
+    
+    return legacyMappings[currentPath] || currentPath;
   };
   
   const updateHighlight = (element) => {
@@ -160,21 +204,21 @@ const Navbar = () => {
     setHoverProgress((prev) => ({ ...prev, [path]: 0 }));
   };
 
-  // Highlight bar effect
+  // Highlight bar effect - ✅ Updated to work with new routes
   useEffect(() => {
-    const activeLink = navLinksRef.current?.querySelector(`[href="${currentPath}"]`);
+    const activeNavPath = getActiveNavPath();
+    const activeLink = navLinksRef.current?.querySelector(`[href="${activeNavPath}"]`);
     updateHighlight(activeLink);
   }, [currentPath]);
 
-  // Color detection effect
+  // Color detection effect - ✅ Updated for new blog routes
   useEffect(() => {
     const lightBackgroundPaths = [
       "/philosophy", "/history", "/writings", "/legal-social",
-      "/tech", "/daily-thoughts"
+      "/tech", "/daily-thoughts", "/blog/"
     ];
     
     const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path)) ||
-                               currentPath.startsWith('/blog/') || 
                                currentPath.startsWith('/blogs/');
     
     const intersectingSensors = new Set();
@@ -241,13 +285,16 @@ const Navbar = () => {
     });
   };
 
+  // ✅ Updated to work with new route structure
   const getHighlightBarActiveClass = () => {
-    switch (currentPath) {
+    const activeNavPath = getActiveNavPath();
+    switch (activeNavPath) {
       case "/daily-thoughts": return styles.dailyThoughtsActive;
-      case "/philosophy": return styles.philosophyActive;
-      case "/history": return styles.historyActive;
-      case "/writings": return styles.writingsActive;
-      case "/legal-social": return styles.legalSocialActive;
+      case "/blog/philosophy": return styles.philosophyActive;
+      case "/blog/history": return styles.historyActive;
+      case "/blog/writings": return styles.writingsActive;
+      case "/blog/lsconcern": return styles.legalSocialActive;
+      case "/blog/tech": return styles.techActive; // Add if you have this class
       default: return "";
     }
   };
@@ -291,7 +338,7 @@ const Navbar = () => {
       <div
         className={`
           ${styles.navbarLeft}
-          ${currentPath === "/legal-social" ? styles.legalSocialPage : ""}
+          ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
           ${isBlogPostPage ? styles.blogPostActive : ''}
           ${isLightBackground ? styles.darkText : styles.lightText}
           ${!isBlogPostPage && hide ? styles.hide : ''}
@@ -357,31 +404,34 @@ const Navbar = () => {
         >
           <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
           {[
-            { to: "/philosophy", label: "Philosophy" },
-            { to: "/history", label: "History" },
-            { to: "/writings", label: "Writings" },
-            { to: "/legal-social", label: "Legal & Social Issues" },
-            { to: "/tech", label: "Tech" },
+            { to: "/blog/philosophy", label: "Philosophy" },
+            { to: "/blog/history", label: "History" },
+            { to: "/blog/writings", label: "Writings" },
+            { to: "/blog/lsconcern", label: "Legal & Social Issues" },
+            { to: "/blog/tech", label: "Tech" },
             { to: "/daily-thoughts", label: "Daily Thoughts" },
             { to: "/admin/login", label: "Author(s)", isAdmin: true },
-          ].map(({ to, label, isAdmin }) => (
-            <Link
-              key={to}
-              to={to}
-              className={`
-                ${styles.navLink} 
-                ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
-                ${currentPath === to && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
-                ${isAdmin ? styles.adminLink : ""}
-              `}
-              onClick={(e) => handleNavLinkClick(e, to)}
-              onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
-              onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
-              style={{ "--hover-progress": hoverProgress[to] || 0 }}
-            >
-              {label}
-            </Link>
-          ))}
+          ].map(({ to, label, isAdmin }) => {
+            const isActive = getActiveNavPath() === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`
+                  ${styles.navLink} 
+                  ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
+                  ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
+                  ${isAdmin ? styles.adminLink : ""}
+                `}
+                onClick={(e) => handleNavLinkClick(e, to)}
+                onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
+                onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
+                style={{ "--hover-progress": hoverProgress[to] || 0 }}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </div>
       </div>
 

@@ -7,16 +7,14 @@ import PageTransition from './components/pageanim/PageTransition';
 
 import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage/AdminPage'; 
-import PhilosophyPage from './pages/PhilosophyPage';
-import HistoryPage from './pages/HistoryPage/HistoryPage';
 import AdminLogin from './pages/AdminPage/AdminLogin';
-import LsconcernPage from './pages/LsconcernPage/LsconcernPage';
-import WritingsPage from './pages/WritingsPage/WritingsPage';
-import TechPage from './pages/TechPage/TechPage';
 import AdminDashboard from './pages/AdminPage/AdminDashboard';
 import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
 import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
 import Uniblog from './pages/UniblogPage/Uniblog';
+
+// NEW: Import the unified blog component
+import UniformPage from './pages/UniformPages/UniformPage';
 
 import { PageProvider } from './context/PageContext'; 
 import { PageTransitionProvider } from './components/pageanim/PageTransitionContext';
@@ -59,22 +57,29 @@ function App() {
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 
-                {/* Category Pages */}
-                <Route path="/philosophy" element={<PhilosophyPage />} />
-                <Route path="/history" element={<HistoryPage />} />
-                <Route path="/tech" element={<TechPage />} />
-                <Route path="/legal-social" element={<LsconcernPage />} />
-                <Route path="/writings" element={<WritingsPage />} />
+                {/* NEW: Unified Blog Category Pages */}
+                <Route path="/blog/philosophy" element={<UniformPage />} />
+                <Route path="/blog/history" element={<UniformPage />} />
+                <Route path="/blog/tech" element={<UniformPage />} />
+                <Route path="/blog/lsconcern" element={<UniformPage />} />
+                <Route path="/blog/writings" element={<UniformPage />} />
+                
+                {/* Legacy Category Page Redirects */}
+                <Route path="/philosophy" element={<Navigate to="/blog/philosophy" replace />} />
+                <Route path="/history" element={<Navigate to="/blog/history" replace />} />
+                <Route path="/tech" element={<Navigate to="/blog/tech" replace />} />
+                <Route path="/legal-social" element={<Navigate to="/blog/lsconcern" replace />} />
+                <Route path="/writings" element={<Navigate to="/blog/writings" replace />} />
                 
                 {/* Daily Thoughts */}
                 <Route path="/daily-thoughts" element={<DailythoughtsReader />} />
                 <Route path="/dailythoughts/submit" element={<DailythoughtsUI />} />
                 <Route path="/admin/dailythoughts/edit" element={<DailythoughtsUI />} />
                 
-                {/* Blog Routes */}
+                {/* Blog Post Routes */}
                 <Route path="/blog/:category/:id" element={<Uniblog />} />
                 
-                {/* Redirects */}
+                {/* Legacy Blog Post Redirects */}
                 <Route path="/blogs/philosophy/:id" element={<Navigate to="/blog/philosophy/:id" replace />} />
                 <Route path="/blogs/history/:id" element={<Navigate to="/blog/history/:id" replace />} />
                 <Route path="/blogs/tech/:id" element={<Navigate to="/blog/tech/:id" replace />} />

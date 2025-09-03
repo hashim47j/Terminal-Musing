@@ -9,7 +9,7 @@ export const blogThemes = {
       errorPrefix: 'philosophy',
       
       // Assets
-      heroImage: () => import('../../assets/kant-sapere-aude.png'),
+      heroImage: () => import('../../assets/kant-sapere-audae.png'),
       heroDarkImage: () => import('../../assets/kant-sapere-aude-dark.png'),
       backgroundImage: () => import('../../assets/philosophy-background.png'),
       

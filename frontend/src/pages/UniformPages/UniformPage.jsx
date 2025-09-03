@@ -1,27 +1,14 @@
+// frontend/src/pages/UniformPages/UniformPage.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './UniformPage.module.css';
 import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 
-// ✅ Dynamic Background Shadow Component
+// ✅ Dynamic Background Shadow Component (Updated)
 const DynamicBackgroundShadow = ({ theme }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState(null);
-
-  useEffect(() => {
-    const loadBackgroundImage = async () => {
-      try {
-        const bgModule = await theme.headerConfig.backgroundImage();
-        setBackgroundImage(bgModule.default);
-      } catch (err) {
-        console.warn('Could not load background image:', err);
-      }
-    };
-
-    loadBackgroundImage();
-  }, [theme]);
 
   useEffect(() => {
     const extractColorFromImage = () => {
@@ -70,10 +57,10 @@ const DynamicBackgroundShadow = ({ theme }) => {
 
   return (
     <>
-      {backgroundImage && (
+      {theme.headerConfig.backgroundImage && (
         <img
           ref={imgRef}
-          src={backgroundImage}
+          src={theme.headerConfig.backgroundImage}
           alt="Background for color extraction"
           crossOrigin="anonymous"
           style={{ display: 'none' }}
@@ -86,28 +73,19 @@ const DynamicBackgroundShadow = ({ theme }) => {
   );
 };
 
-// ✅ Header Section Component
+// ✅ Header Section Component (Updated)
 const HeaderSection = ({ theme, headerRef }) => {
-  const [heroImage, setHeroImage] = useState(null);
-
-  useEffect(() => {
-    const loadHeroImage = async () => {
-      try {
-        const heroModule = await theme.headerConfig.heroImage();
-        setHeroImage(heroModule.default);
-      } catch (err) {
-        console.warn('Could not load hero image:', err);
-      }
-    };
-
-    loadHeroImage();
-  }, [theme]);
-
   return (
-    <section ref={headerRef} className={styles.headerSection}>
-      {heroImage && (
+    <section 
+      ref={headerRef} 
+      className={styles.headerSection}
+      style={{
+        backgroundImage: `url(${theme.headerConfig.backgroundImage})`
+      }}
+    >
+      {theme.headerConfig.heroImage && (
         <img
-          src={heroImage}
+          src={theme.headerConfig.heroImage}
           alt={theme.headerConfig.altText}
           className={styles.heroImage}
           style={{
@@ -121,7 +99,7 @@ const HeaderSection = ({ theme, headerRef }) => {
   );
 };
 
-// ✅ Blog Card Component
+// ✅ Blog Card Component (same as before)
 const BlogCard = ({ 
   post, 
   hoveredPostId, 
@@ -150,7 +128,6 @@ const BlogCard = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Function to extract average color for shadows
   const extractColorFromImage = () => {
     if (!imgRef.current || !cardRef.current || !imageLoaded) return;
 
@@ -334,7 +311,7 @@ const BlogCard = ({
   );
 };
 
-// ✅ Main Uniform Page Component
+// ✅ Main Uniform Page Component (same as before - rest of the code)
 const UniformPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();
@@ -346,7 +323,6 @@ const UniformPage = () => {
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
   const [activeCardId, setActiveCardId] = useState(null);
 
-  // Get theme based on current route
   const category = getCategoryFromPath(location.pathname);
   const theme = getThemeByCategory(category);
 

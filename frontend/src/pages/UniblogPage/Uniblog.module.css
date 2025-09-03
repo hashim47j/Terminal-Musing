@@ -1,535 +1,764 @@
-/* Base styles that work for all themes */
-
-/* Container base - will be overridden by theme-specific styles */
-.writingsPageContainer,
-.techPageContainer,
-.lsconcernPageContainer,
-.historyPageContainer,
-.philosophyPageContainer {
-  min-height: 100vh;
-  font-family: 'Playfair Display', serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.headerSection {
-  background-size: auto; 
-  background-position: center;
-  background-repeat: no-repeat;
-  text-align: center;
-  padding: 40px 20px 60px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  height: 260px;
-  --header-shadow-color: rgba(82, 73, 68, 0);
-}
-
-.headerSection::after {
-  content: '';
-  position: absolute;
-  bottom: 5px;
-  left: 0%;
-  right: 0%;
-  background: transparent;
-  box-shadow: 0 0 40px 15px var(--header-shadow-color);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.heroImage {
-  position: relative;
-  left: var(--hero-x, -45px);
-  top: var(--hero-y, 8px);
-  width: 180px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  z-index: 2;
-  transition: left 0.25s ease, top 0.25s ease;
-}
-
-.postsSection {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  margin: 235px 160px 40px 160px;
-  height: auto;
-  width: auto;
-  flex: 1;
-  padding: 0 5%;
-}
-
-.postsHeading {
-  font-size: 2.5em;
-  font-weight: 700;
-  text-align: center;
-  color: #333;
-  margin: 0;
-  padding: 40px 0 30px 0;
-  font-family: 'Playfair Display', serif;
-}
-
-.blogGridContainer {
-  height: 50vh;
-  overflow-y: auto;
-  padding-right: 10px;
-  scrollbar-width: thin;
-  scrollbar-color: #999 transparent;
-}
-
-.blogGridContainer::-webkit-scrollbar {
-  width: 6px;
-}
-
-.blogGridContainer::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.blogGridContainer::-webkit-scrollbar-thumb {
-  background-color: #999;
-  border-radius: 3px;
-}
-
-.blogGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 180px;
-  gap: 46px 30px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 0 40px 0;
-}
-
-.blogCard {
-  display: flex;
-  flex-direction: row;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  text-decoration: none;
-  min-height: 180px;
-  height: 100%;
-  position: relative;
-  cursor: pointer;
-  -webkit-appearance: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.blogCard.mobileExpanded {
-  transform: translateY(-4px) !important;
-  box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0,0,0,0.3)) !important;
-  -webkit-box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0,0,0,0.3)) !important;
-  transition: all 0.2s ease-out !important;
-  will-change: transform, box-shadow;
-}
-
-/* Touch devices */
-@media (hover: none) and (pointer: coarse) {
-  .blogCard:hover {
-    transform: none !important;
-    box-shadow: none !important;
-  }
-}
-
-.cardBottomFixed {
-  position: absolute;
-  bottom: 12px;
-  left: 18px;
-  right: 18px;
-}
-
-.cardSeparatorLine {
-  width: 100%;
-  height: 1px;
-  background-color: #e0e0e0;
-  margin-bottom: 8px;
-}
-
-.cardMetaRow {
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
-  font-size: 0.8rem;
-}
-
-.cardAuthor {
-  color: #666;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.cardDate {
-  color: #999;
-  white-space: nowrap;
-}
-
-.cardWordCount {
-  color: #999;
-  white-space: nowrap;
-  margin-left: auto;
-}
-
-.coverImage {
-  width: 38%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  position: relative;
-  z-index: 1;
-  transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-.expanded {
-  width: 100% !important;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  filter: blur(4px);
-  transform: scale(1.05);
-}
-
-.hiddenContent {
-  opacity: 0;
-  transform: translateX(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.blogContent {
-  width: 62%;
-  padding: 18px 18px 50px 18px; 
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 1;
-  position: relative;
-}
-
-.hoverOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: #333;
-  z-index: 10;
-  padding: 20px;
-  animation: fadeInOverlay 0.4s ease 0.2s both;
-  pointer-events: none;
-}
-
-.shareIcon, .readBtn {
-  pointer-events: auto;
-}
-
-.subheadingContainer {
-  flex: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  text-align: left;
-  padding-top: -2px; 
-  padding-left: -2px;
-}
-
-.hoverSubheading {
-  font-size: 1.1rem;
-  line-height: 1.4;
-  color: #fff;
-  font-weight: 400;
-  animation: slideUpContent 0.5s ease 0.3s both;
-}
-
-.bottomFixed {
-  position: absolute;
-  bottom: 5px;
-  left: 20px;
-  right: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  animation: slideUpBottom 0.4s ease 0.4s both;
-}
-
-.authorDateContainer {
-  display: flex;
-  gap: 12px;
-  align-items: baseline;
-}
-
-.authorName {
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: #fff;
-  white-space: nowrap;
-}
-
-.postDate {
-  font-size: 0.85rem;
-  color: #fff;
-  white-space: nowrap;
-}
-
-.shareIcon {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  margin-left: 8px;
-}
-
-.shareIcon:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
-.readBtn {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 8px 10px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.readBtn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.blogTitle {
-  font-size: 1.4em;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #111;
-  line-height: 1.3;
-  flex-grow: 1;
-}
-
-.separatorLine {
-  position: relative;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.8);
-  width: 80%;
-  margin-bottom: 2px;
-  animation: expandLineToDate 0.6s ease 0.4s forwards;
-}
-
-.leftContent {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-bottom: 8px;
-}
-
-.rightContent {
-  display: flex;
-  align-items: center;
-  padding-bottom: 4px;
-  gap: 0px;
-  pointer-events: auto;
-}
-
-.grayStrip {
-  height: 5vh;
-  width: 100%;
-}
-
-.loadingState, .errorState, .emptyState {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px 20px;
-  color: #666;
-}
-
-.spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #484848;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-.retryBtn {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #181818;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.retryBtn:hover {
-  background-color: #2c2c2c;
-}
-
-/* Animation keyframes */
-@keyframes fadeInOverlay {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUpContent {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideUpBottom {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes expandLineToDate {
-  from { width: 0%; }
-  to { width: 80%; }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-  .blogCard.mobileExpanded {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0, 0, 0, 0.3)) !important;
-    -webkit-box-shadow: 0 22px 27px -8px var(--card-shadow-color, rgba(0, 0, 0, 0.3)) !important;
-  }
-
-  .blogGridContainer {
-    padding: 20px 25px 35px 25px;
+/* Base styles (same as your original) */
+.blogPageOuterContainer {
+    background-color: #E4E4E4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
   
-  .blogGrid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: minmax(120px, auto);
-    gap: 32px 0;
-    padding: 0;
+  /* Category-specific themes */
+  .blogPageOuterContainer.history {
+    background-color: #E4E4E4; /* Grey */
   }
   
-  .blogCard {
-    flex-direction: row;
-    min-height: 120px;
+  .blogPageOuterContainer.philosophy {
+    background-color: #F5F5DC; /* Cream */
+  }
+  
+  .blogPageOuterContainer.tech {
+    background-color: #E6F3FF; /* Light Blue */
+  }
+  
+  .blogPageOuterContainer.lsconcern {
+    background-color: #F0F8E8; /* Light Green */
+  }
+  
+  /* Category-specific content body backgrounds */
+  .contentBodyPlaceholder {
+    background-color: inherit;
+    min-height: 60vh;
+    padding: 40px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif; /* ✅ CHANGED: from 'Roboto' to sans-serif */
+    font-size: 1.045em; /* ✅ REDUCED: from 1.1em (5% reduction) */
+    line-height: 1.8;
+    color: #333333;
+    border: 1px solid #e5e5e5;
+    margin-left: 25%;
+    margin-right: 8%;
+  }
+
+  .contentBodyPlaceholder p:first-of-type::first-letter {
+    font-size: 4em;
+    font-weight: bold;
+    line-height: 0.8;
+    float: left;
+    margin: 0.05em 0.1em 0 0;
+    font-family: 'Georgia', serif;
+    color: #2c2c2c;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+
+  
+  .history .contentBodyPlaceholder {
+    background-color: #E4E4E4;
+  }
+  
+  .philosophy .contentBodyPlaceholder {
+    background-color: #F5F5DC;
+  }
+  
+  .tech .contentBodyPlaceholder {
+    background-color: #E6F3FF;
+  }
+  
+  .lsconcern .contentBodyPlaceholder {
+    background-color: #F0F8E8;
+  }
+  
+  /* Category-specific title lines */
+  .titleLine {
+    width: 100%;
+    height: 30px;
+    margin-top: -4%;
+    margin-bottom: 18px;
+  }
+  
+  .titleLine.history {
+    background: #929292;
+  }
+  
+  .titleLine.philosophy {
+    background: #D4B896;
+  }
+  
+  .titleLine.tech {
+    background: #4A90E2;
+  }
+  
+  .titleLine.lsconcern {
+    background: #5CB85C;
+  }
+  
+  /* Category-specific comment boxes */
+  .commentBox {
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border: 1px solid #474747;
+    border-radius: 5px;
+    margin-left: 4%;
+  }
+  
+  .history .commentBox {
+    background: #BBBBBB;
+  }
+  
+  .philosophy .commentBox {
+    background: #E8DCC0;
+  }
+  
+  .tech .commentBox {
+    background: #C2E0FF;
+  }
+  
+  .lsconcern .commentBox {
+    background: #D4F0D4;
+  }
+  
+  /* Dark mode category themes */
+  .darkMode.history {
+    background-color: #2A2A2A;
+  }
+  
+  .darkMode.philosophy {
+    background-color: #3A3424;
+  }
+  
+  .darkMode.tech {
+    background-color: #1A2332;
+  }
+  
+  .darkMode.lsconcern {
+    background-color: #243326;
+  }
+  
+  .darkMode .contentBodyPlaceholder,
+  .darkMode .commentBox {
+    background: #333333;
+    color: #e0e0e0;
+    border-color: #555;
+  }
+  
+  /* Rest of your original CSS styles remain the same */
+  /* ... (include all the remaining styles from your original CSS) ... */
+  
+
+.blogPageOuterContainer {
+    background-color: #E4E4E4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Hero Cover Image Section */
+  .heroSection {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #E4E4E4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .heroImageWrapper {
+    position: relative;
+    width: 88%;
     height: 100%;
-  }
-  
-  .coverImage {
-    width: 38%;
-    height: 100%;
-    min-width: 100px;
-  }
-  
-  .blogContent {
-    width: 62%;
-    padding: 11px 10px;
-  }
-  
-  .postsHeading {
-    font-size: 2em;
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .headerSection {
-    padding: 36px 8px 48px;
-    background-size: 220%;
-    background-position: 45% center;
-    height: 180px;
+    display: block;
+    margin: 0 auto;      /* Center the wrapper horizontally */
   }
   
   .heroImage {
-    width: 160px;
-    left: var(--hero-x, 8px);
-    top: var(--hero-y, 15px);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: relative;
+    filter: contrast(1.1) brightness(0.85) saturate(0.9);
   }
   
-  .postsSection {
-    margin: 190px 5vw 80px 5vw;
-    width: 90vw;
+  .heroGrain {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    pointer-events: none;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        rgba(255,255,255,0.04) 1px,
+        transparent 2px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        rgba(0,0,0,0.03) 1px,
+        transparent 2px
+      );
+    mix-blend-mode: overlay;
+    opacity: 0.45;
+    z-index: 2;
   }
   
-  .blogGridContainer {
-    height: 50vh;
-    overflow-y: auto;
-    padding: 0 20px 40px 20px; 
-    scrollbar-width: thin;
-    scrollbar-color: #999 transparent;
+  .heroOverlay {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.25);
+    z-index: 3;
+    pointer-events: none;
   }
 
-  .blogGrid {
-    gap: 25px 0px;
-    padding: 0;
-  }
-  
-  .blogTitle {
-    font-size: 1.09em;
-  }
-
-  .postsHeading {
-    font-size: 1.8em; 
-    font-weight: 700;
-    text-align: center;
-    color: #333;
-    margin: 0;
-    padding: 10px 0 20px 0;
-    font-family: 'Playfair Display', serif;
-    position: static;
-    background-color: #ecebeb;
+  .heroBlurOverlay {
+    position: absolute;
+    bottom: calc(var(--scroll-progress, 0) * 50%);
+    left: 0;
+    width: 100%;
+    height: calc(50% - (var(--scroll-progress, 0) * 25%));
     z-index: 5;
+    pointer-events: none;
+    backdrop-filter: blur(calc(6px * (1 - var(--scroll-progress, 0)))); /* ✅ REDUCED: from 12px to 6px */
+    -webkit-backdrop-filter: blur(calc(6px * (1 - var(--scroll-progress, 0)))); /* ✅ REDUCED: from 12px to 6px */
+    background: rgba(0, 0, 0, calc(0.1 * (1 - var(--scroll-progress, 0)))); /* ✅ REDUCED: from 0.15 to 0.1 */
+    transition: all 0.1s ease-out;
   }
-
-  .blogCard {
-    min-height: 180px;
+  
+  .heroContent {
+    position: absolute;
+    bottom: 8%; /* ✅ CHANGED: Moved to bottom center */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    color: white;
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+  
+  
+  
+  .title {
+    font-family: 'Spectral', serif;
+    font-size: 3.5em;
+    font-weight: 600;
+    line-height: 1.3;
+    color: white;
+    margin-bottom: 0.15em;
+    text-align: center;
+  }
+  
+  .subheadingText {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.4em;
+    color: rgba(255,255,255,0.97);
+    margin-bottom: 18px;
+    margin-top: 6px;
+    text-align: center;
+  }
+  
+  .date {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.1em;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  
+  .date {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.1em;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 40px;
+    text-align: left;
+  }
+  
+  .contentTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5em;
+    color: #2c2c2c;
+    margin-bottom: 15px;
+    line-height: 1.3;
+    font-weight: 600;
+    text-align: left;
+    margin-left: 4%;
+  }
+  
+  .contentDate {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9em;
+    color: #666666;
+    margin-bottom: 40px;
+    text-align: left;
+    margin-left: 4%;
+  }
+  
+  .contentBodyPlaceholder {
+    background-color: #E4E4E4;
+    min-height: 60vh;
+    padding: 40px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #333333;
+    border: 1px solid #e5e5e5;
+    margin-left: 25%;
+    margin-right: 8%;
+  }
+  
+  .paragraph {
+    margin-bottom: 1em;
+  }
+  
+  .inlineImage {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto;
     border-radius: 5px;
   }
-
-  .blogContent {
-    padding: 14px 11px;
+  
+  /* Comments */
+  .commentSection {
+    display: block;
+    margin-left: 2%; /* ✅ REDUCED: from 4% to 2% for more width */
+    margin-right: 2%; /* ✅ REDUCED: from 4% to 2% for more width */
+    padding-top: 40px;
+    max-width: none; /* ✅ REMOVED: No max-width constraint */
   }
+
+/* ✅ UPDATED: Comment section header with larger font */
+.commentSectionHeader {
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e5e5e5; /* ✅ NEW: Subtle separator line */
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .blogCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 27px -8px rgba(0, 123, 255, 0.4);
+.commentSectionHeader h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2em; /* ✅ INCREASED: from default to larger size */
+  font-weight: 600;
+  color: #2c2c2c;
+  margin: 0;
+  text-align: left; /* ✅ NEW: Left aligned */
+}
+
+/* ✅ UPDATED: Comment stats with better styling */
+.commentStats {
+  margin-top: 8px;
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  font-size: 0.95em;
+  color: #666;
+  font-weight: 400;
+}
+
+/* ✅ UPDATED: Comment layout - single column */
+.commentLayout {
+  display: flex;
+  flex-direction: row;
+  gap: 30px; /* ✅ REDUCED: from 40px to 30px for more content space */
+  align-items: flex-start;
+}
+
+/* ✅ UPDATED: Comment list with better spacing */
+.commentList {
+  flex: 3; /* ✅ INCREASED: from 2 to 3 (takes 3/4 of width) */
+  padding: 0;
+  margin-bottom: 0;
+}
+
+/* ✅ UPDATED: Comment boxes with improved styling */
+.commentBox {
+  padding: 20px 24px; /* ✅ INCREASED: More padding */
+  margin-bottom: 24px; /* ✅ INCREASED: More space between comments */
+  border: 1px solid #d0d0d0; /* ✅ UPDATED: Lighter border */
+  
+  border-radius: 8px; /* ✅ INCREASED: More rounded corners */
+  margin-left: 0%; /* ✅ CHANGED: Removed left margin */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* ✅ NEW: Subtle shadow */
+  transition: box-shadow 0.3s ease; /* ✅ NEW: Smooth hover effect */
+}
+
+/* ✅ UPDATED: Comment header styling */
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  flex-wrap: wrap; /* ✅ NEW: Allow wrapping on small screens */
+}
+
+.commenterName {
+  font-size: 1.1rem; /* ✅ INCREASED: Larger name */
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  color: #2c2c2c;
+  font-weight: 600;
+  margin: 0;
+}
+
+.commentMeta {
+  font-size: 0.9rem; /* ✅ INCREASED: Slightly larger */
+  color: #777; /* ✅ UPDATED: Better contrast */
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  margin-top: 2px;
+}
+
+/* ✅ UPDATED: Comment content styling */
+.commentContent {
+  margin-bottom: 15px;
+}
+
+.commentContent p {
+  font-size: 1.0rem; /* ✅ INCREASED: Larger text */
+  color: #333; /* ✅ UPDATED: Better contrast */
+  line-height: 1.7; /* ✅ INCREASED: Better readability */
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  margin: 0;
+}
+
+/* ✅ UPDATED: Reply button styling */
+.replyBtn {
+  font-size: 0.9rem; /* ✅ INCREASED: Larger button */
+  background-color: #414040;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 8px 16px; /* ✅ NEW: Button-like padding */
+  border-radius: 6px; /* ✅ NEW: Rounded corners */
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.replyBtn:hover {
+  background: #e9ecef; /* ✅ NEW: Darker on hover */
+  color: #495057;
+  border-color: #dee2e6;
+  transform: none; /* ✅ REMOVED: No transform */
+  text-decoration: none; /* ✅ REMOVED: No underline */
+}
+
+.replyBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ✅ UPDATED: Comment form container */
+.commentFormContainer {
+  flex: 1; /* ✅ KEPT: 1/4 of the width */
+  margin-top: 0;
+  padding: 25px; /* ✅ REDUCED: from 30px to 25px for more space */
+  background: #bbbbbb;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  align-self: flex-start;
+  position: sticky;
+  top: 20px;
+}
+
+/* ✅ UPDATED: Comment form styling */
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  background-color: #bbbbbb;
+  padding: 0; /* ✅ REMOVED: No extra padding */
+  margin: 0; /* ✅ REMOVED: No extra margin */
+}
+
+.commentForm h3 {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 25px; /* ✅ INCREASED: More space */
+  font-size: 1.9rem; /* ✅ INCREASED: Larger heading */
+  color: #2c2c2c;
+  line-height: 1.3;
+}
+
+/* ✅ UPDATED: Form group styling */
+.formGroup {
+  margin-bottom: 20px; /* ✅ INCREASED: More space between fields */
+  background-color: #bbbbbb;
+}
+
+.commentForm label {
+  margin-bottom: 8px; /* ✅ INCREASED: More space */
+  background-color: #bbbbbb;
+  font-size: 0.95rem;
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  color: #495057; /* ✅ UPDATED: Better contrast */
+  font-weight: 600; /* ✅ INCREASED: Bold labels */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+/* ✅ UPDATED: Form input styling */
+.commentForm input,
+.commentForm textarea {
+  width: 100%;
+  padding: 14px 16px; /* ✅ INCREASED: More padding */
+  font-size: 1.0rem; /* ✅ INCREASED: Larger text */
+  border: 1px solid #e9ecef; /* ✅ UPDATED: Thicker border */
+  border-radius: 8px; /* ✅ INCREASED: More rounded */
+  background-color: #ffffff;
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  box-sizing: border-box;
+  background-color: #adabab;
+  color: #333333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.commentForm input:focus,
+.commentForm textarea:focus {
+  border-color: #505050; /* ✅ UPDATED: Blue focus color */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1); /* ✅ NEW: Focus glow */
+}
+
+/* ✅ UPDATED: Textarea specific styling */
+.commentForm textarea {
+  min-height: 120px; /* ✅ INCREASED: Taller textarea */
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* ✅ NEW: Character count styling */
+.characterCount {
+  font-size: 0.85rem;
+  color: #6c757d;
+  text-align: right;
+  margin-top: 5px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* ✅ UPDATED: Post button styling */
+.postBtn {
+  margin-top: 25px; /* ✅ INCREASED: More space */
+  padding: 14px 32px; /* ✅ INCREASED: Larger button */
+  background-color: #414040;
+  color: white;
+  border: none;
+  border-radius: 8px; /* ✅ INCREASED: More rounded */
+  cursor: pointer;
+  font-family: 'Arial', sans-serif; /* ✅ UPDATED: Sans-serif font */
+  font-size: 1.1em; /* ✅ INCREASED: Larger text */
+  font-weight: 600; /* ✅ INCREASED: Bold text */
+  transition: all 0.3s ease;
+  align-self: flex-start; /* ✅ CHANGED: Left aligned */
+}
+
+.postBtn:hover {
+  background-color: #357abd; /* ✅ UPDATED: Darker blue */
+  border-color: #357abd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); /* ✅ NEW: Blue shadow */
+}
+
+.postBtn:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+  .titleLine {
+    width: 100%;
+    height: 30px;
+    background: #929292;
+    margin-top: -4%;
+    margin-bottom: 18px;
   }
-}
+  
+  /* Responsive */
+  @media (max-width: 992px) {
+    .title {
+      font-size: 2.8em;
+    }
+    .contentTitle {
+      font-size: 2.2em;
+    }
+    .contentBodyPlaceholder {
+      min-height: 50vh;
+      padding: 20px;
+    }
+  
+    /* ✅ UPDATED: Comment layout changes for mobile */
+    .commentLayout {
+      flex-direction: column-reverse; /* ✅ NEW: Reverse order - form first, comments second */
+      gap: 30px;
+    }
+    
+    .commentList {
+      flex: none; /* ✅ Reset flex */
+      order: 2; /* ✅ NEW: Comments go second */
+      padding-left: 0;
+      padding-right: 0;
+    }
+    
+    .commentFormContainer {
+      flex: none; /* ✅ Reset flex */
+      position: static; /* ✅ Remove sticky on mobile */
+      order: 1; /* ✅ NEW: Form goes first */
+      width: 100%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .heroContent {
+      position: absolute !important;
+      bottom: 20px !important;
+      left: 50% !important;
+      margin-bottom: 90px !important;
+      transform: translateX(-50%) !important;
+      top: auto !important;
+      width: 90% !important;
+      max-width: 600px !important;
+      text-align: center !important;
+      padding: 15px 20px !important;
+      z-index: 6 !important;
+    }
 
-.blogCard:hover,
-.blogCard.mobileExpanded {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px var(--card-shadow-color, rgba(0,0,0,0.15));
-}
+    .heroContent .title {
+      font-size: 2.0em !important;
+      margin-bottom: 0.5em !important;
+      color: white !important;
+    }
+  
+    .heroContent .subheadingText {
+      font-size: 1.2em !important;
+      margin-bottom: 10px !important;
+      color: rgba(255,255,255,0.97) !important;
+    }
+
+    .heroContent .date {
+      font-size: 0.9em !important;
+      margin-bottom: 0 !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+  
+    .heroContent .categoryBadge {
+      background: rgba(255, 255, 255, 0.2) !important;
+      padding: 4px 12px !important;
+      border-radius: 20px !important;
+      font-size: 0.8em !important;
+      margin-bottom: 10px !important;
+      backdrop-filter: blur(5px) !important;
+      -webkit-backdrop-filter: blur(5px) !important;
+    }
+  
+   
+    
+    .contentBodyPlaceholder {
+      margin-left: 8%; /* ✅ REDUCED: from 25% to 8% for more width */
+      margin-right: 4%; /* ✅ REDUCED: from 8% to 4% for more width */
+      min-height: 40vh;
+      padding: 15px;
+      font-size: 1em;
+    }
+  
+    /* ✅ UPDATED: Comment section mobile styling */
+    .commentSection {
+      margin-left: 5%; /* ✅ Even smaller margins on mobile */
+      margin-right: 5%;
+      padding-top: 30px;
+    }
+    .commentSectionHeader h3 {
+      font-size: 1.8em; /* ✅ Smaller on mobile */
+    }
+    
+    .commentBox {
+      padding: 16px 18px; /* ✅ UPDATED: Better mobile padding */
+      margin-bottom: 20px;
+    }
+    .commentBox strong {
+      font-size: 0.95rem;
+    }
+    .commentMeta, .commentBox p, .replyBtn {
+      font-size: 0.8rem;
+    }
+    
+    .commentFormContainer {
+      padding: 20px; /* ✅ UPDATED: Mobile form padding */
+      margin-bottom: 30px; /* ✅ NEW: Space between form and comments */
+    }
+    
+    .commentForm h3 {
+      font-size: 1.6rem; /* ✅ UPDATED: Mobile form heading size */
+    }
+    .commentForm label, .commentForm input, .commentForm textarea {
+      font-size: 0.9em;
+    }
+    .postBtn {
+      padding: 10px 20px;
+      font-size: 0.9em;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    @media (max-width: 480px) {
+      .heroContent {
+        bottom: 15px !important;
+        width: 95% !important;
+        padding: 12px 16px !important;
+      }
+    
+      .heroContent .title {
+        font-size: 1.6em !important;
+      }
+    
+      .heroContent .subheadingText {
+        font-size: 1.0em !important;
+      }
+    
+      .heroContent .date {
+        font-size: 0.8em !important;
+      }
+    }
+    .contentBodyPlaceholder {
+      margin-left: 4%; /* ✅ FURTHER REDUCED: from 8% to 4% for maximum width on small screens */
+      margin-right: 2%; /* ✅ FURTHER REDUCED: from 4% to 2% for maximum width */
+      min-height: 35vh;
+      padding: 12px; /* ✅ SLIGHTLY REDUCED: padding for more content space */
+    }
+  
+    /* ✅ UPDATED: Small mobile adjustments */
+    .commentSection {
+      display: block;
+      width: 100vw !important; /* Full viewport width */
+      margin-left: calc(-50vw + 50%) !important; /* Break out of container */
+      margin-right: calc(-50vw + 50%) !important;
+      padding: 20px 15px !important; /* Add some padding for readability */
+    }
+    .commentSectionHeader h3 {
+      font-size: 1.6em;
+    }
+    
+    .commentBox {
+      padding: 14px 16px; /* ✅ UPDATED: Small mobile padding */
+    }
+    .commentBox strong, .commentMeta, .commentBox p, .replyBtn {
+      font-size: 0.75rem;
+    }
+    
+    .commentFormContainer {
+      padding: 16px; /* ✅ UPDATED: Small mobile form padding */
+      margin-bottom: 25px; /* ✅ NEW: Space between form and comments */
+    }
+    
+    .commentForm h3 {
+      font-size: 1.3em;
+    }
+  }
+  

@@ -1,37 +1,27 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useDarkMode } from '../../context/DarkModeContext';
-import { blogThemes } from '../../config/blogThemes';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './UniformPage.module.css';
+import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 
-const DynamicBackgroundShadow = ({ theme, darkMode }) => {
+// ✅ Dynamic Background Shadow Component
+const DynamicBackgroundShadow = ({ theme }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [backgroundImageSrc, setBackgroundImageSrc] = useState('');
-  const [heroImageSrc, setHeroImageSrc] = useState('');
+  const [backgroundImage, setBackgroundImage] = useState(null);
 
   useEffect(() => {
-    const loadImages = async () => {
+    const loadBackgroundImage = async () => {
       try {
-        const backgroundModule = await theme.backgroundImage();
-        const heroModule = await theme.heroImage();
-        
-        setBackgroundImageSrc(backgroundModule.default);
-        setHeroImageSrc(heroModule.default);
-        
-        // Load dark mode image for philosophy if supported
-        if (theme.supportsDarkMode && theme.heroDarkImage && darkMode) {
-          const darkHeroModule = await theme.heroDarkImage();
-          setHeroImageSrc(darkHeroModule.default);
-        }
+        const bgModule = await theme.headerConfig.backgroundImage();
+        setBackgroundImage(bgModule.default);
       } catch (err) {
-        console.warn('Failed to load theme images:', err);
+        console.warn('Could not load background image:', err);
       }
     };
 
-    loadImages();
-  }, [theme, darkMode]);
+    loadBackgroundImage();
+  }, [theme]);
 
   useEffect(() => {
     const extractColorFromImage = () => {
@@ -80,10 +70,10 @@ const DynamicBackgroundShadow = ({ theme, darkMode }) => {
 
   return (
     <>
-      {backgroundImageSrc && (
+      {backgroundImage && (
         <img
           ref={imgRef}
-          src={backgroundImageSrc}
+          src={backgroundImage}
           alt="Background for color extraction"
           crossOrigin="anonymous"
           style={{ display: 'none' }}
@@ -91,33 +81,47 @@ const DynamicBackgroundShadow = ({ theme, darkMode }) => {
           onError={() => setImageLoaded(false)}
         />
       )}
-      <section 
-        ref={headerRef} 
-        className={styles.headerSection}
-        style={{
-          backgroundImage: backgroundImageSrc ? `url(${backgroundImageSrc})` : 'none'
-        }}
-      >
-        {heroImageSrc && (
-          <img
-            src={heroImageSrc}
-            alt={`${theme.name} Hero`}
-            className={`${styles.heroImage} ${styles[theme.heroImageClass]}`}
-            style={{
-              '--hero-x': theme.heroPositioning.desktop.x,
-              '--hero-y': theme.heroPositioning.desktop.y,
-              '--hero-x-mobile': theme.heroPositioning.mobile.x,
-              '--hero-y-mobile': theme.heroPositioning.mobile.y,
-              '--hero-width-desktop': theme.heroWidth?.desktop,
-              '--hero-width-mobile': theme.heroWidth?.mobile
-            }}
-          />
-        )}
-      </section>
+      <HeaderSection theme={theme} headerRef={headerRef} />
     </>
   );
 };
 
+// ✅ Header Section Component
+const HeaderSection = ({ theme, headerRef }) => {
+  const [heroImage, setHeroImage] = useState(null);
+
+  useEffect(() => {
+    const loadHeroImage = async () => {
+      try {
+        const heroModule = await theme.headerConfig.heroImage();
+        setHeroImage(heroModule.default);
+      } catch (err) {
+        console.warn('Could not load hero image:', err);
+      }
+    };
+
+    loadHeroImage();
+  }, [theme]);
+
+  return (
+    <section ref={headerRef} className={styles.headerSection}>
+      {heroImage && (
+        <img
+          src={heroImage}
+          alt={theme.headerConfig.altText}
+          className={styles.heroImage}
+          style={{
+            '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
+            '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
+            width: `${theme.headerConfig.heroWidth}px`
+          }}
+        />
+      )}
+    </section>
+  );
+};
+
+// ✅ Blog Card Component
 const BlogCard = ({ 
   post, 
   hoveredPostId, 
@@ -146,6 +150,7 @@ const BlogCard = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Function to extract average color for shadows
   const extractColorFromImage = () => {
     if (!imgRef.current || !cardRef.current || !imageLoaded) return;
 
@@ -219,7 +224,7 @@ const BlogCard = ({
       style={{
         cursor: 'pointer',
         '--card-shadow-color': (isHovered || isMobileActive) ? shadowColor : 'rgba(0, 0, 0, 0)',
-        background: theme.cardBackground
+        backgroundColor: theme.cardStyle.backgroundColor
       }}
       onKeyDown={onKeyDown}
       aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
@@ -301,11 +306,11 @@ const BlogCard = ({
                   if (navigator.share) {
                     navigator.share({
                       title: post.title,
-                      text: post.subheading || post.title,
-                      url: `${theme.routePath}/${post.id}`
+                      text: post.subheading,
+                      url: `${theme.routeBase}/${post.id}`
                     });
                   } else {
-                    navigator.clipboard.writeText(`${window.location.origin}${theme.routePath}/${post.id}`);
+                    navigator.clipboard.writeText(`${window.location.origin}${theme.routeBase}/${post.id}`);
                     alert('Link copied to clipboard!');
                   }
                 }}
@@ -329,12 +334,11 @@ const BlogCard = ({
   );
 };
 
+// ✅ Main Uniform Page Component
 const UniformPage = () => {
-  const { category } = useParams();
-  const { darkMode } = useDarkMode();
   const containerRef = useRef(null); 
   const navigate = useNavigate();
-  
+  const location = useLocation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -342,16 +346,9 @@ const UniformPage = () => {
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
   const [activeCardId, setActiveCardId] = useState(null);
 
-  // Get theme based on category
-  const theme = blogThemes[category];
-
-  useEffect(() => {
-    if (!theme) {
-      setError('Invalid blog category');
-      setLoading(false);
-      return;
-    }
-  }, [category, theme]);
+  // Get theme based on current route
+  const category = getCategoryFromPath(location.pathname);
+  const theme = getThemeByCategory(category);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -418,8 +415,6 @@ const UniformPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!theme) return;
-
     const fetchPosts = async () => {
       setLoading(true);
       setError('');
@@ -450,7 +445,7 @@ const UniformPage = () => {
         setPosts(sorted);
         
       } catch (err) {
-        setError(`Failed to load ${theme.errorPrefix} posts: ${err.message}`);
+        setError(`Failed to load ${theme.postsSection.heading.toLowerCase()}: ${err.message}`);
         setPosts([]);
       } finally {
         setLoading(false);
@@ -461,7 +456,7 @@ const UniformPage = () => {
   }, [theme]);
 
   const handlePostClick = (post) => {
-    navigate(`${theme.routePath}/${post.id}`);
+    navigate(`${theme.routeBase}/${post.id}`);
   };
 
   const handleKeyDown = (e, post) => {
@@ -471,50 +466,30 @@ const UniformPage = () => {
     }
   };
 
-  if (!theme) {
-    return (
-      <div className={styles.errorContainer}>
-        <h1>Invalid Blog Category</h1>
-        <p>The requested blog category "{category}" does not exist.</p>
-      </div>
-    );
-  }
-
   return (
     <div 
-      className={`${styles.pageContainer} ${styles[theme.containerClass]}`}
-      style={{
-        backgroundColor: theme.pageBackground
-      }}
+      className={styles[theme.containerClass]}
+      style={{ backgroundColor: theme.backgroundColor }}
     >
       <div
         data-navbar-bg-detect
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
-      <DynamicBackgroundShadow theme={theme} darkMode={darkMode} />
+      <DynamicBackgroundShadow theme={theme} />
 
       <section 
         className={styles.postsSection}
-        style={{
-          backgroundColor: theme.sectionBackground
-        }}
+        style={{ backgroundColor: theme.postsSection.backgroundColor }}
       >
-        <h2 
-          className={styles.postsHeading}
-          style={{
-            '--mobile-heading-bg': theme.mobileHeadingBackground
-          }}
-        >
-          {theme.name}
-        </h2>
+        <h2 className={styles.postsHeading}>{theme.postsSection.heading}</h2>
 
         <div ref={containerRef} className={styles.blogGridContainer}>
           <div className={styles.blogGrid}>
             {loading ? (
               <div className={styles.loadingState}>
                 <div className={styles.spinner}></div>
-                <p>{theme.loadingText}</p>
+                <p>{theme.postsSection.loadingText}</p>
               </div>
             ) : error ? (
               <div className={styles.errorState}>
@@ -529,8 +504,8 @@ const UniformPage = () => {
               </div>
             ) : !Array.isArray(posts) || posts.length === 0 ? (
               <div className={styles.emptyState}>
-                <h3>No {theme.name} Available</h3>
-                <p>{theme.emptyStateText}</p>
+                <h3>{theme.postsSection.emptyStateTitle}</h3>
+                <p>{theme.postsSection.emptyStateText}</p>
               </div>
             ) : (
               posts.map((post) => (
@@ -556,9 +531,7 @@ const UniformPage = () => {
 
       <div 
         className={styles.grayStrip}
-        style={{
-          backgroundColor: theme.stripBackground
-        }}
+        style={{ backgroundColor: theme.stripColor }}
       ></div>
     </div>
   );

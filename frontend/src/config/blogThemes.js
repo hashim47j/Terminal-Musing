@@ -1,167 +1,175 @@
-// Theme configurations for different blog categories
+// frontend/src/config/blogThemes.js
+// Configuration for different blog page themes
+
 export const blogThemes = {
     philosophy: {
-      name: 'Philosophy Posts',
-      apiEndpoint: '/api/blogs/philosophy',
-      routePath: '/blog/philosophy',
-      loadingText: 'Loading philosophy posts...',
-      emptyStateText: 'Check back soon for new philosophical insights and articles.',
-      errorPrefix: 'philosophy',
-      
-      // Assets
-      heroImage: () => import('../../assets/kant-sapere-audae.png'),
-      heroDarkImage: () => import('../../assets/kant-sapere-aude-dark.png'),
-      backgroundImage: () => import('../../assets/philosophy-background.png'),
-      
-      // Styling
+      // Container and layout
       containerClass: 'philosophyPageContainer',
-      heroImageClass: 'kantSapereAudeImage',
-      heroPositioning: {
-        desktop: { x: '0px', y: '25px' },
-        mobile: { x: '20px', y: '30px' }
+      backgroundColor: '#f9f7f4',
+      
+      // Header configuration  
+      headerConfig: {
+        // Fixed the typo here - was "kant-sapere-audae" now "kant-sapere-aude"
+        backgroundImage: () => import('../../assets/philosophy-background.png'),
+        heroImage: () => import('../../assets/kant-sapere-aude.png'),
+        heroDarkImage: () => import('../../assets/kant-sapere-aude-dark.png'),
+        heroPosition: { x: -45, y: 8 },
+        heroWidth: 180,
+        altText: 'Kant Sapere Aude'
       },
       
-      // Colors & Backgrounds
-      pageBackground: '#f4f0e8',
-      sectionBackground: '#ffffff60',
-      cardBackground: '#ffffff80',
-      stripBackground: '#e4d7be',
-      mobileHeadingBackground: '#ecebeb',
+      // Content section styling
+      postsSection: {
+        backgroundColor: '#ffffff85',
+        heading: 'Philosophy Posts',
+        loadingText: 'Loading philosophy posts...',
+        emptyStateTitle: 'No Philosophy Posts Available',
+        emptyStateText: 'Check back soon for new philosophical insights and discussions.'
+      },
       
-      // Special features
-      supportsDarkMode: true
+      // Card styling
+      cardStyle: {
+        backgroundColor: '#ffffff90',
+      },
+      
+      // Footer strip color
+      stripColor: '#d4c5a9',
+      
+      // API endpoint
+      apiEndpoint: '/api/blogs/philosophy',
+      
+      // Route base
+      routeBase: '/blog/philosophy'
     },
   
     writings: {
-      name: 'Writings',
-      apiEndpoint: '/api/blogs/writings',
-      routePath: '/blog/writings',
-      loadingText: 'Loading writings...',
-      emptyStateText: 'Check back soon for new poems, stories, and creative works.',
-      errorPrefix: 'writings',
+      containerClass: 'writingsPageContainer', 
+      backgroundColor: '#f7eedb',
       
-      // Assets  
-      heroImage: () => import('../../assets/writings-hero.png'),
-      backgroundImage: () => import('../../assets/Wrting-background.png'),
-      
-      // Styling
-      containerClass: 'writingsPageContainer',
-      heroImageClass: 'heroImage',
-      heroPositioning: {
-        desktop: { x: '-45px', y: '8px' },
-        mobile: { x: '8px', y: '15px' }
+      headerConfig: {
+        backgroundImage: () => import('../../assets/Wrting-background.png'),
+        heroImage: () => import('../../assets/writings-hero.png'),
+        heroPosition: { x: -45, y: 8 },
+        heroWidth: 180,
+        altText: 'Writings Hero'
       },
       
-      // Colors & Backgrounds
-      pageBackground: '#f7eedb',
-      sectionBackground: '#ffffff77',
-      cardBackground: '#ffffff85',
-      stripBackground: '#d1c1a0',
-      mobileHeadingBackground: '#ecebeb',
+      postsSection: {
+        backgroundColor: '#ffffff77',
+        heading: 'Writings',
+        loadingText: 'Loading writings...',
+        emptyStateTitle: 'No Writings Available',
+        emptyStateText: 'Check back soon for new poems, stories, and creative works.'
+      },
       
-      // Hero sizing
-      heroWidth: { desktop: '180px', mobile: '160px' },
+      cardStyle: {
+        backgroundColor: '#ffffff85',
+      },
       
-      supportsDarkMode: false
+      stripColor: '#d1c1a0',
+      apiEndpoint: '/api/blogs/writings',
+      routeBase: '/blog/writings'
     },
   
     tech: {
-      name: 'Tech Posts',
-      apiEndpoint: '/api/blogs/tech',
-      routePath: '/blog/tech',
-      loadingText: 'Loading tech posts...',
-      emptyStateText: 'Check back soon for new technology insights and articles.',
-      errorPrefix: 'tech',
-      
-      // Assets
-      heroImage: () => import('../../assets/techhero.png'),
-      backgroundImage: () => import('../../assets/techbg.png'),
-      
-      // Styling
       containerClass: 'techPageContainer',
-      heroImageClass: 'heroImage',
-      heroPositioning: {
-        desktop: { x: '0px', y: '25px' },
-        mobile: { x: '8px', y: '15px' }
+      backgroundColor: '#e4e7eb',
+      
+      headerConfig: {
+        backgroundImage: () => import('../../assets/techbg.png'),
+        heroImage: () => import('../../assets/techhero.png'),
+        heroPosition: { x: 0, y: 25 },
+        heroWidth: 300,
+        altText: 'Tech Hero'
       },
       
-      // Colors & Backgrounds
-      pageBackground: '#e4e7eb',
-      sectionBackground: '#ffffff6e',
-      cardBackground: '#fff',
-      stripBackground: '#86859a',
-      mobileHeadingBackground: '#ffffffcb',
+      postsSection: {
+        backgroundColor: '#ffffff6e',
+        heading: 'Tech Posts',
+        loadingText: 'Loading tech posts...',
+        emptyStateTitle: 'No Tech Posts Available',
+        emptyStateText: 'Check back soon for new technology insights and articles.'
+      },
       
-      // Hero sizing
-      heroWidth: { desktop: '300px', mobile: '180px' },
+      cardStyle: {
+        backgroundColor: '#fff',
+      },
       
-      supportsDarkMode: false
+      stripColor: '#86859a',
+      apiEndpoint: '/api/blogs/tech',
+      routeBase: '/blog/tech'
     },
   
     lsconcern: {
-      name: 'Legal & Social Posts',
-      apiEndpoint: '/api/blogs/lsconcern',
-      routePath: '/blog/lsconcern',
-      loadingText: 'Loading Legal & Social posts...',
-      emptyStateText: 'Check back soon for new legal insights and social commentary.',
-      errorPrefix: 'Legal & Social',
-      
-      // Assets
-      heroImage: () => import('../../assets/social-hero.png'),
-      backgroundImage: () => import('../../assets/social-bg.jpg'),
-      
-      // Styling
       containerClass: 'lsconcernPageContainer',
-      heroImageClass: 'heroImage',
-      heroPositioning: {
-        desktop: { x: '0px', y: '25px' },
-        mobile: { x: '25px', y: '20px' }
+      backgroundColor: '#dddbd8',
+      
+      headerConfig: {
+        backgroundImage: () => import('../../assets/social-bg.jpg'),
+        heroImage: () => import('../../assets/social-hero.png'),
+        heroPosition: { x: 0, y: 25 },
+        heroWidth: 280,
+        altText: 'Legal & Social Hero',
+        mobileHeroPosition: { x: 25, y: 20 }, // Special mobile positioning
+        mobileHeroWidth: 200
       },
       
-      // Colors & Backgrounds
-      pageBackground: '#dddbd8',
-      sectionBackground: '#ffffff6b',
-      cardBackground: '#ffffff94',
-      stripBackground: '#a19d95',
-      mobileHeadingBackground: '#ecebeb',
+      postsSection: {
+        backgroundColor: '#ffffff6b',
+        heading: 'Legal & Social Posts',
+        loadingText: 'Loading Legal & Social posts...',
+        emptyStateTitle: 'No Legal & Social Posts Available',
+        emptyStateText: 'Check back soon for new legal insights and social commentary.'
+      },
       
-      // Hero sizing
-      heroWidth: { desktop: '280px', mobile: '200px' },
+      cardStyle: {
+        backgroundColor: '#ffffff94',
+      },
       
-      supportsDarkMode: false
+      stripColor: '#a19d95',
+      apiEndpoint: '/api/blogs/lsconcern',
+      routeBase: '/blog/lsconcern'
     },
   
     history: {
-      name: 'History Posts',
-      apiEndpoint: '/api/blogs/history',
-      routePath: '/blog/history',
-      loadingText: 'Loading history posts...',
-      emptyStateText: 'Check back soon for new historical insights and articles.',
-      errorPrefix: 'history',
-      
-      // Assets
-      heroImage: () => import('../../assets/history-hero.png'),
-      backgroundImage: () => import('../../assets/history-background.png'),
-      
-      // Styling
       containerClass: 'historyPageContainer',
-      heroImageClass: 'heroImage',
-      heroPositioning: {
-        desktop: { x: '-45px', y: '8px' },
-        mobile: { x: '8px', y: '15px' }
+      backgroundColor: '#E4E4E4',
+      
+      headerConfig: {
+        backgroundImage: () => import('../../assets/history-background.png'),
+        heroImage: () => import('../../assets/history-hero.png'),
+        heroPosition: { x: -45, y: 8 },
+        heroWidth: 160,
+        altText: 'Historical Illustration',
+        mobileHeroWidth: 120
       },
       
-      // Colors & Backgrounds
-      pageBackground: '#E4E4E4',
-      sectionBackground: '#ecebeb',
-      cardBackground: '#fff',
-      stripBackground: '#929292',
-      mobileHeadingBackground: '#ecebeb',
+      postsSection: {
+        backgroundColor: '#ecebeb',
+        heading: 'History Posts', 
+        loadingText: 'Loading history posts...',
+        emptyStateTitle: 'No History Posts Available',
+        emptyStateText: 'Check back soon for new historical insights and articles.'
+      },
       
-      // Hero sizing
-      heroWidth: { desktop: '160px', mobile: '120px' },
+      cardStyle: {
+        backgroundColor: '#fff',
+      },
       
-      supportsDarkMode: false
+      stripColor: '#929292',
+      apiEndpoint: '/api/blogs/history',
+      routeBase: '/blog/history'
     }
+  };
+  
+  // Helper function to get theme by category
+  export const getThemeByCategory = (category) => {
+    return blogThemes[category] || blogThemes.philosophy; // Default fallback
+  };
+  
+  // Helper to get category from pathname
+  export const getCategoryFromPath = (pathname) => {
+    const match = pathname.match(/\/blog\/([^\/]+)/);
+    return match ? match[1] : 'philosophy';
   };
   

@@ -1,583 +1,540 @@
-import React, { useEffect, useState, useContext, useCallback, useMemo, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import styles from './Uniblog.module.css';
-import { useDarkMode } from '../../context/DarkModeContext';
-import BlogRenderer from '../../components/BlogRenderer';
-import { PageContext } from '../../context/PageContext';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import styles from './UniformPage.module.css';
+import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 
-const THEMES = {
-  history: { name: 'history', display: 'History' },
-  philosophy: { name: 'philosophy', display: 'Philosophy' },
-  tech: { name: 'tech', display: 'Technology' },
-  lsconcern: { name: 'lsconcern', display: 'Legal & Social' }
-};
-const CommentBox = React.memo(({ comment, depth = 0, onReply, isReplying, replyForm, setReplyForm, handleReplySubmit }) => {
-  const [showReplies, setShowReplies] = useState(true);
-  
-  const handleReplyClick = useCallback(() => onReply(comment.id), [onReply, comment.id]);
-  
-  const toggleReplies = useCallback(() => setShowReplies(prev => !prev), []);
-  
-  const replyFormHandlers = useMemo(() => ({
-    name: (e) => setReplyForm(prev => ({ ...prev, name: e.target.value })),
-    email: (e) => setReplyForm(prev => ({ ...prev, email: e.target.value })),
-    comment: (e) => setReplyForm(prev => ({ ...prev, comment: e.target.value }))
-  }), [setReplyForm]);
+// ✅ Dynamic Background Shadow Component
+const DynamicBackgroundShadow = ({ theme }) => {
+  const headerRef = useRef(null);
+  const imgRef = useRef(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState(null);
 
-  const submitReply = useCallback((e) => {
-    e.preventDefault();
-    handleReplySubmit(e, comment.id);
-  }, [handleReplySubmit, comment.id]);
-
-  const cancelReply = useCallback(() => onReply(null), [onReply]);
-
-  if (!comment) return null;
-
-  return (
-    <div 
-      className={`${styles.commentBox} ${depth > 0 ? styles.replyBox : ''}`}
-      style={{ marginLeft: `${depth * 15}px` }}
-    >
-      <div className={styles.commentHeader}>
-        <strong className={styles.commenterName}>{comment.name} says:</strong>
-        <div className={styles.commentMeta}>
-          {new Date(comment.timestamp).toLocaleString()}
-          {comment.editedAt && <span className={styles.editedIndicator}> (edited)</span>}
-        </div>
-      </div>
-      
-      <div className={styles.commentContent}>
-        <p dangerouslySetInnerHTML={{ __html: comment.comment }}></p>
-      </div>
-      
-      {depth < 3 && (
-        <div className={styles.commentActions}>
-          <button 
-            className={styles.replyBtn}
-            onClick={handleReplyClick}
-            disabled={isReplying === comment.id}
-          >
-            {isReplying === comment.id ? 'Replying...' : 'Reply'}
-          </button>
-        </div>
-      )}
-
-      {isReplying === comment.id && (
-        <form onSubmit={submitReply} className={styles.replyForm}>
-          <div className={styles.replyFormGroup}>
-            <input
-              type="text"
-              placeholder="Your name"
-              value={replyForm.name}
-              onChange={replyFormHandlers.name}
-              required
-              className={styles.replyInput}
-            />
-          </div>
-          <div className={styles.replyFormGroup}>
-            <input
-              type="email"
-              placeholder="Your email"
-              value={replyForm.email}
-              onChange={replyFormHandlers.email}
-              required
-              className={styles.replyInput}
-            />
-          </div>
-          <div className={styles.replyFormGroup}>
-            <textarea
-              placeholder="Your reply..."
-              value={replyForm.comment}
-              onChange={replyFormHandlers.comment}
-              required
-              rows={3}
-              className={styles.replyTextarea}
-            />
-          </div>
-          <div className={styles.replyActions}>
-            <button type="submit" className={styles.replySubmitBtn}>Post Reply</button>
-            <button type="button" onClick={cancelReply} className={styles.replyCancelBtn}>Cancel</button>
-          </div>
-        </form>
-      )}
-
-      {comment.replies && comment.replies.length > 0 && (
-        <div className={styles.repliesContainer}>
-          {depth < 2 && (
-            <button className={styles.toggleRepliesBtn} onClick={toggleReplies}>
-              {showReplies ? '▼' : '▶'} {comment.replies.length} repl{comment.replies.length === 1 ? 'y' : 'ies'}
-            </button>
-          )}
-          
-          {showReplies && comment.replies.map((reply, index) => (
-            <CommentBox
-              key={reply.id || `reply-${index}`}
-              comment={reply}
-              depth={depth + 1}
-              onReply={onReply}
-              isReplying={isReplying}
-              replyForm={replyForm}
-              setReplyForm={setReplyForm}
-              handleReplySubmit={handleReplySubmit}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-});
-
-const Uniblog = () => {
-  const { category, id } = useParams();
-  const { darkMode } = useDarkMode();
-  const { setPageTitle } = useContext(PageContext);
-
-  const [blog, setBlog] = useState(null);
-  const [commentsData, setCommentsData] = useState({ comments: [], stats: null });
-  const [form, setForm] = useState({ name: '', email: '', comment: '' });
-  const [replyForm, setReplyForm] = useState({ name: '', email: '', comment: '' });
-  const [loading, setLoading] = useState(true);
-  const [commentsLoading, setCommentsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [isReplying, setIsReplying] = useState(null);
-  const [viewCount, setViewCount] = useState(0);
-
-  // ✅ NEW: Scroll animation state
-  const heroRef = useRef(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  const currentTheme = useMemo(() => THEMES[category] || THEMES.history, [category]);
-  
-  const apiUrls = useMemo(() => ({
-    blog: `/api/blogs/${category}/${id}`,
-    comments: `/api/comments/${category}/${id}`,
-    views: `/api/views/${category}/${id}`
-  }), [category, id]);
-
-  // ✅ NEW: Scroll effect for blur animation
-  // ✅ UPDATED: Scroll effect for bottom-to-top blur animation
   useEffect(() => {
-    let ticking = false;
-    
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          if (!heroRef.current) return;
-          
-          const heroHeight = heroRef.current.offsetHeight;
-          const scrolled = window.scrollY;
-          const progress = Math.min(scrolled / (heroHeight * 0.5), 1);
-          
-          setScrollProgress(progress);
-          ticking = false;
-        });
-        ticking = true;
+    const loadBackgroundImage = async () => {
+      try {
+        const bgModule = await theme.headerConfig.backgroundImage();
+        setBackgroundImage(bgModule.default);
+      } catch (err) {
+        console.warn('Could not load background image:', err);
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    loadBackgroundImage();
+  }, [theme]);
+
+  useEffect(() => {
+    const extractColorFromImage = () => {
+      if (!imgRef.current || !headerRef.current || !imageLoaded) return;
+
+      const img = imgRef.current;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      try {
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        let r = 0, g = 0, b = 0, count = 0;
+        
+        for (let i = 0; i < data.length; i += 4 * 10) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count++;
+        }
+        
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+
+        const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+        headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
+      } catch (err) {
+        console.warn('Could not extract color from background image:', err);
+      }
+    };
+
+    if (imageLoaded) {
+      extractColorFromImage();
+    }
+  }, [imageLoaded]);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  return (
+    <>
+      {backgroundImage && (
+        <img
+          ref={imgRef}
+          src={backgroundImage}
+          alt="Background for color extraction"
+          crossOrigin="anonymous"
+          style={{ display: 'none' }}
+          onLoad={handleImageLoad}
+          onError={() => setImageLoaded(false)}
+        />
+      )}
+      <HeaderSection theme={theme} headerRef={headerRef} />
+    </>
+  );
+};
+
+// ✅ Header Section Component
+const HeaderSection = ({ theme, headerRef }) => {
+  const [heroImage, setHeroImage] = useState(null);
+
+  useEffect(() => {
+    const loadHeroImage = async () => {
+      try {
+        const heroModule = await theme.headerConfig.heroImage();
+        setHeroImage(heroModule.default);
+      } catch (err) {
+        console.warn('Could not load hero image:', err);
+      }
+    };
+
+    loadHeroImage();
+  }, [theme]);
+
+  return (
+    <section ref={headerRef} className={styles.headerSection}>
+      {heroImage && (
+        <img
+          src={heroImage}
+          alt={theme.headerConfig.altText}
+          className={styles.heroImage}
+          style={{
+            '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
+            '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
+            width: `${theme.headerConfig.heroWidth}px`
+          }}
+        />
+      )}
+    </section>
+  );
+};
+
+// ✅ Blog Card Component
+const BlogCard = ({ 
+  post, 
+  hoveredPostId, 
+  onMouseEnter, 
+  onMouseLeave, 
+  onClick, 
+  onKeyDown, 
+  currentAuthor, 
+  getWordCount,
+  activeCardId,
+  setActiveCardId,
+  theme
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0)');
+  const cardRef = useRef(null);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Fetch blog and track views
-  useEffect(() => {
-    if (!category || !id) return;
+  // Function to extract average color for shadows
+  const extractColorFromImage = () => {
+    if (!imgRef.current || !cardRef.current || !imageLoaded) return;
 
-    const fetchAndTrackBlog = async () => {
+    const img = imgRef.current;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+
+    try {
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      let r = 0, g = 0, b = 0, count = 0;
+
+      for (let i = 0; i < data.length; i += 4 * 10) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count++;
+      }
+
+      r = Math.floor(r / count);
+      g = Math.floor(g / count);
+      b = Math.floor(b / count);
+
+      const shadow = `rgba(${r}, ${g}, ${b}, 0.6)`;
+      setShadowColor(shadow);
+    } catch (err) {
+      console.warn('Could not extract color from card image:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (imageLoaded) extractColorFromImage();
+  }, [imageLoaded]);
+
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isMobile) {
+      const newActiveId = post.id === activeCardId ? null : post.id;
+      setActiveCardId(newActiveId);
+    } else {
+      onClick();
+    }
+  };
+
+  const handleReadButtonClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onClick();
+  };
+
+  const isHovered = !isMobile && hoveredPostId === post.id;
+  const isMobileActive = isMobile && activeCardId === post.id;
+  const isActive = isHovered || isMobileActive;
+
+  return (
+    <article
+      ref={cardRef}
+      className={`${styles.blogCard} ${isMobileActive ? styles.mobileExpanded : ''}`}
+      onClick={handleCardClick}
+      onMouseEnter={!isMobile ? onMouseEnter : undefined}
+      onMouseLeave={!isMobile ? onMouseLeave : undefined}
+      role="button"
+      tabIndex={0}
+      style={{
+        cursor: 'pointer',
+        '--card-shadow-color': (isHovered || isMobileActive) ? shadowColor : 'rgba(0, 0, 0, 0)',
+        backgroundColor: theme.cardStyle.backgroundColor
+      }}
+      onKeyDown={onKeyDown}
+      aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
+    >
+      {post.coverImage ? (
+        <img
+          ref={imgRef}
+          src={post.coverImage}
+          alt={`Cover for ${post.title}`}
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
+          loading="lazy"
+          onLoad={() => setImageLoaded(true)}
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
+      ) : (
+        <div
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} 
+          style={{ backgroundColor: '#ccc' }}
+        >
+          <span className={styles.noImageText}>No Image</span>
+        </div>
+      )}
+
+      <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
+        <h3 className={styles.blogTitle}>{post.title}</h3>
+
+        <div className={styles.cardBottomFixed}>
+          <div className={styles.cardSeparatorLine}></div>
+          <div className={styles.cardMetaRow}>
+            <span className={styles.cardAuthor}>
+              by {post.author || currentAuthor}
+            </span>
+            <span className={styles.cardDate}>
+              {new Date(post.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
+            <span className={styles.cardWordCount}>
+              {getWordCount(post.content)} words
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {isActive && (
+        <div className={styles.hoverOverlay}>
+          <div className={styles.subheadingContainer}>
+            <p className={styles.hoverSubheading}>
+              {post.subheading || post.title}
+            </p>
+          </div>
+
+          <div className={styles.bottomFixed}>
+            <div className={styles.leftContent}>
+              <div className={styles.separatorLine}></div>
+              <div className={styles.authorDateContainer}>
+                <span className={styles.authorName}>
+                  {post.author || currentAuthor}
+                </span>
+                <span className={styles.postDate}>
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.rightContent}>
+              <button
+                className={styles.shareIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (navigator.share) {
+                    navigator.share({
+                      title: post.title,
+                      text: post.subheading,
+                      url: `${theme.routeBase}/${post.id}`
+                    });
+                  } else {
+                    navigator.clipboard.writeText(`${window.location.origin}${theme.routeBase}/${post.id}`);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                </svg>
+              </button>
+
+              <button 
+                className={styles.readBtn}
+                onClick={handleReadButtonClick}
+              >
+                Read
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </article>
+  );
+};
+
+// ✅ Main Uniform Page Component
+const UniformPage = () => {
+  const containerRef = useRef(null); 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [hoveredPostId, setHoveredPostId] = useState(null);
+  const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
+  const [activeCardId, setActiveCardId] = useState(null);
+
+  // Get theme based on current route
+  const category = getCategoryFromPath(location.pathname);
+  const theme = getThemeByCategory(category);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setActiveCardId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const getWordCount = (content) => {
+    if (!content || !Array.isArray(content)) return 0;
+    
+    const textContent = content
+      .filter(block => block.type === 'paragraph' && block.text)
+      .map(block => block.text)
+      .join(' ');
+    
+    return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  useEffect(() => {
+    const fetchCurrentAuthor = async () => {
+      try {
+        const endpoints = [
+          '/api/user/me',
+          '/api/admin/profile', 
+          '/api/auth/user',
+          '/api/current-user'
+        ];
+        
+        for (const endpoint of endpoints) {
+          try {
+            const res = await fetch(endpoint);
+            if (res.ok) {
+              const userData = await res.json();
+              const authorName = userData.name || 
+                               userData.username || 
+                               userData.displayName || 
+                               userData.fullName ||
+                               'Terminal Musing';
+              setCurrentAuthor(authorName);
+              return;
+            }
+          } catch (err) {
+            continue;
+          }
+        }
+        
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          setCurrentAuthor(user.name || user.username || 'Terminal Musing');
+        }
+        
+      } catch (err) {
+        setCurrentAuthor('Terminal Musing');
+      }
+    };
+
+    fetchCurrentAuthor();
+  }, []);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
       setLoading(true);
       setError('');
+      
       try {
-        const res = await fetch(apiUrls.blog);
-        if (!res.ok) throw new Error(`Blog fetch failed: HTTP ${res.status} ${res.statusText}`);
+        const res = await fetch(theme.apiEndpoint);
+        if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
         
         const data = await res.json();
-        setBlog(data);
-        if (data?.title) setPageTitle(`${data.title} - ${currentTheme.display}`);
         
-        // Track view silently
-        fetch(apiUrls.views, { method: 'POST' })
-          .then(res => res.json())
-          .then(data => data.count && setViewCount(data.count))
-          .catch(() => {});
+        let postsArray = [];
+        if (Array.isArray(data)) {
+          postsArray = data;
+        } else if (data && Array.isArray(data.blogs)) {
+          postsArray = data.blogs;
+        } else {
+          postsArray = [];
+        }
+
+        const sorted = postsArray
+          .filter(post => post && post.id && post.title)
+          .sort((a, b) => {
+            const dateA = new Date(a.date || 0);
+            const dateB = new Date(b.date || 0);
+            return dateB - dateA;
+          });
           
+        setPosts(sorted);
+        
       } catch (err) {
-        setError(err.message || 'Failed to load blog');
-        setBlog(null);
+        setError(`Failed to load ${theme.postsSection.heading.toLowerCase()}: ${err.message}`);
+        setPosts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAndTrackBlog();
-    return () => setPageTitle(null);
-  }, [category, id, apiUrls.blog, apiUrls.views, setPageTitle, currentTheme.display]);
+    fetchPosts();
+  }, [theme]);
 
-  // Fetch comments with proper variable and safety checks
-  useEffect(() => {
-    const fetchComments = async () => {
-      setCommentsLoading(true);
-      try {
-        const res = await fetch(apiUrls.comments);
-        if (res.ok) {
-          const data = await res.json();
-          
-          let commentsArray = [];
-          let statsData = null;
-          
-          if (Array.isArray(data)) {
-            commentsArray = data;
-          } else if (data && typeof data === 'object') {
-            commentsArray = Array.isArray(data.comments) ? data.comments : [];
-            statsData = data.stats || null;
-          } else {
-            commentsArray = [];
-          }
-          
-          setCommentsData({
-            comments: commentsArray,
-            stats: statsData
-          });
-        } else {
-          setCommentsData({ comments: [], stats: null });
-        }
-      } catch (error) {
-        setCommentsData({ comments: [], stats: null });
-      } finally {
-        setCommentsLoading(false);
-      }
-    };
+  const handlePostClick = (post) => {
+    navigate(`${theme.routeBase}/${post.id}`);
+  };
 
-    if (category && id) {
-      fetchComments();
+  const handleKeyDown = (e, post) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handlePostClick(post);
     }
-  }, [category, id, apiUrls.comments]);
-
-  // Form handlers
-  const formHandlers = useMemo(() => ({
-    name: (e) => setForm(prev => ({ ...prev, name: e.target.value })),
-    email: (e) => setForm(prev => ({ ...prev, email: e.target.value })),
-    comment: (e) => setForm(prev => ({ ...prev, comment: e.target.value }))
-  }), []);
-
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    
-    const { name, email, comment } = form;
-    if (!name.trim() || !email.trim() || !comment.trim()) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    setSubmitLoading(true);
-    try {
-      const res = await fetch(apiUrls.comments, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, timestamp: new Date().toISOString() }),
-      });
-
-      if (res.ok) {
-        const responseData = await res.json();
-        const savedComment = responseData.comment || responseData;
-        
-        setCommentsData(prev => ({
-          comments: [...prev.comments, savedComment],
-          stats: prev.stats ? { ...prev.stats, totalComments: prev.stats.totalComments + 1 } : null
-        }));
-        
-        setForm({ name: '', email: '', comment: '' });
-        alert('Comment posted successfully!');
-      } else {
-        const errorData = await res.json();
-        alert(`Failed to post comment: ${errorData.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Comment submission error:', error);
-      alert('Failed to post comment. Please try again.');
-    } finally {
-      setSubmitLoading(false);
-    }
-  }, [form, apiUrls.comments]);
-
-  const handleReplySubmit = useCallback(async (e, parentId) => {
-    e.preventDefault();
-    
-    const { name, email, comment } = replyForm;
-    if (!name.trim() || !email.trim() || !comment.trim()) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    setSubmitLoading(true);
-    try {
-      const res = await fetch(`/api/comments/${category}/${id}/reply/${parentId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...replyForm, timestamp: new Date().toISOString() }),
-      });
-
-      if (res.ok) {
-        const commentsRes = await fetch(apiUrls.comments);
-        if (commentsRes.ok) {
-          const data = await commentsRes.json();
-          setCommentsData({ 
-            comments: Array.isArray(data) ? data : (data.comments || []), 
-            stats: data.stats || null 
-          });
-        }
-        
-        setReplyForm({ name: '', email: '', comment: '' });
-        setIsReplying(null);
-        alert('Reply posted successfully!');
-      } else {
-        const errorData = await res.json();
-        alert(`Failed to post reply: ${errorData.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Reply submission error:', error);
-      alert('Failed to post reply. Please try again.');
-    } finally {
-      setSubmitLoading(false);
-    }
-  }, [replyForm, category, id, apiUrls.comments]);
-
-  const handleReplyClick = useCallback((commentId) => {
-    setIsReplying(commentId);
-    setReplyForm({ name: '', email: '', comment: '' });
-  }, []);
-
-  // Memoized date formatting
-  const formattedDate = useMemo(() => {
-    if (!blog?.date) return '';
-    return new Date(blog.date).toLocaleDateString('en-US', {
-      day: 'numeric', month: 'short', year: 'numeric'
-    });
-  }, [blog?.date]);
-
-  const metaText = useMemo(() => {
-    if (!formattedDate) return '';
-    return `On ${formattedDate}${blog?.author ? `, By ${blog.author}` : ''}`;
-  }, [formattedDate, blog?.author]);
-
-  const subtitle = useMemo(() => blog?.subtitle || blog?.subheading || '', [blog?.subtitle, blog?.subheading]);
-
-  // Loading states
-  if (loading) {
-    return (
-      <div className={`${styles.blogPageOuterContainer} ${styles[currentTheme.name]} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <div className={styles.loadingContainer}>
-            <div className={styles.loadingSpinner}></div>
-            <p>Loading blog post...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={`${styles.blogPageOuterContainer} ${styles[currentTheme.name]} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <div className={styles.errorContainer}>
-            <h2>Oops! Something went wrong</h2>
-            <p style={{ color: 'red' }}>{error}</p>
-            <button onClick={() => window.location.reload()} className={styles.retryBtn}>
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!blog) {
-    return (
-      <div className={`${styles.blogPageOuterContainer} ${styles[currentTheme.name]} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.mainContentWrapper}>
-          <div className={styles.notFoundContainer}>
-            <h2>Blog Post Not Found</h2>
-            <p>The blog post you're looking for doesn't exist or has been moved.</p>
-            <button onClick={() => window.history.back()} className={styles.goBackBtn}>
-              Go Back
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  };
 
   return (
-    <div className={`${styles.blogPageOuterContainer} ${styles[currentTheme.name]} ${darkMode ? styles.darkMode : ''}`}>
-      <div data-navbar-bg-detect style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '200px', pointerEvents: 'none', zIndex: -1 }} />
+    <div 
+      className={styles[theme.containerClass]}
+      style={{ backgroundColor: theme.backgroundColor }}
+    >
+      <div
+        data-navbar-bg-detect
+        style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
+      />
 
-      {/* ✅ UPDATED: Hero Section with blur animation */}
-      {blog.coverImage && (
-        <section 
-          ref={heroRef} 
-          className={styles.heroSection}
-          style={{
-            '--scroll-progress': scrollProgress,
-          }}
-        >
-          <div className={styles.heroImageWrapper}>
-            <img
-              src={blog.coverImage}
-              alt={blog.title}
-              className={styles.heroImage}
-              onLoad={() => {}}
-              onError={(e) => { e.target.style.display = 'none'; }}
-            />
-            <div className={styles.heroGrain} />
-            <div className={styles.heroOverlay} />
-            
-            {/* ✅ UPDATED: Bottom blur overlay that moves upward */}
-            <div className={styles.heroBlurOverlay} />
-          </div>
-          
-          {/* ✅ UPDATED: Content positioned at middle-bottom */}
-          <div 
-            className={styles.heroContent}
-            style={{
-              transform: `translateY(${scrollProgress * 30}px)`,
-              opacity: 1 - (scrollProgress * 0.6),
-            }}
-          >
-            <div className={styles.categoryBadge}>{currentTheme.display}</div>
-            <h1 className={styles.title}>{blog.title}</h1>
-            {subtitle && <p className={styles.subheadingText}>{subtitle}</p>}
-            <div className={styles.metaInfo}>
-              <p className={styles.date}>{metaText}</p>
-            </div>
-          </div>
-        </section>
-      )}
+      <DynamicBackgroundShadow theme={theme} />
 
+      <section 
+        className={styles.postsSection}
+        style={{ backgroundColor: theme.postsSection.backgroundColor }}
+      >
+        <h2 className={styles.postsHeading}>{theme.postsSection.heading}</h2>
 
-      {/* Main Content */}
-      <div className={styles.mainContentWrapper}>
-        <section className={styles.postContentSection}>
-          {!blog.coverImage && (
-            <>
-              <div className={`${styles.titleLine} ${styles[currentTheme.name]}`}></div>
-              <div className={styles.categoryBadge}>{currentTheme.display}</div>
-              <h1 className={styles.contentTitle}>{blog.title}</h1>
-              <div className={styles.contentMeta}>
-                <p className={styles.contentDate}>{metaText}</p>
-                {/* ✅ REMOVED: Views from non-cover image version too */}
+        <div ref={containerRef} className={styles.blogGridContainer}>
+          <div className={styles.blogGrid}>
+            {loading ? (
+              <div className={styles.loadingState}>
+                <div className={styles.spinner}></div>
+                <p>{theme.postsSection.loadingText}</p>
               </div>
-            </>
-          )}
-          
-          <div className={styles.contentBodyPlaceholder}>
-            <BlogRenderer content={blog.content?.filter(block => {
-              if (block.type === 'paragraph' && block.text === subtitle) {
-                return false;
-              }
-              return true;
-            }) || blog.content} />
-          </div>
-        </section>
-
-        {/* Comments Section */}
-        <section className={styles.commentSection}>
-          <div className={styles.commentSectionHeader}>
-            <h3>Discussion</h3>
-            {commentsData.stats && (
-              <div className={styles.commentStats}>
-                <span>{commentsData.stats.totalComments} comment{commentsData.stats.totalComments !== 1 ? 's' : ''}</span>
-                {commentsData.stats.totalReplies > 0 && (
-                  <span>, {commentsData.stats.totalReplies} repl{commentsData.stats.totalReplies !== 1 ? 'ies' : 'y'}</span>
-                )}
+            ) : error ? (
+              <div className={styles.errorState}>
+                <h3>Oops! Something went wrong</h3>
+                <p style={{ color: 'red' }}>{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className={styles.retryBtn}
+                >
+                  Try Again
+                </button>
               </div>
+            ) : !Array.isArray(posts) || posts.length === 0 ? (
+              <div className={styles.emptyState}>
+                <h3>{theme.postsSection.emptyStateTitle}</h3>
+                <p>{theme.postsSection.emptyStateText}</p>
+              </div>
+            ) : (
+              posts.map((post) => (
+                <BlogCard
+                  key={post.id}
+                  post={post}
+                  hoveredPostId={hoveredPostId}
+                  onMouseEnter={() => setHoveredPostId(post.id)}
+                  onMouseLeave={() => setHoveredPostId(null)}
+                  onClick={() => handlePostClick(post)}
+                  onKeyDown={(e) => handleKeyDown(e, post)}
+                  currentAuthor={currentAuthor}
+                  getWordCount={getWordCount}
+                  activeCardId={activeCardId}
+                  setActiveCardId={setActiveCardId}
+                  theme={theme}
+                />
+              ))
             )}
           </div>
+        </div>
+      </section>
 
-          <div className={styles.commentLayout}>
-            <div className={styles.commentList}>
-              {commentsLoading ? (
-                <div className={styles.commentsLoading}>
-                  <p>Loading comments...</p>
-                </div>
-              ) : (
-                Array.isArray(commentsData.comments) && commentsData.comments.length > 0 ? (
-                  commentsData.comments.map((comment) => (
-                    <CommentBox
-                      key={comment.id || `comment-${Math.random()}`}
-                      comment={comment}
-                      depth={0}
-                      onReply={handleReplyClick}
-                      isReplying={isReplying}
-                      replyForm={replyForm}
-                      setReplyForm={setReplyForm}
-                      handleReplySubmit={handleReplySubmit}
-                    />
-                  ))
-                ) : (
-                  <div className={styles.noComments}>
-                    <p>No comments yet. Be the first to share your thoughts!</p>
-                  </div>
-                )
-              )}
-            </div>
-
-            <div className={styles.commentFormContainer}>
-              <form className={styles.commentForm} onSubmit={handleSubmit}>
-                <h3>Share your thoughts</h3>
-                
-                <div className={styles.formGroup}>
-                  <label htmlFor="nameInput">Name *</label>
-                  <input
-                    id="nameInput"
-                    type="text"
-                    value={form.name}
-                    onChange={formHandlers.name}
-                    required
-                    maxLength={100}
-                    disabled={submitLoading}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="emailInput">Email *</label>
-                  <input
-                    id="emailInput"
-                    type="email"
-                    value={form.email}
-                    onChange={formHandlers.email}
-                    required
-                    disabled={submitLoading}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="commentTextarea">Comment *</label>
-                  <textarea
-                    id="commentTextarea"
-                    rows={5}
-                    value={form.comment}
-                    onChange={formHandlers.comment}
-                    required
-                    maxLength={2000}
-                    disabled={submitLoading}
-                    placeholder="Share your thoughts, questions, or insights about this post..."
-                  />
-                  <div className={styles.characterCount}>
-                    {form.comment.length}/2000 characters
-                  </div>
-                </div>
-
-                <button type="submit" className={styles.postBtn} disabled={submitLoading}>
-                  {submitLoading ? 'Posting...' : 'Post Comment'}
-                </button>
-              </form>
-            </div>
-          </div>
-        </section>
-      </div>
+      <div 
+        className={styles.grayStrip}
+        style={{ backgroundColor: theme.stripColor }}
+      ></div>
     </div>
   );
 };
 
-export default Uniblog;
+export default UniformPage;

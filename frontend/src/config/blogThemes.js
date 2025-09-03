@@ -9,13 +9,12 @@ export const blogThemes = {
       
       // Header configuration  
       headerConfig: {
-        // Fixed the typo here - was "kant-sapere-audae" now "kant-sapere-aude"
-        backgroundImage: () => import('../../assets/philosophy-background.png'),
+        // ✅ FIXED: Using the actual philosophy background asset from your code
+        backgroundImage: () => import('../../assets/philosophy-background.png'), 
         heroImage: () => import('../../assets/kant-sapere-aude.png'),
-        heroDarkImage: () => import('../../assets/kant-sapere-aude-dark.png'),
         heroPosition: { x: -45, y: 8 },
         heroWidth: 180,
-        altText: 'Kant Sapere Aude'
+        altText: 'Philosophy'
       },
       
       // Content section styling

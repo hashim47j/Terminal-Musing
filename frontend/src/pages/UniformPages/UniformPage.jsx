@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './UniformPage.module.css';
 import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 
-// ✅ Dynamic Background Shadow Component (Updated)
+// ✅ Dynamic Background Shadow Component (Updated for public paths)
 const DynamicBackgroundShadow = ({ theme }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
@@ -73,7 +73,7 @@ const DynamicBackgroundShadow = ({ theme }) => {
   );
 };
 
-// ✅ Header Section Component (Updated)
+// ✅ Header Section Component (Updated for public paths)
 const HeaderSection = ({ theme, headerRef }) => {
   return (
     <section 
@@ -99,7 +99,7 @@ const HeaderSection = ({ theme, headerRef }) => {
   );
 };
 
-// ✅ Blog Card Component (same as before)
+// ✅ Blog Card Component (same as before - keeping all the exact functionality)
 const BlogCard = ({ 
   post, 
   hoveredPostId, 
@@ -311,7 +311,7 @@ const BlogCard = ({
   );
 };
 
-// ✅ Main Uniform Page Component (same as before - rest of the code)
+// ✅ Main Uniform Page Component (rest stays exactly the same)
 const UniformPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();

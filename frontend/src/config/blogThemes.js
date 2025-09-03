@@ -1,20 +1,5 @@
 // frontend/src/config/blogThemes.js
-// ✅ FIXED: Use direct static imports instead of dynamic imports
-
-// Import all images at the top
-import writingsBackground from '../../assets/Wrting-background.png';
-import writingsHero from '../../assets/writings-hero.png';
-import techBackground from '../../assets/techbg.png';
-import techHero from '../../assets/techhero.png';
-import socialBackground from '../../assets/social-bg.jpg';
-import socialHero from '../../assets/social-hero.png';
-import historyBackground from '../../assets/history-background.png';
-import historyHero from '../../assets/history-hero.png';
-
-// ⚠️ ADD THESE ASSETS (you need to create/find these)
-// For now, let's use placeholders or existing ones
-import philosophyBackground from '../../assets/history-background.png'; // Placeholder - replace with actual
-import philosophyHero from '../../assets/history-hero.png'; // Placeholder - replace with actual
+// ✅ FIXED: Use public directory paths instead of imports
 
 export const blogThemes = {
   philosophy: {
@@ -22,8 +7,8 @@ export const blogThemes = {
     backgroundColor: '#f9f7f4',
     
     headerConfig: {
-      backgroundImage: philosophyBackground, // ✅ Direct reference
-      heroImage: philosophyHero, // ✅ Direct reference
+      backgroundImage: '/assets/history-background.png', // ✅ Using existing as placeholder
+      heroImage: '/assets/history-hero.png', // ✅ Using existing as placeholder
       heroPosition: { x: -45, y: 8 },
       heroWidth: 180,
       altText: 'Philosophy'
@@ -51,8 +36,8 @@ export const blogThemes = {
     backgroundColor: '#f7eedb',
     
     headerConfig: {
-      backgroundImage: writingsBackground, // ✅ Direct reference
-      heroImage: writingsHero, // ✅ Direct reference
+      backgroundImage: '/assets/Wrting-background.png', // ✅ Public path
+      heroImage: '/assets/writings-hero.png', // ✅ Public path
       heroPosition: { x: -45, y: 8 },
       heroWidth: 180,
       altText: 'Writings Hero'
@@ -80,8 +65,8 @@ export const blogThemes = {
     backgroundColor: '#e4e7eb',
     
     headerConfig: {
-      backgroundImage: techBackground, // ✅ Direct reference
-      heroImage: techHero, // ✅ Direct reference
+      backgroundImage: '/assets/techbg.png', // ✅ Public path
+      heroImage: '/assets/techhero.png', // ✅ Public path
       heroPosition: { x: 0, y: 25 },
       heroWidth: 300,
       altText: 'Tech Hero'
@@ -109,8 +94,8 @@ export const blogThemes = {
     backgroundColor: '#dddbd8',
     
     headerConfig: {
-      backgroundImage: socialBackground, // ✅ Direct reference
-      heroImage: socialHero, // ✅ Direct reference
+      backgroundImage: '/assets/social-bg.jpg', // ✅ Public path
+      heroImage: '/assets/social-hero.png', // ✅ Public path
       heroPosition: { x: 0, y: 25 },
       heroWidth: 280,
       altText: 'Legal & Social Hero',
@@ -140,8 +125,8 @@ export const blogThemes = {
     backgroundColor: '#E4E4E4',
     
     headerConfig: {
-      backgroundImage: historyBackground, // ✅ Direct reference
-      heroImage: historyHero, // ✅ Direct reference
+      backgroundImage: '/assets/history-background.png', // ✅ Public path
+      heroImage: '/assets/history-hero.png', // ✅ Public path
       heroPosition: { x: -45, y: 8 },
       heroWidth: 160,
       altText: 'Historical Illustration',

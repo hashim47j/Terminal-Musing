@@ -4,6 +4,7 @@ import UniformPage from '../../pages/UniformPages/UniformPage';
 import DailythoughtsReader from '../../pages/DailythoughtsPage/DailythoughtsReader';
 import AdminLogin from '../../pages/AdminPage/AdminLogin';
 
+
 const getPageComponent = (path) => {
   switch (path) {
     case '/': return <HomePage />;

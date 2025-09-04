@@ -99,7 +99,7 @@ const HeaderSection = ({ theme, headerRef }) => {
   );
 };
 
-// ✅ Blog Card Component (keeping all exact functionality)
+// ✅ Blog Card Component (keep all exact functionality)
 const BlogCard = ({ 
   post, 
   hoveredPostId, 
@@ -500,7 +500,6 @@ const UniformPage = () => {
                   theme={theme}
                 />
               ))
-              
             )}
           </div>
         </div>

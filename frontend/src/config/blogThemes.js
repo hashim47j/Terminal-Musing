@@ -1,48 +1,16 @@
 // frontend/src/config/blogThemes.js
-// ✅ FIXED: Use public directory paths instead of imports
 
 export const blogThemes = {
-  philosophy: {
-    containerClass: 'philosophyPageContainer',
-    backgroundColor: '#f9f7f4',
-    
-    headerConfig: {
-      backgroundImage: '/assets/history-background.png', // ✅ Using existing as placeholder
-      heroImage: '/assets/history-hero.png', // ✅ Using existing as placeholder
-      heroPosition: { x: -45, y: 8 },
-      heroWidth: 180,
-      altText: 'Philosophy'
-    },
-    
-    postsSection: {
-      backgroundColor: '#ffffff85',
-      heading: 'Philosophy Posts',
-      loadingText: 'Loading philosophy posts...',
-      emptyStateTitle: 'No Philosophy Posts Available',
-      emptyStateText: 'Check back soon for new philosophical insights and discussions.'
-    },
-    
-    cardStyle: {
-      backgroundColor: '#ffffff90',
-    },
-    
-    stripColor: '#d4c5a9',
-    apiEndpoint: '/api/blogs/philosophy',
-    routeBase: '/blog/philosophy'
-  },
-
   writings: {
-    containerClass: 'writingsPageContainer', 
+    containerClass: 'writingsPageContainer',
     backgroundColor: '#f7eedb',
-    
     headerConfig: {
-      backgroundImage: '/assets/Wrting-background.png', // ✅ Public path
-      heroImage: '/assets/writings-hero.png', // ✅ Public path
+      backgroundImage: '/Wrting-background.png', // ✅ Public path
+      heroImage: '/writings-hero.png', // ✅ Public path
+      altText: 'Writings Hero',
       heroPosition: { x: -45, y: 8 },
-      heroWidth: 180,
-      altText: 'Writings Hero'
+      heroWidth: 180
     },
-    
     postsSection: {
       backgroundColor: '#ffffff77',
       heading: 'Writings',
@@ -50,28 +18,24 @@ export const blogThemes = {
       emptyStateTitle: 'No Writings Available',
       emptyStateText: 'Check back soon for new poems, stories, and creative works.'
     },
-    
     cardStyle: {
-      backgroundColor: '#ffffff85',
+      backgroundColor: '#ffffff85'
     },
-    
     stripColor: '#d1c1a0',
     apiEndpoint: '/api/blogs/writings',
     routeBase: '/blog/writings'
   },
-
+  
   tech: {
     containerClass: 'techPageContainer',
     backgroundColor: '#e4e7eb',
-    
     headerConfig: {
-      backgroundImage: '/assets/techbg.png', // ✅ Public path
-      heroImage: '/assets/techhero.png', // ✅ Public path
+      backgroundImage: '/techbg.png', // ✅ Public path
+      heroImage: '/techhero.png', // ✅ Public path
+      altText: 'Tech Hero',
       heroPosition: { x: 0, y: 25 },
-      heroWidth: 300,
-      altText: 'Tech Hero'
+      heroWidth: 300
     },
-    
     postsSection: {
       backgroundColor: '#ffffff6e',
       heading: 'Tech Posts',
@@ -79,30 +43,24 @@ export const blogThemes = {
       emptyStateTitle: 'No Tech Posts Available',
       emptyStateText: 'Check back soon for new technology insights and articles.'
     },
-    
     cardStyle: {
-      backgroundColor: '#fff',
+      backgroundColor: '#fff'
     },
-    
     stripColor: '#86859a',
     apiEndpoint: '/api/blogs/tech',
     routeBase: '/blog/tech'
   },
-
+  
   lsconcern: {
     containerClass: 'lsconcernPageContainer',
     backgroundColor: '#dddbd8',
-    
     headerConfig: {
-      backgroundImage: '/assets/social-bg.jpg', // ✅ Public path
-      heroImage: '/assets/social-hero.png', // ✅ Public path
-      heroPosition: { x: 0, y: 25 },
-      heroWidth: 280,
+      backgroundImage: '/social-bg.jpg', // ✅ Public path
+      heroImage: '/social-hero.png', // ✅ Public path
       altText: 'Legal & Social Hero',
-      mobileHeroPosition: { x: 25, y: 20 },
-      mobileHeroWidth: 200
+      heroPosition: { x: 0, y: 25 },
+      heroWidth: 280
     },
-    
     postsSection: {
       backgroundColor: '#ffffff6b',
       heading: 'Legal & Social Posts',
@@ -110,52 +68,74 @@ export const blogThemes = {
       emptyStateTitle: 'No Legal & Social Posts Available',
       emptyStateText: 'Check back soon for new legal insights and social commentary.'
     },
-    
     cardStyle: {
-      backgroundColor: '#ffffff94',
+      backgroundColor: '#ffffff94'
     },
-    
     stripColor: '#a19d95',
     apiEndpoint: '/api/blogs/lsconcern',
     routeBase: '/blog/lsconcern'
   },
-
+  
   history: {
     containerClass: 'historyPageContainer',
     backgroundColor: '#E4E4E4',
-    
     headerConfig: {
-      backgroundImage: '/assets/history-background.png', // ✅ Public path
-      heroImage: '/assets/history-hero.png', // ✅ Public path
-      heroPosition: { x: -45, y: 8 },
-      heroWidth: 160,
+      backgroundImage: '/history-background.png', // ✅ Public path
+      heroImage: '/history-hero.png', // ✅ Public path
       altText: 'Historical Illustration',
-      mobileHeroWidth: 120
+      heroPosition: { x: -45, y: 8 },
+      heroWidth: 160
     },
-    
     postsSection: {
       backgroundColor: '#ecebeb',
-      heading: 'History Posts', 
+      heading: 'History Posts',
       loadingText: 'Loading history posts...',
       emptyStateTitle: 'No History Posts Available',
       emptyStateText: 'Check back soon for new historical insights and articles.'
     },
-    
     cardStyle: {
-      backgroundColor: '#fff',
+      backgroundColor: '#fff'
     },
-    
     stripColor: '#929292',
     apiEndpoint: '/api/blogs/history',
     routeBase: '/blog/history'
+  },
+  
+  philosophy: {
+    containerClass: 'philosophyPageContainer',
+    backgroundColor: '#f0f0f0',
+    headerConfig: {
+      backgroundImage: '/philosophy-background.png', // ✅ Public path (create/copy from history)
+      heroImage: '/kant-sapere-aude.png', // ✅ Public path
+      altText: 'Philosophy Hero',
+      heroPosition: { x: 0, y: 20 },
+      heroWidth: 200
+    },
+    postsSection: {
+      backgroundColor: '#ffffff',
+      heading: 'Philosophy Posts',
+      loadingText: 'Loading philosophy posts...',
+      emptyStateTitle: 'No Philosophy Posts Available',
+      emptyStateText: 'Check back soon for new philosophical insights and discussions.'
+    },
+    cardStyle: {
+      backgroundColor: '#fff'
+    },
+    stripColor: '#cccccc',
+    apiEndpoint: '/api/blogs/philosophy',
+    routeBase: '/blog/philosophy'
   }
 };
 
-export const getThemeByCategory = (category) => {
-  return blogThemes[category] || blogThemes.philosophy;
+export const getCategoryFromPath = (pathname) => {
+  if (pathname.includes('/writings')) return 'writings';
+  if (pathname.includes('/tech')) return 'tech';
+  if (pathname.includes('/lsconcern')) return 'lsconcern';
+  if (pathname.includes('/history')) return 'history';
+  if (pathname.includes('/philosophy')) return 'philosophy';
+  return 'writings'; // default fallback
 };
 
-export const getCategoryFromPath = (pathname) => {
-  const match = pathname.match(/\/blog\/([^\/]+)/);
-  return match ? match[1] : 'philosophy';
+export const getThemeByCategory = (category) => {
+  return blogThemes[category] || blogThemes.writings;
 };

@@ -1,12 +1,11 @@
 // frontend/src/pages/UniformPages/UniformPage.jsx
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import styles from './UniformPage.module.css';
 import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 import { useBlog } from '../../context/BlogContext';
 import SmartImage from './SmartImage';
 
-// Enhanced Dynamic Background Shadow Component
 // Enhanced Dynamic Background Shadow Component
 const DynamicBackgroundShadow = ({ theme, category }) => {
   const headerRef = useRef(null);
@@ -128,7 +127,7 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
   );
 };
 
-
+// Enhanced Header Section Component
 const HeaderSection = ({ theme, headerRef, category, shadowVisible }) => {
   const { cacheHeroImage, isHeroImageCached } = useBlog();
   const [currentHeroUrl, setCurrentHeroUrl] = useState(null);
@@ -183,7 +182,6 @@ const HeaderSection = ({ theme, headerRef, category, shadowVisible }) => {
     </section>
   );
 };
-
 
 // Blog Card Component (keeping your existing BlogCard component unchanged)
 const BlogCard = ({ 
@@ -410,14 +408,18 @@ const BlogCard = ({
     </article>
   );
 };
+
+// Main Uniform Page Component - Enhanced with useParams
 const UniformPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();
   const location = useLocation();
+  const { category: routeCategory } = useParams(); // Get category from route params
   const [hoveredPostId, setHoveredPostId] = useState(null);
   const [activeCardId, setActiveCardId] = useState(null);
 
-  const category = getCategoryFromPath(location.pathname);
+  // Use route param first, fallback to path parsing
+  const category = routeCategory || getCategoryFromPath(location.pathname);
   const theme = getThemeByCategory(category);
   
   const { state, fetchPosts } = useBlog();
@@ -425,6 +427,7 @@ const UniformPage = () => {
   const currentAuthor = state.currentAuthor;
 
   console.log('Current category:', category);
+  console.log('Route category:', routeCategory);
   console.log('Category state:', categoryState);
   console.log('Theme API endpoint:', theme.apiEndpoint);
 
@@ -432,7 +435,9 @@ const UniformPage = () => {
     return <div>Loading...</div>;
   }
 
+  // Fetch posts when category changes
   useEffect(() => {
+    console.log('Fetching posts for category:', category);
     fetchPosts(category, theme.apiEndpoint);
   }, [category, theme.apiEndpoint, fetchPosts]);
 
@@ -446,6 +451,12 @@ const UniformPage = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Reset component-specific state when category changes
+  useEffect(() => {
+    setHoveredPostId(null);
+    setActiveCardId(null);
+  }, [category]);
 
   const getWordCount = (content) => {
     if (!content || !Array.isArray(content)) return 0;

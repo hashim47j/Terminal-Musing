@@ -165,9 +165,231 @@ const HeaderSection = ({ theme, headerRef, category }) => {
   );
 };
 
-// ... keep your BlogCard component unchanged ...
+// Blog Card Component (keeping your existing BlogCard component unchanged)
+const BlogCard = ({ 
+  post, 
+  hoveredPostId, 
+  onMouseEnter, 
+  onMouseLeave, 
+  onClick, 
+  onKeyDown, 
+  currentAuthor, 
+  getWordCount,
+  activeCardId,
+  setActiveCardId,
+  theme
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0)');
+  const cardRef = useRef(null);
+  const imgRef = useRef(null);
+  const { isImageCached, cacheImage } = useBlog();
 
-// Main Uniform Page Component - Enhanced
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (post.coverImage && isImageCached(post.coverImage)) {
+      setImageLoaded(true);
+    }
+  }, [post.coverImage, isImageCached]);
+
+  const extractColorFromImage = () => {
+    if (!imgRef.current || !cardRef.current || !imageLoaded) return;
+
+    const img = imgRef.current;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+
+    try {
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      let r = 0, g = 0, b = 0, count = 0;
+
+      for (let i = 0; i < data.length; i += 4 * 10) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count++;
+      }
+
+      r = Math.floor(r / count);
+      g = Math.floor(g / count);
+      b = Math.floor(b / count);
+
+      const shadow = `rgba(${r}, ${g}, ${b}, 0.6)`;
+      setShadowColor(shadow);
+    } catch (err) {
+      console.warn('Could not extract color from card image:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (imageLoaded) extractColorFromImage();
+  }, [imageLoaded]);
+
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isMobile) {
+      const newActiveId = post.id === activeCardId ? null : post.id;
+      setActiveCardId(newActiveId);
+    } else {
+      onClick();
+    }
+  };
+
+  const handleReadButtonClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onClick();
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    if (post.coverImage) {
+      cacheImage(post.coverImage);
+    }
+  };
+
+  const isHovered = !isMobile && hoveredPostId === post.id;
+  const isMobileActive = isMobile && activeCardId === post.id;
+  const isActive = isHovered || isMobileActive;
+
+  return (
+    <article
+      ref={cardRef}
+      className={`${styles.blogCard} ${isMobileActive ? styles.mobileExpanded : ''}`}
+      onClick={handleCardClick}
+      onMouseEnter={!isMobile ? onMouseEnter : undefined}
+      onMouseLeave={!isMobile ? onMouseLeave : undefined}
+      role="button"
+      tabIndex={0}
+      style={{
+        cursor: 'pointer',
+        '--card-shadow-color': (isHovered || isMobileActive) ? shadowColor : 'rgba(0, 0, 0, 0)',
+        backgroundColor: theme.cardStyle.backgroundColor
+      }}
+      onKeyDown={onKeyDown}
+      aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
+    >
+      {post.coverImage ? (
+        <img
+          ref={imgRef}
+          src={post.coverImage}
+          alt={`Cover for ${post.title}`}
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
+          loading="lazy"
+          onLoad={handleImageLoad}
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
+      ) : (
+        <div
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} 
+          style={{ backgroundColor: '#ccc' }}
+        >
+          <span className={styles.noImageText}>No Image</span>
+        </div>
+      )}
+
+      <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
+        <h3 className={styles.blogTitle}>{post.title}</h3>
+
+        <div className={styles.cardBottomFixed}>
+          <div className={styles.cardSeparatorLine}></div>
+          <div className={styles.cardMetaRow}>
+            <span className={styles.cardAuthor}>
+              by {post.author || currentAuthor}
+            </span>
+            <span className={styles.cardDate}>
+              {new Date(post.date).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
+            <span className={styles.cardWordCount}>
+              {getWordCount(post.content)} words
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {isActive && (
+        <div className={styles.hoverOverlay}>
+          <div className={styles.subheadingContainer}>
+            <p className={styles.hoverSubheading}>
+              {post.subheading || post.title}
+            </p>
+          </div>
+
+          <div className={styles.bottomFixed}>
+            <div className={styles.leftContent}>
+              <div className={styles.separatorLine}></div>
+              <div className={styles.authorDateContainer}>
+                <span className={styles.authorName}>
+                  {post.author || currentAuthor}
+                </span>
+                <span className={styles.postDate}>
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.rightContent}>
+              <button
+                className={styles.shareIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (navigator.share) {
+                    navigator.share({
+                      title: post.title,
+                      text: post.subheading,
+                      url: `${theme.routeBase}/${post.id}`
+                    });
+                  } else {
+                    navigator.clipboard.writeText(`${window.location.origin}${theme.routeBase}/${post.id}`);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                </svg>
+              </button>
+
+              <button 
+                className={styles.readBtn}
+                onClick={handleReadButtonClick}
+              >
+                Read
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </article>
+  );
+};
 const UniformPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();

@@ -3,12 +3,18 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './UniformPage.module.css';
 import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
+import { useBlog } from '../../context/BlogContext';
 
-// ✅ Dynamic Background Shadow Component
-const DynamicBackgroundShadow = ({ theme }) => {
+// Cached Dynamic Background Shadow Component
+const DynamicBackgroundShadow = ({ backgroundSrc, heroSrc, altText }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Reset imageLoaded when backgroundSrc changes (navigation)
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [backgroundSrc]);
 
   useEffect(() => {
     const extractColorFromImage = () => {
@@ -55,51 +61,35 @@ const DynamicBackgroundShadow = ({ theme }) => {
     setImageLoaded(true);
   };
 
+  const handleImageError = () => {
+    setImageLoaded(false);
+  };
+
   return (
     <>
-      {theme.headerConfig.backgroundImage && (
+      <img
+        ref={imgRef}
+        src={backgroundSrc}
+        alt="Background for color extraction"
+        crossOrigin="anonymous"
+        style={{ display: 'none' }}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        key={backgroundSrc} // Force re-render when src changes
+      />
+      <section ref={headerRef} className={styles.headerSection}>
         <img
-          ref={imgRef}
-          src={theme.headerConfig.backgroundImage}
-          alt="Background for color extraction"
-          crossOrigin="anonymous"
-          style={{ display: 'none' }}
-          onLoad={handleImageLoad}
-          onError={() => setImageLoaded(false)}
+          src={heroSrc}
+          alt={altText}
+          className={styles.heroImage}
+          key={heroSrc} // Force re-render when src changes
         />
-      )}
-      <HeaderSection theme={theme} headerRef={headerRef} />
+      </section>
     </>
   );
 };
 
-// ✅ Header Section Component
-const HeaderSection = ({ theme, headerRef }) => {
-  return (
-    <section 
-      ref={headerRef} 
-      className={styles.headerSection}
-      style={{
-        backgroundImage: `url(${theme.headerConfig.backgroundImage})`
-      }}
-    >
-      {theme.headerConfig.heroImage && (
-        <img
-          src={theme.headerConfig.heroImage}
-          alt={theme.headerConfig.altText}
-          className={styles.heroImage}
-          style={{
-            '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
-            '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
-            width: `${theme.headerConfig.heroWidth}px`
-          }}
-        />
-      )}
-    </section>
-  );
-};
-
-// ✅ Blog Card Component (keep all exact functionality)
+// Cached Blog Card Component  
 const BlogCard = ({ 
   post, 
   hoveredPostId, 
@@ -118,6 +108,7 @@ const BlogCard = ({
   const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0)');
   const cardRef = useRef(null);
   const imgRef = useRef(null);
+  const { isImageCached, cacheImage } = useBlog();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -127,6 +118,12 @@ const BlogCard = ({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (post.coverImage && isImageCached(post.coverImage)) {
+      setImageLoaded(true);
+    }
+  }, [post.coverImage, isImageCached]);
 
   const extractColorFromImage = () => {
     if (!imgRef.current || !cardRef.current || !imageLoaded) return;
@@ -185,6 +182,13 @@ const BlogCard = ({
     onClick();
   };
 
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    if (post.coverImage) {
+      cacheImage(post.coverImage);
+    }
+  };
+
   const isHovered = !isMobile && hoveredPostId === post.id;
   const isMobileActive = isMobile && activeCardId === post.id;
   const isActive = isHovered || isMobileActive;
@@ -213,7 +217,7 @@ const BlogCard = ({
           alt={`Cover for ${post.title}`}
           className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
           loading="lazy"
-          onLoad={() => setImageLoaded(true)}
+          onLoad={handleImageLoad}
           onError={(e) => {
             e.target.style.display = 'none';
           }}
@@ -311,20 +315,25 @@ const BlogCard = ({
   );
 };
 
-// ✅ Main Uniform Page Component
+// Main Uniform Page Component
 const UniformPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();
   const location = useLocation();
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [hoveredPostId, setHoveredPostId] = useState(null);
-  const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
   const [activeCardId, setActiveCardId] = useState(null);
 
   const category = getCategoryFromPath(location.pathname);
   const theme = getThemeByCategory(category);
+  
+  const { state, fetchPosts } = useBlog();
+  const categoryState = state.posts[category];
+  const currentAuthor = state.currentAuthor;
+
+  // Fetch posts for current category if not loaded
+  useEffect(() => {
+    fetchPosts(category, theme.apiEndpoint);
+  }, [category, theme.apiEndpoint, fetchPosts]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -347,89 +356,6 @@ const UniformPage = () => {
     
     return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
-
-  useEffect(() => {
-    const fetchCurrentAuthor = async () => {
-      try {
-        const endpoints = [
-          '/api/user/me',
-          '/api/admin/profile', 
-          '/api/auth/user',
-          '/api/current-user'
-        ];
-        
-        for (const endpoint of endpoints) {
-          try {
-            const res = await fetch(endpoint);
-            if (res.ok) {
-              const userData = await res.json();
-              const authorName = userData.name || 
-                               userData.username || 
-                               userData.displayName || 
-                               userData.fullName ||
-                               'Terminal Musing';
-              setCurrentAuthor(authorName);
-              return;
-            }
-          } catch (err) {
-            continue;
-          }
-        }
-        
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          setCurrentAuthor(user.name || user.username || 'Terminal Musing');
-        }
-        
-      } catch (err) {
-        setCurrentAuthor('Terminal Musing');
-      }
-    };
-
-    fetchCurrentAuthor();
-  }, []);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      setError('');
-      
-      try {
-        const res = await fetch(theme.apiEndpoint);
-        if (!res.ok) throw new Error(`Failed to fetch blogs (status: ${res.status})`);
-        
-        const data = await res.json();
-        
-        let postsArray = [];
-        if (Array.isArray(data)) {
-          postsArray = data;
-        } else if (data && Array.isArray(data.blogs)) {
-          postsArray = data.blogs;
-        } else {
-          postsArray = [];
-        }
-
-        const sorted = postsArray
-          .filter(post => post && post.id && post.title)
-          .sort((a, b) => {
-            const dateA = new Date(a.date || 0);
-            const dateB = new Date(b.date || 0);
-            return dateB - dateA;
-          });
-          
-        setPosts(sorted);
-        
-      } catch (err) {
-        setError(`Failed to load ${theme.postsSection.heading.toLowerCase()}: ${err.message}`);
-        setPosts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, [theme]);
 
   const handlePostClick = (post) => {
     navigate(`${theme.routeBase}/${post.id}`);
@@ -462,15 +388,15 @@ const UniformPage = () => {
 
         <div ref={containerRef} className={styles.blogGridContainer}>
           <div className={styles.blogGrid}>
-            {loading ? (
+            {categoryState.loading ? (
               <div className={styles.loadingState}>
                 <div className={styles.spinner}></div>
                 <p>{theme.postsSection.loadingText}</p>
               </div>
-            ) : error ? (
+            ) : categoryState.error ? (
               <div className={styles.errorState}>
                 <h3>Oops! Something went wrong</h3>
-                <p style={{ color: 'red' }}>{error}</p>
+                <p style={{ color: 'red' }}>{categoryState.error}</p>
                 <button 
                   onClick={() => window.location.reload()} 
                   className={styles.retryBtn}
@@ -478,13 +404,13 @@ const UniformPage = () => {
                   Try Again
                 </button>
               </div>
-            ) : !Array.isArray(posts) || posts.length === 0 ? (
+            ) : !Array.isArray(categoryState.data) || categoryState.data.length === 0 ? (
               <div className={styles.emptyState}>
                 <h3>{theme.postsSection.emptyStateTitle}</h3>
                 <p>{theme.postsSection.emptyStateText}</p>
               </div>
             ) : (
-              posts.map((post) => (
+              categoryState.data.map((post) => (
                 <BlogCard
                   key={post.id}
                   post={post}

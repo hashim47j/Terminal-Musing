@@ -1,6 +1,8 @@
-/* frontend/src/pages/UniformPages/UniformPage.module.css */
-
-/* ✅ Base Containers - Dynamic via JavaScript */
+/* Base Styles - All Pages */
+.writingsPageContainer, 
+.techPageContainer, 
+.lsconcernPageContainer, 
+.historyPageContainer, 
 .philosophyPageContainer {
   min-height: 100vh;
   font-family: 'Playfair Display', serif;
@@ -9,39 +11,6 @@
   position: relative;
 }
 
-.writingsPageContainer {
-  min-height: 100vh;
-  font-family: 'Playfair Display', serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.techPageContainer {
-  min-height: 100vh;
-  font-family: 'Playfair Display', serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.lsconcernPageContainer {
-  min-height: 100vh;
-  font-family: 'Playfair Display', serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.historyPageContainer {
-  min-height: 100vh;
-  font-family: 'Playfair Display', serif;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* ✅ Header Section - Dynamic background via JavaScript */
 .headerSection {
   background-size: auto; 
   background-position: center;
@@ -69,9 +38,10 @@
   pointer-events: none;
 }
 
-/* ✅ Hero Image - Dynamic positioning via JavaScript */
 .heroImage {
   position: relative;
+  left: var(--hero-x, 0px);
+  top: var(--hero-y, 0px);
   height: auto;
   display: block;
   margin: 0 auto;
@@ -79,7 +49,6 @@
   transition: left 0.25s ease, top 0.25s ease;
 }
 
-/* ✅ Posts Section - Dynamic background via JavaScript */
 .postsSection {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   margin: 235px 160px 40px 160px;
@@ -130,7 +99,6 @@
   padding: 24px 0 40px 0;
 }
 
-/* ✅ Blog Card Styles */
 .blogCard {
   display: flex;
   flex-direction: row;
@@ -161,19 +129,6 @@
     transform: none !important;
     box-shadow: none !important;
   }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .blogCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 27px -8px rgba(0, 123, 255, 0.4);
-  }
-}
-
-.blogCard:hover,
-.blogCard.mobileExpanded {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px var(--card-shadow-color, rgba(0,0,0,0.15));
 }
 
 .cardBottomFixed {
@@ -398,24 +353,9 @@
   pointer-events: auto;
 }
 
-/* ✅ Gray Strip - Dynamic color via JavaScript */
 .grayStrip {
   height: 5vh;
   width: 100%;
-}
-
-.footerContainer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-  z-index: 20;
-}
-
-.footerContainer.show {
-  transform: translateY(0);
 }
 
 .loadingState, .errorState, .emptyState {
@@ -477,7 +417,20 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ✅ Responsive Design */
+/* Hover Effects */
+@media (hover: hover) and (pointer: fine) {
+  .blogCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 27px -8px rgba(0, 123, 255, 0.4);
+  }
+}
+
+.blogCard:hover,
+.blogCard.mobileExpanded {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px var(--card-shadow-color, rgba(0,0,0,0.15));
+}
+
 /* Tablet */
 @media (max-width: 768px) {
   .blogCard.mobileExpanded {
@@ -528,11 +481,6 @@
     height: 180px;
   }
 
-  .heroImage {
-    left: var(--hero-x, 8px);
-    top: var(--hero-y, 15px);
-  }
-  
   .postsSection {
     margin: 190px 5vw 80px 5vw;
     width: 90vw;

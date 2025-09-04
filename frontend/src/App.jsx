@@ -12,6 +12,7 @@ import AdminDashboard from './pages/AdminPage/AdminDashboard';
 import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
 import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
 import Uniblog from './pages/UniblogPage/Uniblog';
+import { BlogProvider } from './context/BlogContext';
 
 // NEW: Import the unified blog component
 import UniformPage from './pages/UniformPages/UniformPage';
@@ -44,6 +45,7 @@ function DelayedRouteRenderer({ children }) {
 
 function App() {
   return (
+    <BlogProvider>
     <PageTransitionProvider>
       <PageProvider>
         <Navbar />
@@ -95,6 +97,7 @@ function App() {
         <Footer />
       </PageProvider>
     </PageTransitionProvider>
+    </BlogProvider>
   );
 }
 

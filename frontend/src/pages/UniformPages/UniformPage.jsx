@@ -75,14 +75,14 @@ const DynamicBackgroundShadow = ({ backgroundSrc, heroSrc, altText }) => {
         style={{ display: 'none' }}
         onLoad={handleImageLoad}
         onError={handleImageError}
-        key={backgroundSrc} // Force re-render when src changes
+        key={backgroundSrc}
       />
       <section ref={headerRef} className={styles.headerSection}>
         <img
           src={heroSrc}
           alt={altText}
           className={styles.heroImage}
-          key={heroSrc} // Force re-render when src changes
+          key={heroSrc}
         />
       </section>
     </>

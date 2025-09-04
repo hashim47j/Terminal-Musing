@@ -500,6 +500,7 @@ const UniformPage = () => {
                   theme={theme}
                 />
               ))
+              
             )}
           </div>
         </div>

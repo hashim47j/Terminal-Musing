@@ -7,10 +7,12 @@ import { useBlog } from '../../context/BlogContext';
 import SmartImage from './SmartImage';
 
 // Enhanced Dynamic Background Shadow Component
+// Enhanced Dynamic Background Shadow Component
 const DynamicBackgroundShadow = ({ theme, category }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [shadowVisible, setShadowVisible] = useState(false); // NEW: Shadow visibility state
   const [currentBgUrl, setCurrentBgUrl] = useState(null);
   const { 
     getBackgroundCache, 
@@ -19,12 +21,13 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
     cacheBackgroundImage 
   } = useBlog();
 
-  // Reset only when background URL actually changes
+  // Reset when background URL changes
   useEffect(() => {
     const bgUrl = theme.headerConfig.backgroundImage;
     
     if (bgUrl !== currentBgUrl) {
       setImageLoaded(false);
+      setShadowVisible(false); // Hide shadow immediately when changing
       setCurrentBgUrl(bgUrl);
     }
     
@@ -33,13 +36,18 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
     const cachedShadowColor = getBackgroundCache(bgUrl);
     if (cachedShadowColor && headerRef.current) {
       headerRef.current.style.setProperty('--header-shadow-color', cachedShadowColor);
+      // Show shadow immediately if we have cached color
+      setShadowVisible(true);
       return;
     }
 
     if (isBackgroundImageCached(bgUrl)) {
       setImageLoaded(true);
     }
+  }, [theme.headerConfig.backgroundImage, currentBgUrl, getBackgroundCache, isBackgroundImageCached]);
 
+  // Extract color and show shadow only after image loads
+  useEffect(() => {
     const extractColorFromImage = () => {
       if (!imgRef.current || !headerRef.current || !imageLoaded) return;
 
@@ -71,16 +79,21 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
         const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
         headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
         
-        cacheBackground(bgUrl, shadowColor);
+        cacheBackground(theme.headerConfig.backgroundImage, shadowColor);
+        
+        // Show shadow only after color extraction is complete
+        setShadowVisible(true);
       } catch (err) {
         console.warn('Could not extract color from background image:', err);
+        // Show default shadow even if extraction fails
+        setShadowVisible(true);
       }
     };
 
     if (imageLoaded) {
       extractColorFromImage();
     }
-  }, [theme.headerConfig.backgroundImage, currentBgUrl, imageLoaded, getBackgroundCache, cacheBackground, isBackgroundImageCached]);
+  }, [imageLoaded, theme.headerConfig.backgroundImage, cacheBackground]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -98,30 +111,36 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
           alt="Background for color extraction"
           style={{ display: 'none' }}
           onLoad={handleImageLoad}
-          onError={() => setImageLoaded(false)}
-          key={theme.headerConfig.backgroundImage} // Reset only when URL changes
+          onError={() => {
+            setImageLoaded(false);
+            setShadowVisible(false);
+          }}
+          key={theme.headerConfig.backgroundImage}
         />
       )}
-      <HeaderSection theme={theme} headerRef={headerRef} category={category} />
+      <HeaderSection 
+        theme={theme} 
+        headerRef={headerRef} 
+        category={category} 
+        shadowVisible={shadowVisible} 
+      />
     </>
   );
 };
 
-// Enhanced Header Section Component  
-const HeaderSection = ({ theme, headerRef, category }) => {
+
+const HeaderSection = ({ theme, headerRef, category, shadowVisible }) => {
   const { cacheHeroImage, isHeroImageCached } = useBlog();
   const [currentHeroUrl, setCurrentHeroUrl] = useState(null);
   const [showImage, setShowImage] = useState(false);
 
-  // Hide image immediately when category changes, show when loaded
   useEffect(() => {
     const heroUrl = theme.headerConfig.heroImage;
     
     if (heroUrl !== currentHeroUrl) {
-      setShowImage(false); // Hide immediately on URL change
+      setShowImage(false);
       setCurrentHeroUrl(heroUrl);
       
-      // If image is cached, show it quickly
       if (isHeroImageCached(heroUrl)) {
         setShowImage(true);
       }
@@ -138,7 +157,7 @@ const HeaderSection = ({ theme, headerRef, category }) => {
   return (
     <section 
       ref={headerRef} 
-      className={styles.headerSection}
+      className={`${styles.headerSection} ${shadowVisible ? styles.shadowVisible : ''}`}
       style={{
         ...(theme.headerConfig.backgroundImage && {
           backgroundImage: `url(${theme.headerConfig.backgroundImage})`
@@ -158,12 +177,13 @@ const HeaderSection = ({ theme, headerRef, category }) => {
             transition: 'opacity 0.3s ease'
           }}
           cacheCallback={handleImageLoad}
-          key={theme.headerConfig.heroImage} // Reset when URL changes
+          key={theme.headerConfig.heroImage}
         />
       )}
     </section>
   );
 };
+
 
 // Blog Card Component (keeping your existing BlogCard component unchanged)
 const BlogCard = ({ 

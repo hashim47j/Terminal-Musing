@@ -8,17 +8,15 @@ const SmartImage = ({
   style, 
   onLoad, 
   onError, 
-  isHeroImage = false,
   cacheCallback
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(null);
 
-  // Check if image is already in browser cache
   useEffect(() => {
     if (!src) return;
 
-    // If switching to a new image, reset loading state
+    // If switching to a new image, hide immediately
     if (src !== currentSrc) {
       setIsLoaded(false);
       setCurrentSrc(src);
@@ -31,6 +29,7 @@ const SmartImage = ({
         if (onLoad) onLoad();
       };
       img.onerror = () => {
+        setIsLoaded(false);
         if (onError) onError();
       };
       img.src = src;
@@ -47,7 +46,7 @@ const SmartImage = ({
       style={{
         ...style,
         opacity: isLoaded ? 1 : 0,
-        transition: 'opacity 0.3s ease'
+        transition: 'opacity 0.2s ease'
       }}
     />
   );

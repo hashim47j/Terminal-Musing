@@ -5,20 +5,24 @@ import styles from './UniformPage.module.css';
 import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 import { useBlog } from '../../context/BlogContext';
 
+
 // Cached Dynamic Background Shadow Component
 const DynamicBackgroundShadow = ({ backgroundSrc, heroSrc, altText }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+
   // Reset imageLoaded when backgroundSrc changes (navigation)
   useEffect(() => {
     setImageLoaded(false);
   }, [backgroundSrc]);
 
+
   useEffect(() => {
     const extractColorFromImage = () => {
       if (!imgRef.current || !headerRef.current || !imageLoaded) return;
+
 
       const img = imgRef.current;
       const canvas = document.createElement('canvas');
@@ -45,6 +49,7 @@ const DynamicBackgroundShadow = ({ backgroundSrc, heroSrc, altText }) => {
         g = Math.floor(g / count);
         b = Math.floor(b / count);
 
+
         const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
         headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
       } catch (err) {
@@ -52,18 +57,23 @@ const DynamicBackgroundShadow = ({ backgroundSrc, heroSrc, altText }) => {
       }
     };
 
+
     if (imageLoaded) {
       extractColorFromImage();
     }
   }, [imageLoaded]);
 
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
 
+
   const handleImageError = () => {
+    console.error('Failed to load background image:', backgroundSrc);
     setImageLoaded(false);
   };
+
 
   return (
     <>
@@ -71,13 +81,20 @@ const DynamicBackgroundShadow = ({ backgroundSrc, heroSrc, altText }) => {
         ref={imgRef}
         src={backgroundSrc}
         alt="Background for color extraction"
-        crossOrigin="anonymous"
         style={{ display: 'none' }}
         onLoad={handleImageLoad}
         onError={handleImageError}
         key={backgroundSrc}
       />
-      <section ref={headerRef} className={styles.headerSection}>
+      <section 
+        ref={headerRef} 
+        className={styles.headerSection}
+        style={{
+          backgroundImage: `url(${backgroundSrc})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
         <img
           src={heroSrc}
           alt={altText}
@@ -88,6 +105,7 @@ const DynamicBackgroundShadow = ({ backgroundSrc, heroSrc, altText }) => {
     </>
   );
 };
+
 
 // Cached Blog Card Component  
 const BlogCard = ({ 
@@ -110,6 +128,7 @@ const BlogCard = ({
   const imgRef = useRef(null);
   const { isImageCached, cacheImage } = useBlog();
 
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
@@ -119,28 +138,35 @@ const BlogCard = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+
   useEffect(() => {
     if (post.coverImage && isImageCached(post.coverImage)) {
       setImageLoaded(true);
     }
   }, [post.coverImage, isImageCached]);
 
+
   const extractColorFromImage = () => {
     if (!imgRef.current || !cardRef.current || !imageLoaded) return;
+
 
     const img = imgRef.current;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
+
     canvas.width = img.naturalWidth;
     canvas.height = img.naturalHeight;
+
 
     try {
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
+
       let r = 0, g = 0, b = 0, count = 0;
+
 
       for (let i = 0; i < data.length; i += 4 * 10) {
         r += data[i];
@@ -149,9 +175,11 @@ const BlogCard = ({
         count++;
       }
 
+
       r = Math.floor(r / count);
       g = Math.floor(g / count);
       b = Math.floor(b / count);
+
 
       const shadow = `rgba(${r}, ${g}, ${b}, 0.6)`;
       setShadowColor(shadow);
@@ -160,13 +188,16 @@ const BlogCard = ({
     }
   };
 
+
   useEffect(() => {
     if (imageLoaded) extractColorFromImage();
   }, [imageLoaded]);
 
+
   const handleCardClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
 
     if (isMobile) {
       const newActiveId = post.id === activeCardId ? null : post.id;
@@ -176,11 +207,13 @@ const BlogCard = ({
     }
   };
 
+
   const handleReadButtonClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
     onClick();
   };
+
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -189,9 +222,11 @@ const BlogCard = ({
     }
   };
 
+
   const isHovered = !isMobile && hoveredPostId === post.id;
   const isMobileActive = isMobile && activeCardId === post.id;
   const isActive = isHovered || isMobileActive;
+
 
   return (
     <article
@@ -231,8 +266,10 @@ const BlogCard = ({
         </div>
       )}
 
+
       <div className={`${styles.blogContent} ${isActive ? styles.hiddenContent : ''}`}>
         <h3 className={styles.blogTitle}>{post.title}</h3>
+
 
         <div className={styles.cardBottomFixed}>
           <div className={styles.cardSeparatorLine}></div>
@@ -254,6 +291,7 @@ const BlogCard = ({
         </div>
       </div>
 
+
       {isActive && (
         <div className={styles.hoverOverlay}>
           <div className={styles.subheadingContainer}>
@@ -261,6 +299,7 @@ const BlogCard = ({
               {post.subheading || post.title}
             </p>
           </div>
+
 
           <div className={styles.bottomFixed}>
             <div className={styles.leftContent}>
@@ -278,6 +317,7 @@ const BlogCard = ({
                 </span>
               </div>
             </div>
+
 
             <div className={styles.rightContent}>
               <button
@@ -301,6 +341,7 @@ const BlogCard = ({
                 </svg>
               </button>
 
+
               <button 
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
@@ -315,6 +356,7 @@ const BlogCard = ({
   );
 };
 
+
 // Main Uniform Page Component
 const UniformPage = () => {
   const containerRef = useRef(null); 
@@ -323,6 +365,7 @@ const UniformPage = () => {
   const [hoveredPostId, setHoveredPostId] = useState(null);
   const [activeCardId, setActiveCardId] = useState(null);
 
+
   const category = getCategoryFromPath(location.pathname);
   const theme = getThemeByCategory(category);
   
@@ -330,10 +373,12 @@ const UniformPage = () => {
   const categoryState = state.posts[category];
   const currentAuthor = state.currentAuthor;
 
+
   // Fetch posts for current category if not loaded
   useEffect(() => {
     fetchPosts(category, theme.apiEndpoint);
   }, [category, theme.apiEndpoint, fetchPosts]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -342,9 +387,11 @@ const UniformPage = () => {
       }
     };
 
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
 
   const getWordCount = (content) => {
     if (!content || !Array.isArray(content)) return 0;
@@ -357,9 +404,11 @@ const UniformPage = () => {
     return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
 
+
   const handlePostClick = (post) => {
     navigate(`${theme.routeBase}/${post.id}`);
   };
+
 
   const handleKeyDown = (e, post) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -367,6 +416,7 @@ const UniformPage = () => {
       handlePostClick(post);
     }
   };
+
 
   return (
     <div 
@@ -378,13 +428,20 @@ const UniformPage = () => {
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
-      <DynamicBackgroundShadow theme={theme} />
+
+      <DynamicBackgroundShadow 
+        backgroundSrc={theme.headerConfig.backgroundImage}
+        heroSrc={theme.headerConfig.heroImage}
+        altText={theme.headerConfig.altText}
+      />
+
 
       <section 
         className={styles.postsSection}
         style={{ backgroundColor: theme.postsSection.backgroundColor }}
       >
         <h2 className={styles.postsHeading}>{theme.postsSection.heading}</h2>
+
 
         <div ref={containerRef} className={styles.blogGridContainer}>
           <div className={styles.blogGrid}>
@@ -431,6 +488,7 @@ const UniformPage = () => {
         </div>
       </section>
 
+
       <div 
         className={styles.grayStrip}
         style={{ backgroundColor: theme.stripColor }}
@@ -438,5 +496,6 @@ const UniformPage = () => {
     </div>
   );
 };
+
 
 export default UniformPage;

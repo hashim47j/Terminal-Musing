@@ -7,6 +7,8 @@ import socialHero from '../assets/social-hero.png';
 import socialBackground from '../assets/social-bg.jpg';
 import historyHero from '../assets/history-hero.png';
 import historyBackground from '../assets/history-background.png';
+import PhilosophyHero from '../assets/kant-sapere-aude.png';
+import PhilsophyBackground from '../assets/philosophy-background.png';
 
 export const BLOG_THEMES = {
   writings: {
@@ -121,8 +123,8 @@ export const BLOG_THEMES = {
     backgroundColor: '#f5f5f0',
     containerClass: 'philosophyPageContainer',
     headerConfig: {
-      backgroundImage: null, // Add your philosophy background
-      heroImage: null, // Add your philosophy hero
+      backgroundImage: PhilsophyBackground, 
+      heroImage: PhilosophyHero, 
       altText: 'Philosophy Hero',
       heroPosition: { x: 0, y: 25 },
       heroWidth: 200,

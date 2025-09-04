@@ -150,6 +150,21 @@ export const getThemeByCategory = (category) => {
 };
 
 export const getCategoryFromPath = (pathname) => {
-  const match = pathname.match(/\/blog\/([^\/]+)/);
-  return match ? match[1] : 'writings';
+  // Updated to handle both /blog/ and direct paths
+  if (pathname.includes('/blog/')) {
+    const match = pathname.match(/\/blog\/([^\/]+)/);
+    return match ? match[1] : 'writings';
+  }
+  
+  // Handle direct paths for compatibility
+  const pathMap = {
+    '/philosophy': 'philosophy',
+    '/history': 'history',
+    '/tech': 'tech',
+    '/legal-social': 'lsconcern',
+    '/writings': 'writings'
+  };
+  
+  return pathMap[pathname] || 'writings';
 };
+

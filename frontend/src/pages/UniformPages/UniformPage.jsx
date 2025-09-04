@@ -4,23 +4,38 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './UniformPage.module.css';
 import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 import { useBlog } from '../../context/BlogContext';
+import SmartImage from './SmartImage';
+
+
 
 // Simplified Dynamic Background Shadow Component
+// Updated DynamicBackgroundShadow component
 const DynamicBackgroundShadow = ({ theme }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { getBackgroundCache, cacheBackground } = useBlog();
+  const { 
+    getBackgroundCache, 
+    cacheBackground, 
+    isBackgroundImageCached, 
+    cacheBackgroundImage 
+  } = useBlog();
 
   useEffect(() => {
     const bgUrl = theme.headerConfig.backgroundImage;
     
     if (!bgUrl) return;
     
+    // Check if we already have the shadow color cached
     const cachedShadowColor = getBackgroundCache(bgUrl);
     if (cachedShadowColor && headerRef.current) {
       headerRef.current.style.setProperty('--header-shadow-color', cachedShadowColor);
       return;
+    }
+
+    // Check if image is already cached
+    if (isBackgroundImageCached(bgUrl)) {
+      setImageLoaded(true);
     }
 
     const extractColorFromImage = () => {
@@ -63,10 +78,13 @@ const DynamicBackgroundShadow = ({ theme }) => {
     if (imageLoaded) {
       extractColorFromImage();
     }
-  }, [imageLoaded, theme.headerConfig.backgroundImage, getBackgroundCache, cacheBackground]);
+  }, [imageLoaded, theme.headerConfig.backgroundImage, getBackgroundCache, cacheBackground, isBackgroundImageCached]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
+    if (theme.headerConfig.backgroundImage) {
+      cacheBackgroundImage(theme.headerConfig.backgroundImage);
+    }
   };
 
   return (
@@ -86,8 +104,41 @@ const DynamicBackgroundShadow = ({ theme }) => {
   );
 };
 
+
 // Header Section Component
 const HeaderSection = ({ theme, headerRef }) => {
+
+  const HeaderSection = ({ theme, headerRef }) => {
+    const { cacheHeroImage, cacheBackgroundImage } = useBlog();
+  
+    return (
+      <section 
+        ref={headerRef} 
+        className={styles.headerSection}
+        style={{
+          ...(theme.headerConfig.backgroundImage && {
+            backgroundImage: `url(${theme.headerConfig.backgroundImage})`
+          })
+        }}
+      >
+        {theme.headerConfig.heroImage && (
+          <SmartImage
+            src={theme.headerConfig.heroImage}
+            alt={theme.headerConfig.altText}
+            className={styles.heroImage}
+            style={{
+              '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
+              '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
+              width: `${theme.headerConfig.heroWidth}px`
+            }}
+            isHeroImage={true}
+            cacheCallback={cacheHeroImage}
+          />
+        )}
+      </section>
+    );
+  };
+
   return (
     <section 
       ref={headerRef} 
@@ -406,14 +457,13 @@ const UniformPage = () => {
     <div 
       className={styles[theme.containerClass]}
       style={{ backgroundColor: theme.backgroundColor }}
-      key={category} // This forces complete re-render when category changes
     >
       <div
         data-navbar-bg-detect
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
-      <DynamicBackgroundShadow theme={theme} key={category} />
+      <DynamicBackgroundShadow theme={theme} />
 
       <section 
         className={styles.postsSection}

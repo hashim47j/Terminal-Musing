@@ -114,7 +114,7 @@ const HeaderSection = ({ theme, headerRef }) => {
   );
 };
 
-// Blog Card Component
+// Blog Card Component (keeping your existing BlogCard component unchanged)
 const BlogCard = ({ 
   post, 
   hoveredPostId, 
@@ -340,7 +340,7 @@ const BlogCard = ({
   );
 };
 
-// Main Uniform Page Component
+// Main Uniform Page Component - FIXED
 const UniformPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();
@@ -406,13 +406,14 @@ const UniformPage = () => {
     <div 
       className={styles[theme.containerClass]}
       style={{ backgroundColor: theme.backgroundColor }}
+      key={category} // This forces complete re-render when category changes
     >
       <div
         data-navbar-bg-detect
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
       />
 
-      <DynamicBackgroundShadow theme={theme} />
+      <DynamicBackgroundShadow theme={theme} key={category} />
 
       <section 
         className={styles.postsSection}

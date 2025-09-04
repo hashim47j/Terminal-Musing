@@ -127,7 +127,7 @@ export const BLOG_THEMES = {
       heroImage: PhilosophyHero, 
       altText: 'Philosophy Hero',
       heroPosition: { x: 0, y: 25 },
-      heroWidth: 200,
+      heroWidth: 230,
       mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 160
     },

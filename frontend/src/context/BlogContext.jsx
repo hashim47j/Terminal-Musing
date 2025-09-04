@@ -4,20 +4,19 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 const BlogContext = createContext();
 
 const initialState = {
-    posts: {
-      writings: { data: [], loading: false, error: '', loaded: false },
-      tech: { data: [], loading: false, error: '', loaded: false },
-      lsconcern: { data: [], loading: false, error: '', loaded: false },
-      history: { data: [], loading: false, error: '', loaded: false },
-      philosophy: { data: [], loading: false, error: '', loaded: false }
-    },
-    currentAuthor: 'Terminal Musing',
-    imageCache: new Map(),
-    backgroundCache: new Map(),
-    // NEW: Track loaded hero images
-    heroImageCache: new Map(),
-    backgroundImageCache: new Map()
-  };
+  posts: {
+    writings: { data: [], loading: false, error: '', loaded: false },
+    tech: { data: [], loading: false, error: '', loaded: false },
+    lsconcern: { data: [], loading: false, error: '', loaded: false },
+    history: { data: [], loading: false, error: '', loaded: false },
+    philosophy: { data: [], loading: false, error: '', loaded: false }
+  },
+  currentAuthor: 'Terminal Musing',
+  imageCache: new Map(),
+  backgroundCache: new Map(),
+  heroImageCache: new Map(),
+  backgroundImageCache: new Map()
+};
 
 function blogReducer(state, action) {
   switch (action.type) {
@@ -33,22 +32,6 @@ function blogReducer(state, action) {
           }
         }
       };
-
-      case 'CACHE_HERO_IMAGE':
-        const newHeroCache = new Map(state.heroImageCache);
-        newHeroCache.set(action.url, true);
-        return {
-          ...state,
-          heroImageCache: newHeroCache
-        };
-  
-      case 'CACHE_BACKGROUND_IMAGE':
-        const newBgImageCache = new Map(state.backgroundImageCache);
-        newBgImageCache.set(action.url, true);
-        return {
-          ...state,
-          backgroundImageCache: newBgImageCache
-        };
 
     case 'SET_POSTS':
       return {
@@ -99,25 +82,26 @@ function blogReducer(state, action) {
         backgroundCache: newBgCache
       };
 
+    case 'CACHE_HERO_IMAGE':
+      const newHeroCache = new Map(state.heroImageCache);
+      newHeroCache.set(action.url, true);
+      return {
+        ...state,
+        heroImageCache: newHeroCache
+      };
+
+    case 'CACHE_BACKGROUND_IMAGE':
+      const newBgImageCache = new Map(state.backgroundImageCache);
+      newBgImageCache.set(action.url, true);
+      return {
+        ...state,
+        backgroundImageCache: newBgImageCache
+      };
+
     default:
       return state;
   }
 }
-
-const value = {
-    state,
-    dispatch,
-    fetchPosts,
-    isImageCached: (url) => state.imageCache.has(url),
-    getBackgroundCache: (url) => state.backgroundCache.get(url),
-    cacheImage: (url) => dispatch({ type: 'CACHE_IMAGE', url }),
-    cacheBackground: (url, shadowColor) => dispatch({ type: 'CACHE_BACKGROUND', url, shadowColor }),
-    // NEW: Hero image caching
-    isHeroImageCached: (url) => state.heroImageCache.has(url),
-    isBackgroundImageCached: (url) => state.backgroundImageCache.has(url),
-    cacheHeroImage: (url) => dispatch({ type: 'CACHE_HERO_IMAGE', url }),
-    cacheBackgroundImage: (url) => dispatch({ type: 'CACHE_BACKGROUND_IMAGE', url })
-  };
 
 export function BlogProvider({ children }) {
   const [state, dispatch] = useReducer(blogReducer, initialState);
@@ -216,7 +200,11 @@ export function BlogProvider({ children }) {
     isImageCached: (url) => state.imageCache.has(url),
     getBackgroundCache: (url) => state.backgroundCache.get(url),
     cacheImage: (url) => dispatch({ type: 'CACHE_IMAGE', url }),
-    cacheBackground: (url, shadowColor) => dispatch({ type: 'CACHE_BACKGROUND', url, shadowColor })
+    cacheBackground: (url, shadowColor) => dispatch({ type: 'CACHE_BACKGROUND', url, shadowColor }),
+    isHeroImageCached: (url) => state.heroImageCache.has(url),
+    isBackgroundImageCached: (url) => state.backgroundImageCache.has(url),
+    cacheHeroImage: (url) => dispatch({ type: 'CACHE_HERO_IMAGE', url }),
+    cacheBackgroundImage: (url) => dispatch({ type: 'CACHE_BACKGROUND_IMAGE', url })
   };
 
   return (

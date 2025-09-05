@@ -1,6 +1,5 @@
-// frontend/src/pages/UniformPages/UniformPage.jsx
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './UniformPage.module.css';
 import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes';
 import { useBlog } from '../../context/BlogContext';
@@ -11,7 +10,6 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [shadowVisible, setShadowVisible] = useState(false); // NEW: Shadow visibility state
   const [currentBgUrl, setCurrentBgUrl] = useState(null);
   const { 
     getBackgroundCache, 
@@ -20,13 +18,12 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
     cacheBackgroundImage 
   } = useBlog();
 
-  // Reset when background URL changes
+  // Reset only when background URL actually changes
   useEffect(() => {
     const bgUrl = theme.headerConfig.backgroundImage;
     
     if (bgUrl !== currentBgUrl) {
       setImageLoaded(false);
-      setShadowVisible(false); // Hide shadow immediately when changing
       setCurrentBgUrl(bgUrl);
     }
     
@@ -35,18 +32,13 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
     const cachedShadowColor = getBackgroundCache(bgUrl);
     if (cachedShadowColor && headerRef.current) {
       headerRef.current.style.setProperty('--header-shadow-color', cachedShadowColor);
-      // Show shadow immediately if we have cached color
-      setShadowVisible(true);
       return;
     }
 
     if (isBackgroundImageCached(bgUrl)) {
       setImageLoaded(true);
     }
-  }, [theme.headerConfig.backgroundImage, currentBgUrl, getBackgroundCache, isBackgroundImageCached]);
 
-  // Extract color and show shadow only after image loads
-  useEffect(() => {
     const extractColorFromImage = () => {
       if (!imgRef.current || !headerRef.current || !imageLoaded) return;
 
@@ -78,21 +70,16 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
         const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
         headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
         
-        cacheBackground(theme.headerConfig.backgroundImage, shadowColor);
-        
-        // Show shadow only after color extraction is complete
-        setShadowVisible(true);
+        cacheBackground(bgUrl, shadowColor);
       } catch (err) {
         console.warn('Could not extract color from background image:', err);
-        // Show default shadow even if extraction fails
-        setShadowVisible(true);
       }
     };
 
     if (imageLoaded) {
       extractColorFromImage();
     }
-  }, [imageLoaded, theme.headerConfig.backgroundImage, cacheBackground]);
+  }, [theme.headerConfig.backgroundImage, currentBgUrl, imageLoaded, getBackgroundCache, cacheBackground, isBackgroundImageCached]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -110,36 +97,30 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
           alt="Background for color extraction"
           style={{ display: 'none' }}
           onLoad={handleImageLoad}
-          onError={() => {
-            setImageLoaded(false);
-            setShadowVisible(false);
-          }}
-          key={theme.headerConfig.backgroundImage}
+          onError={() => setImageLoaded(false)}
+          key={theme.headerConfig.backgroundImage} // Reset only when URL changes
         />
       )}
-      <HeaderSection 
-        theme={theme} 
-        headerRef={headerRef} 
-        category={category} 
-        shadowVisible={shadowVisible} 
-      />
+      <HeaderSection theme={theme} headerRef={headerRef} category={category} />
     </>
   );
 };
 
-// Enhanced Header Section Component
-const HeaderSection = ({ theme, headerRef, category, shadowVisible }) => {
+// Enhanced Header Section Component  
+const HeaderSection = ({ theme, headerRef, category }) => {
   const { cacheHeroImage, isHeroImageCached } = useBlog();
   const [currentHeroUrl, setCurrentHeroUrl] = useState(null);
   const [showImage, setShowImage] = useState(false);
 
+  // Hide image immediately when category changes, show when loaded
   useEffect(() => {
     const heroUrl = theme.headerConfig.heroImage;
     
     if (heroUrl !== currentHeroUrl) {
-      setShowImage(false);
+      setShowImage(false); // Hide immediately on URL change
       setCurrentHeroUrl(heroUrl);
       
+      // If image is cached, show it quickly
       if (isHeroImageCached(heroUrl)) {
         setShowImage(true);
       }
@@ -156,7 +137,7 @@ const HeaderSection = ({ theme, headerRef, category, shadowVisible }) => {
   return (
     <section 
       ref={headerRef} 
-      className={`${styles.headerSection} ${shadowVisible ? styles.shadowVisible : ''}`}
+      className={styles.headerSection}
       style={{
         ...(theme.headerConfig.backgroundImage && {
           backgroundImage: `url(${theme.headerConfig.backgroundImage})`
@@ -176,13 +157,12 @@ const HeaderSection = ({ theme, headerRef, category, shadowVisible }) => {
             transition: 'opacity 0.3s ease'
           }}
           cacheCallback={handleImageLoad}
-          key={theme.headerConfig.heroImage}
+          key={theme.headerConfig.heroImage} // Reset when URL changes
         />
       )}
     </section>
   );
 };
-
 // Blog Card Component (keeping your existing BlogCard component unchanged)
 const BlogCard = ({ 
   post, 
@@ -409,17 +389,14 @@ const BlogCard = ({
   );
 };
 
-// Main Uniform Page Component - Enhanced with useParams
 const UniformPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();
   const location = useLocation();
-  const { category: routeCategory } = useParams(); // Get category from route params
   const [hoveredPostId, setHoveredPostId] = useState(null);
   const [activeCardId, setActiveCardId] = useState(null);
 
-  // Use route param first, fallback to path parsing
-  const category = routeCategory || getCategoryFromPath(location.pathname);
+  const category = getCategoryFromPath(location.pathname);
   const theme = getThemeByCategory(category);
   
   const { state, fetchPosts } = useBlog();
@@ -427,7 +404,6 @@ const UniformPage = () => {
   const currentAuthor = state.currentAuthor;
 
   console.log('Current category:', category);
-  console.log('Route category:', routeCategory);
   console.log('Category state:', categoryState);
   console.log('Theme API endpoint:', theme.apiEndpoint);
 
@@ -435,9 +411,7 @@ const UniformPage = () => {
     return <div>Loading...</div>;
   }
 
-  // Fetch posts when category changes
   useEffect(() => {
-    console.log('Fetching posts for category:', category);
     fetchPosts(category, theme.apiEndpoint);
   }, [category, theme.apiEndpoint, fetchPosts]);
 
@@ -451,12 +425,6 @@ const UniformPage = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  // Reset component-specific state when category changes
-  useEffect(() => {
-    setHoveredPostId(null);
-    setActiveCardId(null);
-  }, [category]);
 
   const getWordCount = (content) => {
     if (!content || !Array.isArray(content)) return 0;

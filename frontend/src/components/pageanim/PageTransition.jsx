@@ -6,42 +6,58 @@ import { usePageTransition } from './PageTransitionContext';
 const PageTransition = ({ children }) => {
   const location = useLocation();
   const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
-  const [previousPage, setPreviousPage] = useState(null);
-  const [currentPage, setCurrentPage] = useState(children);
-  const previousLocation = useRef(location.pathname);
+  
+  // A single state object to manage both pages. This prevents race conditions.
+  const [page, setPage] = useState({
+    current: children,
+    previous: null,
+  });
+
+  const previousLocationRef = useRef(location.pathname);
 
   useEffect(() => {
-    if (location.pathname !== previousLocation.current) {
-      if (isTransitioning) {
-        console.log('🎬 Animation started');
-        setPreviousPage(currentPage); // The old page is what's currently displayed
-        setCurrentPage(children);     // The new page is the new children
+    if (location.pathname !== previousLocationRef.current) {
+      previousLocationRef.current = location.pathname;
 
-        // After the animation duration, clean up
+      if (isTransitioning && window.innerWidth > 768) {
+        // Start the transition
+        setPage(p => ({
+          current: children,   // The new page is the incoming children
+          previous: p.current, // The page that was on screen becomes the "previous" page
+        }));
+
+        // Set a timer to clean up after the animation
         const timer = setTimeout(() => {
-          console.log('✅ Animation complete, cleaning up previous page');
-          setPreviousPage(null);
           endTransition();
-        }, 1050); // This should match the total animation time
-
-        previousLocation.current = location.pathname;
+          // After the animation, remove the previous page from state
+          setPage(p => ({
+            current: p.current,
+            previous: null,
+          }));
+        }, 1050); // This duration MUST match your CSS animation time
 
         return () => clearTimeout(timer);
       } else {
-        // If not transitioning, just update the page
-        setCurrentPage(children);
-        previousLocation.current = location.pathname;
+        // If not transitioning, just update the page immediately
+        setPage({ current: children, previous: null });
       }
     }
-  }, [location, children, isTransitioning, endTransition, currentPage]);
+  }, [location, children, isTransitioning, endTransition]);
 
-  if (window.innerWidth <= 768 || !isTransitioning) {
-    return <>{currentPage}</>;
-  }
+  // Render logic
+  const { current, previous } = page;
 
   return (
     <div className={styles.transitionContainer}>
-      {previousPage && (
+      {/* The static page when not animating */}
+      {!previous && (
+        <div className={styles.staticPageWrapper}>
+          {current}
+        </div>
+      )}
+
+      {/* The outgoing page (only rendered during animation) */}
+      {previous && (
         <div
           className={`
             ${styles.pageWrapper}
@@ -49,18 +65,22 @@ const PageTransition = ({ children }) => {
             ${transitionDirection === 'right' ? styles.slideRight : styles.slideLeft}
           `}
         >
-          {previousPage}
+          {previous}
         </div>
       )}
-      <div
-        className={`
-          ${styles.pageWrapper}
-          ${styles.animatingIn}
-          ${transitionDirection === 'right' ? styles.fromLeft : styles.fromRight}
-        `}
-      >
-        {currentPage}
-      </div>
+
+      {/* The incoming page (only rendered during animation) */}
+      {previous && (
+        <div
+          className={`
+            ${styles.pageWrapper}
+            ${styles.animatingIn}
+            ${transitionDirection === 'right' ? styles.fromLeft : styles.fromRight}
+          `}
+        >
+          {current}
+        </div>
+      )}
     </div>
   );
 };

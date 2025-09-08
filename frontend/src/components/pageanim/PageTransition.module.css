@@ -5,33 +5,27 @@
   overflow: hidden;
 }
 
-.pageWrapper, .staticPageWrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
+.pageWrapper {
   width: 100%;
-  height: 100%;
+  position: relative;
   will-change: filter, transform, opacity;
+  /* Define a smooth transition for all properties */
   transition:
     filter 300ms ease-out,
     transform 600ms ease-out,
     opacity 600ms ease-out;
 }
 
-.staticPageWrapper {
-  position: relative;
-}
+/* --- ANIMATION PHASES for the OUTGOING page --- */
 
-/* --- OUTGOING PAGE ANIMATION PHASES --- */
-
-/* Default state for the page that will animate out */
+/* Initial state (no animation) */
 .pageWrapper {
   filter: grayscale(0) blur(0px);
   opacity: 1;
   transform: translateX(0);
 }
 
-/* Phase 1: Turn Black & White */
+/* Phase 1: Black & White */
 .phase1_bw {
   filter: grayscale(100%) blur(0px) !important;
 }
@@ -45,40 +39,11 @@
 .phase3_driftLeft {
   filter: grayscale(100%) blur(12px) !important;
   opacity: 0 !important;
-  transform: translateX(-50px) !important;
+  transform: translateX(50px) !important; /* Drifts to the right */
 }
 
 .phase3_driftRight {
   filter: grayscale(100%) blur(12px) !important;
   opacity: 0 !important;
-  transform: translateX(50px) !important;
-}
-
-/* --- INCOMING PAGE ANIMATION --- */
-
-.incomingPage {
-  z-index: -1; /* Hide behind the old page initially */
-  opacity: 0;
-  filter: blur(10px);
-  transform: scale(0.98);
-  transition:
-    opacity 500ms ease-out 300ms, /* Starts after a 300ms delay */
-    filter 500ms ease-out 300ms,
-    transform 500ms ease-out 300ms;
-}
-
-/* This class is added during Phase 3 to make the new page appear */
-.incoming_visible {
-  z-index: 1;
-  opacity: 1 !important;
-  filter: blur(0) !important;
-  transform: scale(1) !important;
-}
-
-/* --- MOBILE OVERRIDE --- */
-@media (max-width: 768px) {
-  .pageWrapper, .staticPageWrapper {
-    position: static;
-    transition: none !important;
-  }
+  transform: translateX(-50px) !important; /* Drifts to the left */
 }

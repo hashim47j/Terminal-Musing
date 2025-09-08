@@ -1,21 +1,19 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 
-// FIX: Added 'export' to the line below
 export const PageTransitionContext = createContext();
 
 export const PageTransitionProvider = ({ children }) => {
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState('right');
+  const [transitionState, setTransitionState] = useState({
+    isTransitioning: false,
+    direction: 'right',
+    navigationCallback: null,
+  });
   const location = useLocation();
 
   const navbarOrder = [
-    '/blog/philosophy',
-    '/blog/history',
-    '/blog/writings',
-    '/blog/lsconcern',
-    '/blog/tech',
-    '/daily-thoughts'
+    '/blog/philosophy', '/blog/history', '/blog/writings',
+    '/blog/lsconcern', '/blog/tech', '/daily-thoughts'
   ];
 
   const calculateDirection = (currentPath, targetPath) => {
@@ -24,39 +22,47 @@ export const PageTransitionProvider = ({ children }) => {
     }
     const currentIndex = navbarOrder.indexOf(currentPath);
     const targetIndex = navbarOrder.indexOf(targetPath);
-    if (currentIndex === -1 || targetIndex === -1) {
-      return 'right';
-    }
-    return targetIndex > currentIndex ? 'right' : 'left';
+    return currentIndex === -1 || targetIndex === -1 || targetIndex > currentIndex ? 'right' : 'left';
   };
 
   const startPageTransition = (targetPath, navigationCallback) => {
+    if (transitionState.isTransitioning) return;
+
     const direction = calculateDirection(location.pathname, targetPath);
-    
-    if (direction === 'none' || window.innerWidth <= 768 || isTransitioning) {
-      if (location.pathname !== targetPath) {
-        navigationCallback();
-      }
+
+    if (direction === 'none' || window.innerWidth <= 768) {
+      if (location.pathname !== targetPath) navigationCallback();
       return;
     }
     
-    setTransitionDirection(direction);
-    setIsTransitioning(true);
-    
-    navigationCallback();
+    // Set state to START the transition and store the navigation function
+    setTransitionState({
+      isTransitioning: true,
+      direction,
+      navigationCallback,
+    });
   };
 
-  const endTransition = () => {
-    setIsTransitioning(false);
+  // This function will be called by the animation component AFTER the animation is done
+  const completeTransition = () => {
+    if (transitionState.navigationCallback) {
+      transitionState.navigationCallback(); // Execute the stored navigation
+    }
+    // Reset the state for the next transition
+    setTransitionState({
+      isTransitioning: false,
+      direction: 'right',
+      navigationCallback: null,
+    });
   };
 
   return (
     <PageTransitionContext.Provider
       value={{
-        isTransitioning,
-        transitionDirection,
+        isTransitioning: transitionState.isTransitioning,
+        transitionDirection: transitionState.direction,
         startPageTransition,
-        endTransition,
+        completeTransition, // Expose this new function
       }}
     >
       {children}
@@ -65,9 +71,5 @@ export const PageTransitionProvider = ({ children }) => {
 };
 
 export const usePageTransition = () => {
-  const context = useContext(PageTransitionContext);
-  if (!context) {
-    throw new Error('usePageTransition must be used within PageTransitionProvider');
-  }
-  return context;
+  return useContext(PageTransitionContext);
 };

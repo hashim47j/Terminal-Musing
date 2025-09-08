@@ -1,10 +1,3 @@
-.transitionContainer {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  overflow: hidden;
-}
-
 .pageWrapper {
   width: 100%;
   position: relative;

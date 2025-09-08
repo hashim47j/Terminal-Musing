@@ -11,71 +11,74 @@
   left: 0;
   width: 100%;
   height: 100%;
+  will-change: filter, transform, opacity;
+  transition:
+    filter 300ms ease-out,
+    transform 600ms ease-out,
+    opacity 600ms ease-out;
 }
 
 .staticPageWrapper {
-  position: relative; /* Static pages should not be absolute */
+  position: relative;
 }
 
+/* --- OUTGOING PAGE ANIMATION PHASES --- */
+
+/* Default state for the page that will animate out */
 .pageWrapper {
-  will-change: transform, opacity, filter;
+  filter: grayscale(0) blur(0px);
+  opacity: 1;
+  transform: translateX(0);
 }
 
-/* --- Animation for the OUTGOING page --- */
-.animatingOut {
-  animation: fadeAndBlurOut 1s ease-out forwards;
+/* Phase 1: Turn Black & White */
+.phase1_bw {
+  filter: grayscale(100%) blur(0px) !important;
+}
+
+/* Phase 2: Add Blur */
+.phase2_blur {
+  filter: grayscale(100%) blur(8px) !important;
+}
+
+/* Phase 3: Drift Away */
+.phase3_driftLeft {
+  filter: grayscale(100%) blur(12px) !important;
+  opacity: 0 !important;
+  transform: translateX(-50px) !important;
+}
+
+.phase3_driftRight {
+  filter: grayscale(100%) blur(12px) !important;
+  opacity: 0 !important;
+  transform: translateX(50px) !important;
+}
+
+/* --- INCOMING PAGE ANIMATION --- */
+
+.incomingPage {
+  z-index: -1; /* Hide behind the old page initially */
+  opacity: 0;
+  filter: blur(10px);
+  transform: scale(0.98);
+  transition:
+    opacity 500ms ease-out 300ms, /* Starts after a 300ms delay */
+    filter 500ms ease-out 300ms,
+    transform 500ms ease-out 300ms;
+}
+
+/* This class is added during Phase 3 to make the new page appear */
+.incoming_visible {
   z-index: 1;
+  opacity: 1 !important;
+  filter: blur(0) !important;
+  transform: scale(1) !important;
 }
 
-@keyframes fadeAndBlurOut {
-  0% {
-    opacity: 1;
-    filter: grayscale(0%) blur(0px);
-    transform: translateX(0);
-  }
-  50% {
-    filter: grayscale(100%) blur(8px);
-  }
-  100% {
-    opacity: 0;
-    filter: grayscale(100%) blur(12px);
-    transform: translateX(var(--exit-translate-x, -30px));
-  }
-}
-
-.animatingOut.slideLeft { --exit-translate-x: 30px; }
-.animatingOut.slideRight { --exit-translate-x: -30px; }
-
-/* --- Animation for the INCOMING page --- */
-.animatingIn {
-  animation: fadeInFromBlur 1s ease-out forwards;
-  z-index: 2;
-  opacity: 0; /* Start as invisible */
-}
-
-@keyframes fadeInFromBlur {
-  0% {
-    opacity: 0;
-    filter: blur(15px);
-    transform: translateX(var(--enter-translate-x, 30px));
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0px);
-    transform: translateX(0);
-  }
-}
-
-.animatingIn.fromLeft { --enter-translate-x: 30px; }
-.animatingIn.fromRight { --enter-translate-x: -30px; }
-
-/* Mobile override */
+/* --- MOBILE OVERRIDE --- */
 @media (max-width: 768px) {
   .pageWrapper, .staticPageWrapper {
     position: static;
-    animation: none !important;
-  }
-  .transitionContainer {
-    overflow: visible;
+    transition: none !important;
   }
 }

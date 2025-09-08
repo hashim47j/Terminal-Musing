@@ -7,7 +7,6 @@ const PageTransition = ({ children }) => {
   const location = useLocation();
   const { isTransitioning, transitionDirection, endTransition } = usePageTransition();
   
-  // A single state object to manage both pages. This prevents race conditions.
   const [page, setPage] = useState({
     current: children,
     previous: null,
@@ -20,43 +19,35 @@ const PageTransition = ({ children }) => {
       previousLocationRef.current = location.pathname;
 
       if (isTransitioning && window.innerWidth > 768) {
-        // Start the transition
         setPage(p => ({
-          current: children,   // The new page is the incoming children
-          previous: p.current, // The page that was on screen becomes the "previous" page
+          current: children,
+          previous: p.current,
         }));
 
-        // Set a timer to clean up after the animation
         const timer = setTimeout(() => {
           endTransition();
-          // After the animation, remove the previous page from state
           setPage(p => ({
             current: p.current,
             previous: null,
           }));
-        }, 1050); // This duration MUST match your CSS animation time
+        }, 1050); // Matches CSS animation duration
 
         return () => clearTimeout(timer);
       } else {
-        // If not transitioning, just update the page immediately
         setPage({ current: children, previous: null });
       }
     }
   }, [location, children, isTransitioning, endTransition]);
 
-  // Render logic
   const { current, previous } = page;
+
+  // Do not render animation wrappers unless a transition is active
+  if (!previous) {
+    return <>{current}</>;
+  }
 
   return (
     <div className={styles.transitionContainer}>
-      {/* The static page when not animating */}
-      {!previous && (
-        <div className={styles.staticPageWrapper}>
-          {current}
-        </div>
-      )}
-
-      {/* The outgoing page (only rendered during animation) */}
       {previous && (
         <div
           className={`
@@ -68,9 +59,7 @@ const PageTransition = ({ children }) => {
           {previous}
         </div>
       )}
-
-      {/* The incoming page (only rendered during animation) */}
-      {previous && (
+      {current && (
         <div
           className={`
             ${styles.pageWrapper}

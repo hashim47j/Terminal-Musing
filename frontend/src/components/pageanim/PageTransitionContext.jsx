@@ -1,65 +1,57 @@
 import React, { createContext, useState, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const PageTransitionContext = createContext();
 
 export const PageTransitionProvider = ({ children }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState('right');
-  const [targetPageContent, setTargetPageContent] = useState(null);
+  const location = useLocation();
 
+  // Ensure these paths match your new routes in App.js for correct direction
   const navbarOrder = [
-    '/philosophy',
-    '/history',       
-    '/writings',      
-    '/legal-social',  
-    '/tech',          
-    '/daily-thoughts' 
+    '/blog/philosophy',
+    '/blog/history',
+    '/blog/writings',
+    '/blog/lsconcern',
+    '/blog/tech',
+    '/daily-thoughts'
   ];
 
   const calculateDirection = (currentPath, targetPath) => {
-    if (targetPath === '/admin/login' || currentPath === '/admin/login') {
+    if (targetPath.startsWith('/admin') || currentPath.startsWith('/admin') || currentPath === targetPath) {
       return 'none';
     }
     const currentIndex = navbarOrder.indexOf(currentPath);
     const targetIndex = navbarOrder.indexOf(targetPath);
     if (currentIndex === -1 || targetIndex === -1) {
-      return 'right';
+      return 'right'; // Default direction for non-primary nav links
     }
     return targetIndex > currentIndex ? 'right' : 'left';
   };
 
   const startPageTransition = (targetPath, navigationCallback) => {
-    const currentPath = window.location.pathname;
+    const direction = calculateDirection(location.pathname, targetPath);
     
-    if (currentPath === targetPath || isTransitioning) {
+    // Do not start a new transition if one is already in progress or if no animation is needed
+    if (direction === 'none' || window.innerWidth <= 768 || isTransitioning) {
+      if (location.pathname !== targetPath) {
+        navigationCallback();
+      }
       return;
     }
-    const direction = calculateDirection(currentPath, targetPath);
     
-    if (direction === 'none' || window.innerWidth <= 768) {
-      navigationCallback();
-      return;
-    }
-    
-    console.log('🌀 Smooth blur transition:', direction); // Fixed log message
-    
+    // Set the state for the transition...
     setTransitionDirection(direction);
     setIsTransitioning(true);
-    setTargetPageContent(targetPath);
     
-    // Back to original timing
-    setTimeout(() => {
-      console.log('✨ Smooth transition completed');
-      setIsTransitioning(false);
-      setTargetPageContent(null);
-      navigationCallback();
-    }, 1050); // Keep the 1050ms timing
+    // ...and navigate immediately!
+    navigationCallback();
   };
-  
 
+  // This will be called by the PageTransition component itself after the animation ends
   const endTransition = () => {
     setIsTransitioning(false);
-    setTargetPageContent(null);
   };
 
   return (
@@ -67,7 +59,6 @@ export const PageTransitionProvider = ({ children }) => {
       value={{
         isTransitioning,
         transitionDirection,
-        targetPageContent,
         startPageTransition,
         endTransition,
       }}
@@ -84,5 +75,3 @@ export const usePageTransition = () => {
   }
   return context;
 };
-
-export { PageTransitionContext };

@@ -1,82 +1,92 @@
 .transitionContainer {
   position: relative;
   width: 100%;
-  overflow: hidden;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 .pageWrapper {
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  will-change: filter, transform, opacity;
-  transition: filter 400ms ease-out, transform 600ms ease-out, opacity 600ms ease-out;
-}
-
-/* PHASE 1: B&W + Blur together */
-.turnBlackWhiteBlur {
-  filter: grayscale(100%) blur(8px) !important;
-}
-
-/* PHASE 2: Drift */
-.driftLeft {
-  transform: translateX(-30px) translateZ(0) !important;
-  opacity: 0 !important;
-  filter: grayscale(100%) blur(12px) !important;
-}
-
-.driftRight {
-  transform: translateX(30px) translateZ(0) !important;
-  opacity: 0 !important;
-  filter: grayscale(100%) blur(12px) !important;
-}
-
-/* New page coming in */
-.incomingPage {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
+  will-change: transform, opacity, filter;
+}
+
+/* --- Animation for the OUTGOING page --- */
+.animatingOut {
+  animation: fadeAndBlurOut 1s ease-out forwards;
+  z-index: 1;
+}
+
+.animatingOut.slideLeft {
+  transform-origin: 50% 50%;
+}
+
+.animatingOut.slideRight {
+  transform-origin: 50% 50%;
+}
+
+@keyframes fadeAndBlurOut {
+  0% {
+    opacity: 1;
+    filter: grayscale(0%) blur(0px);
+    transform: translateX(0);
+  }
+  50% {
+    filter: grayscale(100%) blur(8px);
+  }
+  100% {
+    opacity: 0;
+    filter: grayscale(100%) blur(12px);
+    transform: translateX(var(--exit-translate-x, -30px));
+  }
+}
+
+.animatingOut.slideLeft {
+  --exit-translate-x: 30px;
+}
+
+.animatingOut.slideRight {
+  --exit-translate-x: -30px;
+}
+
+
+/* --- Animation for the INCOMING page --- */
+.animatingIn {
+  animation: fadeInFromBlur 1s ease-out forwards;
   z-index: 2;
-  will-change: opacity, filter;
+  opacity: 0; /* Start as invisible */
 }
 
-.fromLeft,
-.fromRight {
-  opacity: 0;
-  filter: blur(15px);
-}
-
-.slideInFromBlur {
-  animation: subtleAppear 600ms ease-out forwards;
-}
-
-/* Clean appear animation */
-@keyframes subtleAppear {
+@keyframes fadeInFromBlur {
   0% {
     opacity: 0;
     filter: blur(15px);
+    transform: translateX(var(--enter-translate-x, 30px));
   }
   100% {
     opacity: 1;
     filter: blur(0px);
+    transform: translateX(0);
   }
 }
 
-/* Mobile */
+.animatingIn.fromLeft {
+  --enter-translate-x: 30px;
+}
+
+.animatingIn.fromRight {
+  --enter-translate-x: -30px;
+}
+
+/* Mobile override */
 @media (max-width: 768px) {
   .pageWrapper {
-    transition: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-    filter: none !important;
-  }
-  
-  .incomingPage {
-    position: static !important;
+    position: static;
     animation: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-    filter: none !important;
+  }
+  .animatingIn, .animatingOut {
+    animation: none !important;
   }
 }

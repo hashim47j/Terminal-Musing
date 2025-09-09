@@ -6,6 +6,7 @@ import fs                from 'fs-extra';
 import path              from 'path';
 import multer            from 'multer';
 import bcrypt            from 'bcrypt';
+import session           from 'express-session';
 import { fileURLToPath } from 'url';
 import dotenv            from 'dotenv';
 dotenv.config();
@@ -42,6 +43,43 @@ const rootDir    = path.resolve(__dirname, '..');
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
+// ✅ ADD SESSION MIDDLEWARE
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'change-this-secret-in-production-terminal-musing',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { 
+    secure: false, // Set to true in production with HTTPS
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// ✅ ADMIN AUTHENTICATION MIDDLEWARE
+const requireAdminAuth = (req, res, next) => {
+  const isAuthenticated = req.session?.adminAuthenticated || false;
+  
+  console.log('🛡️ Admin auth check for', req.path, '- Authenticated:', isAuthenticated);
+  
+  if (!isAuthenticated) {
+    console.log('❌ Unauthorized admin access attempt');
+    
+    // If it's an API request, return JSON
+    if (req.path.startsWith('/api/')) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required. Please login first.' 
+      });
+    }
+    
+    // For web requests, redirect to login
+    return res.redirect('/admin/login');
+  }
+  
+  console.log('✅ Admin authenticated, allowing access');
+  next();
+};
 
 // ✅ ADD DEBUG LOGGING MIDDLEWARE
 app.use((req, res, next) => {
@@ -107,7 +145,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
   res.status(200).json({ imageUrl: `/uploads/${req.file.filename}` });
 });
 
-// ─────────────── ADMIN LOGIN ───────────────
+// ─────────────── ADMIN AUTHENTICATION ROUTES ───────────────
 const adminHashPath = path.join(__dirname, 'admin', 'adminKey.hash');
 
 app.post('/api/admin/login', async (req, res) => {
@@ -139,7 +177,11 @@ app.post('/api/admin/login', async (req, res) => {
     const isMatch = await bcrypt.compare(key, cleanHash);
     
     if (isMatch) {
-      console.log('✅ Admin login successful');
+      // ✅ SET SESSION UPON SUCCESSFUL LOGIN
+      req.session.adminAuthenticated = true;
+      req.session.adminLoginTime = new Date().toISOString();
+      
+      console.log('✅ Admin login successful - session created');
       res.status(200).json({
         success: true,
         message: 'Authentication successful'
@@ -171,6 +213,39 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
+// ✅ ADD ADMIN LOGOUT ROUTE
+app.post('/api/admin/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('❌ Session destroy error:', err);
+      return res.status(500).json({ success: false, message: 'Logout failed' });
+    }
+    console.log('✅ Admin logged out successfully');
+    res.json({ success: true, message: 'Logged out successfully' });
+  });
+});
+
+// ✅ ADD AUTH CHECK ENDPOINT
+app.get('/api/admin/check-auth', (req, res) => {
+  const isAuthenticated = req.session?.adminAuthenticated || false;
+  res.json({ 
+    authenticated: isAuthenticated,
+    loginTime: req.session?.adminLoginTime || null 
+  });
+});
+
+// ─────────────── PROTECTED ADMIN ROUTES ───────────────
+
+// Protect all admin pages (except login)
+app.use('/admin', (req, res, next) => {
+  // Allow access to login page without authentication
+  if (req.path === '/login' || req.path === '/login/') {
+    return next();
+  }
+  // All other admin pages require authentication
+  requireAdminAuth(req, res, next);
+});
+
 // ─────────────── ✅ ENHANCED API ROUTES ───────────────
 // These now support:
 // - Unified blog routing (/api/blogs/category/id)  
@@ -183,12 +258,14 @@ app.use('/api/blogs',      blogRoutes);      // ✅ Unified + robust
 app.use('/api/comments',   commentRoutes);   // ✅ Threaded replies + validation
 app.use('/api/views',      viewRoutes);      // ✅ Enhanced stats + caching
 
-// ─────────────── OTHER API ROUTES ───────────────
-app.use('/api/dashboard',                dashboardRoutes);
+// ─────────────── PROTECTED API ROUTES ───────────────
+// Protect admin-only API routes
+app.use('/api/dashboard',                requireAdminAuth, dashboardRoutes);
+
 // ✅ FIXED: Consistent daily thoughts API paths
 app.use('/api/dailythoughts',            dtapiRoutes);
-app.use('/api/dailythoughts/process',    processRoutes);
-app.use('/api/dailythoughts/manage',     manageRoutes);
+app.use('/api/dailythoughts/process',    requireAdminAuth, processRoutes);
+app.use('/api/dailythoughts/manage',     requireAdminAuth, manageRoutes);
 app.use('/api/dailythoughts/likes',      likeRoutes);
 app.use('/api/dailythoughts/approved',   getApprovedRoutes); 
 

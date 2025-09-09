@@ -37,7 +37,7 @@ const __dirname  = path.dirname(__filename);
 const rootDir    = path.resolve(__dirname, '..');
 
 // ✅ CRITICAL FIX: Set trust proxy FIRST, before any middleware
-// app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 // ─────────────── MIDDLEWARE ───────────────
 app.use(cors());
@@ -52,8 +52,10 @@ app.use(session({
   cookie: { 
     secure: false, // Set to true in production with HTTPS
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax'
+  },
+  proxy: true // ✅ CRITICAL: Trust proxy for sessions
 }));
 
 // ✅ ADMIN AUTHENTICATION MIDDLEWARE

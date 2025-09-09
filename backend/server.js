@@ -40,8 +40,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 const rootDir    = path.resolve(__dirname, '..');
 
-// ✅ CORRECTED REDIS SETUP
-const RedisStore = connectRedis(session);
+// ✅ REDIS SETUP (NO DUPLICATE REDISSTORE DECLARATION)
 const redisClient = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379'
 });
@@ -65,7 +64,7 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // ✅ CORRECTED SESSION MIDDLEWARE WITH REDIS STORE
 app.use(session({
-  store: new RedisStore({ client: redisClient }), // Use Redis store
+  store: new RedisStore({ client: redisClient }), // Use imported RedisStore directly
   secret: process.env.SESSION_SECRET || 'change-this-secret-in-production-terminal-musing',
   resave: false,
   saveUninitialized: false,

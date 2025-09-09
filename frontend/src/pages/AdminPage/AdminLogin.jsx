@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './AdminLogin.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // ✅ Add this import
 
 const AdminLogin = () => {
   const [showComicMessage, setShowComicMessage] = useState(false);
@@ -18,6 +19,14 @@ const AdminLogin = () => {
   const tapCounterRef = useRef(0);
 
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth(); // ✅ Add this line
+
+  // ✅ ADD: Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleImageTap = () => {
     const now = Date.now();
@@ -57,6 +66,7 @@ const AdminLogin = () => {
     }
   };
 
+  // ✅ UPDATED: Use auth context instead of direct fetch
   const handlePlayButtonClick = async () => {
     if (!isKeyInserted || !keyContent) {
       setError('No key inserted');
@@ -68,41 +78,27 @@ const AdminLogin = () => {
     setStatus('🎵 Verifying authentication...');
     console.log('▶️ Cassette is playing and verification started...');
 
-    try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ key: keyContent }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setStatus('✅ Authentication successful!');
-        console.log('✅ Verification complete. Navigating to dashboard...');
-        
-        // Successful animation sequence
+    // ✅ Use auth context login method
+    const result = await login(keyContent);
+    
+    if (result.success) {
+      setStatus('✅ Authentication successful!');
+      console.log('✅ Verification complete. Navigating to dashboard...');
+      
+      // Successful animation sequence
+      setTimeout(() => {
+        setStatus('📁 Accessing admin panel...');
         setTimeout(() => {
-          setStatus('📁 Accessing admin panel...');
-          setTimeout(() => {
-            setIsPlaying(false);
-            setShowCassetteOverlay(false);
-            navigate('/admin/dashboard');
-          }, 1500);
-        }, 1000);
-      } else {
-        setError(data.message || 'Invalid authentication key');
-        setIsPlaying(false);
-        setStatus('');
-        console.log('❌ Authentication failed:', data.message);
-      }
-    } catch (error) {
-      console.error('🚨 Login error:', error);
-      setError('Network error. Please check your connection.');
+          setIsPlaying(false);
+          setShowCassetteOverlay(false);
+          navigate('/admin/dashboard');
+        }, 1500);
+      }, 1000);
+    } else {
+      setError(result.message || 'Authentication failed');
       setIsPlaying(false);
       setStatus('');
+      console.log('❌ Authentication failed:', result.message);
     }
   };
 

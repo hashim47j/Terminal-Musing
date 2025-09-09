@@ -27,7 +27,6 @@ import userviewAPI      from './ipapi/userviewapi.js';
 import ipLogger         from './ipapi/motherapi.js';
 import getApprovedRoutes from './dailythougthsapi/getapproved.js';
 
-
 // ─────────────── INIT ───────────────
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -110,19 +109,65 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 
 // ─────────────── ADMIN LOGIN ───────────────
 const adminHashPath = path.join(__dirname, 'admin', 'adminKey.hash');
+
 app.post('/api/admin/login', async (req, res) => {
   const { key } = req.body;
-  if (!key) return res.status(400).json({ message: 'Key is required' });
-  try {
-    const hash  = await fs.readFile(adminHashPath, 'utf8');
-    const match = await bcrypt.compare(key, hash);
-    res.status(match ? 200 : 401).json({
-      success: match,
-      message: match ? 'Authentication successful' : 'Invalid key'
+  
+  // Validate input
+  if (!key) {
+    return res.status(400).json({ 
+      success: false,
+      message: 'Authentication key is required' 
     });
+  }
+  
+  try {
+    // Check if admin key file exists
+    if (!fs.existsSync(adminHashPath)) {
+      console.error('❌ Admin key file not found at:', adminHashPath);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Admin authentication not configured. Please contact administrator.' 
+      });
+    }
+    
+    // Read the stored hash
+    const storedHash = await fs.readFile(adminHashPath, 'utf8');
+    const cleanHash = storedHash.trim(); // Remove any whitespace/newlines
+    
+    // Compare the provided key with the stored hash
+    const isMatch = await bcrypt.compare(key, cleanHash);
+    
+    if (isMatch) {
+      console.log('✅ Admin login successful');
+      res.status(200).json({
+        success: true,
+        message: 'Authentication successful'
+      });
+    } else {
+      console.log('❌ Admin login failed - invalid key');
+      res.status(401).json({
+        success: false,
+        message: 'Invalid authentication key'
+      });
+    }
+    
   } catch (err) {
-    console.error('❌ Admin login error:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('❌ Admin login error:', err.message);
+    
+    // Check if it's a file read error
+    if (err.code === 'ENOENT') {
+      return res.status(500).json({ 
+        success: false,
+        message: 'Admin key file not found. Please run key generation.' 
+      });
+    }
+    
+    // Generic error for security
+    res.status(500).json({ 
+      success: false,
+      message: 'Internal server error during authentication' 
+    });
   }
 });
 

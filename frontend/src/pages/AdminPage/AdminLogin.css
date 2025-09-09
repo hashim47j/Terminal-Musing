@@ -204,6 +204,20 @@ html, body {
     margin: 0;
 }
 
+.close-comic-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    margin-left: 10px;
+}
+
+.close-comic-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
 
 /* --- Responsive Adjustments (also scaled by 15%) --- */
 @media (max-width: 1140.8px) {
@@ -308,12 +322,17 @@ html, body {
     border-radius: 12px;
     box-shadow: 5px 5px 0 #000;
     overflow: hidden;
-
     transition: box-shadow 0.3s ease-out, border-color 0.3s ease-out;
 }
 
 .cassette-ui.key-inserted {
-    /* Removed box-shadow and border-color to remove green glow */
+    border-color: #4CAF50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+}
+
+.cassette-ui.playing {
+    border-color: #2196F3;
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.4);
 }
 
 /* Image overlay for the exact cassette look */
@@ -382,7 +401,8 @@ html, body {
     left: 50%;
     transform: translateX(-50%); /* Horizontally centered */
     z-index: 3;
-    display: flex; /* To center the button within its container */
+    display: flex;
+    flex-direction: column; /* Stack button and messages vertically */
     justify-content: center;
     align-items: center;
 }
@@ -391,17 +411,54 @@ html, body {
     background-color: black;
     color: white;
     font-size: 0.85rem;
-    padding: 6px 12px; /* Slightly adjusted padding */
+    padding: 6px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    min-width: 90px; /* Ensure enough width for text */
+    min-width: 90px;
     text-align: center;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    margin-bottom: 5px; /* Space between button and messages */
 }
 
-.insert-key-button:hover {
+.insert-key-button:hover:not(:disabled) {
     background-color: #333;
+}
+
+.insert-key-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Status and Error Messages */
+.status-message {
+    color: #2196F3;
+    font-size: 0.75rem;
+    text-align: center;
+    font-weight: 500;
+    background-color: rgba(33, 150, 243, 0.1);
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-top: 2px;
+    white-space: nowrap;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.error-message {
+    color: #ff4444;
+    font-size: 0.75rem;
+    text-align: center;
+    font-weight: 500;
+    background-color: rgba(255, 68, 68, 0.1);
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-top: 2px;
+    white-space: nowrap;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Play/Pause & Rewind Controls - BELOW Insert Key */
@@ -435,8 +492,13 @@ html, body {
     fill: black;
 }
 
-.play-button:hover, .rewind-button:hover {
+.play-button:hover:not(:disabled), .rewind-button:hover:not(:disabled) {
     opacity: 0.7;
+}
+
+.play-button:disabled, .rewind-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
 /* Dismiss Button - TOP RIGHT */
@@ -462,11 +524,36 @@ html, body {
     stroke-width: 2; /* Make the 'X' thicker */
 }
 
-.dismiss-button:hover {
+.dismiss-button:hover:not(:disabled) {
     opacity: 0.7;
+}
+
+.dismiss-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
   
 .hidden-input {
     display: none;
 }
+
+/* Responsive adjustments for cassette UI */
+@media (max-width: 400px) {
+    .cassette-ui {
+        width: 280px;
+        height: 160px;
+    }
+    
+    .status-message, .error-message {
+        font-size: 0.7rem;
+        max-width: 160px;
+    }
+    
+    .insert-key-button {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        min-width: 80px;
+    }
+}
+
 /* --- END KEY VERIFICATION CASSETTE UI CSS --- */

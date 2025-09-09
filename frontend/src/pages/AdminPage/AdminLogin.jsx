@@ -1,5 +1,3 @@
-// /frontend/src/pages/AdminPage/AdminLogin.jsx
-
 import React, { useState, useRef } from 'react';
 import './AdminLogin.css';
 import { useNavigate } from 'react-router-dom';
@@ -11,12 +9,15 @@ const AdminLogin = () => {
   const [showCassetteOverlay, setShowCassetteOverlay] = useState(false);
   const [isKeyInserted, setIsKeyInserted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const fileInputRef = useRef(null);
+  const [keyContent, setKeyContent] = useState('');
+  const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
 
+  const fileInputRef = useRef(null);
   const lastTapRef = useRef(0);
   const tapCounterRef = useRef(0);
 
-  const navigate = useNavigate(); // ✅ Moved to top-level
+  const navigate = useNavigate();
 
   const handleImageTap = () => {
     const now = Date.now();
@@ -35,45 +36,113 @@ const AdminLogin = () => {
 
   const handleKeyInsert = (event) => {
     if (event.target.files && event.target.files.length > 0) {
-      setIsKeyInserted(true);
-      console.log('Key (file) inserted:', event.target.files[0].name);
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const content = e.target.result.trim();
+        setKeyContent(content);
+        setIsKeyInserted(true);
+        setError('');
+        setStatus('Key loaded successfully');
+        console.log('🔑 Key file inserted:', file.name);
+      };
+      
+      reader.onerror = () => {
+        setError('Failed to read key file');
+        setIsKeyInserted(false);
+      };
+      
+      reader.readAsText(file);
     }
   };
 
-  const handlePlayButtonClick = () => {
-    if (!isKeyInserted) {
-      console.log('❌ Cannot play: No key inserted.');
+  const handlePlayButtonClick = async () => {
+    if (!isKeyInserted || !keyContent) {
+      setError('No key inserted');
       return;
     }
 
     setIsPlaying(true);
+    setError('');
+    setStatus('🎵 Verifying authentication...');
     console.log('▶️ Cassette is playing and verification started...');
 
-    setTimeout(() => {
-      console.log('✅ Verification complete. Navigating to dashboard...');
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ key: keyContent }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setStatus('✅ Authentication successful!');
+        console.log('✅ Verification complete. Navigating to dashboard...');
+        
+        // Successful animation sequence
+        setTimeout(() => {
+          setStatus('📁 Accessing admin panel...');
+          setTimeout(() => {
+            setIsPlaying(false);
+            setShowCassetteOverlay(false);
+            navigate('/admin/dashboard');
+          }, 1500);
+        }, 1000);
+      } else {
+        setError(data.message || 'Invalid authentication key');
+        setIsPlaying(false);
+        setStatus('');
+        console.log('❌ Authentication failed:', data.message);
+      }
+    } catch (error) {
+      console.error('🚨 Login error:', error);
+      setError('Network error. Please check your connection.');
       setIsPlaying(false);
-      setShowCassetteOverlay(false);
-      navigate('/admin/dashboard'); // ✅ Now routes correctly
-    }, 3000);
+      setStatus('');
+    }
   };
 
   const handleRewindButtonClick = () => {
-    console.log('⏪ Rewind button tapped.');
+    if (isPlaying) return; // Prevent rewind during verification
+    
+    // Reset cassette state
+    setIsKeyInserted(false);
+    setKeyContent('');
+    setError('');
+    setStatus('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    console.log('⏪ Cassette rewound - state reset');
   };
 
   const triggerFileInput = () => {
-    fileInputRef.current.click();
+    if (!isPlaying) { // Only allow file selection if not playing
+      fileInputRef.current.click();
+    }
   };
 
   const handleDismissCassette = () => {
+    if (isPlaying) return; // Prevent dismissal during verification
+    
     setShowCassetteOverlay(false);
     setIsPlaying(false);
     setIsKeyInserted(false);
-    console.log('Cassette UI dismissed.');
+    setKeyContent('');
+    setError('');
+    setStatus('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    console.log('💿 Cassette UI dismissed.');
   };
 
   const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentTarget && !isPlaying) {
       handleDismissCassette();
     }
   };
@@ -129,7 +198,7 @@ const AdminLogin = () => {
 
       {showCassetteOverlay && (
         <div className="key-overlay" onClick={handleOverlayClick}>
-          <div className={`cassette-ui ${isKeyInserted ? 'key-inserted' : ''}`}>
+          <div className={`cassette-ui ${isKeyInserted ? 'key-inserted' : ''} ${isPlaying ? 'playing' : ''}`}>
             <img
               src="/images/Minimalistic_Black-and-White_Line_Drawing_Of_An_Audio_Cassette-removebg-preview.png"
               alt="Cassette Outline"
@@ -141,6 +210,8 @@ const AdminLogin = () => {
               ref={fileInputRef}
               className="hidden-input"
               onChange={handleKeyInsert}
+              accept=".txt,.key,.hash"
+              disabled={isPlaying}
             />
 
             <div className="reel-container reel-left">
@@ -151,18 +222,36 @@ const AdminLogin = () => {
             </div>
 
             <div className="insert-key-container">
-              <button className="insert-key-button" onClick={triggerFileInput}>
+              <button 
+                className="insert-key-button" 
+                onClick={triggerFileInput}
+                disabled={isPlaying}
+              >
                 {isKeyInserted ? 'Key Ready' : 'Insert Key'}
               </button>
+              
+              {/* Status and Error Messages */}
+              {status && <div className="status-message">{status}</div>}
+              {error && <div className="error-message">{error}</div>}
             </div>
 
             <div className="playback-controls">
-              <button className="rewind-button" onClick={handleRewindButtonClick}>
+              <button 
+                className="rewind-button" 
+                onClick={handleRewindButtonClick}
+                disabled={isPlaying}
+                title="Reset cassette"
+              >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path d="M11 19L2 12L11 5V19ZM22 19L13 12L22 5V19Z" fill="black"/>
                 </svg>
               </button>
-              <button className="play-button" onClick={handlePlayButtonClick}>
+              <button 
+                className="play-button" 
+                onClick={handlePlayButtonClick}
+                disabled={!isKeyInserted}
+                title="Verify authentication"
+              >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
                   {isPlaying ? (
                     <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="black"/>
@@ -173,7 +262,12 @@ const AdminLogin = () => {
               </button>
             </div>
 
-            <button className="dismiss-button" onClick={handleDismissCassette}>
+            <button 
+              className="dismiss-button" 
+              onClick={handleDismissCassette}
+              disabled={isPlaying}
+              title="Close cassette player"
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M6 18L18 6M6 6L18 18" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>

@@ -10,7 +10,7 @@ import session           from 'express-session';
 import { fileURLToPath } from 'url';
 import dotenv            from 'dotenv';
 // ✅ CORRECTED REDIS IMPORTS
-import connectRedis      from 'connect-redis';
+import { RedisStore }    from 'connect-redis';
 import { createClient }  from 'redis';
 
 dotenv.config();

@@ -9,24 +9,15 @@ import bcrypt            from 'bcrypt';
 import session           from 'express-session';
 import { fileURLToPath } from 'url';
 import dotenv            from 'dotenv';
+// ✅ ADD THESE REDIS IMPORTS
+import RedisStore        from 'connect-redis';
+import { createClient }  from 'redis';
+
 dotenv.config();
 
 // ─────────────── ENHANCED API ROUTERS ─────────────
-import blogRoutes       from './blogapi/blog.js';              // ✅ Enhanced unified blog API
-import commentRoutes    from './comments/routes/comments.js';   // ✅ Enhanced with replies
-import viewRoutes       from './DashboardApi/views.js';        // ✅ Enhanced with stats
-import dashboardRoutes  from './DashboardApi/dashboard.js';
-import visitorStatsApi  from './ipapi/visitorStats.js';
-
-// ✅ Daily-Thoughts routes (folder really is "dailythougthsapi")
-import dtapiRoutes      from './dailythougthsapi/dtapi.js';
-import processRoutes    from './dailythougthsapi/processapi.js';
-import manageRoutes     from './dailythougthsapi/thoughtmanageapi.js';
-import likeRoutes       from './dailythougthsapi/getlikes.js';
-
-import userviewAPI      from './ipapi/userviewapi.js';
-import ipLogger         from './ipapi/motherapi.js';
-import getApprovedRoutes from './dailythougthsapi/getapproved.js';
+import blogRoutes       from './blogapi/blog.js';
+// ... your other imports ...
 
 // ─────────────── INIT ───────────────
 const app  = express();
@@ -36,6 +27,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 const rootDir    = path.resolve(__dirname, '..');
 
+// ✅ SET UP REDIS CLIENT (PUT THIS HERE)
+const redisClient = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
+
+// Connect Redis (wrap your app initialization in async function)
+(async () => {
+  try {
+    await redisClient.connect();
+    console.log('✅ Connected to Redis');
+  } catch (error) {
+    console.error('❌ Redis connection failed:', error);
+  }
+})();
+
 // ✅ CRITICAL FIX: Set trust proxy FIRST, before any middleware
 app.set('trust proxy', 1);
 
@@ -44,18 +52,19 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-// ✅ ADD SESSION MIDDLEWARE
+// ✅ REPLACE YOUR SESSION MIDDLEWARE WITH THIS
 app.use(session({
+  store: new RedisStore({ client: redisClient }), // Use Redis store
   secret: process.env.SESSION_SECRET || 'change-this-secret-in-production-terminal-musing',
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    secure: false, // Set to true in production with HTTPS
+    secure: false, // Keep false since Node.js sees HTTP
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   },
-  proxy: true // ✅ CRITICAL: Trust proxy for sessions
+  proxy: true
 }));
 
 // ✅ ADMIN AUTHENTICATION MIDDLEWARE

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // ✅ Add this import
 import styles from './AdminDashboard.module.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, loading, logout } = useAuth(); // ✅ Add this line
 
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalViews, setTotalViews] = useState(0);
@@ -58,10 +60,31 @@ const AdminDashboard = () => {
     'tech': 'Tech'
   };
 
+  // ✅ ADD: Authentication check
   useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate('/admin/login');
+      return;
+    }
+  }, [isAuthenticated, loading, navigate]);
+
+  // ✅ ADD: Logout handler
+  const handleLogout = async () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      await logout();
+      navigate('/admin/login');
+    }
+  };
+
+  useEffect(() => {
+    // ✅ ONLY FETCH DATA IF AUTHENTICATED
+    if (!isAuthenticated) return;
+
     const fetchStats = async () => {
       try {
-        const res = await fetch('/api/dashboard/stats');
+        const res = await fetch('/api/dashboard/stats', {
+          credentials: 'include' // ✅ Important: send cookies
+        });
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const data = await res.json();
         setTotalPosts(data.totalPosts ?? 0);
@@ -76,7 +99,9 @@ const AdminDashboard = () => {
 
     const fetchBlogStats = async () => {
       try {
-        const res = await fetch('/api/blogs');
+        const res = await fetch('/api/blogs', {
+          credentials: 'include' // ✅ Important: send cookies
+        });
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const blogs = await res.json();
 
@@ -115,7 +140,9 @@ const AdminDashboard = () => {
 
     const fetchDailyRequests = async () => {
       try {
-        const res = await fetch('/api/dailythoughts/manage/pending');
+        const res = await fetch('/api/dailythoughts/manage/pending', {
+          credentials: 'include' // ✅ Important: send cookies
+        });
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const thoughts = await res.json();
         setDailyRequests(Array.isArray(thoughts) ? thoughts : []);
@@ -127,7 +154,9 @@ const AdminDashboard = () => {
 
     const fetchVisitorStats = async () => {
       try {
-        const res = await fetch('/api/visitorstats');
+        const res = await fetch('/api/visitorstats', {
+          credentials: 'include' // ✅ Important: send cookies
+        });
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const data = await res.json();
         setVisitorStats({
@@ -145,13 +174,15 @@ const AdminDashboard = () => {
     fetchBlogStats();
     fetchDailyRequests();
     fetchVisitorStats();
-  }, []);
+  }, [isAuthenticated]); // ✅ Add isAuthenticated as dependency
 
   // ✅ NEW: Fetch all blogs for the modal
   const fetchAllBlogs = async () => {
     setIsLoadingBlogs(true);
     try {
-      const res = await fetch('/api/blogs');
+      const res = await fetch('/api/blogs', {
+        credentials: 'include' // ✅ Important: send cookies
+      });
       if (!res.ok) throw new Error(`Failed with status ${res.status}`);
       const blogs = await res.json();
 
@@ -195,7 +226,8 @@ const AdminDashboard = () => {
 
     try {
       const res = await fetch(`/api/blogs/${category}/${blogId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include' // ✅ Important: send cookies
       });
 
       if (!res.ok) {
@@ -242,6 +274,7 @@ const AdminDashboard = () => {
     try {
       const res = await fetch(`/api/dailythoughts/process/approve/${id}`, {
         method: 'POST',
+        credentials: 'include' // ✅ Important: send cookies
       });
       const result = await res.json();
       console.log('✅ Approval result:', result);
@@ -260,6 +293,24 @@ const AdminDashboard = () => {
     return map?.[backendCategory] || 0;
   };
 
+  // ✅ ADD: Loading state
+  if (loading) {
+    return (
+      <div className={styles.loading}>
+        <h2>Loading...</h2>
+      </div>
+    );
+  }
+
+  // ✅ ADD: Not authenticated state
+  if (!isAuthenticated) {
+    return (
+      <div className={styles.loading}>
+        <h2>Redirecting to login...</h2>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.dashboardContainer}>
       <div className={styles.header}>
@@ -271,9 +322,13 @@ const AdminDashboard = () => {
           <button className={styles.allBlogsBtn} onClick={handleAllBlogsClick}>
             📚 All Blogs
           </button>
+          <button className={styles.logoutBtn} onClick={handleLogout}>
+            🚪 Logout
+          </button>
         </div>
       </div>
 
+      {/* Rest of your existing JSX stays exactly the same... */}
       {/* Top stats row */}
       <div className={styles.topRow}>
         <div className={styles.box}>

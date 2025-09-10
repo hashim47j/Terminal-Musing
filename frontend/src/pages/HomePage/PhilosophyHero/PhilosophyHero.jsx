@@ -20,10 +20,6 @@ const PhilosophyHero = () => {
       </div>
       <div className={styles.imageWrapper}>
         <img src={sisyphusSketch} alt="Sisyphus pushing a boulder - one must imagine sisyphus happy" className={styles.sisyphusImage} />
-        <p className={styles.camusQuote}>
-          "One must imagine sisyphus happy"<br />
-          - Albert Camus
-        </p>
       </div>
     </section>
   );

@@ -1,12 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './AdminLogin.css';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'; // ✅ Add this import
+import { useAuth } from '../../context/AuthContext';
 
 const AdminLogin = () => {
   const [showComicMessage, setShowComicMessage] = useState(false);
-
-  // Cassette UI States
   const [showCassetteOverlay, setShowCassetteOverlay] = useState(false);
   const [isKeyInserted, setIsKeyInserted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,9 +17,8 @@ const AdminLogin = () => {
   const tapCounterRef = useRef(0);
 
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth(); // ✅ Add this line
+  const { login, isAuthenticated, loading } = useAuth();
 
-  // ✅ ADD: Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/admin/dashboard');
@@ -35,7 +32,6 @@ const AdminLogin = () => {
       if (tapCounterRef.current === 3) {
         setShowCassetteOverlay(true);
         tapCounterRef.current = 0;
-        console.log('✅ Triple tap detected: showing cassette UI');
       }
     } else {
       tapCounterRef.current = 1;
@@ -47,26 +43,24 @@ const AdminLogin = () => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const reader = new FileReader();
-      
+
       reader.onload = (e) => {
         const content = e.target.result.trim();
         setKeyContent(content);
         setIsKeyInserted(true);
         setError('');
         setStatus('Key loaded successfully');
-        console.log('🔑 Key file inserted:', file.name);
       };
-      
+
       reader.onerror = () => {
         setError('Failed to read key file');
         setIsKeyInserted(false);
       };
-      
+
       reader.readAsText(file);
     }
   };
 
-  // ✅ UPDATED: Use auth context instead of direct fetch
   const handlePlayButtonClick = async () => {
     if (!isKeyInserted || !keyContent) {
       setError('No key inserted');
@@ -76,16 +70,11 @@ const AdminLogin = () => {
     setIsPlaying(true);
     setError('');
     setStatus('🎵 Verifying authentication...');
-    console.log('▶️ Cassette is playing and verification started...');
 
-    // ✅ Use auth context login method
     const result = await login(keyContent);
-    
+
     if (result.success) {
       setStatus('✅ Authentication successful!');
-      console.log('✅ Verification complete. Navigating to dashboard...');
-      
-      // Successful animation sequence
       setTimeout(() => {
         setStatus('📁 Accessing admin panel...');
         setTimeout(() => {
@@ -98,43 +87,33 @@ const AdminLogin = () => {
       setError(result.message || 'Authentication failed');
       setIsPlaying(false);
       setStatus('');
-      console.log('❌ Authentication failed:', result.message);
     }
   };
 
   const handleRewindButtonClick = () => {
-    if (isPlaying) return; // Prevent rewind during verification
-    
-    // Reset cassette state
+    if (isPlaying) return;
     setIsKeyInserted(false);
     setKeyContent('');
     setError('');
     setStatus('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    console.log('⏪ Cassette rewound - state reset');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const triggerFileInput = () => {
-    if (!isPlaying) { // Only allow file selection if not playing
+    if (!isPlaying) {
       fileInputRef.current.click();
     }
   };
 
   const handleDismissCassette = () => {
-    if (isPlaying) return; // Prevent dismissal during verification
-    
+    if (isPlaying) return;
     setShowCassetteOverlay(false);
     setIsPlaying(false);
     setIsKeyInserted(false);
     setKeyContent('');
     setError('');
     setStatus('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    console.log('💿 Cassette UI dismissed.');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleOverlayClick = (e) => {
@@ -154,7 +133,6 @@ const AdminLogin = () => {
 
   return (
     <div className="login-wrapper">
-      {/* Dynamic navbar background detector */}
       <div
         data-navbar-bg-detect
         style={{ position: 'absolute', top: 0, height: '80px', width: '100%' }}
@@ -174,7 +152,7 @@ const AdminLogin = () => {
               </div>
             )}
           </div>
-          <button type="submit">Login</button>
+          <button type="submit" disabled>Login</button>
         </form>
 
         <div className="login-image-container">
@@ -226,7 +204,6 @@ const AdminLogin = () => {
                 {isKeyInserted ? 'Key Ready' : 'Insert Key'}
               </button>
               
-              {/* Status and Error Messages */}
               {status && <div className="status-message">{status}</div>}
               {error && <div className="error-message">{error}</div>}
             </div>
@@ -245,16 +222,18 @@ const AdminLogin = () => {
               <button 
                 className="play-button" 
                 onClick={handlePlayButtonClick}
-                disabled={!isKeyInserted}
+                disabled={!isKeyInserted || loading}
                 title="Verify authentication"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                  {isPlaying ? (
-                    <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="black"/>
-                  ) : (
-                    <path d="M8 5V19L19 12L8 5Z" fill="black"/>
-                  )}
-                </svg>
+                {loading ? "..." : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    {isPlaying ? (
+                      <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="black"/>
+                    ) : (
+                      <path d="M8 5V19L19 12L8 5Z" fill="black"/>
+                    )}
+                  </svg>
+                )}
               </button>
             </div>
 

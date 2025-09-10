@@ -1,81 +1,131 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Import core components that appear on all pages
+// Core components
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
+import PageTransition from './components/pageanim/PageTransition';
+import { PageTransitionProvider } from './components/pageanim/PageTransitionContext';
+import { BlogProvider } from './context/BlogContext';
+import { PageProvider } from './context/PageContext';
 
-// Import your page components
-import HomePage from './pages/HomePage'; // This will import src/pages/HomePage/index.jsx
+// Pages
+import HomePage from './pages/HomePage';
 import AdminLogin from './pages/AdminPage/AdminLogin';
 import AdminDashboard from './pages/AdminPage/AdminDashboard';
+import AdminPage from './pages/AdminPage/AdminPage';
+import DailythoughtsReader from './pages/DailythoughtsPage/DailythoughtsReader';
+import DailythoughtsUI from './pages/DailythoughtsPage/DailythoughtsUI';
+import Uniblog from './pages/UniblogPage/Uniblog';
+import UniformPage from './pages/UniformPages/UniformPage';
 
-// You'll create these pages later for your specific topics
-// import LawPage from './pages/LawPage';
-// import SocialIssuesPage from './pages/SocialIssuesPage';
-// import PoemsPage from './pages/PoemsPage';
-// import PhotographyPage from './pages/PhotographyPage';
-// import PhilosophyPage from './pages/PhilosophyPage';
-// import HistoryPage from './pages/HistoryPage';
-// import ShortStoriesPage from './pages/ShortStoriesPage';
-// import AndroidLinuxPage from './pages/AndroidLinuxPage';
+// ─────────────── Dynamic Uniform Page Loader ───────────────
+function UniformPageWrapper() {
+  const { category } = useParams();
+  return <UniformPage key={category} />;
+}
 
-function App() {
+// ─────────────── Delay Route Swapping (Smooth Transitions) ───────────────
+function DelayedRouteRenderer({ children }) {
+  const location = useLocation();
+  const [displayedChildren, setDisplayedChildren] = useState(children);
+  const [currentPath, setCurrentPath] = useState(location.pathname);
+
+  useEffect(() => {
+    if (location.pathname !== currentPath) {
+      const timer = setTimeout(() => {
+        setDisplayedChildren(children);
+        setCurrentPath(location.pathname);
+      }, 16);
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayedChildren(children);
+    }
+  }, [children, location.pathname, currentPath]);
+
+  return <>{displayedChildren}</>;
+}
+
+// ─────────────── App Component ───────────────
+export default function App() {
   return (
     <AuthProvider>
-      <Router>
-        <>
-          <Navbar /> {/* Your navigation bar */}
-          <main>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<HomePage />} /> {/* Homepage */}
+      <BlogProvider>
+        <PageTransitionProvider>
+          <PageProvider>
+            <Router>
+              <>
+                <Navbar />
+                <main>
+                  <PageTransition>
+                    <DelayedRouteRenderer>
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route path="/daily-thoughts" element={<DailythoughtsReader />} />
+                        <Route path="/dailythoughts/submit" element={<DailythoughtsUI />} />
 
-              {/* Admin authentication routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
+                        {/* Protected Admin Routes */}
+                        <Route
+                          path="/admin"
+                          element={
+                            <ProtectedRoute>
+                              <AdminPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/dashboard"
+                          element={
+                            <ProtectedRoute>
+                              <AdminDashboard />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/*"
+                          element={
+                            <ProtectedRoute>
+                              <div>Other Admin Pages</div>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/dailythoughts/edit"
+                          element={
+                            <ProtectedRoute>
+                              <DailythoughtsUI />
+                            </ProtectedRoute>
+                          }
+                        />
 
-              {/* Protected admin routes */}
-              <Route 
-                path="/admin/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Protect all other admin routes */}
-              <Route 
-                path="/admin/*" 
-                element={
-                  <ProtectedRoute>
-                    <div>Other Admin Pages</div>
-                  </ProtectedRoute>
-                } 
-              />
+                        {/* Blog & Uniform Pages */}
+                        <Route path="/blog/:category" element={<UniformPageWrapper />} />
+                        <Route path="/blog/:category/:id" element={<Uniblog />} />
 
-              {/* Placeholders for your topic pages */}
-              {/* <Route path="/law" element={<LawPage />} /> */}
-              {/* <Route path="/social-issues" element={<SocialIssuesPage />} /> */}
-              {/* <Route path="/poems" element={<PoemsPage />} /> */}
-              {/* <Route path="/photography" element={<PhotographyPage />} /> */}
-              {/* <Route path="/philosophy" element={<PhilosophyPage />} /> */}
-              {/* <Route path="/history" element={<HistoryPage />} /> */}
-              {/* <Route path="/short-stories" element={<ShortStoriesPage />} /> */}
-              {/* <Route path="/android-linux" element={<AndroidLinuxPage />} /> */}
+                        {/* Legacy Redirects */}
+                        <Route path="/philosophy" element={<Navigate to="/blog/philosophy" replace />} />
+                        <Route path="/history" element={<Navigate to="/blog/history" replace />} />
+                        <Route path="/tech" element={<Navigate to="/blog/tech" replace />} />
+                        <Route path="/legal-social" element={<Navigate to="/blog/lsconcern" replace />} />
+                        <Route path="/writings" element={<Navigate to="/blog/writings" replace />} />
 
-              {/* Add a 404 Not Found page route later if desired */}
-              {/* <Route path="*" element={<NotFoundPage />} /> */}
-            </Routes>
-          </main>
-          <Footer /> {/* Your footer */}
-        </>
-      </Router>
+                        {/* 404 */}
+                        <Route path="*" element={<div>404 - Page Not Found</div>} />
+                      </Routes>
+                    </DelayedRouteRenderer>
+                  </PageTransition>
+                </main>
+                <Footer />
+              </>
+            </Router>
+          </PageProvider>
+        </PageTransitionProvider>
+      </BlogProvider>
     </AuthProvider>
   );
 }
-
-export default App;

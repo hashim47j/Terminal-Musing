@@ -17,13 +17,18 @@
   font-weight: 500;
 }
 
-/* ✅ NEW: Header buttons container */
+/* Header buttons container */
 .headerButtons {
   display: flex;
   gap: 15px;
 }
 
-.postBtn, .allBlogsBtn {
+.postBtn,
+.allBlogsBtn,
+.headerButtons button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: #e6e6e6;
   border: none;
   padding: 10px 16px;
@@ -31,14 +36,19 @@
   cursor: pointer;
   border-radius: 4px;
   font-family: inherit;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.postBtn:hover, .allBlogsBtn:hover {
+.postBtn:hover,
+.allBlogsBtn:hover,
+.headerButtons button:hover {
   background: #d4d4d4;
+  transform: translateY(-2px);
 }
 
-.topRow, .bottomRow, .middleRow {
+.topRow,
+.bottomRow,
+.middleRow {
   display: flex;
   justify-content: space-between;
   gap: 40px;
@@ -50,12 +60,16 @@
   padding: 25px 30px;
   flex: 1;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
-.box h2, .box h3 {
+.box h2,
+.box h3 {
   margin-bottom: 20px;
   font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space for icons */
 }
 
 .box p {
@@ -152,6 +166,7 @@
   flex: 1;
 }
 
+/* Daily Requests */
 .requestsList {
   display: flex;
   flex-direction: column;
@@ -182,7 +197,7 @@
   font-size: 0.9rem;
 }
 
-/* ✅ NEW: All Blogs Modal Styles */
+/* All Blogs Modal */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -296,6 +311,9 @@
 }
 
 .deleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: #ff4444;
   border: none;
   padding: 8px 12px;
@@ -303,12 +321,12 @@
   cursor: pointer;
   color: white;
   font-size: 1rem;
-  transition: background 0.3s ease;
-  margin-left: 15px;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .deleteBtn:hover {
   background: #cc0000;
+  transform: translateY(-1px);
 }
 
 .closeBtn {
@@ -325,7 +343,7 @@
   color: #333;
 }
 
-/* Existing popup styles */
+/* Popup */
 .clickableName {
   color: #1a1a1a;
   cursor: pointer;
@@ -354,7 +372,7 @@
 }
 
 .popupCard {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   padding: 30px 35px;
   width: 450px;
@@ -380,21 +398,6 @@
   margin-bottom: 20px;
 }
 
-.popupField {
-  margin-bottom: 15px;
-}
-
-.popupField strong {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.popupField p {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.4;
-}
-
 .popupActions {
   display: flex;
   justify-content: flex-end;
@@ -403,64 +406,47 @@
 
 .approveBtn,
 .editBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 10px 18px;
   font-size: 1rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.3s;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .approveBtn {
-  background-color: #4CAF50;
+  background: #28a745;
   color: white;
 }
+
 .approveBtn:hover {
-  background-color: #45a045;
-}
-
-.editBtn {
-  background-color: #444;
-  color: white;
-}
-.editBtn:hover {
-  background-color: #222;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .topRow, .bottomRow, .middleRow {
-    flex-direction: column;
-  }
-  
-  .headerButtons {
-    flex-direction: column;
-  }
-  
-  .modalCard {
-    width: 95%;
-    max-height: 90vh;
-  }
-  
-  .distributionStats {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .statGroup {
-    flex-direction: column;
-    gap: 10px;
-  }
+  background: #218838;
+  transform: translateY(-1px);
 }
 
 @keyframes fadeInPop {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .topRow, .bottomRow, .middleRow {
+    flex-direction: column;
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .headerButtons {
+    flex-wrap: wrap;
+    gap: 10px;
   }
 }

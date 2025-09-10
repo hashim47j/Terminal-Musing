@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { 
+  FaFileAlt, 
+  FaEye, 
+  FaUsers, 
+  FaGlobe, 
+  FaCheckCircle, 
+  FaTrashAlt, 
+  FaPlus, 
+  FaTimes 
+} from "react-icons/fa";
 import styles from "./AdminDashboard.module.css";
 
 const AdminDashboard = () => {
@@ -46,14 +56,12 @@ const AdminDashboard = () => {
     tech: "Tech",
   };
 
-  // ✅ Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate("/admin/login");
     }
   }, [isAuthenticated, loading, navigate]);
 
-  // ✅ Logout handler
   const handleLogout = async () => {
     if (window.confirm("Are you sure you want to logout?")) {
       await logout();
@@ -61,7 +69,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // ✅ Fetch all admin stats if authenticated
   useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -76,7 +83,7 @@ const AdminDashboard = () => {
         setViewsByCategory(data.viewsByCategory || {});
         setViewsPerPost(data.viewsPerPost || {});
       } catch (err) {
-        console.error("❌ Failed to load dashboard stats:", err);
+        console.error("Failed to load dashboard stats:", err);
       }
     };
 
@@ -110,7 +117,7 @@ const AdminDashboard = () => {
           setRecentPosts(sortedBlogs);
         }
       } catch (err) {
-        console.error("❌ Failed to fetch blog stats:", err);
+        console.error("Failed to fetch blog stats:", err);
       }
     };
 
@@ -136,7 +143,7 @@ const AdminDashboard = () => {
           browserCounts: data.browserDistribution || {},
         });
       } catch (err) {
-        console.error("❌ Failed to fetch visitor stats:", err);
+        console.error("Failed to fetch visitor stats:", err);
       }
     };
 
@@ -146,7 +153,6 @@ const AdminDashboard = () => {
     fetchVisitorStats();
   }, [isAuthenticated]);
 
-  // ✅ Fetch all blogs for modal
   const fetchAllBlogs = async () => {
     setIsLoadingBlogs(true);
     try {
@@ -211,42 +217,113 @@ const AdminDashboard = () => {
         setShowPopup(false);
       }
     } catch {
-      console.error("❌ Approval failed");
+      console.error("Approval failed");
     }
   };
 
-  const getCount = (map, category) =>
-    map?.[categoryMapping[category]] || 0;
-
-  // ✅ Show loader during auth check
-  if (loading)
-    return <div className={styles.loading}><h2>Loading...</h2></div>;
-
-  // ✅ Redirect if not authenticated
-  if (!isAuthenticated)
-    return <div className={styles.loading}><h2>Redirecting...</h2></div>;
+  if (loading) return <div className={styles.loading}><h2>Loading...</h2></div>;
+  if (!isAuthenticated) return <div className={styles.loading}><h2>Redirecting...</h2></div>;
 
   return (
     <div className={styles.dashboardContainer}>
       {/* HEADER */}
       <div className={styles.header}>
-        <h1>📊 Admin Dashboard</h1>
+        <h1>Admin Dashboard</h1>
         <div className={styles.headerButtons}>
-          <button onClick={() => navigate("/admin/")}>✍️ Create Post</button>
-          <button onClick={() => { setShowAllBlogsModal(true); fetchAllBlogs(); }}>📚 All Blogs</button>
-          <button onClick={handleLogout}>🚪 Logout</button>
+          <button className={styles.postBtn} onClick={() => navigate("/admin/")}>
+            <FaPlus /> Create Post
+          </button>
+          <button className={styles.allBlogsBtn} onClick={() => { setShowAllBlogsModal(true); fetchAllBlogs(); }}>
+            <FaFileAlt /> All Blogs
+          </button>
+          <button onClick={handleLogout}>
+            <FaTimes /> Logout
+          </button>
         </div>
       </div>
 
       {/* TOP STATS */}
       <div className={styles.topRow}>
-        <div className={styles.box}><h2>📝 Posts</h2><p>{totalPosts}</p></div>
-        <div className={styles.box}><h2>👀 Views</h2><p>{totalViews}</p></div>
-        <div className={styles.box}><h2>👥 Authors</h2><p>{totalAuthors}</p></div>
-        <div className={styles.box}><h2>🌍 Visitors</h2><p>{visitorStats.uniqueIPs}</p></div>
+        <div className={styles.box}><h2><FaFileAlt /> Posts</h2><p>{totalPosts}</p></div>
+        <div className={styles.box}><h2><FaEye /> Views</h2><p>{totalViews}</p></div>
+        <div className={styles.box}><h2><FaUsers /> Authors</h2><p>{totalAuthors}</p></div>
+        <div className={styles.box}><h2><FaGlobe /> Visitors</h2><p>{visitorStats.uniqueIPs}</p></div>
       </div>
 
-      {/* The rest of your JSX remains unchanged (stats, modals, lists, etc.) */}
+      {/* DAILY THOUGHTS APPROVAL */}
+      <div className={styles.bottomRow}>
+        <h2>Pending Daily Thoughts</h2>
+        <div className={styles.requestsList}>
+          {dailyRequests.length ? dailyRequests.map(req => (
+            <div 
+              key={req.id} 
+              className={styles.requestItem} 
+              onClick={() => { setSelectedRequest(req); setShowPopup(true); }}
+            >
+              <p className={styles.requestName}>{req.author}</p>
+              <p className={styles.requestPreview}>{req.content.slice(0, 100)}...</p>
+            </div>
+          )) : <p>No pending requests.</p>}
+        </div>
+      </div>
+
+      {/* POPUP FOR DAILY THOUGHTS */}
+      {showPopup && selectedRequest && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupCard}>
+            <div className={styles.popupHeader}>
+              <h2>{selectedRequest.author}</h2>
+              <button className={styles.closeBtn} onClick={() => setShowPopup(false)}><FaTimes /></button>
+            </div>
+            <div className={styles.popupContent}>
+              <p>{selectedRequest.content}</p>
+            </div>
+            <div className={styles.popupActions}>
+              <button className={styles.approveBtn} onClick={() => handleApprove(selectedRequest.id)}>
+                <FaCheckCircle /> Approve
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ALL BLOGS MODAL */}
+      {showAllBlogsModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalCard}>
+            <div className={styles.modalHeader}>
+              <h2>All Blogs</h2>
+              <button className={styles.closeBtn} onClick={() => setShowAllBlogsModal(false)}><FaTimes /></button>
+            </div>
+            <div className={styles.modalContent}>
+              {isLoadingBlogs ? <p>Loading...</p> : (
+                Object.keys(allBlogs).map(cat => (
+                  <div key={cat} className={styles.categorySection}>
+                    <h3 className={styles.categoryTitle}>{displayCategoryMapping[cat] || cat}</h3>
+                    <div className={styles.blogsInCategory}>
+                      {allBlogs[cat].map(blog => (
+                        <div key={blog.id} className={styles.blogItem}>
+                          <div className={styles.blogInfo}>
+                            <p className={styles.blogTitle}>{blog.title}</p>
+                            <div className={styles.blogMeta}>
+                              <span>{blog.author}</span>
+                              <span>{blog.date}</span>
+                            </div>
+                          </div>
+                          <button className={styles.deleteBtn} onClick={() => handleDeleteBlog(cat, blog.id, blog.title)}>
+                            <FaTrashAlt /> Delete
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

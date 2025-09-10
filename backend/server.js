@@ -226,11 +226,36 @@ app.use("/blogs", express.static(path.join(__dirname, "blogs")));
 app.use("/uploads", express.static(uploadDir));
 
 // ------------------ Upload endpoint (PROTECTED) ------------------
-// Only admin can upload images
-app.post("/api/upload", verifyAdminSession, upload.single("image"), (req, res) => {
-  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-  res.status(200).json({ imageUrl: `/uploads/${req.file.filename}` });
+// ------------------ UPLOAD & BLOG ENDPOINTS (PROTECTED) ------------------
+
+// Only admin can publish blogs
+app.post("/api/blogs", verifyAdminSession, async (req, res) => {
+  try {
+    const blogData = req.body;
+
+    // TODO: Add blog creation logic here, e.g., saving to database
+    // Example: const newBlog = await Blog.create(blogData);
+
+    return res.status(201).json({ success: true, message: "Blog published successfully", blog: blogData });
+  } catch (err) {
+    console.error("❌ Blog creation error:", err);
+    return res.status(500).json({ success: false, message: "Internal server error while publishing blog" });
+  }
 });
+
+// Only admin can upload images
+app.post("/api/upload", verifyAdminSession, upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, message: "No file uploaded" });
+
+    // Return the uploaded file path
+    return res.status(200).json({ success: true, imageUrl: `/uploads/${req.file.filename}` });
+  } catch (err) {
+    console.error("❌ File upload error:", err);
+    return res.status(500).json({ success: false, message: "Internal server error during file upload" });
+  }
+});
+
 
 // ------------------ ADMIN AUTH ROUTES ------------------
 // login uses limiter. Compare posted key against bcrypt hash on disk.

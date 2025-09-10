@@ -1,31 +1,40 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
+import bcrypt from 'bcrypt';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Middleware to check if admin is authenticated
-export const requireAdminAuth = (req, res, next) => {
-  const isAuthenticated = req.session?.adminAuthenticated || false;
-  
-  console.log('🛡️ Admin auth check:', isAuthenticated);
-  
-  if (!isAuthenticated) {
-    console.log('❌ Unauthorized admin access attempt');
-    
-    // If it's an API request, return JSON
-    if (req.path.startsWith('/api/')) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Authentication required. Please login first.' 
-      });
+// Path to stored hashed key
+const ADMIN_KEY_PATH = path.join(__dirname, '../admin/adminKey.hash');
+
+// Middleware function
+export const adminAuth = async (req, res, next) => {
+  try {
+    // Get admin key from request header or body
+    const clientKey = req.headers['x-admin-key'] || req.body.adminKey;
+    if (!clientKey) {
+      return res.status(401).json({ message: 'Admin key required' });
     }
-    
-    // For web requests, redirect to login
-    return res.redirect('/admin/login');
+
+    // Read hashed key
+    if (!fs.existsSync(ADMIN_KEY_PATH)) {
+      return res.status(500).json({ message: 'Admin key not found on server' });
+    }
+
+    const storedHash = fs.readFileSync(ADMIN_KEY_PATH, 'utf8');
+
+    // Compare provided key with stored hash
+    const isMatch = await bcrypt.compare(clientKey, storedHash);
+    if (!isMatch) {
+      return res.status(403).json({ message: 'Invalid admin key' });
+    }
+
+    // If valid → grant access
+    next();
+  } catch (error) {
+    console.error('Admin auth error:', error.message);
+    return res.status(500).json({ message: 'Server error' });
   }
-  
-  console.log('✅ Admin authenticated, allowing access');
-  next();
 };

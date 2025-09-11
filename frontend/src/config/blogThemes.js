@@ -127,16 +127,16 @@ export const BLOG_THEMES = {
       heroImage: PhilosophyHero, 
       altText: 'Philosophy Hero',
       heroPosition: { x: 0, y: 25 },
-      heroWidth: 230,
+      heroWidth: 140,
       mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 160
+      mobileHeroWidth: 100
     },
     postsSection: {
       backgroundColor: '#ffffff80',
       heading: 'Philosophy Posts',
       loadingText: 'Loading philosophy posts...',
       emptyStateTitle: 'No Philosophy Posts Available',
-      emptyStateText: 'Check back soon for new philosophical insights and discussions.'
+      emptyStateText: 'Check back soon .'
     },
     cardStyle: {
       backgroundColor: '#fff'

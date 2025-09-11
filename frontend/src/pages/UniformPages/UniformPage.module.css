@@ -481,6 +481,19 @@
     height: 180px;
   }
 
+  .heroImage {
+    position: relative;
+    left: var(--hero-x, 0px);
+    top: var(--hero-y, 0px);
+    height: auto;
+    display: block;
+    width: 100;
+    margin: 0 auto;
+    z-index: 2;
+    transition: left 0.25s ease, top 0.25s ease;
+  }
+  
+
   .postsSection {
     margin: 190px 5vw 80px 5vw;
     width: 90vw;

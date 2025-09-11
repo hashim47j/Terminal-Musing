@@ -305,7 +305,7 @@
     }
   
     .navbarLeft .brandWrapper {
-      padding: 8px 10px;
+      padding: 6px 8px;
       /* FIX: Only animate padding/background, not positioning */
       transition: padding 0.4s ease, background-color 0.3s ease;
     }

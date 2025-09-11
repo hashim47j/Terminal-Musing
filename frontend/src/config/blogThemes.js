@@ -21,7 +21,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: -45, y: 8 },
       heroWidth: 180,
       mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 160
+      mobileHeroWidth: 100
     },
     postsSection: {
       backgroundColor: '#ffffff77',
@@ -48,7 +48,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: 0, y: 25 },
       heroWidth: 300,
       mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 180
+      mobileHeroWidth: 100
     },
     postsSection: {
       backgroundColor: '#ffffff6e',
@@ -75,7 +75,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: 0, y: 25 },
       heroWidth: 280,
       mobileHeroPosition: { x: 25, y: 20 },
-      mobileHeroWidth: 140
+      mobileHeroWidth: 100
     },
     postsSection: {
       backgroundColor: '#ffffff6b',
@@ -102,7 +102,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: -45, y: 8 },
       heroWidth: 160,
       mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 120
+      mobileHeroWidth: 100
     },
     postsSection: {
       backgroundColor: '#ecebeb',
@@ -127,7 +127,7 @@ export const BLOG_THEMES = {
       heroImage: PhilosophyHero, 
       altText: 'Philosophy Hero',
       heroPosition: { x: 0, y: 25 },
-      heroWidth: 140,
+      heroWidth: 230,
       mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 100
     },
@@ -136,7 +136,7 @@ export const BLOG_THEMES = {
       heading: 'Philosophy Posts',
       loadingText: 'Loading philosophy posts...',
       emptyStateTitle: 'No Philosophy Posts Available',
-      emptyStateText: 'Check back soon .'
+      emptyStateText: 'Check back soon for new philosophical insights and discussions.'
     },
     cardStyle: {
       backgroundColor: '#fff'

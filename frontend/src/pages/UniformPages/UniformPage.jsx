@@ -5,6 +5,19 @@ import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes
 import { useBlog } from '../../context/BlogContext';
 import SmartImage from './SmartImage';
 
+// small hook to detect mobile breakpoint
+const useIsMobile = (breakpoint = 480) => {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= breakpoint : false
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= breakpoint);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [breakpoint]);
+  return isMobile;
+};
+
 // Enhanced Dynamic Background Shadow Component
 const DynamicBackgroundShadow = ({ theme, category }) => {
   const headerRef = useRef(null);
@@ -111,6 +124,7 @@ const HeaderSection = ({ theme, headerRef, category }) => {
   const { cacheHeroImage, isHeroImageCached } = useBlog();
   const [currentHeroUrl, setCurrentHeroUrl] = useState(null);
   const [showImage, setShowImage] = useState(false);
+  const isMobile = useIsMobile(480);
 
   // Hide image immediately when category changes, show when loaded
   useEffect(() => {
@@ -134,37 +148,41 @@ const HeaderSection = ({ theme, headerRef, category }) => {
     }
   };
 
-  return (
-<section
-  ref={headerRef}
-  className={styles.headerSection}
-  style={{
-    ...(theme.headerConfig.backgroundImage && {
-      backgroundImage: `url(${theme.headerConfig.backgroundImage})`
-    }),
-    '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
-    '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
-    '--hero-width': `${theme.headerConfig.heroWidth}px`,
-    '--hero-width-mobile': `${theme.headerConfig.mobileHeroWidth}px`,
-  }}
->
-  {theme.headerConfig.heroImage && (
-    <SmartImage
-      src={theme.headerConfig.heroImage}
-      alt={theme.headerConfig.altText}
-      className={styles.heroImage}
-      style={{
-        opacity: showImage ? 1 : 0,
-        transition: 'opacity 0.3s ease'
-      }}
-      cacheCallback={handleImageLoad}
-      key={theme.headerConfig.heroImage}
-    />
-  )}
-</section>
+  // Use theme config values directly; mobile uses mobileHeroWidth
+  const widthPx = isMobile
+    ? theme.headerConfig.mobileHeroWidth
+    : theme.headerConfig.heroWidth;
 
+  return (
+    <section 
+      ref={headerRef} 
+      className={styles.headerSection}
+      style={{
+        ...(theme.headerConfig.backgroundImage && {
+          backgroundImage: `url(${theme.headerConfig.backgroundImage})`
+        })
+      }}
+    >
+      {theme.headerConfig.heroImage && (
+        <SmartImage
+          src={theme.headerConfig.heroImage}
+          alt={theme.headerConfig.altText}
+          className={styles.heroImage}
+          style={{
+            '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
+            '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
+            width: `${widthPx}px`,
+            opacity: showImage ? 1 : 0,
+            transition: 'opacity 0.3s ease'
+          }}
+          cacheCallback={handleImageLoad}
+          key={theme.headerConfig.heroImage}
+        />
+      )}
+    </section>
   );
 };
+
 // Blog Card Component (keeping your existing BlogCard component unchanged)
 const BlogCard = ({ 
   post, 

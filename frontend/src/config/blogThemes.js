@@ -28,7 +28,7 @@ export const BLOG_THEMES = {
       heading: 'Writings',
       loadingText: 'Loading writings...',
       emptyStateTitle: 'No Writings Available',
-      emptyStateText: 'Check back soon for new poems, stories, and creative works.'
+      emptyStateText: 'Check back soon.'
     },
     cardStyle: {
       backgroundColor: '#ffffff85'
@@ -129,7 +129,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: 0, y: 25 },
       heroWidth: 230,
       mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 160
+      mobileHeroWidth: 100
     },
     postsSection: {
       backgroundColor: '#ffffff80',

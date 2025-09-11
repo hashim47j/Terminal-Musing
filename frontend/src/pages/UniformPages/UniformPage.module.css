@@ -38,16 +38,6 @@
   pointer-events: none;
 }
 
-.heroImage {
-  position: relative;
-  left: var(--hero-x, 0px);
-  top: var(--hero-y, 0px);
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  z-index: 2;
-  transition: left 0.25s ease, top 0.25s ease;
-}
 
 .postsSection {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -487,10 +477,10 @@
     top: var(--hero-y, 0px);
     height: auto;
     display: block;
-    width: 100;
+    width: var(--hero-width, 300px);
     margin: 0 auto;
     z-index: 2;
-    transition: left 0.25s ease, top 0.25s ease;
+    transition: left 0.25s ease, top 0.25s ease, opacity 0.3s ease;
   }
   
 

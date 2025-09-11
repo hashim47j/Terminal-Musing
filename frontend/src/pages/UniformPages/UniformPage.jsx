@@ -135,32 +135,34 @@ const HeaderSection = ({ theme, headerRef, category }) => {
   };
 
   return (
-    <section 
-      ref={headerRef} 
-      className={styles.headerSection}
+<section
+  ref={headerRef}
+  className={styles.headerSection}
+  style={{
+    ...(theme.headerConfig.backgroundImage && {
+      backgroundImage: `url(${theme.headerConfig.backgroundImage})`
+    }),
+    '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
+    '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
+    '--hero-width': `${theme.headerConfig.heroWidth}px`,
+    '--hero-width-mobile': `${theme.headerConfig.mobileHeroWidth}px`,
+  }}
+>
+  {theme.headerConfig.heroImage && (
+    <SmartImage
+      src={theme.headerConfig.heroImage}
+      alt={theme.headerConfig.altText}
+      className={styles.heroImage}
       style={{
-        ...(theme.headerConfig.backgroundImage && {
-          backgroundImage: `url(${theme.headerConfig.backgroundImage})`
-        })
+        opacity: showImage ? 1 : 0,
+        transition: 'opacity 0.3s ease'
       }}
-    >
-      {theme.headerConfig.heroImage && (
-        <SmartImage
-          src={theme.headerConfig.heroImage}
-          alt={theme.headerConfig.altText}
-          className={styles.heroImage}
-          style={{
-            '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
-            '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
-            width: `${theme.headerConfig.heroWidth}px`,
-            opacity: showImage ? 1 : 0,
-            transition: 'opacity 0.3s ease'
-          }}
-          cacheCallback={handleImageLoad}
-          key={theme.headerConfig.heroImage} // Reset when URL changes
-        />
-      )}
-    </section>
+      cacheCallback={handleImageLoad}
+      key={theme.headerConfig.heroImage}
+    />
+  )}
+</section>
+
   );
 };
 // Blog Card Component (keeping your existing BlogCard component unchanged)

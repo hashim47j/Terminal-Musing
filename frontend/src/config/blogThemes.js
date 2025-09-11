@@ -48,7 +48,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: 0, y: 25 },
       heroWidth: 300,
       mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 100
+      mobileHeroWidth: 160
     },
     postsSection: {
       backgroundColor: '#ffffff6e',
@@ -75,7 +75,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: 0, y: 25 },
       heroWidth: 280,
       mobileHeroPosition: { x: 25, y: 20 },
-      mobileHeroWidth: 100
+      mobileHeroWidth: 160
     },
     postsSection: {
       backgroundColor: '#ffffff6b',
@@ -99,7 +99,7 @@ export const BLOG_THEMES = {
       backgroundImage: historyBackground,
       heroImage: historyHero,
       altText: 'Historical Illustration',
-      heroPosition: { x: -45, y: 8 },
+      heroPosition: { x: -20, y: 8 },
       heroWidth: 160,
       mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 100
@@ -126,7 +126,7 @@ export const BLOG_THEMES = {
       backgroundImage: PhilosophyBackground, 
       heroImage: PhilosophyHero, 
       altText: 'Philosophy Hero',
-      heroPosition: { x: 0, y: 30 },
+      heroPosition: { x: 0, y: 32 },
       heroWidth: 230,
       mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 140

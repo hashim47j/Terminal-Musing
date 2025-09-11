@@ -129,7 +129,7 @@ export const BLOG_THEMES = {
       heroPosition: { x: 0, y: 25 },
       heroWidth: 230,
       mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 100
+      mobileHeroWidth: 140
     },
     postsSection: {
       backgroundColor: '#ffffff80',

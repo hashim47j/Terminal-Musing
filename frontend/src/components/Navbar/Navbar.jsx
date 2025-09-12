@@ -246,21 +246,22 @@ const Navbar = () => {
     };
   }, [currentPath]);
 
-  // Resize observer effect
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const padding = 40;
-        const calculatedLeftNavbarWidth = entry.contentRect.width + 16; /* Much smaller padding */
-
+      for (let entry of entries) {   
+        const isMobileView = window.innerWidth <= 768;
+        const padding = isMobileView ? 16 : 40;
+        
+        const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
         setLeftNavbarWidth(calculatedLeftNavbarWidth);
-
+    
         const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
         setBridgeLeft(homeButtonCenter);
         const calculatedBridgeWidth = NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter;
         setBridgeWidth(Math.max(0, calculatedBridgeWidth));
       }
     });
+    
     if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
     return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
   }, [currentPath]);

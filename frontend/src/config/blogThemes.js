@@ -141,7 +141,7 @@ export const BLOG_THEMES = {
     cardStyle: {
       backgroundColor: '#fff'
     },
-    stripColor: '#d4d4aa',
+    stripColor: '#d3c9af',
     apiEndpoint: '/api/blogs/philosophy',
     routeBase: '/blog/philosophy'
   }
@@ -152,7 +152,6 @@ export const getThemeByCategory = (category) => {
 };
 
 export const getCategoryFromPath = (pathname) => {
-  // Updated to handle both /blog/ and direct paths
   if (pathname.includes('/blog/')) {
     const match = pathname.match(/\/blog\/([^\/]+)/);
     return match ? match[1] : 'writings';

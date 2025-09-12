@@ -128,7 +128,7 @@ export const BLOG_THEMES = {
       altText: 'Philosophy Hero',
       heroPosition: { x: 50, y: 38 },
       heroWidth: 230,
-      mobileHeroPosition: { x: 8, y: 15 },
+      mobileHeroPosition: { x: 50, y: 38 },
       mobileHeroWidth: 140
     },
     postsSection: {

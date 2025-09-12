@@ -247,7 +247,7 @@ const Navbar = () => {
   }, [currentPath]);
 
   useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
+    const observer = new ResizeObserver((entries) =>{
       for (let entry of entries) {   
         const isMobileView = window.innerWidth <= 768;
         const padding = isMobileView ? 16 : 40;

@@ -99,7 +99,7 @@ export const BLOG_THEMES = {
       backgroundImage: historyBackground,
       heroImage: historyHero,
       altText: 'Historical Illustration',
-      heroPosition: { x: -10, y: 8 },
+      heroPosition: { x: -6, y: 8 },
       heroWidth: 160,
       mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 100

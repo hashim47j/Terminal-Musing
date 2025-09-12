@@ -251,7 +251,8 @@ const Navbar = () => {
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const padding = 40;
-        const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
+        const calculatedLeftNavbarWidth = entry.contentRect.width + 16; /* Much smaller padding */
+
         setLeftNavbarWidth(calculatedLeftNavbarWidth);
 
         const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;

@@ -149,38 +149,49 @@ const HeaderSection = ({ theme, headerRef, category }) => {
   };
 
   // Use theme config values directly; mobile uses mobileHeroWidth
-  const widthPx = isMobile
-    ? theme.headerConfig.mobileHeroWidth
-    : theme.headerConfig.heroWidth;
+// Use theme config values directly; mobile uses mobileHeroWidth
+const widthPx = isMobile
+  ? theme.headerConfig.mobileHeroWidth
+  : theme.headerConfig.heroWidth;
 
-  return (
-    <section 
-      ref={headerRef} 
-      className={styles.headerSection}
-      style={{
-        ...(theme.headerConfig.backgroundImage && {
-          backgroundImage: `url(${theme.headerConfig.backgroundImage})`
-        })
-      }}
-    >
-      {theme.headerConfig.heroImage && (
-        <SmartImage
-          src={theme.headerConfig.heroImage}
-          alt={theme.headerConfig.altText}
-          className={styles.heroImage}
-          style={{
-            '--hero-x': `${theme.headerConfig.heroPosition.x}px`,
-            '--hero-y': `${theme.headerConfig.heroPosition.y}px`,
-            width: `${widthPx}px`,
-            opacity: showImage ? 1 : 0,
-            transition: 'opacity 0.3s ease'
-          }}
-          cacheCallback={handleImageLoad}
-          key={theme.headerConfig.heroImage}
-        />
-      )}
-    </section>
-  );
+// ADD THIS - Use mobile position when on mobile
+const positionX = isMobile 
+  ? theme.headerConfig.mobileHeroPosition.x 
+  : theme.headerConfig.heroPosition.x;
+
+const positionY = isMobile 
+  ? theme.headerConfig.mobileHeroPosition.y 
+  : theme.headerConfig.heroPosition.y;
+
+return (
+  <section 
+    ref={headerRef} 
+    className={styles.headerSection}
+    style={{
+      ...(theme.headerConfig.backgroundImage && {
+        backgroundImage: `url(${theme.headerConfig.backgroundImage})`
+      })
+    }}
+  >
+    {theme.headerConfig.heroImage && (
+      <SmartImage
+        src={theme.headerConfig.heroImage}
+        alt={theme.headerConfig.altText}
+        className={styles.heroImage}
+        style={{
+          '--hero-x': `${positionX}px`,  // Use calculated position
+          '--hero-y': `${positionY}px`,  // Use calculated position
+          width: `${widthPx}px`,
+          opacity: showImage ? 1 : 0,
+          transition: 'opacity 0.3s ease'
+        }}
+        cacheCallback={handleImageLoad}
+        key={theme.headerConfig.heroImage}
+      />
+    )}
+  </section>
+);
+
 };
 
 // Blog Card Component (keeping your existing BlogCard component unchanged)

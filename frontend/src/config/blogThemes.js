@@ -13,7 +13,7 @@ import PhilosophyBackground from '../assets/philosophy-background.png'
 export const BLOG_THEMES = {
   writings: {
     backgroundColor: '#f7eedb',
-    containerClass: 'writingsPageContainer',
+    containerClass: 'writingsPageContainer' ,
     headerConfig: {
       backgroundImage: writingsBackground,
       heroImage: writingsHero,

@@ -18,7 +18,7 @@ export const BLOG_THEMES = {
       backgroundImage: writingsBackground,
       heroImage: writingsHero,
       altText: 'Writings Hero',
-      heroPosition: { x: 50, y: 50 },
+      heroPosition: { x: 0, y: 25 },
       heroWidth: 180,
       mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 160

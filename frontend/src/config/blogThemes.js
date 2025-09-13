@@ -20,7 +20,7 @@ export const BLOG_THEMES = {
       altText: 'Writings Hero',
       heroPosition: { x: 0, y: 25 },
       heroWidth: 180,
-      mobileHeroPosition: { x: 8, y: 15 },
+      mobileHeroPosition: { x: 4, y: 15 },
       mobileHeroWidth: 160
     },
     postsSection: {
@@ -45,7 +45,7 @@ export const BLOG_THEMES = {
       backgroundImage: techBackground,
       heroImage: techHero,
       altText: 'Tech Hero',
-      heroPosition: { x: 0, y: 25 },
+      heroPosition: { x: 50, y: 25 },
       heroWidth: 300,
       mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 180
@@ -99,10 +99,10 @@ export const BLOG_THEMES = {
       backgroundImage: historyBackground,
       heroImage: historyHero,
       altText: 'Historical Illustration',
-      heroPosition: { x: 0, y: 8 },
+      heroPosition: { x: 0, y: 4 },
       heroWidth: 160,
-      mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 100
+      mobileHeroPosition: { x: 7.5, y: 15 },
+      mobileHeroWidth: 120
     },
     postsSection: {
       backgroundColor: '#ecebeb',
@@ -128,8 +128,8 @@ export const BLOG_THEMES = {
       altText: 'Philosophy Hero',
       heroPosition: { x: 0, y: 25 },
       heroWidth: 230,
-      mobileHeroPosition: { x: 8, y: 15 },
-      mobileHeroWidth: 140
+      mobileHeroPosition: { x: 8, y: 12 },
+      mobileHeroWidth: 150
     },
     postsSection: {
       backgroundColor: '#ffffff80',

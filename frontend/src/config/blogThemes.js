@@ -47,7 +47,7 @@ export const BLOG_THEMES = {
       altText: 'Tech Hero',
       heroPosition: { x: 0, y: 15 },
       heroWidth: 300,
-      mobileHeroPosition: { x: 8, y: 25 },
+      mobileHeroPosition: { x: 8, y: 15 },
       mobileHeroWidth: 180
     },
     postsSection: {
@@ -128,7 +128,7 @@ export const BLOG_THEMES = {
       altText: 'Philosophy Hero',
       heroPosition: { x: 0, y: 25 },
       heroWidth: 230,
-      mobileHeroPosition: { x: 8, y: 12 },
+      mobileHeroPosition: { x: 8, y: 22},
       mobileHeroWidth: 150
     },
     postsSection: {

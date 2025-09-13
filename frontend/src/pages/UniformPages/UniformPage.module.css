@@ -38,6 +38,14 @@
   pointer-events: none;
 }
 
+.heroImage {
+  position: relative; /* or absolute, as needed */
+  left: var(--hero-x, 0px);
+  top: var(--hero-y, 0px);
+  /* rest of desktop styles */
+}
+
+
 
 .postsSection {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);

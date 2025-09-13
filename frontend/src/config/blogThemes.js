@@ -18,9 +18,9 @@ export const BLOG_THEMES = {
       backgroundImage: writingsBackground,
       heroImage: writingsHero,
       altText: 'Writings Hero',
-      heroPosition: { x: 0, y: 25 },
+      heroPosition: { x: -5, y: 25 },
       heroWidth: 180,
-      mobileHeroPosition: { x: 4, y: 15 },
+      mobileHeroPosition: { x: 4, y: 11 },
       mobileHeroWidth: 160
     },
     postsSection: {
@@ -101,7 +101,7 @@ export const BLOG_THEMES = {
       altText: 'Historical Illustration',
       heroPosition: { x: 0, y: 4 },
       heroWidth: 160,
-      mobileHeroPosition: { x: 7.2, y: 14 },
+      mobileHeroPosition: { x: 7.2, y: 12 },
       mobileHeroWidth: 120
     },
     postsSection: {

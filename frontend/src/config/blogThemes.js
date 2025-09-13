@@ -47,7 +47,7 @@ export const BLOG_THEMES = {
       altText: 'Tech Hero',
       heroPosition: { x: 0, y: 15 },
       heroWidth: 300,
-      mobileHeroPosition: { x: 30, y: 15 },
+      mobileHeroPosition: { x: 8, y: 25 },
       mobileHeroWidth: 180
     },
     postsSection: {

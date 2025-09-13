@@ -101,7 +101,7 @@ export const BLOG_THEMES = {
       altText: 'Historical Illustration',
       heroPosition: { x: 0, y: 4 },
       heroWidth: 160,
-      mobileHeroPosition: { x: 7.5, y: 15 },
+      mobileHeroPosition: { x: 7.2, y: 14 },
       mobileHeroWidth: 120
     },
     postsSection: {

@@ -681,6 +681,13 @@
   /* Default round for fallback */
   border-radius: 18px;
   overflow: hidden;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 36px) 0,
+    100% 36px,
+    100% 100%,
+    0 100%
+  )
 }
 
 .blogMobileHeader::after {
@@ -690,9 +697,10 @@
   right: 0;
   width: 36px;
   height: 36px;
-  background: #191919; /* Or match your background */
+  background: inherit; /* matches whatever is behind .blogMobileHeader */
   border-radius: 0 0 100% 0;
-  z-index: 1;
+  z-index: 10000; /* higher to show above navbar content */
+  pointer-events: none; /* avoids interfering with interactions */
 }
 
 

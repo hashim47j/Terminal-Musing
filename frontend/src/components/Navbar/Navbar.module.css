@@ -665,7 +665,7 @@
 }
 
 /* Minimal mobile blog header bar */
-/* Minimal mobile blog header bar */
+/* Minimal mobile blog header bar with carved corner */
 .blogMobileHeader {
   position: fixed;
   top: 0;
@@ -682,39 +682,68 @@
   backdrop-filter: blur(12px);
   z-index: 4500;
 
-  /* Circular inside-corner radius */
+  /* Needed so ::after can be layered inside */
+  position: fixed;
+  border-radius: 14px;
+  overflow: visible; /* we are cutting visually, not clipping */
+  /* curve radius variable for easy tuning */
   --filletR: 22px;
 
-  /* One-line path to keep minifiers happy (crisp circular arc) */
-  clip-path: path("M0,0 H calc(100% - var(--filletR)) A var(--filletR) var(--filletR) 0 0 1 100 var(--filletR) V 100 H 0 Z");
-
-  /* Performance boost for mobile scrolling */
-  transform: translate3d(0,0,0);
-  will-change: transform;
+  /* create a stacking context so the cutter sits above bg but below content */
+  isolation: isolate;
 }
 
-/* Fallback for engines without clip-path: path() */
-@supports not (clip-path: path("M0,0H10")) {
-  .blogMobileHeader {
-    /* Base full-rect, minus circular bite in top-right */
-    -webkit-mask:
-      linear-gradient(#000 0 0) top left / 100% 100% no-repeat,
-      radial-gradient(var(--filletR) at right var(--filletR) top var(--filletR), transparent 99%, #0000 0)
-        top right / calc(var(--filletR)*2) calc(var(--filletR)*2) no-repeat;
-    mask:
-      linear-gradient(#000 0 0) top left / 100% 100% no-repeat,
-      radial-gradient(var(--filletR) at right var(--filletR) top var(--filletR), transparent 99%, #0000 0)
-        top right / calc(var(--filletR)*2) calc(var(--filletR)*2) no-repeat;
+/* Circular inward fillet using a background-colored cutter */
+.blogMobileHeader::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
 
-    /* Subtract circle from rect */
-    -webkit-mask-composite: xor;   /* Safari */
-    mask-composite: exclude;       /* Standard */
-  }
+  /* square whose quarter circle will erase the corner */
+  width: calc(var(--filletR) * 2);
+  height: calc(var(--filletR) * 2);
+
+  /* Put the cutter above the translucent header bg but below children */
+  z-index: 0;              /* children are z-index: auto (>0 via stacking) */
+  pointer-events: none;
+
+  /* Match page background behind the header; adjust if using themes */
+  background: var(--app-bg, #0b0b0b);
+
+  /* Place the circle so its quarter overlaps inside the header */
+  transform: translate(0, -50%);
+  border-bottom-left-radius: calc(var(--filletR) * 2);
+  /* The other corners remain sharp to avoid showing outside */
 }
 
-/* Optional: tighter curve on very small phones */
+/* Ensure header’s children render above the cutter */
+.blogMinimalHomeButton,
+.blogMinimalTitle,
+.blogMinimalHamburger {
+  position: relative;
+  z-index: 1;
+}
+
+/* Optional: adapt to light pages if your background changes */
+:root {
+  /* fallback background token the cutter uses */
+  --app-bg: #0b0b0b;
+}
+
+[data-navbar-no-shadow] .blogMobileHeader::after,
+.light-surface .blogMobileHeader::after {
+  /* If the page background is light, set the cutter to that color */
+  background: var(--app-bg, #ffffff);
+}
+
+/* Smaller radius on tiny phones */
 @media (max-width: 380px) {
   .blogMobileHeader { --filletR: 18px; }
+  .blogMobileHeader::after {
+    width: calc(var(--filletR) * 2);
+    height: calc(var(--filletR) * 2);
+  }
 }
 
 

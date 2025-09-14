@@ -667,28 +667,21 @@
 /* Minimal mobile blog header bar */
 .blogMobileHeader {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 54px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255,255,255,0.25);
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  padding: 0 10px;
+  background: rgba(255,255,255,0.24);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  /* Default round for fallback */
-  border-radius: 18px;
-  overflow: hidden;
-  clip-path: polygon(
-    0 0,
-    calc(100% - 36px) 0,
-    100% 36px,
-    100% 100%,
-    0 100%
-  )
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  z-index: 4500;
+  /* SMOOTH inward curve at top-right via SVG path */
+  clip-path: path('M0,0H93.5Q100,0,99,10Q97,22,100,28V54H0Z');
 }
+
 
 .blogMobileHeader {
   position: fixed;

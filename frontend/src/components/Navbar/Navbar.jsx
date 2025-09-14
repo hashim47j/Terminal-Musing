@@ -63,16 +63,6 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
-  const SvgClipPath = () => (
-    <svg width="0" height="0">
-      <defs>
-        <clipPath id="inward-corners-clip" clipPathUnits="objectBoundingBox">
-          <path d="M0.05,0 L0.9,0 Q1,0 1,0.1 L1,0.9 Q1,1 0.9,1 L0.05,1 Q0,1 0,0.9 L0,0.1 Q0,0 0.05,0 Z" />
-        </clipPath>
-      </defs>
-    </svg>
-  );
-
   // ✅ RESTORED: Simple and smooth scroll progress tracking (original implementation)
   useEffect(() => {
     const handleScroll = () => {
@@ -324,85 +314,62 @@ const Navbar = () => {
     }
   };
 
-  if (isBlogPostPage && isMobileView) {
-    return (
-      <>
-        {/* The minimal header with the special shape */}
-        <div className={styles.blogMobileHeader}>
-          <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
-            <img
-              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
-              alt="Home"
-              style={{ width: "22px", height: "22px", objectFit: "contain" }}
-            />
-          </Link>
-          <span className={styles.blogMinimalTitle}>
-            {pageTitle || getCenterTitle()}
-          </span>
-          <button
-            className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
-            aria-label="Toggle menu"
+if (isBlogPostPage && isMobileView) {
+  return (
+    <div className={styles.blogMobileHeader}>
+      <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
+        <img 
+          src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} 
+          alt="Home" 
+          style={{ width: "23px", height: "23px", objectFit: "contain" }} 
+        />
+      </Link>
+      <span className={styles.blogMinimalTitle}>
+        {pageTitle || getCenterTitle()}
+      </span>
+      {/* Hamburger that triggers the main menu logic */}
+      <button 
+        className={styles.blogMinimalHamburger} 
+        aria-label="Toggle menu"
+        onClick={toggleMenu}
+      >
+        <span className={styles.line}></span>
+        <span className={styles.line}></span>
+        <span className={styles.line}></span>
+      </button>
+
+        {/* Optionally, if menu overlay should appear */}
+        {menuOpen &&
+          <div 
+            className={styles.blogMinimalMenuOverlay}
             onClick={toggleMenu}
           >
-            <span className={styles.line}></span>
-            <span className={styles.line}></span>
-            <span className={styles.line}></span>
-          </button>
-        </div>
-
-        {/* This reuses the main menu overlay from your original navbar */}
-        <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
-
-        <div
-          ref={navLinksRef}
-          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
-        >
-          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
-          {[
-            { to: "/blog/philosophy", label: "Philosophy" },
-            { to: "/blog/history", label: "History" },
-            { to: "/blog/writings", label: "Writings" },
-            { to: "/blog/lsconcern", label: "Legal & Social Issues" },
-            { to: "/blog/tech", label: "Tech" },
-            { to: "/daily-thoughts", label: "Daily Thoughts" },
-            { to: "/admin/login", label: "Author(s)", isAdmin: true },
-          ].map(({ to, label, isAdmin }) => {
-            const isActive = getActiveNavPath() === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`
-                  ${styles.navLink} 
-                  ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
-                  ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
-                  ${isAdmin ? styles.adminLink : ""}
-                `}
-                onClick={(e) => handleNavLinkClick(e, to)}
-                onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
-                onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
-                style={{ "--hover-progress": hoverProgress[to] || 0 }}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </div>
-  
-        {/* Secret Dialog */}
-        {showSecretDialog && (
-          <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
-            <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>
-              <h3>Upload Admin Key</h3>
-              <input type="file" />
-              <button onClick={() => setShowSecretDialog(false)}>Close</button>
-            </div>
+            {/* Render same nav links as usual, in a more minimal style */}
+            <nav className={styles.blogMinimalNavLinks}>
+              {[
+                { to: "/blog/philosophy", label: "Philosophy" },
+                { to: "/blog/history", label: "History" },
+                { to: "/blog/writings", label: "Writings" },
+                { to: "/blog/lsconcern", label: "Legal & Social Issues" },
+                { to: "/blog/tech", label: "Tech" },
+                { to: "/daily-thoughts", label: "Daily Thoughts" },
+                { to: "/admin/login", label: "Author(s)", isAdmin: true },
+              ].map(({ to, label, isAdmin }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className={styles.blogMinimalNavLink}
+                  onClick={(e) => handleNavLinkClick(e, to)}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
           </div>
-        )}
-      </>
+        }
+      </div>
     );
   }
-  
   
   const handleNavLinkClick = (e, path) => {
     e.preventDefault();

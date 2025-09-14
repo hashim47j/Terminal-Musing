@@ -663,110 +663,111 @@
     rgba(255, 255, 255, 0.2) 100%
   );
 }
-/*
- * The Main Header Bar for the Blog on Mobile
- * It has a standard, simple border-radius. The inward curves are created by the pseudo-elements below.
-*/
+
+/* Minimal mobile blog header bar */
 .blogMobileHeader {
   position: fixed;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  height: 56px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  background: rgba(40, 40, 40, 0.6); /* Dark glass effect for good contrast */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  justify-content: space-between;
+  padding: 0 10px;
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   z-index: 4500;
-  color: #fff;
-  border-radius: 18px;
+  
+  /* RESPONSIVE inward curve using percentage-based polygon instead of fixed SVG path */
+  clip-path: polygon(
+    0 0,
+    calc(100% - 25px) 0,
+    100% 25px,
+    100% 100%,
+    0 100%
+  );
+  
+  /* Performance boost for mobile scrolling */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
-/*
- * Creating the Smooth Inward Curves
- * This uses a classic trick: two hidden squares are positioned just outside the top-right
- * and bottom-right corners. A box-shadow, colored to match the navbar's background,
- * fills the space and creates the illusion of a perfect, smooth inward notch.
-*/
-.blogMobileHeader::before,
-.blogMobileHeader::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  width: 20px; /* This controls the size of the inward curve */
-  height: 20px;
-  background: transparent; /* The squares themselves are invisible */
-  pointer-events: none; /* Prevents them from interfering with clicks */
-}
-
-/* Top-right inward curve */
-.blogMobileHeader::before {
-  top: -20px; /* Positions the square just outside the top-right corner */
-  border-radius: 0 0 16px 0;
-  /* The shadow has the SAME background as the navbar, creating the curve */
-  box-shadow: 0 20px 0 0 rgba(40, 40, 40, 0.6);
-}
-
-/* Bottom-right inward curve */
-.blogMobileHeader::after {
-  bottom: -20px; /* Positions the square just outside the bottom-right corner */
-  border-radius: 16px 0 0 0;
-  box-shadow: 0 -20px 0 0 rgba(40, 40, 40, 0.6);
-}
-
-
-/* --- Button and Title Styles --- */
-
-.blogMinimalHomeButton,
-.blogMinimalHamburger {
-  width: 40px;
-  height: 40px;
+/* Minimal home button */
+.blogMinimalHomeButton {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  border: none;
-  cursor: pointer;
-}
-
-.blogMinimalHomeButton {
   text-decoration: none;
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
+/* Center title with rounded background */
 .blogMinimalTitle {
-  flex-grow: 1;
+  flex: 1 1 auto;
+  display: inline-block;
+  background: rgba(255,255,255,0.21);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 13px;
+  padding: 8px 18px;
   font-family: 'Playfair Display', serif;
-  font-size: 1.1em;
+  font-size: 1.15em;
+  color: #111;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: center;
-  color: inherit;
+  margin-right: 10px;
 }
+
+/* Hamburger button */
+.blogMinimalHamburger {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
 
 .blogMinimalHamburger .line {
   width: 18px;
   height: 2px;
   background: currentColor;
-  border-radius: 1px;
+  border-radius: 2px;
   margin: 2px 0;
-  transition: all 0.3s;
+  transition: all 0.32s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
 }
 
-/* Hamburger animation to a cross shape when the menu is open */
+/* Animate hamburger to cross (×) when menuOpen=true */
 .blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
+  transform: rotate(45deg) translate(5px, 5px);
 }
 .blogMinimalHamburger.hamburgerActive .line:nth-child(2) {
   opacity: 0;
+  transform: translateX(-16px);
 }
 .blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
+  transform: rotate(-45deg) translate(5px, -5px);
 }
+

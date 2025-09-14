@@ -748,12 +748,25 @@
   padding: 0;
 }
 
-/* Hamburger lines */
 .blogMinimalHamburger .line {
   width: 18px;
   height: 2px;
   background: currentColor;
   border-radius: 2px;
   margin: 2px 0;
-  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  transition: all 0.32s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
 }
+
+/* Animate hamburger to cross (×) when menuOpen=true */
+.blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.blogMinimalHamburger.hamburgerActive .line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+.blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+

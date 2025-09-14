@@ -663,30 +663,65 @@
     rgba(255, 255, 255, 0.2) 100%
   );
 }
-/* Updated Blog Mobile Header with SVG clip-path for perfect corners */
+/*
+ * The Main Header Bar for the Blog on Mobile
+ * It has a standard, simple border-radius. The inward curves are created by the pseudo-elements below.
+*/
 .blogMobileHeader {
   position: fixed;
-  top: 10px; /* Give a little space from the top */
+  top: 10px;
   left: 10px;
   right: 10px;
   height: 56px;
   display: flex;
   align-items: center;
-  padding: 0 8px 0 12px;
-  background: rgba(40, 40, 40, 0.5); /* Darker glass effect */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  padding: 0 8px;
+  background: rgba(40, 40, 40, 0.6); /* Dark glass effect for good contrast */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   z-index: 4500;
   color: #fff;
-
-  /* This is the key: applies the smooth, responsive SVG shape */
-  clip-path: url(#inward-corners-clip);
-  -webkit-clip-path: url(#inward-corners-clip);
+  border-radius: 18px;
 }
 
-/* Minimal home button */
-.blogMinimalHomeButton {
+/*
+ * Creating the Smooth Inward Curves
+ * This uses a classic trick: two hidden squares are positioned just outside the top-right
+ * and bottom-right corners. A box-shadow, colored to match the navbar's background,
+ * fills the space and creates the illusion of a perfect, smooth inward notch.
+*/
+.blogMobileHeader::before,
+.blogMobileHeader::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 20px; /* This controls the size of the inward curve */
+  height: 20px;
+  background: transparent; /* The squares themselves are invisible */
+  pointer-events: none; /* Prevents them from interfering with clicks */
+}
+
+/* Top-right inward curve */
+.blogMobileHeader::before {
+  top: -20px; /* Positions the square just outside the top-right corner */
+  border-radius: 0 0 16px 0;
+  /* The shadow has the SAME background as the navbar, creating the curve */
+  box-shadow: 0 20px 0 0 rgba(40, 40, 40, 0.6);
+}
+
+/* Bottom-right inward curve */
+.blogMobileHeader::after {
+  bottom: -20px; /* Positions the square just outside the bottom-right corner */
+  border-radius: 16px 0 0 0;
+  box-shadow: 0 -20px 0 0 rgba(40, 40, 40, 0.6);
+}
+
+
+/* --- Button and Title Styles --- */
+
+.blogMinimalHomeButton,
+.blogMinimalHamburger {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -694,12 +729,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none;
-  margin-right: 10px;
   flex-shrink: 0;
+  border: none;
+  cursor: pointer;
 }
 
-/* Center title */
+.blogMinimalHomeButton {
+  text-decoration: none;
+  margin-right: 10px;
+}
+
 .blogMinimalTitle {
   flex-grow: 1;
   font-family: 'Playfair Display', serif;
@@ -712,23 +751,6 @@
   color: inherit;
 }
 
-/* Hamburger button */
-.blogMinimalHamburger {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-/* Hamburger lines */
 .blogMinimalHamburger .line {
   width: 18px;
   height: 2px;
@@ -738,7 +760,7 @@
   transition: all 0.3s;
 }
 
-/* Hamburger animation to cross */
+/* Hamburger animation to a cross shape when the menu is open */
 .blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
   transform: translateY(6px) rotate(45deg);
 }

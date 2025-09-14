@@ -327,10 +327,7 @@ const Navbar = () => {
   if (isBlogPostPage && isMobileView) {
     return (
       <>
-        {/* Add the SVG to the DOM so the CSS can reference it */}
-        <SvgClipPath />
-
-        {/* Blog Mobile Header */}
+        {/* The minimal header with the special shape */}
         <div className={styles.blogMobileHeader}>
           <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
             <img
@@ -352,14 +349,13 @@ const Navbar = () => {
             <span className={styles.line}></span>
           </button>
         </div>
-  
-        {/* REUSE THE SAME MOBILE OVERLAY AND MENU FROM HOME PAGE */}
+
+        {/* This reuses the main menu overlay from your original navbar */}
         <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
-  
+
         <div
           ref={navLinksRef}
           className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
-          onClick={(e) => e.stopPropagation()}
         >
           <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
           {[

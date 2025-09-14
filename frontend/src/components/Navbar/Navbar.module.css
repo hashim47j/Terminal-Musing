@@ -664,7 +664,6 @@
   );
 }
 
-/* Minimal mobile blog header bar */
 .blogMobileHeader {
   position: fixed;
   top: 0;
@@ -681,18 +680,45 @@
   backdrop-filter: blur(12px);
   z-index: 4500;
   
-  /* RESPONSIVE inward curve using percentage-based polygon instead of fixed SVG path */
-  clip-path: polygon(
-    0 0,
-    calc(100% - 25px) 0,
-    100% 25px,
-    100% 100%,
-    0 100%
-  );
+  /* Smooth rounded inward curves using CSS mask */
+  mask: 
+    radial-gradient(20px at calc(100% - 20px) 20px, #0000 99%, #000 100%),
+    radial-gradient(20px at calc(100% - 20px) calc(100% - 20px), #0000 99%, #000 100%),
+    linear-gradient(#000 0 0);
+  mask-composite: subtract;
+  -webkit-mask: 
+    radial-gradient(20px at calc(100% - 20px) 20px, #0000 99%, #000 100%),
+    radial-gradient(20px at calc(100% - 20px) calc(100% - 20px), #0000 99%, #000 100%),
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: subtract;
   
-  /* Performance boost for mobile scrolling */
+  /* Performance optimization */
   transform: translate3d(0, 0, 0);
   will-change: transform;
+}
+
+/* Alternative method using border-radius + pseudo-elements for better browser support */
+.blogMobileHeader::before,
+.blogMobileHeader::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.blogMobileHeader::before {
+  top: 0;
+  border-radius: 0 0 20px 0;
+  box-shadow: 0 20px 0 0 rgba(255,255,255,0.25);
+}
+
+.blogMobileHeader::after {
+  bottom: 0;
+  border-radius: 20px 0 0 0;
+  box-shadow: 0 -20px 0 0 rgba(255,255,255,0.25);
 }
 
 /* Minimal home button */
@@ -729,6 +755,75 @@
   text-overflow: ellipsis;
   margin-right: 10px;
 }
+
+/* Hamburger button */
+.blogMinimalHamburger {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+/* Hamburger lines */
+.blogMinimalHamburger .line {
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  margin: 2px 0;
+  transition: all 0.32s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+
+/* Hamburger animation */
+.blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.blogMinimalHamburger.hamburgerActive .line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+.blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .blogMobileHeader {
+    background: rgba(22,22,22,0.44);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.23);
+    color: #f2f2f2;
+  }
+  
+  .blogMobileHeader::before {
+    box-shadow: 0 20px 0 0 rgba(22,22,22,0.44);
+  }
+  
+  .blogMobileHeader::after {
+    box-shadow: 0 -20px 0 0 rgba(22,22,22,0.44);
+  }
+  
+  .blogMinimalHomeButton,
+  .blogMinimalHamburger {
+    background: rgba(22,22,22,0.44);
+  }
+  
+  .blogMinimalTitle {
+    background: rgba(22,22,22,0.35);
+    color: #f2f2f2;
+  }
+}
+
 
 /* Hamburger button */
 .blogMinimalHamburger {

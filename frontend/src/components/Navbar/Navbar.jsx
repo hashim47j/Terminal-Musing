@@ -316,60 +316,89 @@ const Navbar = () => {
 
   if (isBlogPostPage && isMobileView) {
     return (
-      <div className={styles.blogMobileHeader}>
-        <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
-          <img 
-            src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} 
-            alt="Home" 
-            style={{ width: "23px", height: "23px", objectFit: "contain" }} 
-          />
-        </Link>
-        <span className={styles.blogMinimalTitle}>
-          {pageTitle || getCenterTitle()}
-        </span>
-        {/* Hamburger that triggers the main menu logic */}
-        <button 
-          className={styles.blogMinimalHamburger} 
-          aria-label="Toggle menu"
-          onClick={toggleMenu}
-        >
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
-        </button>
-
-        {/* Optionally, if menu overlay should appear */}
-        {menuOpen &&
-          <div 
-            className={styles.blogMinimalMenuOverlay}
+      <>
+        {/* Blog Mobile Header */}
+        <div className={styles.blogMobileHeader}>
+          <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
+            <img 
+              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} 
+              alt="Home" 
+              style={{ width: "22px", height: "22px", objectFit: "contain" }} 
+            />
+          </Link>
+          <span className={styles.blogMinimalTitle}>
+            {pageTitle || getCenterTitle()}
+          </span>
+          <button 
+            className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
+            aria-label="Toggle menu"
             onClick={toggleMenu}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                toggleMenu();
+              }
+            }}
           >
-            {/* Render same nav links as usual, in a more minimal style */}
-            <nav className={styles.blogMinimalNavLinks}>
-              {[
-                { to: "/blog/philosophy", label: "Philosophy" },
-                { to: "/blog/history", label: "History" },
-                { to: "/blog/writings", label: "Writings" },
-                { to: "/blog/lsconcern", label: "Legal & Social Issues" },
-                { to: "/blog/tech", label: "Tech" },
-                { to: "/daily-thoughts", label: "Daily Thoughts" },
-                { to: "/admin/login", label: "Author(s)", isAdmin: true },
-              ].map(({ to, label, isAdmin }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  className={styles.blogMinimalNavLink}
-                  onClick={(e) => handleNavLinkClick(e, to)}
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
+            <span className={styles.line}></span>
+            <span className={styles.line}></span>
+            <span className={styles.line}></span>
+          </button>
+        </div>
+  
+        {/* REUSE THE SAME MOBILE OVERLAY AND MENU FROM HOME PAGE */}
+        <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
+  
+        <div
+          ref={navLinksRef}
+          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
+          {[
+            { to: "/blog/philosophy", label: "Philosophy" },
+            { to: "/blog/history", label: "History" },
+            { to: "/blog/writings", label: "Writings" },
+            { to: "/blog/lsconcern", label: "Legal & Social Issues" },
+            { to: "/blog/tech", label: "Tech" },
+            { to: "/daily-thoughts", label: "Daily Thoughts" },
+            { to: "/admin/login", label: "Author(s)", isAdmin: true },
+          ].map(({ to, label, isAdmin }) => {
+            const isActive = getActiveNavPath() === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`
+                  ${styles.navLink} 
+                  ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
+                  ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
+                  ${isAdmin ? styles.adminLink : ""}
+                `}
+                onClick={(e) => handleNavLinkClick(e, to)}
+                onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
+                onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
+                style={{ "--hover-progress": hoverProgress[to] || 0 }}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </div>
+  
+        {/* Secret Dialog */}
+        {showSecretDialog && (
+          <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
+            <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>
+              <h3>Upload Admin Key</h3>
+              <input type="file" />
+              <button onClick={() => setShowSecretDialog(false)}>Close</button>
+            </div>
           </div>
-        }
-      </div>
+        )}
+      </>
     );
   }
+  
   
   const handleNavLinkClick = (e, path) => {
     e.preventDefault();

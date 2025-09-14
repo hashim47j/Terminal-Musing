@@ -704,21 +704,18 @@
 
 /* Center title */
 .blogMinimalTitle {
-  flex: 1 1 auto;
-  display: inline-block;
-  background: rgba(255,255,255,0.21); /* Slight glass effect */
+  background: rgba(255,255,255,0.21);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  border-radius: 13px;
-  padding: 8px 18px;
+  padding: 10px 20px;
   font-family: 'Playfair Display', serif;
   font-size: 1.15em;
-  color: #111; /* Use #fff for dark mode themes */
+  color: #111;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-right: 10px;
+  clip-path: path('M0,40 Q0,0 40,0 H140 Q180,0 180,40 V50 H0 Z'); /* example, tweak for your design */
 }
 
 

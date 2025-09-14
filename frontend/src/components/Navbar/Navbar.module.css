@@ -663,108 +663,61 @@
     rgba(255, 255, 255, 0.2) 100%
   );
 }
-
+/* Updated Blog Mobile Header with SVG clip-path for perfect corners */
 .blogMobileHeader {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 54px;
+  top: 10px; /* Give a little space from the top */
+  left: 10px;
+  right: 10px;
+  height: 56px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  background: rgba(255,255,255,0.25);
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  padding: 0 8px 0 12px;
+  background: rgba(40, 40, 40, 0.5); /* Darker glass effect */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   z-index: 4500;
-  
-  /* Smooth rounded inward curves using CSS mask */
-  mask: 
-    radial-gradient(20px at calc(100% - 20px) 20px, #0000 99%, #000 100%),
-    radial-gradient(20px at calc(100% - 20px) calc(100% - 20px), #0000 99%, #000 100%),
-    linear-gradient(#000 0 0);
-  mask-composite: subtract;
-  -webkit-mask: 
-    radial-gradient(20px at calc(100% - 20px) 20px, #0000 99%, #000 100%),
-    radial-gradient(20px at calc(100% - 20px) calc(100% - 20px), #0000 99%, #000 100%),
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: subtract;
-  
-  /* Performance optimization */
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
-}
+  color: #fff;
 
-/* Alternative method using border-radius + pseudo-elements for better browser support */
-.blogMobileHeader::before,
-.blogMobileHeader::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  background: transparent;
-  pointer-events: none;
-}
-
-.blogMobileHeader::before {
-  top: 0;
-  border-radius: 0 0 20px 0;
-  box-shadow: 0 20px 0 0 rgba(255,255,255,0.25);
-}
-
-.blogMobileHeader::after {
-  bottom: 0;
-  border-radius: 20px 0 0 0;
-  box-shadow: 0 -20px 0 0 rgba(255,255,255,0.25);
+  /* This is the key: applies the smooth, responsive SVG shape */
+  clip-path: url(#inward-corners-clip);
+  -webkit-clip-path: url(#inward-corners-clip);
 }
 
 /* Minimal home button */
 .blogMinimalHomeButton {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  margin-right: 8px;
+  margin-right: 10px;
+  flex-shrink: 0;
 }
 
-/* Center title with rounded background */
+/* Center title */
 .blogMinimalTitle {
-  flex: 1 1 auto;
-  display: inline-block;
-  background: rgba(255,255,255,0.21);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  border-radius: 13px;
-  padding: 8px 18px;
+  flex-grow: 1;
   font-family: 'Playfair Display', serif;
-  font-size: 1.15em;
-  color: #111;
+  font-size: 1.1em;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-right: 10px;
+  text-align: center;
+  color: inherit;
 }
 
 /* Hamburger button */
 .blogMinimalHamburger {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   cursor: pointer;
   display: flex;
@@ -772,6 +725,7 @@
   justify-content: center;
   align-items: center;
   padding: 0;
+  flex-shrink: 0;
 }
 
 /* Hamburger lines */
@@ -779,89 +733,18 @@
   width: 18px;
   height: 2px;
   background: currentColor;
-  border-radius: 2px;
+  border-radius: 1px;
   margin: 2px 0;
-  transition: all 0.32s cubic-bezier(.4,0,.2,1);
-  pointer-events: none;
+  transition: all 0.3s;
 }
 
-/* Hamburger animation */
+/* Hamburger animation to cross */
 .blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
+  transform: translateY(6px) rotate(45deg);
 }
 .blogMinimalHamburger.hamburgerActive .line:nth-child(2) {
   opacity: 0;
-  transform: translateX(-16px);
 }
 .blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
+  transform: translateY(-6px) rotate(-45deg);
 }
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .blogMobileHeader {
-    background: rgba(22,22,22,0.44);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.23);
-    color: #f2f2f2;
-  }
-  
-  .blogMobileHeader::before {
-    box-shadow: 0 20px 0 0 rgba(22,22,22,0.44);
-  }
-  
-  .blogMobileHeader::after {
-    box-shadow: 0 -20px 0 0 rgba(22,22,22,0.44);
-  }
-  
-  .blogMinimalHomeButton,
-  .blogMinimalHamburger {
-    background: rgba(22,22,22,0.44);
-  }
-  
-  .blogMinimalTitle {
-    background: rgba(22,22,22,0.35);
-    color: #f2f2f2;
-  }
-}
-
-
-/* Hamburger button */
-.blogMinimalHamburger {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-}
-
-.blogMinimalHamburger .line {
-  width: 18px;
-  height: 2px;
-  background: currentColor;
-  border-radius: 2px;
-  margin: 2px 0;
-  transition: all 0.32s cubic-bezier(.4,0,.2,1);
-  pointer-events: none;
-}
-
-/* Animate hamburger to cross (×) when menuOpen=true */
-.blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.blogMinimalHamburger.hamburgerActive .line:nth-child(2) {
-  opacity: 0;
-  transform: translateX(-16px);
-}
-.blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-

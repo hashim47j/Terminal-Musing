@@ -63,6 +63,16 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
+  const SvgClipPath = () => (
+    <svg width="0" height="0">
+      <defs>
+        <clipPath id="inward-corners-clip" clipPathUnits="objectBoundingBox">
+          <path d="M0.05,0 L0.9,0 Q1,0 1,0.1 L1,0.9 Q1,1 0.9,1 L0.05,1 Q0,1 0,0.9 L0,0.1 Q0,0 0.05,0 Z" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+
   // ✅ RESTORED: Simple and smooth scroll progress tracking (original implementation)
   useEffect(() => {
     const handleScroll = () => {
@@ -317,27 +327,25 @@ const Navbar = () => {
   if (isBlogPostPage && isMobileView) {
     return (
       <>
+        {/* Add the SVG to the DOM so the CSS can reference it */}
+        <SvgClipPath />
+
         {/* Blog Mobile Header */}
         <div className={styles.blogMobileHeader}>
           <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
-            <img 
-              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} 
-              alt="Home" 
-              style={{ width: "22px", height: "22px", objectFit: "contain" }} 
+            <img
+              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+              alt="Home"
+              style={{ width: "22px", height: "22px", objectFit: "contain" }}
             />
           </Link>
           <span className={styles.blogMinimalTitle}>
             {pageTitle || getCenterTitle()}
           </span>
-          <button 
+          <button
             className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
             aria-label="Toggle menu"
             onClick={toggleMenu}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                toggleMenu();
-              }
-            }}
           >
             <span className={styles.line}></span>
             <span className={styles.line}></span>

@@ -665,7 +665,7 @@
 }
 
 /* Minimal mobile blog header bar */
-/* Mobile blog header with inward curves on bottom-left and bottom-right */
+/* Mobile blog header with transparent inward bottom corners */
 .blogMobileHeader {
   position: fixed;
   top: 0;
@@ -682,69 +682,50 @@
   backdrop-filter: blur(12px);
   z-index: 4500;
 
-  /* keep soft top rounding, straight bottom edge before cuts */
+  /* Rounded top only; bottom will be scooped by mask */
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
 
   /* inward scoop radius */
   --scoopR: 20px;
 
-  /* allow internal layering */
-  isolation: isolate;
-  overflow: visible;
+  /* Create a full-rect mask minus two circular bites at bottom corners */
+  /* WebKit/Safari */
+  -webkit-mask:
+    /* base rect */
+    linear-gradient(#000 0 0) top left/100% 100% no-repeat,
+    /* bottom-left scoop */
+    radial-gradient(var(--scoopR) at left var(--scoopR) bottom var(--scoopR), transparent 99%, #0000 0)
+      bottom left / calc(var(--scoopR)*2) calc(var(--scoopR)*2) no-repeat,
+    /* bottom-right scoop */
+    radial-gradient(var(--scoopR) at right var(--scoopR) bottom var(--scoopR), transparent 99%, #0000 0)
+      bottom right / calc(var(--scoopR)*2) calc(var(--scoopR)*2) no-repeat;
+  /* Standard */
+  mask:
+    linear-gradient(#000 0 0) top left/100% 100% no-repeat,
+    radial-gradient(var(--scoopR) at left var(--scoopR) bottom var(--scoopR), transparent 99%, #0000 0)
+      bottom left / calc(var(--scoopR)*2) calc(var(--scoopR)*2) no-repeat,
+    radial-gradient(var(--scoopR) at right var(--scoopR) bottom var(--scoopR), transparent 99%, #0000 0)
+      bottom right / calc(var(--scoopR)*2) calc(var(--scoopR)*2) no-repeat;
+
+  /* Subtract scoops from the base rect */
+  -webkit-mask-composite: destination-out, destination-out, source-over; /* WebKit compositing order */
+  mask-composite: exclude, exclude; /* Standard: subtract the two circles from the first layer */
+
+  /* Keep perf */
+  transform: translate3d(0,0,0);
+  will-change: transform;
 }
 
-/* Ensure content sits above cutters */
+/* Ensure the chips/title sit normally */
 .blogMinimalHomeButton,
 .blogMinimalTitle,
 .blogMinimalHamburger {
   position: relative;
-  z-index: 1;
-}
-
-/* Bottom-left cutter */
-.blogMobileHeader::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: calc(var(--scoopR) * 2);
-  height: calc(var(--scoopR) * 2);
-  /* match page background behind header */
-  background: var(--app-bg, #0b0b0b);
-  /* quarter circle facing inward from bottom-left */
-  border-top-right-radius: calc(var(--scoopR) * 2);
-  /* align so quarter circle bites into the header */
-  transform: translate(-25%, 25%);
   z-index: 0;
-  pointer-events: none;
 }
 
-/* Bottom-right cutter */
-.blogMobileHeader::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: calc(var(--scoopR) * 2);
-  height: calc(var(--scoopR) * 2);
-  background: var(--app-bg, #0b0b0b);
-  border-top-left-radius: calc(var(--scoopR) * 2);
-  transform: translate(25%, 25%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Optional: adapt cutter color for light pages */
-:root { --app-bg: #0b0b0b; }  /* set to the actual page/background color */
-.light-surface .blogMobileHeader::before,
-.light-surface .blogMobileHeader::after {
-  background: var(--app-bg, #ffffff);
-}
-
-/* Tighter scoops on very small phones */
+/* Optional: smaller scoops on tiny phones */
 @media (max-width: 380px) {
   .blogMobileHeader { --scoopR: 16px; }
 }

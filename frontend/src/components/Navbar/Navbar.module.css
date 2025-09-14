@@ -665,13 +665,16 @@
 }
 
 /* Minimal mobile blog header bar */
-/* Minimal mobile blog header bar with inverted bottom corners */
+/* Mobile blog header with inverted bottom corners (SVG mask) */
 .blogMobileHeader {
+  /* Positioning */
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 54px;
+
+  /* Layout */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -684,11 +687,11 @@
   backdrop-filter: blur(12px);
   z-index: 4500;
 
-  /* Keep the pill-like top; bottom is shaped by the mask */
+  /* Keep pill-like top; bottom is shaped by mask */
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
 
-  /* Apply the global SVG mask that cuts inward at both bottom corners */
+  /* Apply the global mask defined in index.html */
   -webkit-mask: url(#blogHeaderInvertedCorners);
   mask: url(#blogHeaderInvertedCorners);
   -webkit-mask-repeat: no-repeat;
@@ -701,7 +704,7 @@
   will-change: transform;
 }
 
-/* Ensure the header’s children render normally above the masked surface */
+/* Ensure children render above the masked surface */
 .blogMinimalHomeButton,
 .blogMinimalTitle,
 .blogMinimalHamburger {
@@ -709,11 +712,10 @@
   z-index: 0;
 }
 
-/* Optional: smaller scoops on tiny phones (adjust the SVG r if you want a different depth) */
+/* Optional: small-phone tweaks (curves come from SVG r value) */
 @media (max-width: 380px) {
   .blogMobileHeader {
-    /* No change required here; curves come from the SVG mask’s r value, 
-       but this breakpoint is left for related size tweaks if needed. */
+    /* keep for related spacing if you adjust layout on tiny screens */
   }
 }
 

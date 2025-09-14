@@ -313,6 +313,62 @@ const Navbar = () => {
       setMenuOpen(true);
     }
   };
+
+  if (isBlogPostPage && isMobileView) {
+    // Render the minimal blog navbar for mobile view
+    return (
+      <div className={styles.blogMobileHeader}>
+        <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
+          <img 
+            src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} 
+            alt="Home" 
+            style={{ width: "22px", height: "22px", objectFit: "contain" }} 
+          />
+        </Link>
+        <span className={styles.blogMinimalTitle}>
+          {pageTitle || getCenterTitle()}
+        </span>
+        <button 
+          className={styles.blogMinimalHamburger} 
+          aria-label="Toggle menu"
+          onClick={toggleMenu}
+        >
+          <span className={styles.line}></span>
+          <span className={styles.line}></span>
+          <span className={styles.line}></span>
+        </button>
+        {/* Optionally, if menu overlay should appear */}
+        {menuOpen &&
+          <div 
+            className={styles.blogMinimalMenuOverlay}
+            onClick={toggleMenu}
+          >
+            {/* Render same nav links as usual, in a more minimal style */}
+            <nav className={styles.blogMinimalNavLinks}>
+              {[
+                { to: "/blog/philosophy", label: "Philosophy" },
+                { to: "/blog/history", label: "History" },
+                { to: "/blog/writings", label: "Writings" },
+                { to: "/blog/lsconcern", label: "Legal & Social Issues" },
+                { to: "/blog/tech", label: "Tech" },
+                { to: "/daily-thoughts", label: "Daily Thoughts" },
+                { to: "/admin/login", label: "Author(s)", isAdmin: true },
+              ].map(({ to, label, isAdmin }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className={styles.blogMinimalNavLink}
+                  onClick={(e) => handleNavLinkClick(e, to)}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        }
+      </div>
+    );
+  }
   
   const handleNavLinkClick = (e, path) => {
     e.preventDefault();
@@ -328,6 +384,7 @@ const Navbar = () => {
       navigate(path);
     });
   };
+
 
   return (
     <>

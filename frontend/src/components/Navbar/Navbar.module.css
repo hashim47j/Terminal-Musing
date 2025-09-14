@@ -663,3 +663,110 @@
     rgba(255, 255, 255, 0.2) 100%
   );
 }
+
+/* Minimal mobile blog header bar */
+.blogMobileHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: rgba(32,32,32,0.92); /* flat dark, minimal */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 4500;
+  padding: 0 10px;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Minimal home button, left-aligned */
+.blogMinimalHomeButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  margin-right: 8px;
+}
+
+/* Center title */
+.blogMinimalTitle {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1em;
+  color: #fff;
+  font-weight: bold;
+  text-align: left;
+  margin-left: 4px;
+  margin-right: 12px;
+}
+
+/* Minimal hamburger */
+.blogMinimalHamburger {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+/* Hamburger lines (reuse, or define more minimal look) */
+.blogMinimalHamburger .line {
+  width: 22px;
+  height: 2.5px;
+  background: #eaeaea;
+  border-radius: 2px;
+  margin: 3px 0px;
+  transition: all 0.3s;
+}
+
+/* Minimal overlay for menu */
+.blogMinimalMenuOverlay {
+  position: fixed;
+  top: 44px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(48,48,48,0.97);
+  z-index: 4550;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 32px;
+}
+
+/* Minimal nav links */
+.blogMinimalNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.blogMinimalNavLink {
+  color: #f2f2f2;
+  font-size: 1.1em;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 9px;
+  background: none;
+  text-align: center;
+  transition: background 0.17s;
+}
+.blogMinimalNavLink:hover {
+  background: rgba(255,255,255,0.06);
+}

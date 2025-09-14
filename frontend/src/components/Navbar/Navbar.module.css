@@ -667,52 +667,53 @@
 /* Minimal mobile blog header bar */
 .blogMobileHeader {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 54px;
+  top: 0; left: 0; right: 0;
+  height: 60px; /* increased for comfort */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
-  background: rgba(255,255,255,0.25); /* main frosted glass theme */
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  padding: 0 18px;
+  background: rgba(255,255,255,0.23); /* glass for light mode */
+  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.12);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   z-index: 4500;
+  color: #111;
+  overflow: visible;
 
-  /* immersive inward curve at top-right using clip-path */
-  clip-path: polygon(
-    0 0,                             /* top-left corner */
-    calc(100% - 36px) 0,             /* just before top-right curve */
-    100% 36px,                       /* curve inward (controlled by 36px) */
-    100% 100%,                       /* bottom-right corner */
-    0 100%                           /* bottom-left corner */
-  );
+  /* Smooth Inward Rounded Top-Right Corner */
+  /* This SVG path creates a soft, immersive curve -- much smoother than polygon */
+  clip-path: path('M0,0 H88 Q100,0 97,16 Q92,33 100,45 V60 H0 Z');
+  /* If your browser doesn't support path(), fallback below: */
+  /* border-top-right-radius: 40px 80px; */
 }
 
-/* Optionally, dark mode or customization based on theme */
-@media (prefers-color-scheme: dark) {
+/* Classic fallback for browsers lacking SVG path clip-path: */
+@supports not (clip-path: path('')) {
   .blogMobileHeader {
-    background: rgba(22,22,22,0.45);
-    box-shadow: 0 2px 9px rgba(0,0,0,.16);
-    color: #fff;
+    border-top-right-radius: 40px 80px;
+    border-radius: 20px;
   }
 }
 
-
-.blogMobileHeader::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 36px;
-  height: 36px;
-  background: inherit; /* matches whatever is behind .blogMobileHeader */
-  border-radius: 0 0 100% 0;
-  z-index: 10000; /* higher to show above navbar content */
-  pointer-events: none; /* avoids interfering with interactions */
+/* Optional: Responsive adjustments for smaller devices */
+@media (max-width: 450px) {
+  .blogMobileHeader {
+    height: 52px;
+    padding: 0 10px;
+    clip-path: path('M0,0 H72 Q100,0 95,13 Q90,26 100,36 V52 H0 Z');
+  }
 }
+
+/* Optional: Dark mode styling */
+@media (prefers-color-scheme: dark) {
+  .blogMobileHeader {
+    background: rgba(22,22,22,0.44); /* glass for dark mode */
+    box-shadow: 0 2px 12px rgba(0,0,0,0.23);
+    color: #f2f2f2;
+  }
+}
+
 
 
 

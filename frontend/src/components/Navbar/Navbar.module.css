@@ -674,15 +674,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 4500;
-  padding: 0 10px;
-  background: rgba(255, 255, 255, 0.25); /* Same semi-transparent white */
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  /* If you use a dark mode, swap colors with JS logic */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* Same shadow */
-  border-radius: 18px; /* Slight curve for the whole bar, optional */
+  /* Default round for fallback */
+  border-radius: 18px;
+  overflow: hidden;
 }
+
+.blogMobileHeader::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  pointer-events: none;
+  /* Apply mask with an inward curve SVG */
+  mask-image: url("data:image/svg+xml;utf8,<svg width='42' height='42' viewBox='0 0 42 42' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M0 0C23 0 42 19 42 42H0V0Z' fill='white'/></svg>");
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg width='42' height='42' viewBox='0 0 42 42' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M0 0C23 0 42 19 42 42H0V0Z' fill='white'/></svg>");
+  background: inherit;
+}
+
 
 
 /* Minimal home button, left-aligned */
@@ -704,18 +718,21 @@
 
 /* Center title */
 .blogMinimalTitle {
-  background: rgba(255,255,255,0.21);
+  flex: 1 1 auto;
+  display: inline-block;
+  background: rgba(255,255,255,0.21); /* Slight glass effect */
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  padding: 10px 20px;
+  border-radius: 13px;
+  padding: 8px 18px;
   font-family: 'Playfair Display', serif;
   font-size: 1.15em;
-  color: #111;
+  color: #111; /* Use #fff for dark mode themes */
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  clip-path: path('M0,40 Q0,0 40,0 H140 Q180,0 180,40 V50 H0 Z'); /* example, tweak for your design */
+  margin-right: 10px;
 }
 
 

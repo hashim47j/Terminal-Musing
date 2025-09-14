@@ -757,23 +757,3 @@
   margin: 2px 0;
   transition: all 0.3s cubic-bezier(.4,0,.2,1);
 }
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .blogMobileHeader {
-    background: rgba(22,22,22,0.44);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.23);
-    color: #f2f2f2;
-  }
-  
-  .blogMinimalHomeButton,
-  .blogMinimalHamburger {
-    background: rgba(22,22,22,0.44);
-  }
-  
-  .blogMinimalTitle {
-    background: rgba(22,22,22,0.35);
-    color: #f2f2f2;
- 
-  }
-}

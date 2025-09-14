@@ -7,6 +7,15 @@
     <title>Terminal Musing</title>
   </head>
   <body>
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <mask id="blogHeaderInvertedCorners" maskUnits="objectBoundingBox" x="0" y="0" width="1" height="1">
+          <rect x="0" y="0" width="1" height="1" fill="white"/>
+          <circle cx="0" cy="1" r="0.18" fill="black"/>
+          <circle cx="1" cy="1" r="0.18" fill="black"/>
+        </mask>
+      </defs>
+    </svg>
     <div id="root"></div>
     <script type="module" src="/frontend/src/main.jsx"></script>
   </body>

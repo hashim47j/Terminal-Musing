@@ -667,58 +667,35 @@
 /* Minimal mobile blog header bar */
 .blogMobileHeader {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 60px; /* increased for comfort */
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 18px;
-  background: rgba(255,255,255,0.23); /* glass for light mode */
-  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.12);
+  padding: 0 10px;
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   z-index: 4500;
-  color: #111;
-  overflow: visible;
-
-  /* Smooth Inward Rounded Top-Right Corner */
-  /* This SVG path creates a soft, immersive curve -- much smoother than polygon */
-  clip-path: path('M0,0 H88 Q100,0 97,16 Q92,33 100,45 V60 H0 Z');
-  /* If your browser doesn't support path(), fallback below: */
-  /* border-top-right-radius: 40px 80px; */
+  
+  /* RESPONSIVE inward curve using percentage-based polygon instead of fixed SVG path */
+  clip-path: polygon(
+    0 0,
+    calc(100% - 25px) 0,
+    100% 25px,
+    100% 100%,
+    0 100%
+  );
+  
+  /* Performance boost for mobile scrolling */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
-/* Classic fallback for browsers lacking SVG path clip-path: */
-@supports not (clip-path: path('')) {
-  .blogMobileHeader {
-    border-top-right-radius: 40px 80px;
-    border-radius: 20px;
-  }
-}
-
-/* Optional: Responsive adjustments for smaller devices */
-@media (max-width: 450px) {
-  .blogMobileHeader {
-    height: 52px;
-    padding: 0 10px;
-    clip-path: path('M0,0 H72 Q100,0 95,13 Q90,26 100,36 V52 H0 Z');
-  }
-}
-
-/* Optional: Dark mode styling */
-@media (prefers-color-scheme: dark) {
-  .blogMobileHeader {
-    background: rgba(22,22,22,0.44); /* glass for dark mode */
-    box-shadow: 0 2px 12px rgba(0,0,0,0.23);
-    color: #f2f2f2;
-  }
-}
-
-
-
-
-
-/* Minimal home button, left-aligned */
+/* Minimal home button */
 .blogMinimalHomeButton {
   width: 38px;
   height: 38px;
@@ -734,19 +711,18 @@
   margin-right: 8px;
 }
 
-
-/* Center title */
+/* Center title with rounded background */
 .blogMinimalTitle {
   flex: 1 1 auto;
   display: inline-block;
-  background: rgba(255,255,255,0.21); /* Slight glass effect */
+  background: rgba(255,255,255,0.21);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-radius: 13px;
   padding: 8px 18px;
   font-family: 'Playfair Display', serif;
   font-size: 1.15em;
-  color: #111; /* Use #fff for dark mode themes */
+  color: #111;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
@@ -754,13 +730,15 @@
   margin-right: 10px;
 }
 
-
-/* Minimal hamburger */
+/* Hamburger button */
 .blogMinimalHamburger {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  background: transparent;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
   border: none;
   cursor: pointer;
   display: flex;
@@ -770,48 +748,31 @@
   padding: 0;
 }
 
-/* Hamburger lines (reuse, or define more minimal look) */
+/* Hamburger lines */
 .blogMinimalHamburger .line {
-  width: 22px;
-  height: 2.5px;
-  background: #eaeaea;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
   border-radius: 2px;
-  margin: 3px 0px;
-  transition: all 0.3s;
+  margin: 2px 0;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
 }
 
-/* Minimal overlay for menu */
-.blogMinimalMenuOverlay {
-  position: fixed;
-  top: 44px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(48,48,48,0.97);
-  z-index: 4550;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 32px;
-}
-
-/* Minimal nav links */
-.blogMinimalNavLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.blogMinimalNavLink {
-  color: #f2f2f2;
-  font-size: 1.1em;
-  text-decoration: none;
-  padding: 10px 18px;
-  border-radius: 9px;
-  background: none;
-  text-align: center;
-  transition: background 0.17s;
-}
-.blogMinimalNavLink:hover {
-  background: rgba(255,255,255,0.06);
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .blogMobileHeader {
+    background: rgba(22,22,22,0.44);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.23);
+    color: #f2f2f2;
+  }
+  
+  .blogMinimalHomeButton,
+  .blogMinimalHamburger {
+    background: rgba(22,22,22,0.44);
+  }
+  
+  .blogMinimalTitle {
+    background: rgba(22,22,22,0.35);
+    color: #f2f2f2;
+  }
 }

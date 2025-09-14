@@ -682,46 +682,37 @@
   backdrop-filter: blur(12px);
   z-index: 4500;
 
-  /* Circular inside-corner fillet radius (tweak as needed) */
+  /* Circular inside-corner radius */
   --filletR: 22px;
 
-  /* Preferred: path() arc for crisp curve */
-  clip-path: path(
-    "M0,0 
-     H calc(100% - var(--filletR)) 
-     A var(--filletR) var(--filletR) 0 0 1 100 var(--filletR)
-     V 100
-     H 0
-     Z"
-  );
+  /* One-line path to keep minifiers happy (crisp circular arc) */
+  clip-path: path("M0,0 H calc(100% - var(--filletR)) A var(--filletR) var(--filletR) 0 0 1 100 var(--filletR) V 100 H 0 Z");
 
   /* Performance boost for mobile scrolling */
-  transform: translate3d(0, 0, 0);
+  transform: translate3d(0,0,0);
   will-change: transform;
 }
 
-/* Fallback for browsers without clip-path: path support */
+/* Fallback for engines without clip-path: path() */
 @supports not (clip-path: path("M0,0H10")) {
   .blogMobileHeader {
-    /* Base full-rect mask, minus a circular bite in the top-right */
+    /* Base full-rect, minus circular bite in top-right */
     -webkit-mask:
       linear-gradient(#000 0 0) top left / 100% 100% no-repeat,
-      radial-gradient(var(--filletR) at right var(--filletR) top var(--filletR),
-        transparent 99%, #0000 0)
+      radial-gradient(var(--filletR) at right var(--filletR) top var(--filletR), transparent 99%, #0000 0)
         top right / calc(var(--filletR)*2) calc(var(--filletR)*2) no-repeat;
     mask:
       linear-gradient(#000 0 0) top left / 100% 100% no-repeat,
-      radial-gradient(var(--filletR) at right var(--filletR) top var(--filletR),
-        transparent 99%, #0000 0)
+      radial-gradient(var(--filletR) at right var(--filletR) top var(--filletR), transparent 99%, #0000 0)
         top right / calc(var(--filletR)*2) calc(var(--filletR)*2) no-repeat;
 
-    /* Combine layers so the circle subtracts from the rect */
-    -webkit-mask-composite: xor;  /* Safari */
-    mask-composite: exclude;      /* Standard */
+    /* Subtract circle from rect */
+    -webkit-mask-composite: xor;   /* Safari */
+    mask-composite: exclude;       /* Standard */
   }
 }
 
-/* Optional: adjust radius on very small screens */
+/* Optional: tighter curve on very small phones */
 @media (max-width: 380px) {
   .blogMobileHeader { --filletR: 18px; }
 }

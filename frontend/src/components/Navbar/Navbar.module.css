@@ -670,24 +670,30 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 44px;
-  background: rgba(32,32,32,0.92); /* flat dark, minimal */
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   z-index: 4500;
   padding: 0 10px;
-  box-shadow: none;
-  border-radius: 0;
+  background: rgba(255, 255, 255, 0.25); /* Same semi-transparent white */
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  /* If you use a dark mode, swap colors with JS logic */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* Same shadow */
+  border-radius: 18px; /* Slight curve for the whole bar, optional */
 }
+
 
 /* Minimal home button, left-aligned */
 .blogMinimalHomeButton {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  background: transparent;
-  box-shadow: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -695,20 +701,26 @@
   margin-right: 8px;
 }
 
+
 /* Center title */
 .blogMinimalTitle {
   flex: 1 1 auto;
+  display: inline-block;
+  background: rgba(255,255,255,0.21); /* Slight glass effect */
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 13px;
+  padding: 8px 18px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15em;
+  color: #111; /* Use #fff for dark mode themes */
+  font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1em;
-  color: #fff;
-  font-weight: bold;
-  text-align: left;
-  margin-left: 4px;
-  margin-right: 12px;
+  margin-right: 10px;
 }
+
 
 /* Minimal hamburger */
 .blogMinimalHamburger {

@@ -315,19 +315,19 @@ const Navbar = () => {
   };
 
   if (isBlogPostPage && isMobileView) {
-    // Render the minimal blog navbar for mobile view
     return (
       <div className={styles.blogMobileHeader}>
         <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
           <img 
             src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} 
             alt="Home" 
-            style={{ width: "22px", height: "22px", objectFit: "contain" }} 
+            style={{ width: "23px", height: "23px", objectFit: "contain" }} 
           />
         </Link>
         <span className={styles.blogMinimalTitle}>
           {pageTitle || getCenterTitle()}
         </span>
+        {/* Hamburger that triggers the main menu logic */}
         <button 
           className={styles.blogMinimalHamburger} 
           aria-label="Toggle menu"
@@ -337,6 +337,7 @@ const Navbar = () => {
           <span className={styles.line}></span>
           <span className={styles.line}></span>
         </button>
+
         {/* Optionally, if menu overlay should appear */}
         {menuOpen &&
           <div 

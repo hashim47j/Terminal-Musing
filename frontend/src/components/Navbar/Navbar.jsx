@@ -37,7 +37,9 @@ const Navbar = () => {
   const currentPath = location.pathname;
   
   // ✅ Enhanced blog post detection for unified routes
-  const isBlogPostPage = currentPath.startsWith('/blogs/') || currentPath.startsWith('/blog/');
+  const pathParts = currentPath.split('/').filter(Boolean);
+const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
+
   
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);

@@ -328,10 +328,15 @@ if (isBlogPostPage && isMobileView) {
             style={{ width: "22px", height: "22px", objectFit: "contain" }} 
           />
         </Link>
+
         <span className={styles.blogMinimalTitle}>
-          {pageTitle || getCenterTitle()}
-        </span>
-        
+  {pageTitle || getCenterTitle()}
+  <div 
+    className={styles.progressFillMobile} 
+    style={{ width: `${scrollProgress}%` }} 
+  />
+</span>
+
         <button 
           className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
           aria-label="Toggle menu"

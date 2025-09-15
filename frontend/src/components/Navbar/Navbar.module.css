@@ -765,8 +765,8 @@
   left: 0;
   height: 100%;
   background: linear-gradient(90deg, 
-  rgba(37, 99, 235, 0.8) 0%,  /* Stronger blue */
-  rgba(37, 99, 235, 0.6) 100%
+  rgba(96, 104, 121, 0.8) 0%,  /* Stronger blue */
+  rgba(99, 109, 129, 0.6) 100%
   );
   border-radius: 13px;
   transition: width 0.1s ease-out, opacity 0.3s ease;

@@ -765,25 +765,9 @@
   left: 0;
   height: 100%;
   background: linear-gradient(90deg, 
-    rgba(255, 255, 255, 0.4) 0%, 
-    rgba(255, 255, 255, 0.2) 100%);
-  border-radius: 13px;
-  transition: width 0.1s ease-out, opacity 0.3s ease;
-  pointer-events: none;
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.6); /* subtle glow */
-  opacity: 0.3; /* match desktop visibility */
-  z-index: -1; /* behind the text */
-}
-
-
-.blogMinimalTitle .progressFillMobile {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    rgba(255, 255, 255, 0.4) 0%, 
-    rgba(255, 255, 255, 0.2) 100%);
+  rgba(37, 99, 235, 0.8) 0%,  /* Stronger blue */
+  rgba(37, 99, 235, 0.6) 100%
+  );
   border-radius: 13px;
   transition: width 0.1s ease-out, opacity 0.3s ease;
   pointer-events: none;

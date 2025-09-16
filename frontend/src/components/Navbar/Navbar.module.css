@@ -755,7 +755,7 @@
 
 /* Slide left class for heading */
 .slideLeft {
-  transform: translateX(-20%); /* ✅ Slide heading left */
+  transform: translateX(-15%); /* ✅ Slide heading left */
 }
 
 

@@ -3,8 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { PageContext } from "../../context/PageContext.jsx";
 
-import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
-import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
+import jerusalemHomeLight from "../../assets/jerusalemhomelight";
+import jerusalemHomeDark from "../../assets/jerusalemhomedark";
+
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
 
 const Navbar = () => {
@@ -290,7 +291,7 @@ const Navbar = () => {
             aria-label="Home"
           >
             <img
-              src={isLightBackground ? jerusalemHomeLight : jerusalemDark}
+              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
               alt="Home"
               style={{ width: 22, height: 22, objectFit: "contain" }}
             />
@@ -399,7 +400,7 @@ const Navbar = () => {
         aria-label="Home"
       >
         <img
-          src={isLightBackground ? jerusalemHomeLight : jerusalemDark}
+          src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
           alt="Home"
           style={{ width: 27, height: 27, objectFit: "contain" }}
         />

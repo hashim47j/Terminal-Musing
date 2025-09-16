@@ -834,8 +834,3 @@
 .headingLeft {
   justify-content: flex-start;
 }
-
-.slideLeft {
-  transform: translateX(0) scale(0.98);
-  opacity: 0.98;
-}

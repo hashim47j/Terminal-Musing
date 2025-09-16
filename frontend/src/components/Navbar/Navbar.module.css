@@ -715,9 +715,9 @@
 
 /* Minimal home button */
 .blogMinimalHomeButton {
-  position: absolute;
+  position: fixed; /* Changed from absolute to fixed */
   top: 8px;
-  left: 10px;
+  left: 10px; /* Fixed position from left edge */
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -729,7 +729,7 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  z-index: 1;
+  z-index: 4501; /* Above navbar */
 }
 
 /* Center title with rounded background */
@@ -774,9 +774,9 @@
 
 /* Hamburger button */
 .blogMinimalHamburger {
-  position: absolute;
+  position: fixed; /* Changed from absolute to fixed */
   top: 8px;
-  right: 10px;
+  right: 10px; /* Fixed position from right edge */
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -791,7 +791,7 @@
   justify-content: center;
   align-items: center;
   padding: 0;
-  z-index: 1;
+  z-index: 4501; /* Above navbar */
 }
 
 

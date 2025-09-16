@@ -358,7 +358,19 @@ if (isBlogPostPage && isMobileView) {
           />
         </Link>
 
-        className={`${styles.blogMinimalTitle}${hideNavControls ? ' ' + styles.slideLeft : ''}`}
+        <span
+  className={[
+    styles.blogMinimalTitle,
+    hideNavControls ? styles.slideLeft : ''
+  ].join(' ')}
+>
+  {pageTitle || getCenterTitle()}
+  <div
+    className={styles.progressFillMobile}
+    style={{ width: `${scrollProgress}%` }}
+  />
+</span>
+
         <button
           className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
           aria-label="Toggle menu"

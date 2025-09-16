@@ -298,11 +298,9 @@ const Navbar = () => {
           </Link>
 
           <span
-            ref={blogMinimalTitleRef}
-            className={[
-              styles.blogMinimalTitle,
-              hideNavControls ? styles.slideLeft : "",
-            ].join(" ")}
+  ref={blogMinimalTitleRef}
+  className={styles.blogMinimalTitle} // No slideLeft class here
+>
           >
             {pageTitle || getCenterText()}
 

@@ -38,6 +38,9 @@ const Navbar = () => {
   // State - Navbar resize/positioning for shrinking background
   const [bgWidth, setBgWidth] = useState(null);
   const [bgLeft, setBgLeft] = useState(null);
+  const [bgHeight, setBgHeight] = useState(null);
+  const [bgTop, setBgTop] = useState(null);
+
 
   // Refs
   const navLinksRef = useRef(null);
@@ -113,34 +116,43 @@ const Navbar = () => {
   useEffect(() => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-      const navbarRect = blogMobileHeaderRef.current.getBoundingClientRect();
       
       // Calculate exact center position
       const headingCenter = headingRect.left + (headingRect.width / 2);
       const newNavbarLeft = headingCenter - (headingRect.width / 2);
       
       setBgWidth(headingRect.width);
+      setBgHeight(headingRect.height); // Add height matching
       setBgLeft(newNavbarLeft); // This centers the navbar background on the heading
+      setBgTop(headingRect.top); // Add top position matching
     } else {
       setBgWidth(null);
       setBgLeft(null);
+      setBgHeight(null); // Reset height
+      setBgTop(null); // Reset top
     }
-  }, [hideNavControls, isMobileView]);
-  
-
-  // Recalculate on window resize to handle orientation/font changes
-  useEffect(() => {
-    function handleResize() {
-      if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
-        const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-        const navbarRect = blogMobileHeaderRef.current.getBoundingClientRect();
-        setBgWidth(headingRect.width);
-        setBgLeft(headingRect.left - navbarRect.left);
+    }, [hideNavControls, isMobileView]);
+    
+    // Recalculate on window resize to handle orientation/font changes
+    useEffect(() => {
+      function handleResize() {
+        if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+          const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+          
+          // Calculate exact center position
+          const headingCenter = headingRect.left + (headingRect.width / 2);
+          const newNavbarLeft = headingCenter - (headingRect.width / 2);
+          
+          setBgWidth(headingRect.width);
+          setBgHeight(headingRect.height); // Add height matching
+          setBgLeft(newNavbarLeft);
+          setBgTop(headingRect.top); // Add top position matching
+        }
       }
-    }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [hideNavControls, isMobileView]);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, [hideNavControls, isMobileView]);
+    
 
   // Homepage detection for shadow control
   useEffect(() => {
@@ -283,8 +295,10 @@ const Navbar = () => {
   className={styles.blogMobileHeader}
   style={{
     width: bgWidth ? `${bgWidth}px` : "100%",
+    height: bgHeight ? `${bgHeight}px` : "54px", // Dynamic height
     left: bgLeft ? `${bgLeft}px` : "0",
-    transition: "width 0.4s, left 0.4s",
+    top: bgTop ? `${bgTop}px` : "0", // Dynamic top position
+    transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s",
     position: "fixed"
   }}
 

@@ -40,6 +40,27 @@ const Navbar = () => {
   const [bgLeft, setBgLeft] = useState(null);
   const [bgHeight, setBgHeight] = useState(null);
   const [bgTop, setBgTop] = useState(null);
+  const [slideLeft, setSlideLeft] = useState(false);
+  if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+    const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+    
+    const headingCenter = headingRect.left + (headingRect.width / 2);
+    const newNavbarLeft = headingCenter - (headingRect.width / 2);
+    
+    setBgWidth(headingRect.width);
+    setBgHeight(headingRect.height);
+    setBgLeft(newNavbarLeft);
+    setBgTop(headingRect.top);
+    setSlideLeft(true); // ✅ Add slide left state
+  } else {
+    setBgWidth(null);
+    setBgLeft(null);
+    setBgHeight(null);
+    setBgTop(null);
+    setSlideLeft(false); // ✅ Reset slide left
+  }
+  
+
 
 
   // Refs
@@ -292,13 +313,14 @@ const Navbar = () => {
       <>
 <div
   ref={blogMobileHeaderRef}
-  className={styles.blogMobileHeader}
+  className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
   style={{
     width: bgWidth ? `${bgWidth}px` : "100%",
-    height: bgHeight ? `${bgHeight}px` : "54px", // Dynamic height
+    height: bgHeight ? `${bgHeight}px` : "54px",
     left: bgLeft ? `${bgLeft}px` : "0",
-    top: bgTop ? `${bgTop}px` : "0", // Dynamic top position
-    transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s",
+    top: bgTop ? `${bgTop}px` : "0",
+    transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)', // ✅ Slide navbar bg too
+    transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s, transform 0.4s",
     position: "fixed"
   }}
 
@@ -320,7 +342,7 @@ const Navbar = () => {
 
           <span
             ref={blogMinimalTitleRef}
-            className={styles.blogMinimalTitle}
+            className={`${styles.blogMinimalTitle} ${slideLeft ? styles.slideLeft : ''}`}
           >
             {pageTitle || getCenterText()}
 

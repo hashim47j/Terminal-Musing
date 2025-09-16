@@ -716,7 +716,7 @@
 .blogMinimalHomeButton {
   position: fixed;
   top: 8px;
-  left: 5px; /* Increased from 10px to 20px */
+  left: 4px; /* Increased from 10px to 20px */
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -732,6 +732,7 @@
 }
 
 /* Center title with rounded background */
+/* Heading slide left animation */
 .blogMinimalTitle {
   position: relative;
   z-index: 1;
@@ -749,8 +750,14 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
   max-width: 80vw;
-  /* NO transition, NO transform, NO width animation */
+  transition: transform 0.4s ease; /* ✅ Add transform transition */
 }
+
+/* Slide left class for heading */
+.slideLeft {
+  transform: translateX(-20%); /* ✅ Slide heading left */
+}
+
 
 
 
@@ -775,7 +782,7 @@
 .blogMinimalHamburger {
   position: fixed;
   top: 8px;
-  right: 5px; /* Increased from 10px to 20px */
+  right: 4px; /* Increased from 10px to 20px */
   width: 38px;
   height: 38px;
   border-radius: 50%;

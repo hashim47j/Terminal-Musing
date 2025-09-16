@@ -51,7 +51,52 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
 
   const { startPageTransition } = useContext(PageTransitionContext);
   const [hideNavControls, setHideNavControls] = useState(false);
+  const blogMinimalTitleRef = useRef(null);
+  const blogMobileHeaderRef = useRef(null);
+  const [bgWidth, setBgWidth] = useState(null);
+  const [bgLeft, setBgLeft] = useState(null);
 
+  useEffect(() => {
+    if (hideNavControls && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+      const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+      const navbarRect = blogMobileHeaderRef.current.getBoundingClientRect();
+  
+      setBgWidth(headingRect.width);
+      setBgLeft(headingRect.left - navbarRect.left);
+    } else {
+      // Reset to full width and left 0 when not hiding
+      setBgWidth(null);
+      setBgLeft(null);
+    }
+  }, [hideNavControls]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (hideNavControls && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+        const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+        const navbarRect = blogMobileHeaderRef.current.getBoundingClientRect();
+  
+        setBgWidth(headingRect.width);
+        setBgLeft(headingRect.left - navbarRect.left);
+      }
+    };
+  
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [hideNavControls]);
+  
+  <div
+  ref={blogMobileHeaderRef}
+  className={`${styles.blogMobileHeader} ${hideNavControls && isMobileView ? styles.resizingBg : ''}`}
+  style={{
+    width: bgWidth ? `${bgWidth}px` : '100%',
+    left: bgLeft ? `${bgLeft}px` : '0',
+    transition: 'width 0.4s ease, left 0.4s ease',
+    position: 'fixed', // keep fixed for navbar
+  }}
+>
+  {/* Navbar contents */}
+</div>
 
 
   useEffect(() => {

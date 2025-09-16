@@ -85,16 +85,30 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     return () => window.removeEventListener("resize", handleResize);
   }, [hideNavControls]);
   
-  <div
+<div
   ref={blogMobileHeaderRef}
   className={`${styles.blogMobileHeader} ${hideNavControls && isMobileView ? styles.resizingBg : ''}`}
   style={{
     width: bgWidth ? `${bgWidth}px` : '100%',
     left: bgLeft ? `${bgLeft}px` : '0',
     transition: 'width 0.4s ease, left 0.4s ease',
-    position: 'fixed', // keep fixed for navbar
+    position: 'fixed',
   }}
 >
+
+<span
+    ref={blogMinimalTitleRef}    // Attach the ref to heading span!
+    className={[
+      styles.blogMinimalTitle,
+      hideNavControls ? styles.slideLeft : ''
+    ].join(' ')}
+  >
+    {pageTitle || getCenterTitle()}
+    <div
+      className={styles.progressFillMobile}
+      style={{ width: `${scrollProgress}%` }}
+    />
+  </span>
   {/* Navbar contents */}
 </div>
 

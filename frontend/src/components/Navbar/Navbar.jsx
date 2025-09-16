@@ -50,6 +50,8 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
 
   const { startPageTransition } = useContext(PageTransitionContext);
+  const [hideNavControls, setHideNavControls] = useState(false);
+
 
 
   useEffect(() => {

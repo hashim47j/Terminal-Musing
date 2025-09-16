@@ -359,10 +359,10 @@ if (isBlogPostPage && isMobileView) {
         </Link>
 
         <span
-  className={[
-    styles.blogMinimalTitle,
-    hideNavControls ? styles.slideLeft : ''
-  ].join(' ')}
+    className={[
+      styles.blogMinimalTitle,
+      hideNavControls ? styles.slideLeft : ''
+    ].join(' ')}
 >
   {pageTitle || getCenterTitle()}
   <div

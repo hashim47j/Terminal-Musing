@@ -758,6 +758,8 @@
   box-sizing: border-box;
   z-index: 0; /* behind text */
   transition: transform 0.45s cubic-bezier(.22,.68,.53,1.01), opacity 0.4s;
+  max-width: 80vw;
+  
 }
 .slideLeft {
   transform: translateX(-40%) scale(0.98);
@@ -829,3 +831,11 @@
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+.headingLeft {
+  justify-content: flex-start;
+}
+
+.slideLeft {
+  transform: translateX(0) scale(0.98);
+  opacity: 0.98;
+}

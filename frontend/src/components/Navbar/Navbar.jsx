@@ -21,8 +21,8 @@ const Navbar = () => {
   // State - UI
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [hide, setHide] = useState(false); // For desktop navbar hiding
-  const [hideNavControls, setHideNavControls] = useState(false); // For mobile controls
+  const [hide, setHide] = useState(false);
+  const [hideNavControls, setHideNavControls] = useState(false);
   const [highlightStyle, setHighlightStyle] = useState({});
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuClosing, setMenuClosing] = useState(false);
@@ -41,27 +41,6 @@ const Navbar = () => {
   const [bgHeight, setBgHeight] = useState(null);
   const [bgTop, setBgTop] = useState(null);
   const [slideLeft, setSlideLeft] = useState(false);
-  if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
-    const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-    
-    const headingCenter = headingRect.left + (headingRect.width / 2);
-    const newNavbarLeft = headingCenter - (headingRect.width / 2);
-    
-    setBgWidth(headingRect.width);
-    setBgHeight(headingRect.height);
-    setBgLeft(newNavbarLeft);
-    setBgTop(headingRect.top);
-    setSlideLeft(true); // ✅ Add slide left state
-  } else {
-    setBgWidth(null);
-    setBgLeft(null);
-    setBgHeight(null);
-    setBgTop(null);
-    setSlideLeft(false); // ✅ Reset slide left
-  }
-  
-
-
 
   // Refs
   const navLinksRef = useRef(null);
@@ -100,7 +79,6 @@ const Navbar = () => {
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
         const progress = docHeight > 0 ? (currentY / docHeight) * 100 : 0;
         setScrollProgress(Math.min(progress, 100));
-        // Handle showing/hiding navbar on scroll for blog post
         setIsScrolledEnough(currentY > 50);
       } else {
         setScrollProgress(0);
@@ -132,48 +110,47 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isBlogPost, isMobileView]);
 
-  // Update measurements for shrinking bg when hideNavControls changes OR window resizes
-  // throttled ResizeObserver can be added for better perf if needed
+  // Update measurements for shrinking bg when hideNavControls changes
   useEffect(() => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
       
-      // Calculate exact center position
       const headingCenter = headingRect.left + (headingRect.width / 2);
       const newNavbarLeft = headingCenter - (headingRect.width / 2);
       
       setBgWidth(headingRect.width);
-      setBgHeight(headingRect.height); // Add height matching
-      setBgLeft(newNavbarLeft); // This centers the navbar background on the heading
-      setBgTop(headingRect.top); // Add top position matching
+      setBgHeight(headingRect.height);
+      setBgLeft(newNavbarLeft);
+      setBgTop(headingRect.top);
+      setSlideLeft(true);
     } else {
       setBgWidth(null);
       setBgLeft(null);
-      setBgHeight(null); // Reset height
-      setBgTop(null); // Reset top
+      setBgHeight(null);
+      setBgTop(null);
+      setSlideLeft(false);
     }
-    }, [hideNavControls, isMobileView]);
-    
-    // Recalculate on window resize to handle orientation/font changes
-    useEffect(() => {
-      function handleResize() {
-        if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
-          const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-          
-          // Calculate exact center position
-          const headingCenter = headingRect.left + (headingRect.width / 2);
-          const newNavbarLeft = headingCenter - (headingRect.width / 2);
-          
-          setBgWidth(headingRect.width);
-          setBgHeight(headingRect.height); // Add height matching
-          setBgLeft(newNavbarLeft);
-          setBgTop(headingRect.top); // Add top position matching
-        }
+  }, [hideNavControls, isMobileView]);
+
+  // Recalculate on window resize
+  useEffect(() => {
+    function handleResize() {
+      if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+        const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+        
+        const headingCenter = headingRect.left + (headingRect.width / 2);
+        const newNavbarLeft = headingCenter - (headingRect.width / 2);
+        
+        setBgWidth(headingRect.width);
+        setBgHeight(headingRect.height);
+        setBgLeft(newNavbarLeft);
+        setBgTop(headingRect.top);
+        setSlideLeft(true);
       }
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, [hideNavControls, isMobileView]);
-    
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [hideNavControls, isMobileView]);
 
   // Homepage detection for shadow control
   useEffect(() => {
@@ -195,10 +172,6 @@ const Navbar = () => {
       const isMobile = window.innerWidth <= 768;
       const padding = isMobile ? 16 : 40;
       const wrapperWidth = brandWrapperRef.current.offsetWidth || 0;
-      setBgWidth(null); // Clear shrinking bg when width changes to reset
-      setBgLeft(null);
-      // This controls the left navbar width as well
-      setBgWidth(null);
     }
 
     updateSizes();
@@ -275,7 +248,7 @@ const Navbar = () => {
     setHoverProgress((v) => ({ ...v, [path]: 0 }));
   }
 
-  // Tap multiple times on brand to open secret dialog (example)
+  // Tap multiple times on brand to open secret dialog
   function handleTap() {
     if (tapTimeout.current) clearTimeout(tapTimeout.current);
     setTapCount((c) => {
@@ -311,19 +284,18 @@ const Navbar = () => {
   if (isBlogPost && isMobileView) {
     return (
       <>
-<div
-  ref={blogMobileHeaderRef}
-  className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
-  style={{
-    width: bgWidth ? `${bgWidth}px` : "100%",
-    height: bgHeight ? `${bgHeight}px` : "54px",
-    left: bgLeft ? `${bgLeft}px` : "0",
-    top: bgTop ? `${bgTop}px` : "0",
-    transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)', // ✅ Slide navbar bg too
-    transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s, transform 0.4s",
-    position: "fixed"
-  }}
-
+        <div
+          ref={blogMobileHeaderRef}
+          className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
+          style={{
+            width: bgWidth ? `${bgWidth}px` : "100%",
+            height: bgHeight ? `${bgHeight}px` : "54px",
+            left: bgLeft ? `${bgLeft}px` : "0",
+            top: bgTop ? `${bgTop}px` : "0",
+            transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)',
+            transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s, transform 0.4s",
+            position: "fixed"
+          }}
           data-navbar-no
         >
           <Link
@@ -347,7 +319,7 @@ const Navbar = () => {
             {pageTitle || getCenterText()}
 
             <div
-              className={styles.progressFillMobile}  
+              className={styles.progressFillMobile}
               style={{ width: scrollProgress + "%" }}
             />
           </span>
@@ -429,7 +401,7 @@ const Navbar = () => {
     );
   }
 
-  // Desktop/mobile legacy navbar JSX (unchanged)
+  // Desktop/mobile legacy navbar JSX
   return (
     <>
       <Link
@@ -453,8 +425,8 @@ const Navbar = () => {
           isHomePage ? styles.noShadow : ""
         }`}
         style={{
-          width: `${bgWidth ? bgWidth + 48 : 0}px`, // Example bridge width based on title width plus padding
-          left: `${bgLeft ? bgLeft - 16 : 0}px`, // Example left offset to align with navbar and padding
+          width: `${bgWidth ? bgWidth + 48 : 0}px`,
+          left: `${bgLeft ? bgLeft - 16 : 0}px`,
         }}
       />
 
@@ -474,7 +446,7 @@ const Navbar = () => {
             }}
           />
         )}
-        <div onClick={handleTap} className={styles.brandWrapper}>
+        <div onClick={handleTap} className={styles.brandWrapper} ref={brandWrapperRef}>
           <Link to={currentPath} className={styles.brand}>
             {getCenterText()}
           </Link>

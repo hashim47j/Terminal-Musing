@@ -672,19 +672,19 @@
   left: 0; /* overridden by inline style */
   width: 100%; /* overridden by inline style */
   height: 54px;
-  transition: left 0.4s, width 0.4s;
   display: flex;
   align-items: center;
-  justify-content: center; /* center heading when expanded */
-  padding: 0 10px;
+  justify-content: center; /* center the heading only */
+  padding: 0; /* remove padding since buttons are now absolute */
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
+  border-top-right-radius: 14px;  
   z-index: 4500;
-  overflow: visible; /* Ensure heading never clipped */
+  overflow: visible;
+  transition: width 0.4s ease, left 0.4s ease;
 }
 
 
@@ -706,6 +706,9 @@
 
 /* Minimal home button */
 .blogMinimalHomeButton {
+  position: absolute;
+  top: 8px;
+  left: 10px;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -717,14 +720,14 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  margin-right: 8px;
+  z-index: 1;
 }
 
 /* Center title with rounded background */
 .blogMinimalTitle {
   position: relative;
-  z-index: 1; /* above shrinking navbar */
-  background: rgba(255,255,255,0.21);
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.21);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-radius: 13px;
@@ -736,10 +739,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-right: 10px;
   box-sizing: border-box;
-  transition: none; /* No transform/width animation */
   max-width: 80vw;
+  /* NO transition, NO transform, NO width animation */
 }
 
 
@@ -763,6 +765,9 @@
 
 /* Hamburger button */
 .blogMinimalHamburger {
+  position: absolute;
+  top: 8px;
+  right: 10px;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -777,6 +782,7 @@
   justify-content: center;
   align-items: center;
   padding: 0;
+  z-index: 1;
 }
 
 

@@ -344,24 +344,28 @@ if (isBlogPostPage && isMobileView) {
     <>
       {/* Blog Mobile Header */}
       <div className={styles.blogMobileHeader}>
-        <Link to="/" className={styles.blogMinimalHomeButton} aria-label="Home">
-          <img 
-            src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} 
-            alt="Home" 
-            style={{ width: "22px", height: "22px", objectFit: "contain" }} 
+        <Link
+          to="/"
+          className={`${styles.blogMinimalHomeButton} ${hideNavControls ? styles.hideNavButton : ""}`}
+          aria-label="Home"
+        >
+          <img
+            src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+            alt="Home"
+            style={{ width: "22px", height: "22px", objectFit: "contain" }}
           />
         </Link>
 
         <span className={styles.blogMinimalTitle}>
-  {pageTitle || getCenterTitle()}
-  <div 
-    className={styles.progressFillMobile} 
-    style={{ width: `${scrollProgress}%` }} 
-  />
-</span>
+          {pageTitle || getCenterTitle()}
+          <div
+            className={styles.progressFillMobile}
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </span>
 
-        <button 
-          className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
+        <button
+          className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
           aria-label="Toggle menu"
           onClick={toggleMenu}
           onKeyDown={(e) => {

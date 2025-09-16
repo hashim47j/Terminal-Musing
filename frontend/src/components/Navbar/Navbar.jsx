@@ -345,7 +345,8 @@ if (isBlogPostPage && isMobileView) {
   return (
     <>
       {/* Blog Mobile Header */}
-      <div className={styles.blogMobileHeader}>
+      <div className={`${styles.blogMobileHeader} ${hideNavControls && isMobileView ? styles.hideBackground : ''}`}>
+
         <Link
           to="/"
           className={`${styles.blogMinimalHomeButton} ${hideNavControls ? styles.hideNavButton : ""}`}

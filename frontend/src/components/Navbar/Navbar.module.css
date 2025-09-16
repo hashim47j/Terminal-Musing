@@ -669,29 +669,22 @@
 .blogMobileHeader {
   position: fixed;
   top: 0;
-  left: 0;           /* Will be overridden dynamically via inline style */
-  width: 100%;       /* Will be overridden dynamically via inline style */
+  left: 0; /* overridden by inline style */
+  width: 100%; /* overridden by inline style */
   height: 54px;
-
-  transition: left 0.4s ease, width 0.4s ease;
-
-
+  transition: left 0.4s, width 0.4s;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center; /* center heading when expanded */
   padding: 0 10px;
-
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
-
   z-index: 4500;
-
-  /* Smoothly transition width and left position */
-  transition: width 0.4s ease, left 0.4s ease;
+  overflow: visible; /* Ensure heading never clipped */
 }
 
 
@@ -729,7 +722,9 @@
 
 /* Center title with rounded background */
 .blogMinimalTitle {
-  background: rgba(255, 255, 255, 0.21);
+  position: relative;
+  z-index: 1; /* above shrinking navbar */
+  background: rgba(255,255,255,0.21);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-radius: 13px;
@@ -743,16 +738,11 @@
   text-overflow: ellipsis;
   margin-right: 10px;
   box-sizing: border-box;
-  z-index: 0; /* behind text */
-  transition: transform 0.45s cubic-bezier(.22,.68,.53,1.01), opacity 0.4s;
+  transition: none; /* No transform/width animation */
   max-width: 80vw;
 }
 
-.slideLeft {
-  transform: translateX(-18%);
-  opacity: 2;
-  /* You can tweak the amount of slide (-40%, -50%, etc) and scaling */
-}
+
 
 .blogMinimalTitle .progressFillMobile {
   position: absolute;

@@ -272,15 +272,16 @@ const Navbar = () => {
   if (isBlogPost && isMobileView) {
     return (
       <>
-        <div
-          ref={blogMobileHeaderRef}
-          className={`${styles.blogMobileHeader} ${hideNavControls && isMobileView ? styles.resizingBg : ""}`}
-          style={{
-            width: bgWidth ? `${bgWidth}px` : "100%",
-            left: bgLeft ? `${bgLeft}px` : "0",
-            transition: "width 0.4s ease, left 0.4s ease",
-            position: "fixed",
-          }}
+<div
+  ref={blogMobileHeaderRef}
+  className={styles.blogMobileHeader}
+  style={{
+    width: bgWidth ? `${bgWidth}px` : "100%",
+    left: bgLeft ? `${bgLeft}px` : "0",
+    transition: "width 0.4s, left 0.4s",
+    position: "fixed"
+  }}
+
           data-navbar-no
         >
           <Link

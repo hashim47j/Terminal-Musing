@@ -667,42 +667,30 @@
 /* Minimal mobile blog header bar */
 /* Mobile blog header with inverted bottom corners (SVG mask) */
 .blogMobileHeader {
-  /* Positioning */
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 0;           /* Will be overridden dynamically via inline style */
+  width: 100%;       /* Will be overridden dynamically via inline style */
   height: 54px;
 
-  /* Layout */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 10px;
 
-  /* Visuals */
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  z-index: 4500;
-
-  /* Keep pill-like top; bottom is shaped by mask */
+  -webkit-backdrop-filter: blur(12px);
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
 
-  /* Apply the global mask defined in index.html */
-  -webkit-mask: url(#blogHeaderInvertedCorners);
-  mask: url(#blogHeaderInvertedCorners);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
+  z-index: 4500;
 
-  /* Performance hints */
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
+  /* Smoothly transition width and left position */
+  transition: width 0.4s ease, left 0.4s ease;
 }
+
 
 /* Ensure children render above the masked surface */
 .blogMinimalHomeButton,
@@ -738,11 +726,7 @@
 
 /* Center title with rounded background */
 .blogMinimalTitle {
-  position: relative;
-  /* Existing styles below */
-  flex: 1 1 auto;
-  display: inline-block;
-  background: rgba(255,255,255,0.21);
+  background: rgba(255, 255, 255, 0.21);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-radius: 13px;
@@ -759,8 +743,8 @@
   z-index: 0; /* behind text */
   transition: transform 0.45s cubic-bezier(.22,.68,.53,1.01), opacity 0.4s;
   max-width: 80vw;
-  
 }
+
 .slideLeft {
   transform: translateX(-18%) scale(0.98);
   opacity: 0.98;

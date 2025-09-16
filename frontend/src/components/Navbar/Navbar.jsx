@@ -358,12 +358,10 @@ if (isBlogPostPage && isMobileView) {
             style={{ width: "22px", height: "22px", objectFit: "contain" }}
           />
         </Link>
+        
 
         <span
-    className={[
-      styles.blogMinimalTitle,
-      hideNavControls ? styles.slideLeft : ''
-    ].join(' ')}
+   className={styles.blogMinimalTitle}
 >
   {pageTitle || getCenterTitle()}
   <div

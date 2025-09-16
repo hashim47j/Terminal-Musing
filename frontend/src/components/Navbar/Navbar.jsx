@@ -114,13 +114,19 @@ const Navbar = () => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
       const navbarRect = blogMobileHeaderRef.current.getBoundingClientRect();
+      
+      // Calculate exact center position
+      const headingCenter = headingRect.left + (headingRect.width / 2);
+      const newNavbarLeft = headingCenter - (headingRect.width / 2);
+      
       setBgWidth(headingRect.width);
-      setBgLeft(headingRect.left - navbarRect.left);
+      setBgLeft(newNavbarLeft); // This centers the navbar background on the heading
     } else {
       setBgWidth(null);
       setBgLeft(null);
     }
   }, [hideNavControls, isMobileView]);
+  
 
   // Recalculate on window resize to handle orientation/font changes
   useEffect(() => {

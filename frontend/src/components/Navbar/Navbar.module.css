@@ -757,6 +757,12 @@
   margin-right: 10px;
   box-sizing: border-box;
   z-index: 0; /* behind text */
+  transition: transform 0.45s cubic-bezier(.22,.68,.53,1.01), opacity 0.4s;
+}
+.slideLeft {
+  transform: translateX(-40%) scale(0.98);
+  opacity: 0.98;
+  /* You can tweak the amount of slide (-40%, -50%, etc) and scaling */
 }
 
 .blogMinimalTitle .progressFillMobile {

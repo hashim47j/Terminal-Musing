@@ -816,4 +816,10 @@
 .blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
   transform: rotate(-45deg) translate(5px, -5px);
 }
+.hideNavButton {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
 

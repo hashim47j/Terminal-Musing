@@ -51,6 +51,29 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
 
   const { startPageTransition } = useContext(PageTransitionContext);
 
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+  
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // Existing scrollProgress updates...
+  
+      // New hide/show logic for nav controls
+      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
+        // Scrolling down past threshold
+        setHideNavControls(true);
+      } else {
+        // Scrolling up or near top
+        setHideNavControls(false);
+      }
+      lastScrollY = currentScrollY;
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isBlogPostPage]);
+  
   // Homepage detection for shadow control
   useEffect(() => {
     const checkHomePage = () => {

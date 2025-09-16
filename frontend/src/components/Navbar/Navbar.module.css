@@ -762,7 +762,7 @@
   
 }
 .slideLeft {
-  transform: translateX(-40%) scale(0.98);
+  transform: translateX(-20%) scale(0.98);
   opacity: 0.98;
   /* You can tweak the amount of slide (-40%, -50%, etc) and scaling */
 }

@@ -325,7 +325,7 @@ const Navbar = () => {
             {pageTitle || getCenterText()}
 
             <div
-              className={styles.progressBar}
+              className={styles.progressFillMobile}  
               style={{ width: scrollProgress + "%" }}
             />
           </span>

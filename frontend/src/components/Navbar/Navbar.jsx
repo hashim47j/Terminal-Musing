@@ -3,8 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { PageContext } from "../../context/PageContext.jsx";
 
-import jerusalemHomeLight from "../../assets/jerusalemhomelight";
-import jerusalemHomeDark from "../../assets/jerusalemhomedark";
+import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
+import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
 

@@ -673,6 +673,9 @@
   width: 100%;       /* Will be overridden dynamically via inline style */
   height: 54px;
 
+  transition: left 0.4s ease, width 0.4s ease;
+
+
   display: flex;
   align-items: center;
   justify-content: space-between;

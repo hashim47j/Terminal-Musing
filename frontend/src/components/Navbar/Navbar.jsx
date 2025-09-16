@@ -298,9 +298,8 @@ const Navbar = () => {
           </Link>
 
           <span
-  ref={blogMinimalTitleRef}
-  className={styles.blogMinimalTitle} // No slideLeft class here
->
+            ref={blogMinimalTitleRef}
+            className={styles.blogMinimalTitle}
           >
             {pageTitle || getCenterText()}
 

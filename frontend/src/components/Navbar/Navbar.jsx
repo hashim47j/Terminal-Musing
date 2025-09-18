@@ -3,18 +3,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { PageContext } from "../../context/PageContext.jsx";
 
-
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
-
 
 const Navbar = () => {
   // State for the new feature
   const { pageTitle } = useContext(PageContext);
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-
 
   // General Navbar state
   const [hide, setHide] = useState(false);
@@ -41,19 +38,15 @@ const Navbar = () => {
   
   // ✅ Enhanced blog post detection for unified routes
   const pathParts = currentPath.split('/').filter(Boolean);
-const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
+  const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
 
-
-  
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
 
-
   const HOME_BUTTON_LEFT = 30;
   const HOME_BUTTON_WIDTH = 54;
   const NAVBAR_LEFT_INITIAL_LEFT = 105;
-
 
   const { startPageTransition } = useContext(PageTransitionContext);
   const [hideNavControls, setHideNavControls] = useState(false);
@@ -61,55 +54,51 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
   const blogMobileHeaderRef = useRef(null);
   const [bgWidth, setBgWidth] = useState(null);
   const [bgLeft, setBgLeft] = useState(null);
+  const [bgHeight, setBgHeight] = useState(null);
+  const [bgTop, setBgTop] = useState(null);
+  const [slideLeft, setSlideLeft] = useState(false);
 
-
+  // Update measurements for shrinking bg when hideNavControls changes
   useEffect(() => {
-    if (hideNavControls && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+    if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-      const navbarRect = blogMobileHeaderRef.current.getBoundingClientRect();
-  
+      
+      const headingCenter = headingRect.left + (headingRect.width / 2);
+      const newNavbarLeft = headingCenter - (headingRect.width / 2);
+      
       setBgWidth(headingRect.width);
-      setBgLeft(headingRect.left - navbarRect.left);
+      setBgHeight(headingRect.height);
+      setBgLeft(newNavbarLeft);
+      setBgTop(headingRect.top);
+      setSlideLeft(true);
     } else {
-      // Reset to full width and left 0 when not hiding
       setBgWidth(null);
       setBgLeft(null);
+      setBgHeight(null);
+      setBgTop(null);
+      setSlideLeft(false);
     }
-  }, [hideNavControls]);
+  }, [hideNavControls, isMobileView]);
 
-
+  // Recalculate on window resize
   useEffect(() => {
-    const handleResize = () => {
-      if (hideNavControls && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+    function handleResize() {
+      if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
         const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-        const navbarRect = blogMobileHeaderRef.current.getBoundingClientRect();
-  
+        
+        const headingCenter = headingRect.left + (headingRect.width / 2);
+        const newNavbarLeft = headingCenter - (headingRect.width / 2);
+        
         setBgWidth(headingRect.width);
-        setBgLeft(headingRect.left - navbarRect.left);
+        setBgHeight(headingRect.height);
+        setBgLeft(newNavbarLeft);
+        setBgTop(headingRect.top);
+        setSlideLeft(true);
       }
-    };
-  
+    }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [hideNavControls]);
-  
-<div
-  ref={blogMobileHeaderRef}
-  className={`${styles.blogMobileHeader} ${hideNavControls && isMobileView ? styles.resizingBg : ''}`}
-  style={{
-    width: bgWidth ? `${bgWidth}px` : '100%',
-    left: bgLeft ? `${bgLeft}px` : '0',
-    transition: 'width 0.4s ease, left 0.4s ease',
-    position: 'fixed',
-  }}
->
-
-
-  
-  {/* Navbar contents */}
-</div>
-
-
+  }, [hideNavControls, isMobileView]);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -140,15 +129,12 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
       setIsHomePage(!!homeElement);
     };
 
-
     checkHomePage();
     const observer = new MutationObserver(checkHomePage);
     observer.observe(document.body, { childList: true, subtree: true });
 
-
     return () => observer.disconnect();
   }, [currentPath]);
-
 
   // ✅ RESTORED: Simple and smooth scroll progress tracking (original implementation)
   useEffect(() => {
@@ -176,14 +162,12 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
       setLastScrollY(currentScrollY);
     };
 
-
     window.addEventListener("scroll", handleScroll);
     
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [isBlogPostPage, lastScrollY]);
-
 
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) {
@@ -232,7 +216,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     }
   };
 
-
   // ✅ Helper function to get the active nav link path
   const getActiveNavPath = () => {
     // For unified blog category pages, map back to the nav link path
@@ -268,7 +251,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
       const parentRect = navLinksRef.current.getBoundingClientRect();
       const linkRect = element.getBoundingClientRect();
 
-
       if (window.innerWidth > 768 && parentRect.width > 0 && parentRect.height > 0) {
         setHighlightStyle({
           width: linkRect.width,
@@ -283,7 +265,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     }
   };
 
-
   const handleNavLinkMouseMove = (e, path) => {
     const { left, width } = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - left;
@@ -292,11 +273,9 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     setHoverProgress((prev) => ({ ...prev, [path]: progress }));
   };
 
-
   const handleNavLinkMouseLeave = (path) => {
     setHoverProgress((prev) => ({ ...prev, [path]: 0 }));
   };
-
 
   // Highlight bar effect - ✅ Updated to work with new routes
   useEffect(() => {
@@ -304,7 +283,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     const activeLink = navLinksRef.current?.querySelector(`[href="${activeNavPath}"]`);
     updateHighlight(activeLink);
   }, [currentPath]);
-
 
   // Color detection effect - ✅ Updated for new blog routes
   useEffect(() => {
@@ -317,7 +295,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
                                currentPath.startsWith('/blogs/');
     
     const intersectingSensors = new Set();
-
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -334,16 +311,13 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
       { threshold: 0.6 }
     );
 
-
     const targets = document.querySelectorAll("[data-navbar-bg-detect]");
     targets.forEach(target => observer.observe(target));
-
 
     return () => {
       targets.forEach(target => observer.unobserve(target));
     };
   }, [currentPath]);
-
 
   useEffect(() => {
     const observer = new ResizeObserver((entries) =>{
@@ -365,7 +339,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     return () => brandWrapperRef.current && observer.unobserve(brandWrapperRef.current);
   }, [currentPath]);
 
-
   // Mobile view effect
   useEffect(() => {
     const handleResize = () => setIsMobileView(window.innerWidth <= 768);
@@ -373,7 +346,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
 
   const handleBrandTap = () => {
     if (tapTimeout.current) clearTimeout(tapTimeout.current);
@@ -387,7 +359,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
       return next;
     });
   };
-
 
   // ✅ Updated to work with new route structure
   const getHighlightBarActiveClass = () => {
@@ -403,7 +374,6 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     }
   };
 
-
   const toggleMenu = () => {
     if (menuOpen) {
       setMenuClosing(true);
@@ -417,14 +387,24 @@ const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
     }
   };
 
-
 if (isBlogPostPage && isMobileView) {
   return (
     <>
-      {/* Blog Mobile Header */}
-      <div className={`${styles.blogMobileHeader} ${hideNavControls && isMobileView ? styles.hideBackground : ''}`}>
-
-
+      {/* Blog Mobile Header - UPDATED WITH LATEST CHANGES */}
+      <div
+        ref={blogMobileHeaderRef}
+        className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
+        style={{
+          width: bgWidth ? `${bgWidth}px` : "100%",
+          height: bgHeight ? `${bgHeight}px` : "54px",
+          left: bgLeft ? `${bgLeft}px` : "0",
+          top: bgTop ? `${bgTop}px` : "0",
+          transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)',
+          transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s, transform 0.4s",
+          position: "fixed"
+        }}
+        data-navbar-no
+      >
         <Link
           to="/"
           className={`${styles.blogMinimalHomeButton} ${hideNavControls ? styles.hideNavButton : ""}`}
@@ -437,20 +417,16 @@ if (isBlogPostPage && isMobileView) {
           />
         </Link>
 
-
         <span
-    className={[
-      styles.blogMinimalTitle,
-      hideNavControls ? styles.slideLeft : ''
-    ].join(' ')}
->
-  {pageTitle || getCenterTitle()}
-  <div
-    className={styles.progressFillMobile}
-    style={{ width: `${scrollProgress}%` }}
-  />
-</span>
-
+          ref={blogMinimalTitleRef}
+          className={`${styles.blogMinimalTitle} ${slideLeft ? styles.slideLeft : ''}`}
+        >
+          {pageTitle || getCenterTitle()}
+          <div
+            className={styles.progressFillMobile}
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </span>
 
         <button
           className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
@@ -468,10 +444,8 @@ if (isBlogPostPage && isMobileView) {
         </button>
       </div>
 
-
       {/* REUSE THE SAME MOBILE OVERLAY AND MENU FROM HOME PAGE */}
       <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
-
 
       <div
         ref={navLinksRef}
@@ -510,7 +484,6 @@ if (isBlogPostPage && isMobileView) {
         })}
       </div>
 
-
       {/* Secret Dialog */}
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
@@ -525,8 +498,6 @@ if (isBlogPostPage && isMobileView) {
   );
 }
 
-
-  
   const handleNavLinkClick = (e, path) => {
     e.preventDefault();
     updateHighlight(e.currentTarget);
@@ -541,8 +512,6 @@ if (isBlogPostPage && isMobileView) {
       navigate(path);
     });
   };
-
-
 
   return (
     <>
@@ -580,7 +549,6 @@ if (isBlogPostPage && isMobileView) {
           />
         )}
 
-
         <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle()}
@@ -614,7 +582,6 @@ if (isBlogPostPage && isMobileView) {
           <span className={styles.line}></span>
           <span className={styles.line}></span>
         </div>
-
 
         <div
           ref={navLinksRef}
@@ -654,9 +621,7 @@ if (isBlogPostPage && isMobileView) {
         </div>
       </div>
 
-
       <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
-
 
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
@@ -671,6 +636,4 @@ if (isBlogPostPage && isMobileView) {
   );
 };
 
-
 export default Navbar;
-

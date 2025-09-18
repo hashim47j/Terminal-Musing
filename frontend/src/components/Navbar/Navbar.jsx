@@ -408,23 +408,32 @@ useEffect(() => {
   };
 
 if (isBlogPostPage && isMobileView) {
+
+  console.log('JSX styles being applied:', {
+    width: bgWidth ? `${bgWidth}px` : "100%",
+    height: bgHeight ? `${bgHeight}px` : "54px", 
+    left: bgLeft ? `${bgLeft}px` : "0",
+    top: bgTop ? `${bgTop}px` : "0",
+    transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)'
+  });
   return (
     <>
       {/* Blog Mobile Header - UPDATED WITH LATEST CHANGES */}
       <div
-        ref={blogMobileHeaderRef}
-        className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
-        style={{
-          width: bgWidth ? `${bgWidth}px` : "100%",
-          height: bgHeight ? `${bgHeight}px` : "54px",
-          left: bgLeft ? `${bgLeft}px` : "0",
-          top: bgTop ? `${bgTop}px` : "0",
-          transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)',
-          transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s, transform 0.4s",
-          position: "fixed"
-        }}
-        data-navbar-no
-      >
+  ref={blogMobileHeaderRef}
+  className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
+  style={{
+    width: bgWidth ? `${bgWidth}px` : "100%",
+    height: bgHeight ? `${bgHeight}px` : "54px", 
+    left: bgLeft ? `${bgLeft}px` : "0",
+    top: bgTop ? `${bgTop}px` : "0",
+    // Remove this transform from inline styles, let slideLeft class handle it
+    transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s",
+    position: "fixed"
+  }}
+  data-navbar-no
+>
+
         <Link
           to="/"
           className={`${styles.blogMinimalHomeButton} ${hideNavControls ? styles.hideNavButton : ""}`}
@@ -438,9 +447,9 @@ if (isBlogPostPage && isMobileView) {
         </Link>
 
         <span
-          ref={blogMinimalTitleRef}
-          className={`${styles.blogMinimalTitle} ${slideLeft ? styles.slideLeft : ''}`}
-        >
+  ref={blogMinimalTitleRef}
+  className={`${styles.blogMinimalTitle} ${slideLeft ? styles.slideLeft : ''}`}
+>
           {pageTitle || getCenterTitle()}
           <div
             className={styles.progressFillMobile}

@@ -60,6 +60,10 @@ const Navbar = () => {
 
   // Update measurements for shrinking bg when hideNavControls changes
   useEffect(() => {
+
+    console.log('hideNavControls:', hideNavControls, 'isMobileView:', isMobileView); 
+
+
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
       
@@ -71,6 +75,16 @@ const Navbar = () => {
       setBgLeft(newNavbarLeft);
       setBgTop(headingRect.top);
       setSlideLeft(true);
+
+      console.log('Set bg values:', { // Debug
+        width: headingRect.width,
+        height: headingRect.height,
+        left: newNavbarLeft,
+        top: headingRect.top
+      });
+
+
+
     } else {
       setBgWidth(null);
       setBgLeft(null);
@@ -340,12 +354,18 @@ const Navbar = () => {
   }, [currentPath]);
 
   // Mobile view effect
-  useEffect(() => {
-    const handleResize = () => setIsMobileView(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+// Make sure this useEffect runs properly
+useEffect(() => {
+  const handleResize = () => {
+    const newIsMobileView = window.innerWidth <= 768;
+    setIsMobileView(newIsMobileView);
+    console.log('Mobile view:', newIsMobileView, 'Width:', window.innerWidth); // Debug line
+  };
+  handleResize(); // Run immediately
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   const handleBrandTap = () => {
     if (tapTimeout.current) clearTimeout(tapTimeout.current);

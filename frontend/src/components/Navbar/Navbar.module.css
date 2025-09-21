@@ -670,31 +670,25 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 54px;
+  width: 100%; /* Default width */
+  height: 54px; /* Default height */
   
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
+  /* Remove flex centering */
+  display: block; 
+
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  
-  /* Dynamic border radius - matches heading when shrunk */
-  border-radius: 14px; /* Default full navbar radius */
+  border-radius: 14px; /* Default radius */
   
   z-index: 4500;
-  overflow: visible;
-  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease;
+  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease, transform 0.4s ease;
 }
 
 /* When shrunk, match heading's border radius */
 .blogMobileHeader.shrunk {
-  border-radius: 13px;
-  padding: 8px 18px; /* Same as .blogMinimalTitle */
-  box-sizing: border-box;
+  border-radius: 13px; /* Match heading's radius when shrunk */
 }
 
 
@@ -739,11 +733,17 @@
 .blogMinimalTitle {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.21);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  border-radius: 13px;
+
+  /* Make background invisible - the parent .blogMobileHeader will be the background */
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+
+  /* Keep padding to size the element correctly */
   padding: 8px 18px;
+  
+  /* Keep all font and text styles */
   font-family: 'Playfair Display', serif;
   font-size: 1.15em;
   color: #111;
@@ -753,7 +753,7 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
   max-width: 80vw;
-  transition: transform 0.4s ease; /* ✅ Add transform transition */
+  transition: transform 0.4s ease;
 }
 
 /* Slide left class for heading */

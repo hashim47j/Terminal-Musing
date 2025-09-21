@@ -60,28 +60,22 @@ const Navbar = () => {
 
   // Update measurements for shrinking bg when hideNavControls changes
   // First useEffect - Main measurement logic
+// In Navbar.jsx
+
+// Update measurements for shrinking bg
 useEffect(() => {
-  console.log('hideNavControls:', hideNavControls, 'isMobileView:', isMobileView);
-  if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+  if (hideNavControls && isMobileView && blogMinimalTitleRef.current) {
     const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
     
-    // Method 1: Manual padding adjustment
-    const HEADING_PADDING_H = 36; // 18px * 2
-    const HEADING_PADDING_V = 16;  // 8px * 2
-    
-    setBgWidth(headingRect.width - HEADING_PADDING_H);
-    setBgHeight(headingRect.height - HEADING_PADDING_V);
-    setBgLeft(headingRect.left + HEADING_PADDING_H / 2);
-    setBgTop(headingRect.top + HEADING_PADDING_V / 2);
+    // Set the background to the EXACT dimensions and position of the title pill
+    setBgWidth(headingRect.width);
+    setBgHeight(headingRect.height);
+    setBgLeft(headingRect.left);
+    setBgTop(headingRect.top);
     setSlideLeft(true);
-    
-    console.log('Set bg values:', {
-      width: headingRect.width - HEADING_PADDING_H,
-      height: headingRect.height - HEADING_PADDING_V,
-      left: headingRect.left + HEADING_PADDING_H / 2,
-      top: headingRect.top + HEADING_PADDING_V / 2
-    });
+
   } else {
+    // Reset to default
     setBgWidth(null);
     setBgHeight(null);
     setBgLeft(null);
@@ -90,27 +84,17 @@ useEffect(() => {
   }
 }, [hideNavControls, isMobileView]);
 
-// Second useEffect - Resize handler with same logic
+// Recalculate on window resize (use the same logic)
 useEffect(() => {
   function handleResize() {
-    if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+    if (hideNavControls && isMobileView && blogMinimalTitleRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
       
-      // Method 1: Manual padding adjustment
-      const HEADING_PADDING_H = 36; // 18px * 2
-      const HEADING_PADDING_V = 16;  // 8px * 2
-      
-      setBgWidth(headingRect.width - HEADING_PADDING_H);
-      setBgHeight(headingRect.height - HEADING_PADDING_V);
-      setBgLeft(headingRect.left + HEADING_PADDING_H / 2);
-      setBgTop(headingRect.top + HEADING_PADDING_V / 2);
+      setBgWidth(headingRect.width);
+      setBgHeight(headingRect.height);
+      setBgLeft(headingRect.left);
+      setBgTop(headingRect.top);
       setSlideLeft(true);
-    } else {
-      setBgWidth(null);
-      setBgHeight(null);
-      setBgLeft(null);
-      setBgTop(null);
-      setSlideLeft(false);
     }
   }
   window.addEventListener("resize", handleResize);

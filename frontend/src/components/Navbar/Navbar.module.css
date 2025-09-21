@@ -673,22 +673,28 @@
   width: 100%; /* Default width */
   height: 54px; /* Default height */
   
-  /* Remove flex centering */
-  display: block; 
+  /* Contains the title and buttons */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space out children */
+  padding: 0 10px; /* Default padding for buttons */
 
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 14px; /* Default radius */
+  border-radius: 14px;
   
   z-index: 4500;
-  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease, transform 0.4s ease;
+  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease, transform 0.4s ease, padding 0.4s ease;
 }
+
 
 /* When shrunk, match heading's border radius */
 .blogMobileHeader.shrunk {
-  border-radius: 13px; /* Match heading's radius when shrunk */
+  border-radius: 13px; /* Match heading's intended radius */
+  justify-content: center; /* Center the title when buttons are gone */
+  padding: 0; /* Remove padding when shrunk */
 }
 
 
@@ -734,13 +740,13 @@
   position: relative;
   z-index: 1;
 
-  /* Make background invisible - the parent .blogMobileHeader will be the background */
+  /* Make its own background invisible */
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
 
-  /* Keep padding to size the element correctly */
+  /* Padding defines the shape for the parent to shrink to */
   padding: 8px 18px;
   
   /* Keep all font and text styles */
@@ -755,6 +761,7 @@
   max-width: 80vw;
   transition: transform 0.4s ease;
 }
+
 
 /* Slide left class for heading */
 .slideLeft {

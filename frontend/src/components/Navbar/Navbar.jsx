@@ -59,8 +59,7 @@ const Navbar = () => {
   const [slideLeft, setSlideLeft] = useState(false);
 
   // Update measurements for shrinking bg when hideNavControls changes
-  // First useEffect - Main measurement logic
-// In Navbar.jsx
+  // In Navbar.jsx
 
 // Update measurements for shrinking bg
 useEffect(() => {
@@ -75,7 +74,7 @@ useEffect(() => {
     setSlideLeft(true);
 
   } else {
-    // Reset to default
+    // Reset to default when not shrunk
     setBgWidth(null);
     setBgHeight(null);
     setBgLeft(null);
@@ -84,7 +83,7 @@ useEffect(() => {
   }
 }, [hideNavControls, isMobileView]);
 
-// Recalculate on window resize (use the same logic)
+// Recalculate on window resize (same logic)
 useEffect(() => {
   function handleResize() {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current) {
@@ -100,6 +99,26 @@ useEffect(() => {
   window.addEventListener("resize", handleResize);
   return () => window.removeEventListener("resize", handleResize);
 }, [hideNavControls, isMobileView]);
+
+// Scroll handler to trigger the animation
+useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    if (isBlogPostPage && isMobileView) {
+      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
+        setHideNavControls(true);
+      } else {
+        setHideNavControls(false);
+      }
+    }
+    lastScrollY = currentScrollY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [isBlogPostPage, isMobileView]);
 
   
   

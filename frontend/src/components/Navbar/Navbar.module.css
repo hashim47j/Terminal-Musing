@@ -686,16 +686,17 @@
   z-index: 4500;
   overflow: hidden;
   
-  /* Add 'transform' to the transition */
-  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease, transform 0.4s ease;
+  /* Main navbar transition with NO delay */
+  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease;
+  
+  /* Transform has a DELAY - it waits for buttons to disappear first */
+  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease, transform 0.4s ease 0.3s;
 }
 
-/* When shrunk, slide left with animation */
 .blogMobileHeader.shrunk {
   border-radius: 13px;
-  transform: translateX(-20%); /* This will now animate smoothly */
+  transform: translateX(-20%); /* This will animate AFTER 0.3s delay */
 }
-
 
 
 /* Ensure children render above the masked surface */
@@ -751,9 +752,10 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
   max-width: 80vw;
-  transition: transform 0.4s ease; /* ✅ Add transform transition */
+  
+  /* Heading slide animation with SAME delay as navbar */
+  transition: transform 0.4s ease 0.3s;
 }
-
 /* Slide left class for heading */
 .slideLeft {
   transform: translateX(5%); /* ✅ Slide heading left */
@@ -826,7 +828,7 @@
 .hideNavButton {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-20px);
+  transform: translateY(-15px);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 

@@ -681,19 +681,19 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  
-  /* Dynamic border radius - matches heading when shrunk */
-  border-radius: 14px; /* Default full navbar radius */
+  border-radius: 14px;
   
   z-index: 4500;
   overflow: hidden;
-  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease;
+  
+  /* Add 'transform' to the transition */
+  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease, transform 0.4s ease;
 }
 
-/* When shrunk, match heading's border radius */
+/* When shrunk, slide left with animation */
 .blogMobileHeader.shrunk {
-  border-radius: 13px; /* Same as .blogMinimalTitle */
-  transform: translateX(-15%); /* Slide the entire navbar background left */
+  border-radius: 13px;
+  transform: translateX(-20%); /* This will now animate smoothly */
 }
 
 

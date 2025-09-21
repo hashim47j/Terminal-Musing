@@ -96,20 +96,19 @@ const Navbar = () => {
 
   // Recalculate on window resize
   useEffect(() => {
-    useEffect(() => {
-      function handleResize() {
-        if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
-          const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-          setBgWidth(headingRect.width);
-          setBgHeight(headingRect.height);
-          setBgLeft(headingRect.left);
-          setBgTop(headingRect.top);
-          setSlideLeft(true);
-        }
+    function handleResize() {
+      if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+        const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+        setBgWidth(headingRect.width);
+        setBgHeight(headingRect.height);
+        setBgLeft(headingRect.left);
+        setBgTop(headingRect.top);
+        setSlideLeft(true);
       }
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, [hideNavControls, isMobileView]);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [hideNavControls, isMobileView]);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -660,6 +659,6 @@ if (isBlogPostPage && isMobileView) {
       )}
     </>
   );
-})};
+};
 
 export default Navbar;

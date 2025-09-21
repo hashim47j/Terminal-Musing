@@ -64,7 +64,7 @@ useEffect(() => {
   if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
     const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
 
-    const shrinkPx = 20;
+    const shrinkPx = 50;
 
     // Use headingRect.left directly, and adjust for shrinking
     // Alternatively, if you want to compute centered left offset:
@@ -99,7 +99,7 @@ useEffect(() => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
 
-      const shrinkPx = 20;
+      const shrinkPx = 50;
 
       setBgWidth(headingRect.width - shrinkPx);
       setBgHeight(headingRect.height);

@@ -96,23 +96,20 @@ const Navbar = () => {
 
   // Recalculate on window resize
   useEffect(() => {
-    function handleResize() {
-      if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
-        const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-        
-        const headingCenter = headingRect.left + (headingRect.width / 2);
-        const newNavbarLeft = headingCenter - (headingRect.width / 2);
-        
-        setBgWidth(headingRect.width);
-        setBgHeight(headingRect.height);
-        setBgLeft(newNavbarLeft);
-        setBgTop(headingRect.top);
-        setSlideLeft(true);
+    useEffect(() => {
+      function handleResize() {
+        if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+          const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+          setBgWidth(headingRect.width);
+          setBgHeight(headingRect.height);
+          setBgLeft(headingRect.left);
+          setBgTop(headingRect.top);
+          setSlideLeft(true);
+        }
       }
-    }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [hideNavControls, isMobileView]);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, [hideNavControls, isMobileView]);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -663,6 +660,6 @@ if (isBlogPostPage && isMobileView) {
       )}
     </>
   );
-};
+})};
 
 export default Navbar;

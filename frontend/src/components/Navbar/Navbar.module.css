@@ -828,7 +828,7 @@
 .hideNavButton {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-10px);
+  transform: translateY(-5px);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 

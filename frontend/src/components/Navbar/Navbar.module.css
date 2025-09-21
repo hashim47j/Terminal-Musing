@@ -707,40 +707,53 @@
 
 /* Optional: small-phone tweaks (curves come from SVG r value) */
 @media (max-width: 380px) {
-  .blogMobileHeader {
-    /* keep for related spacing if you adjust layout on tiny screens */
-  }
-}
+/* In Navbar.module.css */
 
-
-.blogMinimalHomeButton {
+/* Main container - THIS IS THE ONLY BACKGROUND NOW */
+.blogMobileHeader {
   position: fixed;
-  top: 8px;
-  left: 4px; /* Increased from 10px to 20px */
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 54px;
+  
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  z-index: 4501;
+  justify-content: space-between; /* This correctly spaces the buttons and title */
+  padding: 0 10px;
+
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  
+  z-index: 4500;
+  transition: all 0.4s ease; /* Simplified transition */
 }
 
-/* Center title with rounded background */
-/* Heading slide left animation */
+/* This class is added by JS when shrinking */
+.blogMobileHeader.shrunk {
+  border-radius: 13px; /* Match heading's intended radius */
+  padding: 0; /* Remove padding when shrunk to allow perfect fit */
+  justify-content: center; /* Center the title when buttons are gone */
+}
+
+/* The Heading Pill - ITS OWN BACKGROUND IS NOW TRANSPARENT */
 .blogMinimalTitle {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.21);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  border-radius: 13px;
+
+  /* The parent .blogMobileHeader provides the background now */
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  /* Padding is still needed to give the parent its shape to shrink to */
   padding: 8px 18px;
+  
+  /* All your existing font/text styles are kept */
   font-family: 'Playfair Display', serif;
   font-size: 1.15em;
   color: #111;
@@ -750,84 +763,69 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
   max-width: 80vw;
-  transition: transform 0.4s ease; /* ✅ Add transform transition */
+  transition: transform 0.4s ease;
 }
 
-/* Slide left class for heading */
-.slideLeft {
-  transform: translateX(5%); /* ✅ Slide heading left */
-}
-
-
-
-
+/* The progress bar inside the title */
 .blogMinimalTitle .progressFillMobile {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(90deg, 
-  rgba(96, 104, 121, 0.8) 0%,  /* Stronger blue */
-  rgba(99, 109, 129, 0.6) 100%
-  );
+  background: linear-gradient(90deg, rgba(96, 104, 121, 0.8) 0%, rgba(99, 109, 129, 0.6) 100%);
   border-radius: 13px;
-  transition: width 0.1s ease-out, opacity 0.3s ease;
-  pointer-events: none;
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.6); /* subtle glow */
-  opacity: 0.3; /* match desktop visibility */
-  z-index: -1; /* behind the text */
+  transition: width 0.1s ease-out;
+  opacity: 0.3;
+  z-index: -1;
 }
 
-/* Hamburger button */
+/* Slide-left animation class */
+.slideLeft {
+  transform: translateX(5%);
+}
+
+/* Buttons - NO LONGER position: fixed */
+.blogMinimalHomeButton,
 .blogMinimalHamburger {
-  position: fixed;
-  top: 8px;
-  right: 4px; /* Increased from 10px to 20px */
+  position: relative; /* They are now part of the flex layout */
+  z-index: 2;
+  flex-shrink: 0; /* Prevent them from shrinking */
+
+  /* Keep all your visual styles */
   width: 38px;
   height: 38px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.25);
-  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  z-index: 4501;
 }
+.blogMinimalHomeButton { text-decoration: none; }
+.blogMinimalHamburger { padding: 0; flex-direction: column; }
 
-
+/* Hamburger lines are unchanged */
 .blogMinimalHamburger .line {
-  width: 18px;
-  height: 2px;
-  background: currentColor;
-  border-radius: 2px;
-  margin: 2px 0;
+  width: 18px; height: 2px; background: currentColor;
+  border-radius: 2px; margin: 2px 0;
   transition: all 0.32s cubic-bezier(.4,0,.2,1);
-  pointer-events: none;
 }
+.blogMinimalHamburger.hamburgerActive .line:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.blogMinimalHamburger.hamburgerActive .line:nth-child(2) { opacity: 0; transform: translateX(-16px); }
+.blogMinimalHamburger.hamburgerActive .line:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-/* Animate hamburger to cross (×) when menuOpen=true */
-.blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.blogMinimalHamburger.hamburgerActive .line:nth-child(2) {
-  opacity: 0;
-  transform: translateX(-16px);
-}
-.blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
+/* This class now correctly hides the buttons without breaking the layout */
 .hideNavButton {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-20px);
+  transform: scale(0.5); /* Use scale for a smoother animation */
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
 
 .headingLeft {
   justify-content: flex-start;
@@ -838,3 +836,4 @@
   /* keep all other heading background styles */
 }
 
+}

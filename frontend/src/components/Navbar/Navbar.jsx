@@ -67,7 +67,7 @@ const Navbar = () => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
 
-      const shrinkPx = 12;
+      const shrinkPx = 8;
       
       const headingCenter = headingRect.left + (headingRect.width / 2);
       const newNavbarLeft = headingCenter - (headingRect.width / 2);
@@ -102,7 +102,7 @@ const Navbar = () => {
       if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
         const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
 
-        const shrinkPx = 12;
+        const shrinkPx = 8;
         setBgWidth(headingRect.width);
         setBgHeight(headingRect.height);
         setBgLeft(headingRect.left);

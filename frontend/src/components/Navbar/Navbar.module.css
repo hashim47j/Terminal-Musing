@@ -693,6 +693,7 @@
 /* When shrunk, match heading's border radius */
 .blogMobileHeader.shrunk {
   border-radius: 13px; /* Same as .blogMinimalTitle */
+  transform: translateX(-10%); /* Slide the entire navbar background left */
 }
 
 

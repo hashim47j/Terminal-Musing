@@ -59,30 +59,52 @@ const Navbar = () => {
   const [slideLeft, setSlideLeft] = useState(false);
 
   // Update measurements for shrinking bg when hideNavControls changes
-  useEffect(() => {
-    console.log('hideNavControls:', hideNavControls, 'isMobileView:', isMobileView);
+  // First useEffect - Main measurement logic
+useEffect(() => {
+  console.log('hideNavControls:', hideNavControls, 'isMobileView:', isMobileView);
+  if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+    const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+    
+    // Method 1: Manual padding adjustment
+    const HEADING_PADDING_H = 36; // 18px * 2
+    const HEADING_PADDING_V = 16;  // 8px * 2
+    
+    setBgWidth(headingRect.width - HEADING_PADDING_H);
+    setBgHeight(headingRect.height - HEADING_PADDING_V);
+    setBgLeft(headingRect.left + HEADING_PADDING_H / 2);
+    setBgTop(headingRect.top + HEADING_PADDING_V / 2);
+    setSlideLeft(true);
+    
+    console.log('Set bg values:', {
+      width: headingRect.width - HEADING_PADDING_H,
+      height: headingRect.height - HEADING_PADDING_V,
+      left: headingRect.left + HEADING_PADDING_H / 2,
+      top: headingRect.top + HEADING_PADDING_V / 2
+    });
+  } else {
+    setBgWidth(null);
+    setBgHeight(null);
+    setBgLeft(null);
+    setBgTop(null);
+    setSlideLeft(false);
+  }
+}, [hideNavControls, isMobileView]);
+
+// Second useEffect - Resize handler with same logic
+useEffect(() => {
+  function handleResize() {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-  
-      const shrinkPx = 8;
-  
-      // Use headingRect.left directly, and adjust for shrinking
-      // Alternatively, if you want to compute centered left offset:
-      // const newLeft = headingRect.left; 
-      // or adjust based on application layout
-  
-      setBgWidth(headingRect.width - shrinkPx); // Reduce width by shrinkPx total (both sides)
-      setBgHeight(headingRect.height);
-      setBgLeft(headingRect.left + shrinkPx / 2); // Shift right by half shrinkPx (equal padding both sides)
-      setBgTop(headingRect.top);
+      
+      // Method 1: Manual padding adjustment
+      const HEADING_PADDING_H = 36; // 18px * 2
+      const HEADING_PADDING_V = 16;  // 8px * 2
+      
+      setBgWidth(headingRect.width - HEADING_PADDING_H);
+      setBgHeight(headingRect.height - HEADING_PADDING_V);
+      setBgLeft(headingRect.left + HEADING_PADDING_H / 2);
+      setBgTop(headingRect.top + HEADING_PADDING_V / 2);
       setSlideLeft(true);
-  
-      console.log('Set bg values:', {
-        width: headingRect.width - shrinkPx,
-        height: headingRect.height,
-        left: headingRect.left + shrinkPx / 2,
-        top: headingRect.top
-      });
     } else {
       setBgWidth(null);
       setBgHeight(null);
@@ -90,33 +112,11 @@ const Navbar = () => {
       setBgTop(null);
       setSlideLeft(false);
     }
-  }, [hideNavControls, isMobileView]);
-  
-  
-  // Handle window resize similarly
-  useEffect(() => {
-    function handleResize() {
-      if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
-        const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-  
-        const shrinkPx = 8;
-  
-        setBgWidth(headingRect.width - shrinkPx);
-        setBgHeight(headingRect.height);
-        setBgLeft(headingRect.left + shrinkPx / 2);
-        setBgTop(headingRect.top);
-        setSlideLeft(true);
-      } else {
-        setBgWidth(null);
-        setBgHeight(null);
-        setBgLeft(null);
-        setBgTop(null);
-        setSlideLeft(false);
-      }
-    }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [hideNavControls, isMobileView]);
+  }
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, [hideNavControls, isMobileView]);
+
   
   
   // Scroll listener to update hide/show of controls

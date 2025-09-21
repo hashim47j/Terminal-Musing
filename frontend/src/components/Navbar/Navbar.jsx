@@ -59,91 +59,61 @@ const Navbar = () => {
   const [slideLeft, setSlideLeft] = useState(false);
 
   // Update measurements for shrinking bg when hideNavControls changes
-  // In Navbar.jsx
+  useEffect(() => {
 
-// Update measurements for shrinking bg
-useEffect(() => {
-  if (hideNavControls && isMobileView && blogMinimalTitleRef.current) {
-    const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
-    
-    // Set the background to the EXACT dimensions and position of the title pill
-    setBgWidth(headingRect.width);
-    setBgHeight(headingRect.height);
-    setBgLeft(headingRect.left);
-    setBgTop(headingRect.top);
-    setSlideLeft(true);
+    console.log('hideNavControls:', hideNavControls, 'isMobileView:', isMobileView); 
 
-  } else {
-    // Reset to default when not shrunk
-    setBgWidth(null);
-    setBgHeight(null);
-    setBgLeft(null);
-    setBgTop(null);
-    setSlideLeft(false);
-  }
-}, [hideNavControls, isMobileView]);
 
-// Recalculate on window resize (same logic)
-useEffect(() => {
-  function handleResize() {
-    if (hideNavControls && isMobileView && blogMinimalTitleRef.current) {
+    if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+
+      const shrinkPx = 8;
+      
+      const headingCenter = headingRect.left + (headingRect.width / 2);
+      const newNavbarLeft = headingCenter - (headingRect.width / 2);
       
       setBgWidth(headingRect.width);
       setBgHeight(headingRect.height);
-      setBgLeft(headingRect.left);
+      setBgLeft(newNavbarLeft);
       setBgTop(headingRect.top);
       setSlideLeft(true);
+
+      console.log('Set bg values:', { // Debug
+        width: headingRect.width,
+        height: headingRect.height,
+        left: newNavbarLeft,
+        top: headingRect.top
+      });
+
+
+
+    } else {
+      setBgWidth(null);
+      setBgLeft(null);
+      setBgHeight(null);
+      setBgTop(null);
+      setSlideLeft(false);
     }
-  }
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, [hideNavControls, isMobileView]);
+  }, [hideNavControls, isMobileView]);
 
-// Scroll handler to trigger the animation
-useEffect(() => {
-  let lastScrollY = window.scrollY;
-
-  const handleScroll = () => {
-    const currentScrollY = window.scrollY;
-    if (isBlogPostPage && isMobileView) {
-      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
-        setHideNavControls(true);
-      } else {
-        setHideNavControls(false);
-      }
-    }
-    lastScrollY = currentScrollY;
-  };
-
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [isBlogPostPage, isMobileView]);
-
-  
-  
-  // Scroll listener to update hide/show of controls
+  // Recalculate on window resize
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-  
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-  
-      // Your existing scroll progress and navbar hide/show logic should be here
-  
-      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
-        setHideNavControls(true);
-      } else {
-        setHideNavControls(false);
+    function handleResize() {
+      if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
+        const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+
+const shrinkPx = 8; // or 12, adjust visually
+
+setBgWidth(headingRect.width - shrinkPx);
+setBgHeight(headingRect.height);
+setBgLeft(headingRect.left + shrinkPx / 2);
+setBgTop(headingRect.top);
+setSlideLeft(true);
       }
-  
-      lastScrollY = currentScrollY;
-    };
-  
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isMobileView]);
-  
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [hideNavControls, isMobileView]);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;

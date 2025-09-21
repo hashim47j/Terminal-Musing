@@ -102,10 +102,11 @@ const Navbar = () => {
       if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
         const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
 
-        const shrinkPx = 8;
-        setBgWidth(headingRect.width);
+        const shrinkPx = 8; // or 12, adjust visually
+
+        setBgWidth(headingRect.width - shrinkPx);
         setBgHeight(headingRect.height);
-        setBgLeft(headingRect.left);
+        setBgLeft(headingRect.left + shrinkPx / 2);
         setBgTop(headingRect.top);
         setSlideLeft(true);
       }

@@ -692,8 +692,10 @@
 
 /* When shrunk, match heading's border radius */
 .blogMobileHeader.shrunk {
-  border-radius: 13px; /* Same as .blogMinimalTitle */
-  min-width: unset !important; 
+  border-radius: 13px;
+  width: auto !important; /* ← Let JavaScript control the width */
+  /* Remove any min-width that might be interfering */
+  min-width: unset !important;
 }
 
 

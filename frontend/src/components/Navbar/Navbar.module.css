@@ -695,7 +695,7 @@
 
 .blogMobileHeader.shrunk {
   border-radius: 13px;
-  transform: translateX(-20%); /* This will animate AFTER 0.3s delay */
+  transform: translateX(-5%); /* This will animate AFTER 0.3s delay */
 }
 
 

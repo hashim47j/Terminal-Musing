@@ -73,7 +73,7 @@ useEffect(() => {
 
     setBgWidth(headingRect.width - shrinkPx); // Reduce width by shrinkPx total (both sides)
     setBgHeight(headingRect.height);
-    setBgLeft(headingRect.left + shrinkPx / 2); // Shift right by half shrinkPx (equal padding both sides)
+     // Shift right by half shrinkPx (equal padding both sides)
     setBgTop(headingRect.top);
     setSlideLeft(true);
 
@@ -86,7 +86,7 @@ useEffect(() => {
   } else {
     setBgWidth(null);
     setBgHeight(null);
-    setBgLeft(null);
+   
     setBgTop(null);
     setSlideLeft(false);
   }
@@ -103,7 +103,7 @@ useEffect(() => {
 
       setBgWidth(headingRect.width - shrinkPx);
       setBgHeight(headingRect.height);
-      setBgLeft(headingRect.left + shrinkPx / 2);
+      
       setBgTop(headingRect.top);
       setSlideLeft(true);
     } else {
@@ -440,7 +440,7 @@ if (isBlogPostPage && isMobileView) {
   console.log('JSX styles being applied:', {
     width: bgWidth ? `${bgWidth}px` : "100%",
     height: bgHeight ? `${bgHeight}px` : "54px", 
-    left: bgLeft ? `${bgLeft}px` : "0",
+    
     top: bgTop ? `${bgTop}px` : "0",
     transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)'
   });

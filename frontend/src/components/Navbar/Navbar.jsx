@@ -488,7 +488,7 @@ if (isBlogPostPage && isMobileView) {
   className={[
     styles.blogMinimalTitle,
     slideLeft ? styles.slideLeft : '',
-    hideNavControls ? styles.noEllipsis : ''
+    hideNavControls ? `${styles.noEllipsis} ${styles.padRight}` : ''
   ].join(' ')}
 >
   {(() => {

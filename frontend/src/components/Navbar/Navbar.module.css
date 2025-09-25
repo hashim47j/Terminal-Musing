@@ -759,13 +759,17 @@
 
 .blogMinimalTitle.noEllipsis {
   text-overflow: clip;
-  overflow: visible;     /* or overflow: hidden; if you still want it clipped cleanly */
-  white-space: nowrap;   /* keep it on one line */
-  max-width: none;       /* remove the 80vw limit so it can match the shrunk bg width */
+  overflow: visible;     
+  white-space: nowrap;   
+  max-width: none;       
 }
-/* Slide left class for heading */
+
+.blogMinimalTitle.noEllipsis.padRight {
+  padding-right: 26px; 
+}
+
 .slideLeft {
-  transform: translateX(5%); /* ✅ Slide heading left */
+  transform: translateX(5%); 
 }
 
 

@@ -655,13 +655,30 @@ useEffect(() => {
       <div
   className={`
     ${styles.navbarRight}
+    ${hide ? styles.hide : ""}
     ${isLightBackground ? styles.darkText : styles.lightText}
     ${menuOpen ? styles.menuOpen : ""}
     ${menuClosing ? styles.menuClosing : ""}
     ${isHomePage ? styles.noShadow : ""}
   `}
-  style={{ position: 'relative', zIndex: 1000 }}
 >
+  <div
+    onClick={toggleMenu}
+    className={`${styles.hamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
+    aria-label="Toggle menu"
+    role="button"
+    tabIndex={0}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        toggleMenu();
+      }
+    }}
+  >
+    <span className={styles.line}></span>
+    <span className={styles.line}></span>
+    <span className={styles.line}></span>
+  </div>
+
   <div
     ref={navLinksRef}
     className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}

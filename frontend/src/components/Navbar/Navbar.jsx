@@ -494,25 +494,29 @@ className={[
 ].join(' ')}
 >
 {stripCategorySuffix(pageTitle || getCenterTitle())}
+
 <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
 </span>
 
 
 
-        <button
-          className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
-          aria-label="Toggle menu"
-          onClick={toggleMenu}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              toggleMenu();
-            }
-          }}
-        >
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
-        </button>
+<div
+  onClick={toggleMenu}
+  className={`${styles.hamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
+  aria-label="Toggle menu"
+  role="button"
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      toggleMenu();
+    }
+  }}
+>
+  <span className={styles.line}></span>
+  <span className={styles.line}></span>
+  <span className={styles.line}></span>
+</div>
+
       </div>
 
       {/* REUSE THE SAME MOBILE OVERLAY AND MENU FROM HOME PAGE */}

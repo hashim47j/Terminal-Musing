@@ -486,7 +486,7 @@ if (isBlogPostPage && isMobileView) {
         </Link>
 
         <span
-<span
+
 ref={blogMinimalTitleRef}
 className={[
   styles.blogMinimalTitle,

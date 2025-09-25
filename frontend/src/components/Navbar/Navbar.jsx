@@ -60,14 +60,12 @@ const Navbar = () => {
 
   const stripCategorySuffix = (text) => {
     if (!text) return "";
-    // Matches suffixes like:
-    //  " - Philosophy", " - History", " - Technology",
-    //  " - Tech", " - Writings", " - Legal & Social"
-    // Supports -, – or — and optional extra spaces
     const catPattern = /\s*[-–—]\s*(Philosophy|History|Technology|Tech|Writings|Legal\s*&\s*Social)\s*$/i;
     return text.replace(catPattern, "").trim();
   };
-  
+
+  const rawTitle = pageTitle || getCenterTitle();
+  const displayTitle = stripCategorySuffix(rawTitle);
 
   // Update measurements for shrinking bg when hideNavControls changes
 useEffect(() => {
@@ -129,6 +127,27 @@ useEffect(() => {
   return () => window.removeEventListener("resize", handleResize);
 }, [hideNavControls, isMobileView]);
 
+useEffect(() => {
+  function updateSizing() {
+    if (hideNavControls && isMobileView && blogMinimalTitleRef.current) {
+      const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
+      const rightBreath = 0; // keep 0 here; visual padding is in CSS via padding-right
+      setBgWidth(headingRect.width + rightBreath);
+      setBgHeight(headingRect.height);
+      // Keep using transform for slide; do not override with left if you animate via transform
+      setBgTop(headingRect.top);
+      setSlideLeft(true);
+    } else {
+      setBgWidth(null);
+      setBgHeight(null);
+      setBgTop(null);
+      setSlideLeft(false);
+    }
+  }
+  updateSizing();
+  window.addEventListener("resize", updateSizing);
+  return () => window.removeEventListener("resize", updateSizing);
+}, [hideNavControls, isMobileView, displayTitle]); // re-measure when title text changes
 
 // Scroll listener to update hide/show of controls
 useEffect(() => {
@@ -486,15 +505,15 @@ if (isBlogPostPage && isMobileView) {
         </Link>
 
         <span
-
-ref={blogMinimalTitleRef}
-className={[
-  styles.blogMinimalTitle,
-  slideLeft ? styles.slideLeft : ''
-].join(' ')}
+  ref={blogMinimalTitleRef}
+  className={[
+    styles.blogMinimalTitle,
+    slideLeft ? styles.slideLeft : '',
+    hideNavControls ? styles.noEllipsis : ''   // add noEllipsis only when slid
+  ].join(' ')}
 >
-{stripCategorySuffix(pageTitle || getCenterTitle())}
-<div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
+  {displayTitle}
+  <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
 </span>
 
 

@@ -757,12 +757,17 @@
   transition: transform 0.4s ease 0.3s;
 }
 
+/* Disable ellipsis while slid and let the title size to content */
 .blogMinimalTitle.noEllipsis {
-  text-overflow: clip;
-  overflow: visible;     
-  white-space: nowrap;   
-  max-width: none;       
+  text-overflow: clip;     /* no dots */ 
+  overflow: visible;       /* reveal full text */
+  white-space: nowrap;     /* stay one line */
+  min-width: max-content;  /* grow to fit full text width */
+  max-width: none;         /* no cap in slid mode */
+  display: inline-block;   /* ensure a measurable inline box */
+  padding-right: 22px;     /* breathing space at end (tweak value) */
 }
+
 
 .blogMinimalTitle.noEllipsis.padRight {
   padding-right: 26px; 

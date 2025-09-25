@@ -447,9 +447,11 @@ useEffect(() => {
   };
 
 if (isBlogPostPage && isMobileView) {
+
   console.log('JSX styles being applied:', {
     width: bgWidth ? `${bgWidth}px` : "100%",
     height: bgHeight ? `${bgHeight}px` : "54px", 
+    
     top: bgTop ? `${bgTop}px` : "0",
     transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)'
   });
@@ -457,18 +459,20 @@ if (isBlogPostPage && isMobileView) {
     <>
       {/* Blog Mobile Header - UPDATED WITH LATEST CHANGES */}
       <div
-        ref={blogMobileHeaderRef}
-        className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
-        style={{
-          width: bgWidth ? `${bgWidth}px` : "100%",
-          height: bgHeight ? `${bgHeight}px` : "54px", 
-          left: bgLeft ? `${bgLeft}px` : "0",
-          top: bgTop ? `${bgTop}px` : "0",
-          transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s",
-          position: "fixed"
-        }}
-        data-navbar-no
-      >
+  ref={blogMobileHeaderRef}
+  className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
+  style={{
+    width: bgWidth ? `${bgWidth}px` : "100%",
+    height: bgHeight ? `${bgHeight}px` : "54px", 
+    left: bgLeft ? `${bgLeft}px` : "0",
+    top: bgTop ? `${bgTop}px` : "0",
+    // Remove this transform from inline styles, let slideLeft class handle it
+    transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s",
+    position: "fixed"
+  }}
+  data-navbar-no
+>
+
         <Link
           to="/"
           className={`${styles.blogMinimalHomeButton} ${hideNavControls ? styles.hideNavButton : ""}`}
@@ -482,22 +486,23 @@ if (isBlogPostPage && isMobileView) {
         </Link>
 
         <span
-          ref={blogMinimalTitleRef}
-          className={[
-            styles.blogMinimalTitle,
-            slideLeft ? styles.slideLeft : ''
-          ].join(' ')}
-        >
-          {stripCategorySuffix(pageTitle || getCenterTitle())}
-          <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
-        </span>
 
-        <div
-          onClick={toggleMenu}
-          className={`${styles.hamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
+ref={blogMinimalTitleRef}
+className={[
+  styles.blogMinimalTitle,
+  slideLeft ? styles.slideLeft : ''
+].join(' ')}
+>
+{stripCategorySuffix(pageTitle || getCenterTitle())}
+<div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
+</span>
+
+
+
+        <button
+          className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
           aria-label="Toggle menu"
-          role="button"
-          tabIndex={0}
+          onClick={toggleMenu}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               toggleMenu();
@@ -507,58 +512,47 @@ if (isBlogPostPage && isMobileView) {
           <span className={styles.line}></span>
           <span className={styles.line}></span>
           <span className={styles.line}></span>
-        </div>
+        </button>
       </div>
 
       {/* REUSE THE SAME MOBILE OVERLAY AND MENU FROM HOME PAGE */}
       <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
 
       <div
-        className={`
-          ${styles.navbarRight}
-          ${isLightBackground ? styles.darkText : styles.lightText}
-          ${menuOpen ? styles.menuOpen : ""}
-          ${menuClosing ? styles.menuClosing : ""}
-          ${isHomePage ? styles.noShadow : ""}
-        `}
-        style={{ position: 'relative', zIndex: 1000 }}
+        ref={navLinksRef}
+        className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          ref={navLinksRef}
-          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
-          {[
-            { to: "/blog/philosophy", label: "Philosophy" },
-            { to: "/blog/history", label: "History" },
-            { to: "/blog/writings", label: "Writings" },
-            { to: "/blog/lsconcern", label: "Legal & Social Issues" },
-            { to: "/blog/tech", label: "Tech" },
-            { to: "/daily-thoughts", label: "Daily Thoughts" },
-            { to: "/admin/login", label: "Author(s)", isAdmin: true },
-          ].map(({ to, label, isAdmin }) => {
-            const isActive = getActiveNavPath() === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`
-                  ${styles.navLink} 
-                  ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
-                  ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
-                  ${isAdmin ? styles.adminLink : ""}
-                `}
-                onClick={(e) => handleNavLinkClick(e, to)}
-                onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
-                onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
-                style={{ "--hover-progress": hoverProgress[to] || 0 }}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </div>
+        <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
+        {[
+          { to: "/blog/philosophy", label: "Philosophy" },
+          { to: "/blog/history", label: "History" },
+          { to: "/blog/writings", label: "Writings" },
+          { to: "/blog/lsconcern", label: "Legal & Social Issues" },
+          { to: "/blog/tech", label: "Tech" },
+          { to: "/daily-thoughts", label: "Daily Thoughts" },
+          { to: "/admin/login", label: "Author(s)", isAdmin: true },
+        ].map(({ to, label, isAdmin }) => {
+          const isActive = getActiveNavPath() === to;
+          return (
+            <Link
+              key={to}
+              to={to}
+              className={`
+                ${styles.navLink} 
+                ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
+                ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
+                ${isAdmin ? styles.adminLink : ""}
+              `}
+              onClick={(e) => handleNavLinkClick(e, to)}
+              onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
+              onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
+              style={{ "--hover-progress": hoverProgress[to] || 0 }}
+            >
+              {label}
+            </Link>
+          );
+        })}
       </div>
 
       {/* Secret Dialog */}
@@ -574,7 +568,6 @@ if (isBlogPostPage && isMobileView) {
     </>
   );
 }
-
 
   const handleNavLinkClick = (e, path) => {
     e.preventDefault();
@@ -635,69 +628,69 @@ if (isBlogPostPage && isMobileView) {
       </div>
       
       <div
-  className={`
-    ${styles.navbarRight}
-    ${hide ? styles.hide : ""}
-    ${isLightBackground ? styles.darkText : styles.lightText}
-    ${menuOpen ? styles.menuOpen : ""}
-    ${menuClosing ? styles.menuClosing : ""}
-    ${isHomePage ? styles.noShadow : ""}
-  `}
->
-  <div
-    onClick={toggleMenu}
-    className={`${styles.hamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
-    aria-label="Toggle menu"
-    role="button"
-    tabIndex={0}
-    onKeyDown={(e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        toggleMenu();
-      }
-    }}
-  >
-    <span className={styles.line}></span>
-    <span className={styles.line}></span>
-    <span className={styles.line}></span>
-  </div>
-
-  <div
-    ref={navLinksRef}
-    className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
-    onClick={(e) => e.stopPropagation()}
-  >
-    <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
-    {[
-      { to: "/blog/philosophy", label: "Philosophy" },
-      { to: "/blog/history", label: "History" },
-      { to: "/blog/writings", label: "Writings" },
-      { to: "/blog/lsconcern", label: "Legal & Social Issues" },
-      { to: "/blog/tech", label: "Tech" },
-      { to: "/daily-thoughts", label: "Daily Thoughts" },
-      { to: "/admin/login", label: "Author(s)", isAdmin: true },
-    ].map(({ to, label, isAdmin }) => {
-      const isActive = getActiveNavPath() === to;
-      return (
-        <Link
-          key={to}
-          to={to}
-          className={`
-            ${styles.navLink} 
-            ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
-            ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
-            ${isAdmin ? styles.adminLink : ""}
-          `}
-          onClick={(e) => handleNavLinkClick(e, to)}
-          onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
-          onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
-          style={{ "--hover-progress": hoverProgress[to] || 0 }}
+        className={`
+          ${styles.navbarRight}
+          ${hide ? styles.hide : ""}
+          ${isLightBackground ? styles.darkText : styles.lightText}
+          ${menuOpen ? styles.menuOpen : ""}
+          ${menuClosing ? styles.menuClosing : ""}
+          ${isHomePage ? styles.noShadow : ""}
+        `}
+      >
+        <div
+          onClick={toggleMenu}
+          className={`${styles.hamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
+          aria-label="Toggle menu"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              toggleMenu();
+            }
+          }}
         >
-          {label}
-        </Link>
-      );
-    })}
-  </div>
-</div>
+          <span className={styles.line}></span>
+          <span className={styles.line}></span>
+          <span className={styles.line}></span>
+        </div>
+
+        <div
+          ref={navLinksRef}
+          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
+          {[
+            { to: "/blog/philosophy", label: "Philosophy" },
+            { to: "/blog/history", label: "History" },
+            { to: "/blog/writings", label: "Writings" },
+            { to: "/blog/lsconcern", label: "Legal & Social Issues" },
+            { to: "/blog/tech", label: "Tech" },
+            { to: "/daily-thoughts", label: "Daily Thoughts" },
+            { to: "/admin/login", label: "Author(s)", isAdmin: true },
+          ].map(({ to, label, isAdmin }) => {
+            const isActive = getActiveNavPath() === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`
+                  ${styles.navLink} 
+                  ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
+                  ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
+                  ${isAdmin ? styles.adminLink : ""}
+                `}
+                onClick={(e) => handleNavLinkClick(e, to)}
+                onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
+                onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
+                style={{ "--hover-progress": hoverProgress[to] || 0 }}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
 
       <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
 

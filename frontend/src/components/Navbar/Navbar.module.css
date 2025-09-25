@@ -696,7 +696,6 @@
 .blogMobileHeader.shrunk {
   border-radius: 13px;
   transform: translateX(-3%); /* This will animate AFTER 0.3s delay */
-  padding: 0 -2px; 
 }
 
 
@@ -756,6 +755,13 @@
   
   /* Heading slide animation with SAME delay as navbar */
   transition: transform 0.4s ease 0.3s;
+}
+
+.blogMinimalTitle.noEllipsis {
+  text-overflow: clip;
+  overflow: visible;     /* or overflow: hidden; if you still want it clipped cleanly */
+  white-space: nowrap;   /* keep it on one line */
+  max-width: none;       /* remove the 80vw limit so it can match the shrunk bg width */
 }
 /* Slide left class for heading */
 .slideLeft {

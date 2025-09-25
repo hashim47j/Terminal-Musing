@@ -485,17 +485,19 @@ if (isBlogPostPage && isMobileView) {
 
         <span
   ref={blogMinimalTitleRef}
-  className={`${styles.blogMinimalTitle} ${slideLeft ? styles.slideLeft : ''}`}
+  className={[
+    styles.blogMinimalTitle,
+    slideLeft ? styles.slideLeft : '',
+    hideNavControls ? styles.noEllipsis : ''
+  ].join(' ')}
 >
-{(() => {
-  const raw = pageTitle || getCenterTitle();
-  return (isBlogPostPage && hideNavControls) ? stripCategorySuffix(raw) : raw;
-})()}
-          <div
-            className={styles.progressFillMobile}
-            style={{ width: `${scrollProgress}%` }}
-          />
-        </span>
+  {(() => {
+    const raw = pageTitle || getCenterTitle();
+    return (isBlogPostPage && hideNavControls) ? stripCategorySuffix(raw) : raw;
+  })()}
+  <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
+</span>
+
 
         <button
           className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}

@@ -768,6 +768,17 @@
   padding-right: 22px;     /* breathing space at end (tweak value) */
 }
 
+/* Minimal: disable ellipsis + give breath only when slid */
+.blogMinimalTitle.slideLeft {
+  text-overflow: clip;
+  overflow: visible;
+  white-space: nowrap;
+  min-width: max-content;
+  max-width: none;
+  display: inline-block;
+  padding-right: 22px; /* tweak space */
+}
+
 
 .blogMinimalTitle.noEllipsis.padRight {
   padding-right: 26px; 

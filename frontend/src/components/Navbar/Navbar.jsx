@@ -58,6 +58,15 @@ const Navbar = () => {
   const [bgTop, setBgTop] = useState(null);
   const [slideLeft, setSlideLeft] = useState(false);
 
+  const stripCategorySuffix = (text) => {
+    if (!text) return "";
+    // Matches: " - Philosophy", " - History", " - Technology",
+    // " - Legal & Social", " - Writings", " - Tech"
+    // Supports -, – or — as the dash
+    const catPattern = /\s[-–—]\s(Philosophy|History|Technology|Legal\s*&\s*Social|Writings|Tech)$/i;
+    return text.replace(catPattern, "");
+  };
+
   // Update measurements for shrinking bg when hideNavControls changes
 useEffect(() => {
   console.log('hideNavControls:', hideNavControls, 'isMobileView:', isMobileView);
@@ -478,7 +487,10 @@ if (isBlogPostPage && isMobileView) {
   ref={blogMinimalTitleRef}
   className={`${styles.blogMinimalTitle} ${slideLeft ? styles.slideLeft : ''}`}
 >
-          {pageTitle || getCenterTitle()}
+{(() => {
+  const raw = pageTitle || getCenterTitle();
+  return (isBlogPostPage && hideNavControls) ? stripCategorySuffix(raw) : raw;
+})()}
           <div
             className={styles.progressFillMobile}
             style={{ width: `${scrollProgress}%` }}

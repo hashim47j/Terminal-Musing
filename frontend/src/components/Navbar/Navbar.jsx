@@ -60,12 +60,14 @@ const Navbar = () => {
 
   const stripCategorySuffix = (text) => {
     if (!text) return "";
-    // Matches: " - Philosophy", " - History", " - Technology",
-    // " - Legal & Social", " - Writings", " - Tech"
-    // Supports -, – or — as the dash
-    const catPattern = /\s[-–—]\s(Philosophy|History|Technology|Legal\s*&\s*Social|Writings|Tech)$/i;
-    return text.replace(catPattern, "");
+    // Matches suffixes like:
+    //  " - Philosophy", " - History", " - Technology",
+    //  " - Tech", " - Writings", " - Legal & Social"
+    // Supports -, – or — and optional extra spaces
+    const catPattern = /\s*[-–—]\s*(Philosophy|History|Technology|Tech|Writings|Legal\s*&\s*Social)\s*$/i;
+    return text.replace(catPattern, "").trim();
   };
+  
 
   // Update measurements for shrinking bg when hideNavControls changes
 useEffect(() => {
@@ -484,19 +486,17 @@ if (isBlogPostPage && isMobileView) {
         </Link>
 
         <span
-  ref={blogMinimalTitleRef}
-  className={[
-    styles.blogMinimalTitle,
-    slideLeft ? styles.slideLeft : '',
-    hideNavControls ? `${styles.noEllipsis} ${styles.padRight}` : ''
-  ].join(' ')}
+<span
+ref={blogMinimalTitleRef}
+className={[
+  styles.blogMinimalTitle,
+  slideLeft ? styles.slideLeft : ''
+].join(' ')}
 >
-  {(() => {
-    const raw = pageTitle || getCenterTitle();
-    return (isBlogPostPage && hideNavControls) ? stripCategorySuffix(raw) : raw;
-  })()}
-  <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
+{stripCategorySuffix(pageTitle || getCenterTitle())}
+<div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
 </span>
+
 
 
         <button

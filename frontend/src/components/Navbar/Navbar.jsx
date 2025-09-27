@@ -638,14 +638,20 @@ className={[
 )}
 
 <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
-  <Link to={currentPath} className={styles.brand}>
-    {getCenterTitle() === "Terminal Musing" ? (
-      <>
-        <span style={{fontFamily: 'Abhaya Libre, serif'}}>Terminal</span>
-        <span style={{fontFamily: 'Luxurious Script, cursive'}}> Musing</span>
-      </>
-    ) : getCenterTitle()}
-  </Link>
+<Link to={currentPath} className={styles.brand}>
+  {getCenterTitle() === "Terminal Musing" ? (
+    <>
+      <span style={{fontFamily: 'Abhaya Libre, serif'}}>Terminal</span>
+      <span style={{
+        fontFamily: 'Luxurious Script, cursive',
+        marginLeft: '-8px', 
+        position: 'relative',
+        top: '3px' 
+      }}> Musing</span>
+    </>
+  ) : getCenterTitle()}
+</Link>
+
 </div>
 </div>
 

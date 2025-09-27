@@ -618,32 +618,38 @@ className={[
 <div className={bridgeClass} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
 
 <div
-  className={navbarLeftClass}
-  style={{ 
-    width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
-    left: currentPath === "/" ? "30px" : "auto", // Slide to home button position
-    transition: "left 0.3s ease-in-out"
-  }}
+
+className={navbarLeftClass}
+style={{ 
+  width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+  left: currentPath === "/" ? "30px" : "auto",
+  transition: "left 0.3s ease-in-out"
+}}
+>
+{/* Progress fill overlay */}
+{isBlogPostPage && (
+  <div 
+    className={styles.progressFill}
+    style={{ 
+      width: `${scrollProgress}%`,
+      opacity: isScrolled ? 0.3 : 0
+    }}
   />
-      <div className={`${styles.bridgeConnector} ${hide ? styles.hide : ""} ${isLightBackground ? styles.darkText : styles.lightText} ${isHomePage ? styles.noShadow : ""}`} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
-      
-      <div
-        className={`
-          ${styles.navbarLeft}
-          ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
-          ${isBlogPostPage ? styles.blogPostActive : ''}
-          ${isLightBackground ? styles.darkText : styles.lightText}
-          ${!isBlogPostPage && hide ? styles.hide : ''}
-          ${isBlogPostPage && !isScrolled ? styles.hide : ''}
-          ${isHomePage ? styles.noShadow : ""}
-        `}
-        style={{ 
-          width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
-          ...(isBlogPostPage && { 
-           transform: `translateY(${isMobileView ? '0px' : '0px'})`
-          })
-        }}
-      >
+)}
+
+<div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
+  <Link to={currentPath} className={styles.brand}>
+    {getCenterTitle() === "Terminal Musing" ? (
+      <>
+        <span style={{fontFamily: 'Abhaya Libre, serif'}}>Terminal</span>
+        <span style={{fontFamily: 'Luxurious Script, cursive'}}> Musing</span>
+      </>
+    ) : getCenterTitle()}
+  </Link>
+</div>
+</div>
+
+
         {/* Progress fill overlay */}
         {isBlogPostPage && (
           <div 
@@ -666,7 +672,7 @@ className={[
 </Link>
 
         </div>
-      </div>
+    
       
       <div
         className={`

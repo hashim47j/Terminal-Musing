@@ -631,7 +631,7 @@ className={[
         className={styles.brandImage}
         style={{ 
           height: "auto", 
-          maxHeight: "32px", // Adjust based on your navbar height
+          maxHeight: "80px",
           width: "auto"
         }}
       />

@@ -641,16 +641,21 @@ className={[
 <Link to={currentPath} className={styles.brand}>
   {getCenterTitle() === "Terminal Musing" ? (
     <>
-      <span style={{fontFamily: 'Abhaya Libre, serif'}}>Terminal</span>
+      <span style={{
+        fontFamily: 'Abhaya Libre, serif',
+        fontSize: '20px' 
+      }}>Terminal</span>
       <span style={{
         fontFamily: 'Luxurious Script, cursive',
-        marginLeft: '-10px', 
+        marginLeft: '-10px',
         position: 'relative',
-        top: '5px' 
+        top: '5px',
+        fontSize: '18px' 
       }}> Musing</span>
     </>
   ) : getCenterTitle()}
 </Link>
+
 
 </div>
 </div>

@@ -78,11 +78,6 @@ useEffect(() => {
 
     const shrinkPx = 8;
 
-    // Use headingRect.left directly, and adjust for shrinking
-    // Alternatively, if you want to compute centered left offset:
-    // const newLeft = headingRect.left; 
-    // or adjust based on application layout
-
     setBgWidth(headingRect.width - shrinkPx); // Reduce width by shrinkPx total (both sides)
     setBgHeight(headingRect.height);
      // Shift right by half shrinkPx (equal padding both sides)
@@ -622,9 +617,15 @@ className={[
         )}
 
         <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
-          <Link to={currentPath} className={styles.brand}>
-            {getCenterTitle()}
-          </Link>
+        <Link to={currentPath} className={styles.brand}>
+  {getCenterTitle() === "Terminal Musing" ? (
+    <>
+      <span style={{fontFamily: 'Agdasima, sans-serif'}}>Terminal</span>
+      <span style={{fontFamily: 'Luxurious Script, cursive'}}> Musing</span>
+    </>
+  ) : getCenterTitle()}
+</Link>
+
         </div>
       </div>
       

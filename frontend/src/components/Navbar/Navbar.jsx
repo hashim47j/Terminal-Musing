@@ -585,6 +585,7 @@ className={[
   return (
     <>
       <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ""} ${isHomePage ? styles.noShadow : ""}`} aria-label="Home">
+
         <img src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} alt="Home" style={{ width: "27px", height: "27px", objectFit: "contain" }} />
       </Link>
       

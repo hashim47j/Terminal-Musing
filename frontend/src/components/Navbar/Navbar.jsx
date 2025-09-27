@@ -647,9 +647,9 @@ className={[
       }}>Terminal</span>
       <span style={{
         fontFamily: 'Luxurious Script, cursive',
-        marginLeft: '-8px',
+        marginLeft: '-10px',
         position: 'relative',
-        top: '3px',
+        top: '5px',
         fontSize: currentPath === "/" ? (isMobileView ? '28px' : '46px') : '14px' // Only larger on home page
       }}> Musing</span>
     </>

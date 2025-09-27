@@ -643,18 +643,19 @@ className={[
     <>
       <span style={{
         fontFamily: 'Abhaya Libre, serif',
-        fontSize: isMobileView ? '30px' : '50px' // Mobile: 18px, Desktop: 24px
+        fontSize: currentPath === "/" ? (isMobileView ? '30px' : '50px') : '16px' // Only larger on home page
       }}>Terminal</span>
       <span style={{
         fontFamily: 'Luxurious Script, cursive',
         marginLeft: '-8px',
         position: 'relative',
         top: '3px',
-        fontSize: isMobileView ? '26px' : '46px' // Mobile: 16px, Desktop: 20px
+        fontSize: currentPath === "/" ? (isMobileView ? '28px' : '46px') : '14px' // Only larger on home page
       }}> Musing</span>
     </>
   ) : getCenterTitle()}
 </Link>
+
 
 
 

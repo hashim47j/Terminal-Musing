@@ -240,25 +240,6 @@ useEffect(() => {
         }
       }
     }
-
-    const navbarLeftClass = `
-    ${styles.navbarLeft}
-    ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
-    ${isBlogPostPage ? styles.blogPostActive : ''}
-    ${isLightBackground ? styles.darkText : styles.lightText}
-    ${!isBlogPostPage && hide ? styles.hide : ''}
-    ${isBlogPostPage && !isScrolled ? styles.hide : ''}
-    ${isHomePage ? styles.noShadow : ""}
-    ${currentPath === "/" ? styles.homePagePosition : ""}
-  `;
-
-  const bridgeClass = `
-    ${styles.bridgeConnector} 
-    ${hide ? styles.hide : ""} 
-    ${isLightBackground ? styles.darkText : styles.lightText} 
-    ${isHomePage ? styles.noShadow : ""} 
-    ${currentPath === "/" ? styles.hideOnHome : ""}
-  `;
     
     // Handle category pages - NEW: Support both old and new routes
     const categoryMappings = {
@@ -462,6 +443,25 @@ useEffect(() => {
       setMenuOpen(true);
     }
   };
+
+  const navbarLeftClass = `
+  ${styles.navbarLeft}
+  ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
+  ${isBlogPostPage ? styles.blogPostActive : ''}
+  ${isLightBackground ? styles.darkText : styles.lightText}
+  ${!isBlogPostPage && hide ? styles.hide : ''}
+  ${isBlogPostPage && !isScrolled ? styles.hide : ''}
+  ${isHomePage ? styles.noShadow : ""}
+  ${currentPath === "/" ? styles.homePagePosition : ""}
+`;
+
+const bridgeClass = `
+  ${styles.bridgeConnector} 
+  ${hide ? styles.hide : ""} 
+  ${isLightBackground ? styles.darkText : styles.lightText} 
+  ${isHomePage ? styles.noShadow : ""} 
+  ${currentPath === "/" ? styles.hideOnHome : ""}
+`;
 
 if (isBlogPostPage && isMobileView) {
 

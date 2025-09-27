@@ -68,6 +68,27 @@ const Navbar = () => {
     const catPattern = /\s*[-–—]\s*(Philosophy|History|Technology|Tech|Writings|Legal\s*&\s*Social)\s*$/i;
     return text.replace(catPattern, "").trim();
   };
+
+  // Add this CSS class logic in your return statement
+const navbarLeftClass = `
+${styles.navbarLeft}
+${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
+${isBlogPostPage ? styles.blogPostActive : ''}
+${isLightBackground ? styles.darkText : styles.lightText}
+${!isBlogPostPage && hide ? styles.hide : ''}
+${isBlogPostPage && !isScrolled ? styles.hide : ''}
+${isHomePage ? styles.noShadow : ""}
+${currentPath === "/" ? styles.homePagePosition : ""}
+`;
+
+const bridgeClass = `
+${styles.bridgeConnector} 
+${hide ? styles.hide : ""} 
+${isLightBackground ? styles.darkText : styles.lightText} 
+${isHomePage ? styles.noShadow : ""} 
+${currentPath === "/" ? styles.hideOnHome : ""}
+`;
+
   
 
   // Update measurements for shrinking bg when hideNavControls changes
@@ -478,9 +499,13 @@ if (isBlogPostPage && isMobileView) {
       src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
       alt="Home"
       style={{ width: "22px", height: "22px", objectFit: "contain" }}
-    />
+   
+   
+   
+   />
   </Link>
 )}
+
 
 
         <span
@@ -590,7 +615,16 @@ className={[
   </Link>
 )}
 
-      
+<div className={bridgeClass} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
+
+<div
+  className={navbarLeftClass}
+  style={{ 
+    width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+    left: currentPath === "/" ? "30px" : "auto", // Slide to home button position
+    transition: "left 0.3s ease-in-out"
+  }}
+  />
       <div className={`${styles.bridgeConnector} ${hide ? styles.hide : ""} ${isLightBackground ? styles.darkText : styles.lightText} ${isHomePage ? styles.noShadow : ""}`} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
       
       <div

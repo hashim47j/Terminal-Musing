@@ -868,3 +868,16 @@
   /* keep all other heading background styles */
 }
 
+.brandImage {
+  height: auto;
+  max-height: 32px; /* Adjust based on your navbar height */
+  width: auto;
+  object-fit: contain;
+  transition: opacity 0.3s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}

@@ -468,18 +468,20 @@ if (isBlogPostPage && isMobileView) {
   }}
   data-navbar-no
 >
+{currentPath !== "/" && (
+  <Link
+    to="/"
+    className={`${styles.blogMinimalHomeButton} ${hideNavControls ? styles.hideNavButton : ""}`}
+    aria-label="Home"
+  >
+    <img
+      src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+      alt="Home"
+      style={{ width: "22px", height: "22px", objectFit: "contain" }}
+    />
+  </Link>
+)}
 
-        <Link
-          to="/"
-          className={`${styles.blogMinimalHomeButton} ${hideNavControls ? styles.hideNavButton : ""}`}
-          aria-label="Home"
-        >
-          <img
-            src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
-            alt="Home"
-            style={{ width: "22px", height: "22px", objectFit: "contain" }}
-          />
-        </Link>
 
         <span
 

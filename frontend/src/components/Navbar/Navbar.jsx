@@ -639,18 +639,28 @@ className={[
 
 <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
 <Link to={currentPath} className={styles.brand}>
-  {getCenterTitle() === "Terminal Musing" ? (
+  {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
     <>
       <span style={{
         fontFamily: 'Abhaya Libre, serif',
-        fontSize: currentPath === "/" ? (isMobileView ? '30px' : '50px') : '16px' // Only larger on home page
+        fontSize: isMobileView ? '30px' : '50px'
       }}>Terminal</span>
       <span style={{
         fontFamily: 'Luxurious Script, cursive',
         marginLeft: '-10px',
         position: 'relative',
         top: '5px',
-        fontSize: currentPath === "/" ? (isMobileView ? '28px' : '46px') : '14px' // Only larger on home page
+        fontSize: isMobileView ? '28px' : '46px'
+      }}> Musing</span>
+    </>
+  ) : getCenterTitle() === "Terminal Musing" ? (
+    <>
+      <span style={{fontFamily: 'Abhaya Libre, serif'}}>Terminal</span>
+      <span style={{
+        fontFamily: 'Luxurious Script, cursive',
+        marginLeft: '-10px',
+        position: 'relative',
+        top: '5px'
       }}> Musing</span>
     </>
   ) : getCenterTitle()}

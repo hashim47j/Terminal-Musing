@@ -621,7 +621,7 @@ className={[
   {getCenterTitle() === "Terminal Musing" ? (
     <>
       <span style={{fontFamily: 'Abhaya Libre, serif'}}>Terminal</span>
-      <span style={{fontFamily: 'Abhaya Libre, serif'}}> Musing</span>
+      <span style={{fontFamily: 'Luxurious Script, cursive'}}> Musing</span>
     </>
   ) : getCenterTitle()}
 </Link>

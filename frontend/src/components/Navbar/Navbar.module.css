@@ -868,3 +868,12 @@
   /* keep all other heading background styles */
 }
 
+.homePagePosition {
+  left: 30px !important;
+  transition: left 0.3s ease-in-out;
+}
+
+.hideOnHome {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}

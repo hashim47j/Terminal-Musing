@@ -6,8 +6,7 @@ import { PageContext } from "../../context/PageContext.jsx";
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
-import terminalMusingLight from "../../assets/terminal-musing-light.png"; 
-import terminalMusingDark from "../../assets/terminal-musing-dark.png";   
+
 
 const Navbar = () => {
   // State for the new feature
@@ -622,25 +621,11 @@ className={[
           />
         )}
 
-<div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
-  <Link to={currentPath} className={styles.brand}>
-    {getCenterTitle() === "Terminal Musing" ? (
-      <img
-        src={isLightBackground ? terminalMusingLight : terminalMusingDark}
-        alt="Terminal Musing"
-        className={styles.brandImage}
-        style={{ 
-          height: "auto", 
-          maxHeight: "80px",
-          width: "auto"
-        }}
-      />
-    ) : (
-      getCenterTitle()
-    )}
-  </Link>
-</div>
-
+        <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
+          <Link to={currentPath} className={styles.brand}>
+            {getCenterTitle()}
+          </Link>
+        </div>
       </div>
       
       <div

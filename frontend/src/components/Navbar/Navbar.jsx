@@ -643,18 +643,19 @@ className={[
     <>
       <span style={{
         fontFamily: 'Abhaya Libre, serif',
-        fontSize: '50px' 
+        fontSize: isMobileView ? '18px' : '50px' // Mobile: 18px, Desktop: 24px
       }}>Terminal</span>
       <span style={{
         fontFamily: 'Luxurious Script, cursive',
-        marginLeft: '-10px',
+        marginLeft: '-8px',
         position: 'relative',
-        top: '5px',
-        fontSize: '46px' 
+        top: '3px',
+        fontSize: isMobileView ? '16px' : '46px' // Mobile: 16px, Desktop: 20px
       }}> Musing</span>
     </>
   ) : getCenterTitle()}
 </Link>
+
 
 
 </div>

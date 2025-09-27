@@ -618,13 +618,13 @@ className={[
 <div className={bridgeClass} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
 
 <div
-
-className={navbarLeftClass}
-style={{ 
-  width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
-  left: currentPath === "/" ? "30px" : "auto",
-  transition: "left 0.3s ease-in-out"
-}}
+  className={navbarLeftClass}
+  style={{ 
+    width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+    ...(isBlogPostPage && { 
+      transform: `translateY(${isMobileView ? '0px' : '0px'})`
+    })
+  }}
 >
 {/* Progress fill overlay */}
 {isBlogPostPage && (

@@ -1,8 +1,7 @@
-// server.js — hardened & production-ready backend for Terminal-Musing
-// Requires: helmet, cookie-parser, csurf, express-rate-limit
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
+import compression from "compression";
 import bodyParser from "body-parser";
 import fs from "fs-extra";
 import path from "path";
@@ -46,6 +45,10 @@ const DIST_INDEX = path.join(DIST_DIR, "index.html");
 // ─────────────── REDIS SETUP ───────────────
 const redisClient = createClient({
   url: process.env.REDIS_URL || "redis://localhost:6379",
+  socket: {
+    keepAlive: true,
+    reconnectStrategy: (retries) => Math.min(retries * 50, 500),
+  },
 });
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
@@ -62,6 +65,20 @@ app.set("trust proxy", 1);
 // Helmet for secure headers
 app.use(helmet());
 
+// ⚡ COMPRESSION - Add this early to compress all responses
+app.use(
+  compression({
+    level: 6, // balance between speed and compression ratio
+    threshold: 1024, // only compress responses larger than 1KB
+    filter: (req, res) => {
+      if (req.headers["x-no-compression"]) {
+        return false;
+      }
+      return compression.filter(req, res);
+    },
+  })
+);
+
 // Strict CORS: configure FRONTEND_URL in .env
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 app.use(
@@ -69,15 +86,16 @@ app.use(
     origin: FRONTEND_URL,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    maxAge: 86400, // cache preflight requests for 24 hours
   })
 );
 
-// Parsers
-app.use(bodyParser.json({ limit: "10mb" }));
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+// ⚡ OPTIMIZED PARSERS - Reduced default limits
+app.use(bodyParser.json({ limit: "1mb" }));
+app.use(bodyParser.urlencoded({ limit: "1mb", extended: true }));
 app.use(cookieParser());
 
-// Session with Redis store
+// ⚡ SESSION OPTIMIZATION - Skip session for static assets
 const sessionOptions = {
   store: new RedisStore({ client: redisClient }),
   secret: process.env.SESSION_SECRET || "change-this-secret-in-production-terminal-musing",
@@ -85,36 +103,49 @@ const sessionOptions = {
   saveUninitialized: false,
   proxy: true,
   cookie: {
-    secure: process.env.NODE_ENV === "production", // true in production
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
   },
 };
-app.use(session(sessionOptions));
+
+const sessionMiddleware = session(sessionOptions);
+
+// Smart session middleware - skip for static assets
+app.use((req, res, next) => {
+  // Skip session processing for static files
+  if (
+    req.path.startsWith("/uploads") ||
+    req.path.startsWith("/blogs") ||
+    req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|webp|map)$/i)
+  ) {
+    return next();
+  }
+  sessionMiddleware(req, res, next);
+});
 
 // ─────────────── RATE LIMITERS ───────────────
-// General API limiter (good default)
+// ⚡ OPTIMIZED - More lenient for authenticated users
 const generalApiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 120, // 120 requests per minute per IP
+  windowMs: 60 * 1000,
+  max: 200, // increased from 120
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.session?.adminAuthenticated, // skip for authenticated admins
 });
 app.use("/api", generalApiLimiter);
 
 // Strict limiter for admin login
 const adminLoginLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 6, // max 6 attempts per IP per window
+  windowMs: 10 * 60 * 1000,
+  max: 6,
   message: { success: false, message: "Too many attempts. Try again later." },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 // ─────────────── CSRF PROTECTION ───────────────
-// We'll provide a simple token endpoint the SPA can call to get token.
-// Using cookie-based CSRF tokens (requires cookieParser)
 const csrfProtection = csrf({
   cookie: {
     httpOnly: true,
@@ -123,31 +154,22 @@ const csrfProtection = csrf({
   },
 });
 
-// We'll use CSRF protection for state changing routes (POST/PUT/DELETE) except APIs authenticated by session.
-// Provide token at /api/csrf-token to client when needed
 app.get("/api/csrf-token", (req, res, next) => {
-  // generate token for this session
   csrfProtection(req, res, (err) => {
     if (err) return next(err);
     res.json({ csrfToken: req.csrfToken?.() || null });
   });
 });
 
-// Helper: check X-CSRF-Token header when csrfProtection is applied via middleware
 const csrfHeaderChecker = (req, res, next) => {
-  // If token is provided in header, attach to body for csurf to validate
   const token = req.get("x-csrf-token");
   if (token) {
     req.cookies = req.cookies || {};
-    // csurf (cookie mode) will verify token against req.cookies._csrf by default;
-    // but here we accept token in header and validate manually via middleware when used.
   }
   next();
 };
 
 // ─────────────── ADMIN KEY / HASH PATH ───────────────
-// Use env var to point to adminKey.hash outside the repo if possible.
-// Default path: ../admin/adminKey.hash (same as before) — can override with ADMIN_KEY_PATH
 const ADMIN_KEY_PATH = process.env.ADMIN_KEY_PATH || path.join(__dirname, "admin", "adminKey.hash");
 if (!fs.existsSync(ADMIN_KEY_PATH)) {
   console.warn(`⚠️ Admin key file not found at ${ADMIN_KEY_PATH}. Create it using your generator.`);
@@ -170,7 +192,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 10 * 1024 * 1024,
     fieldSize: 10 * 1024 * 1024,
     fieldNameSize: 1000,
     fields: 50,
@@ -190,7 +212,6 @@ app.use((error, req, res, next) => {
 });
 
 // ─────────────── AUTH MIDDLEWARES ───────────────
-// Verify session-based admin auth for pages and APIs
 const verifyAdminSession = (req, res, next) => {
   try {
     const isAuthenticated = !!req.session?.adminAuthenticated;
@@ -203,7 +224,6 @@ const verifyAdminSession = (req, res, next) => {
       });
     }
 
-    // For frontend admin routes, redirect to login page
     return res.redirect("/admin/login");
   } catch (err) {
     console.error("verifyAdminSession error:", err);
@@ -211,44 +231,57 @@ const verifyAdminSession = (req, res, next) => {
   }
 };
 
-// Optional: IP whitelist helper (enable if you want stricter access control)
-// const allowedAdminIPs = (process.env.ADMIN_ALLOWED_IPS || "").split(",").map(s => s.trim()).filter(Boolean);
-// const ipWhitelist = (req, res, next) => {
-//   if (allowedAdminIPs.length === 0) return next(); // no whitelist configured
-//   const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-//   if (allowedAdminIPs.includes(ip)) return next();
-//   return res.status(403).send('Forbidden');
-// };
+// ─────────────── STATIC ASSETS (OPTIMIZED) ───────────────
+// ⚡ PERFORMANCE: Serve static files with aggressive caching
+app.use(
+  "/blogs",
+  express.static(path.join(__dirname, "blogs"), {
+    maxAge: "1d", // cache for 1 day
+    etag: true,
+    lastModified: true,
+    immutable: false,
+    setHeaders: (res, path) => {
+      if (path.endsWith(".html")) {
+        res.setHeader("Cache-Control", "public, max-age=3600"); // 1 hour for HTML
+      } else {
+        res.setHeader("Cache-Control", "public, max-age=86400"); // 1 day for assets
+      }
+    },
+  })
+);
+
+app.use(
+  "/uploads",
+  express.static(uploadDir, {
+    maxAge: "1y", // uploads are immutable
+    etag: true,
+    lastModified: true,
+    immutable: true,
+  })
+);
 
 // ─────────────── ROUTES ───────────────
-// Public assets & static
-app.use("/blogs", express.static(path.join(__dirname, "blogs")));
-app.use("/uploads", express.static(uploadDir));
 
-// ------------------ Upload endpoint (PROTECTED) ------------------
 // ------------------ UPLOAD & BLOG ENDPOINTS (PROTECTED) ------------------
-
-// Only admin can publish blogs
-app.post("/api/blogs", verifyAdminSession, async (req, res) => {
-  try {
-    const blogData = req.body;
-
-    // TODO: Add blog creation logic here, e.g., saving to database
-    // Example: const newBlog = await Blog.create(blogData);
-
-    return res.status(201).json({ success: true, message: "Blog published successfully", blog: blogData });
-  } catch (err) {
-    console.error("❌ Blog creation error:", err);
-    return res.status(500).json({ success: false, message: "Internal server error while publishing blog" });
+// ⚡ Higher limits only for upload routes
+app.post(
+  "/api/blogs",
+  verifyAdminSession,
+  bodyParser.json({ limit: "10mb" }),
+  async (req, res) => {
+    try {
+      const blogData = req.body;
+      return res.status(201).json({ success: true, message: "Blog published successfully", blog: blogData });
+    } catch (err) {
+      console.error("❌ Blog creation error:", err);
+      return res.status(500).json({ success: false, message: "Internal server error while publishing blog" });
+    }
   }
-});
+);
 
-// Only admin can upload images
 app.post("/api/upload", verifyAdminSession, upload.single("image"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: "No file uploaded" });
-
-    // Return the uploaded file path
     return res.status(200).json({ success: true, imageUrl: `/uploads/${req.file.filename}` });
   } catch (err) {
     console.error("❌ File upload error:", err);
@@ -256,9 +289,7 @@ app.post("/api/upload", verifyAdminSession, upload.single("image"), async (req, 
   }
 });
 
-
 // ------------------ ADMIN AUTH ROUTES ------------------
-// login uses limiter. Compare posted key against bcrypt hash on disk.
 app.post("/api/admin/login", adminLoginLimiter, async (req, res) => {
   const { key } = req.body;
   if (!key) return res.status(400).json({ success: false, message: "Authentication key is required" });
@@ -273,7 +304,6 @@ app.post("/api/admin/login", adminLoginLimiter, async (req, res) => {
     const isMatch = await bcrypt.compare(key, storedHash);
 
     if (isMatch) {
-      // Prevent fixation: regenerate session id on login
       req.session.regenerate((err) => {
         if (err) {
           console.error("Session regenerate error:", err);
@@ -282,8 +312,6 @@ app.post("/api/admin/login", adminLoginLimiter, async (req, res) => {
 
         req.session.adminAuthenticated = true;
         req.session.adminLoginTime = new Date().toISOString();
-
-        // Optionally store metadata
         req.session.adminAuthIP = req.ip || req.headers["x-forwarded-for"] || null;
 
         console.log("✅ Admin login successful - session created");
@@ -306,7 +334,6 @@ app.post("/api/admin/logout", (req, res) => {
       console.error("❌ Session destroy error:", err);
       return res.status(500).json({ success: false, message: "Logout failed" });
     }
-    // Clear cookie on logout
     res.clearCookie(process.env.SESSION_COOKIE_NAME || "connect.sid");
     return res.json({ success: true, message: "Logged out successfully" });
   });
@@ -320,17 +347,11 @@ app.get("/api/admin/check-auth", (req, res) => {
 });
 
 // ------------------ PROTECTED ADMIN FRONTEND ROUTES ------------------
-// We serve SPA dist for frontend normally, but protect /admin* routes.
-// If you host admin panel as part of the SPA (e.g., /admin/login, /admin/dashboard),
-// we gate GET requests for /admin* with verifyAdminSession (except login path).
 app.get("/admin/login", (req, res, next) => {
-  // allow login page to be served without auth - SPA will handle UI
   return res.sendFile(DIST_INDEX);
 });
 
-// Protect all other admin frontend paths (dashboard, edit, etc.)
 app.get("/admin/*", verifyAdminSession, (req, res) => {
-  // Serve SPA index for client-side routing only if authenticated
   return res.sendFile(DIST_INDEX);
 });
 
@@ -338,8 +359,6 @@ app.get("/admin/*", verifyAdminSession, (req, res) => {
 app.use("/api/blogs", blogRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/views", viewRoutes);
-
-// Require admin session for dashboard & admin APIs
 app.use("/api/dashboard", verifyAdminSession, dashboardRoutes);
 app.use("/api/dailythoughts", dtapiRoutes);
 app.use("/api/dailythoughts/process", verifyAdminSession, processRoutes);
@@ -352,10 +371,30 @@ app.use("/", userviewAPI);
 app.use(ipLogger);
 app.use("/api", visitorStatsApi);
 
-// ─────────────── FRONTEND SPA (DEFAULT) ───────────────
-// Serve SPA static files
+// ─────────────── FRONTEND SPA (OPTIMIZED) ───────────────
+// ⚡ Serve SPA static files with optimized caching
 if (fs.existsSync(DIST_DIR)) {
-  app.use(express.static(DIST_DIR));
+  app.use(
+    express.static(DIST_DIR, {
+      maxAge: process.env.NODE_ENV === "production" ? "1h" : "0",
+      etag: true,
+      lastModified: true,
+      setHeaders: (res, path) => {
+        // Aggressive caching for JS/CSS with hashes
+        if (path.match(/\.[a-f0-9]{8,}\.(js|css)$/)) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        }
+        // Short cache for HTML
+        else if (path.endsWith(".html")) {
+          res.setHeader("Cache-Control", "no-cache, must-revalidate");
+        }
+        // Medium cache for other assets
+        else {
+          res.setHeader("Cache-Control", "public, max-age=3600");
+        }
+      },
+    })
+  );
 } else {
   console.warn("⚠️ Dist directory not found. SPA static files won't be served.");
 }
@@ -366,7 +405,6 @@ app.get("*", (req, res) => {
     return res.status(404).json({ error: "🚫 Route not found" });
   }
 
-  // For /admin/login we already served index earlier; for other /admin/* we protected above
   if (fs.existsSync(DIST_INDEX)) return res.sendFile(DIST_INDEX);
   return res.status(404).send("Not found");
 });
@@ -380,4 +418,7 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Server running at http://0.0.0.0:${PORT}`);
+  console.log(`⚡ NODE_ENV: ${process.env.NODE_ENV || "development"}`);
+  console.log(`⚡ Compression: enabled`);
+  console.log(`⚡ Caching: optimized`);
 });

@@ -14,7 +14,7 @@
 
 .navbarLeft {
   left: 105px;
-  height: 54px; 
+  height: auto; 
   overflow: hidden;
   white-space: nowrap;
   transition: width 0.4s ease, transform 0.3s ease, left 0.3s ease;
@@ -22,6 +22,8 @@
   display: flex;
   align-items: center;
   justify-content: center; 
+  padding-top: 13px;
+  padding-bottom: 13px;
 }
 
 .brandWrapper {
@@ -228,10 +230,10 @@
 
 .homeButton {
   position: fixed;
-  top: 28px;
+  top: 20px;
   left: 30px;
-  width: 54px;
-  height: 54px;
+  width: auto;
+  height: auto;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px);
@@ -244,6 +246,7 @@
   transition: all 0.3s ease;
   text-decoration: none;
   box-sizing: border-box;
+  padding: 13px; 
 }
 
 .bridgeConnector {

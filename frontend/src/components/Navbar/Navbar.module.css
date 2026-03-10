@@ -247,6 +247,7 @@
   text-decoration: none;
   box-sizing: border-box;
   padding: 13px; 
+  overflow: hidden; 
 }
 
 .bridgeConnector {
@@ -900,7 +901,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url('/assets/pattern.png');
+  background-image: url('../../assets/pattern.png');
   background-size: 120px 120px;
   background-repeat: repeat;
   mix-blend-mode: multiply;

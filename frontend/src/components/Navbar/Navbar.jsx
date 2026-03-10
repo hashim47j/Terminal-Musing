@@ -547,6 +547,9 @@ const Navbar = () => {
         className={navbarLeftClass}
         style={{ 
           width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+          backgroundImage: `url(${patternBg})`, 
+          backgroundSize: '120px 120px',
+          backgroundRepeat: 'repeat',
           ...(isBlogPostPage && { 
             transform: `translateY(${isMobileView ? '0px' : '0px'})`
           })

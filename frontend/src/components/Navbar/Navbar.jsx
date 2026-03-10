@@ -6,6 +6,7 @@ import { PageContext } from "../../context/PageContext.jsx";
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
+import patternBg from '../../assets/pattern.png';
 
 
 const Navbar = () => {
@@ -69,6 +70,22 @@ const Navbar = () => {
     return text.replace(catPattern, "").trim();
   };
 
+  return (
+    <>
+      <style>{`
+        .${styles.navbarLeft}::before,
+        .${styles.navbarRight}::before,
+        .${styles.homeButton}::before,
+        .${styles.blogMobileHeader}::before,
+        .${styles.blogMinimalHomeButton}::before,
+        .${styles.blogMinimalHamburger}::before {
+          background-image: url(${patternBg}) !important;
+        }
+      `}</style>
+  
+      {/* rest of your JSX... */}
+    </>
+  );  
 
   
 

@@ -915,9 +915,7 @@
 .navbarLeft > *,
 .navbarRight > *,
 .homeButton > *,
-.blogMobileHeader > *,
-.blogMinimalHomeButton > *,
-.blogMinimalHamburger > * {
+.blogMobileHeader > * {
   position: relative;
   z-index: 1;
 }

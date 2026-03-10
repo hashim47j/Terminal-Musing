@@ -10,6 +10,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   border-radius: 14px;
   transition: all 0.3s ease-in-out;
+  overflow: hidden; 
 }
 
 .navbarLeft {
@@ -229,7 +230,7 @@
 
 .homeButton {
   position: fixed;
-  top: 28px;
+  top: 29px;
   left: 30px;
   width: auto;
   height: auto;
@@ -886,4 +887,36 @@
 
 .hideOnHome {
   display: none;
+}
+
+/* ======= ISLAMIC PATTERN OVERLAY ======= */
+
+.navbarLeft::before,
+.navbarRight::before,
+.homeButton::before,
+.blogMobileHeader::before,
+.blogMinimalHomeButton::before,
+.blogMinimalHamburger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/pattern.png');
+  background-size: 120px 120px;
+  background-repeat: repeat;
+  mix-blend-mode: multiply;
+  opacity: 0.12;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Make sure all direct children sit above the pattern */
+.navbarLeft > *,
+.navbarRight > *,
+.homeButton > *,
+.blogMobileHeader > *,
+.blogMinimalHomeButton > *,
+.blogMinimalHamburger > * {
+  position: relative;
+  z-index: 1;
 }

@@ -1,4 +1,4 @@
-/* Base styles */
+/* Base styles (same as your original) */
 .blogPageOuterContainer {
   background-color: #E4E4E4;
   min-height: 100vh;
@@ -8,21 +8,22 @@
 
 /* Category-specific themes */
 .blogPageOuterContainer.history {
-  background-color: #E4E4E4;
+  background-color: #E4E4E4; /* Grey */
 }
 
 .blogPageOuterContainer.philosophy {
-  background-color: #F5F5DC;
+  background-color: #F5F5DC; /* Cream */
 }
 
 .blogPageOuterContainer.tech {
-  background-color: #E6F3FF;
+  background-color: #E6F3FF; /* Light Blue */
 }
 
 .blogPageOuterContainer.lsconcern {
-  background-color: #F0F8E8;
+  background-color: #F0F8E8; /* Light Green */
 }
 
+/* Category-specific content body backgrounds */
 .contentBodyPlaceholder {
   background-color: inherit;
   min-height: 60vh;
@@ -89,7 +90,7 @@
   background: #5CB85C;
 }
 
-/* Base comment box */
+/* Category-specific comment boxes */
 .commentBox {
   padding: 15px 20px;
   margin-bottom: 20px;
@@ -114,11 +115,22 @@
   background: #D4F0D4;
 }
 
-/* Dark mode */
-.darkMode.history { background-color: #2A2A2A; }
-.darkMode.philosophy { background-color: #3A3424; }
-.darkMode.tech { background-color: #1A2332; }
-.darkMode.lsconcern { background-color: #243326; }
+/* Dark mode category themes */
+.darkMode.history {
+  background-color: #2A2A2A;
+}
+
+.darkMode.philosophy {
+  background-color: #3A3424;
+}
+
+.darkMode.tech {
+  background-color: #1A2332;
+}
+
+.darkMode.lsconcern {
+  background-color: #243326;
+}
 
 .darkMode .contentBodyPlaceholder,
 .darkMode .commentBox {
@@ -127,8 +139,6 @@
   border-color: #555;
 }
 
-/* ===================== HERO SECTION ===================== */
-
 .blogPageOuterContainer {
   background-color: #E4E4E4;
   min-height: 100vh;
@@ -136,6 +146,7 @@
   flex-direction: column;
 }
 
+/* Hero Cover Image Section */
 .heroSection {
   position: relative;
   width: 100%;
@@ -166,12 +177,24 @@
 
 .heroGrain {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
   pointer-events: none;
   background: 
-    repeating-linear-gradient(0deg, transparent 0px, rgba(255,255,255,0.04) 1px, transparent 2px),
-    repeating-linear-gradient(90deg, transparent 0px, rgba(0,0,0,0.03) 1px, transparent 2px);
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(255,255,255,0.04) 1px,
+      transparent 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(0,0,0,0.03) 1px,
+      transparent 2px
+    );
   mix-blend-mode: overlay;
   opacity: 0.45;
   z-index: 2;
@@ -179,8 +202,10 @@
 
 .heroOverlay {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
   background: rgba(0,0,0,0.25);
   z-index: 3;
   pointer-events: none;
@@ -240,6 +265,14 @@
   font-size: 1.1em;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 40px;
+  text-align: center;
+}
+
+.date {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.1em;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 40px;
   text-align: left;
 }
 
@@ -290,8 +323,7 @@
   border-radius: 5px;
 }
 
-/* ===================== COMMENTS BASE ===================== */
-
+/* Comments */
 .commentSection {
   display: block;
   margin-left: 2%;
@@ -381,7 +413,6 @@ font-family: 'Arial', sans-serif;
 margin: 0;
 }
 
-/* Base reply button */
 .replyBtn {
 font-size: 0.9rem;
 background-color: #414040;
@@ -408,7 +439,6 @@ opacity: 0.6;
 cursor: not-allowed;
 }
 
-/* Base comment form container */
 .commentFormContainer {
 flex: 1;
 margin-top: 0;
@@ -424,7 +454,7 @@ top: 20px;
 .commentForm {
 display: flex;
 flex-direction: column;
-background-color: transparent;
+background-color: #bbbbbb;
 padding: 0;
 margin: 0;
 }
@@ -439,10 +469,12 @@ line-height: 1.3;
 
 .formGroup {
 margin-bottom: 20px;
+background-color: #bbbbbb;
 }
 
 .commentForm label {
 margin-bottom: 8px;
+background-color: #bbbbbb;
 font-size: 0.95rem;
 font-family: 'Arial', sans-serif;
 color: #495057;
@@ -459,6 +491,7 @@ padding: 14px 16px;
 font-size: 1.0rem;
 border: 1px solid #e9ecef;
 border-radius: 8px;
+background-color: #ffffff;
 font-family: 'Arial', sans-serif;
 box-sizing: border-box;
 background-color: #adabab;
@@ -487,7 +520,6 @@ margin-top: 5px;
 font-family: 'Arial', sans-serif;
 }
 
-/* Base post button */
 .postBtn {
 margin-top: 25px;
 padding: 14px 32px;
@@ -504,9 +536,10 @@ align-self: flex-start;
 }
 
 .postBtn:hover {
-background-color: #5a5a5a;
+background-color: #357abd;
+border-color: #357abd;
 transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
 .postBtn:disabled {
@@ -518,15 +551,19 @@ box-shadow: none;
 }
 
 .titleLine {
-width: 100%;
-height: 30px;
-background: #929292;
-margin-top: -4%;
-margin-bottom: 18px;
+  width: 100%;
+  height: 30px;
+  background: #929292;
+  margin-top: -4%;
+  margin-bottom: 18px;
 }
 
-/* ===================== HISTORY THEME ===================== */
 
+/* =========================================
+ CATEGORY THEME OVERRIDES — COMMENTS ONLY
+ ========================================= */
+
+/* ── HISTORY (greyscale) ── */
 .history .commentSectionHeader {
 border-bottom: 2px solid #929292;
 }
@@ -537,19 +574,30 @@ color: #2a2a2a;
 background: #CCCCCC;
 border-color: #999999;
 }
-.history .commenterName {
-color: #1a1a1a;
+.history .commenterName { color: #1a1a1a; }
+.history .commentMeta { color: #555555; }
+.history .commentContent p { color: #2a2a2a; }
+.history .replyBtn {
+background-color: #555555;
+color: #ffffff;
+border-color: transparent;
+}
+.history .replyBtn:hover {
+background-color: #333333;
+color: #ffffff;
+border-color: #222222;
 }
 .history .commentFormContainer {
-background: #C0C0C0;
+background: #C8C8C8;
 border: 1px solid #999999;
 }
-.history .commentForm h3 {
-color: #1a1a1a;
-}
+.history .commentForm,
+.history .formGroup,
 .history .commentForm label {
-color: #333333;
+background-color: #C8C8C8;
 }
+.history .commentForm h3 { color: #1a1a1a; }
+.history .commentForm label { color: #333333; }
 .history .commentForm input,
 .history .commentForm textarea {
 background-color: #D8D8D8;
@@ -561,48 +609,48 @@ color: #1a1a1a;
 border-color: #555555;
 box-shadow: 0 0 0 3px rgba(100, 100, 100, 0.15);
 }
-.history .replyBtn {
-background-color: #555555;
-color: #ffffff;
-}
-.history .replyBtn:hover {
-background-color: #333333;
-color: #ffffff;
-border-color: #222222;
-}
 .history .postBtn {
 background-color: #555555;
 }
 .history .postBtn:hover {
 background-color: #333333;
+border-color: #222222;
 box-shadow: 0 4px 12px rgba(50, 50, 50, 0.3);
 }
 
-/* ===================== PHILOSOPHY THEME ===================== */
-
+/* ── PHILOSOPHY (warm cream/tan) ── */
 .philosophy .commentSectionHeader {
 border-bottom: 2px solid #D4B896;
 }
-.philosophy .commentSectionHeader h3 {
-color: #5e3a1a;
-}
+.philosophy .commentSectionHeader h3 { color: #5e3a1a; }
 .philosophy .commentBox {
 background: #EDE0C8;
 border-color: #C9A97A;
 }
-.philosophy .commenterName {
-color: #3a2410;
+.philosophy .commenterName { color: #3a2410; }
+.philosophy .commentMeta { color: #7a6040; }
+.philosophy .commentContent p { color: #3a2e1e; }
+.philosophy .replyBtn {
+background-color: #8B6F47;
+color: #ffffff;
+border-color: transparent;
+}
+.philosophy .replyBtn:hover {
+background-color: #6B5030;
+color: #ffffff;
+border-color: #5a4025;
 }
 .philosophy .commentFormContainer {
 background: #E8DCC0;
 border: 1px solid #D4B896;
 }
-.philosophy .commentForm h3 {
-color: #5e3a1a;
-}
+.philosophy .commentForm,
+.philosophy .formGroup,
 .philosophy .commentForm label {
-color: #5e4a2e;
+background-color: #E8DCC0;
 }
+.philosophy .commentForm h3 { color: #5e3a1a; }
+.philosophy .commentForm label { color: #5e4a2e; }
 .philosophy .commentForm input,
 .philosophy .commentForm textarea {
 background-color: #faf6ef;
@@ -614,48 +662,48 @@ color: #3a2e1e;
 border-color: #8B6F47;
 box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.15);
 }
-.philosophy .replyBtn {
-background-color: #8B6F47;
-color: #ffffff;
-}
-.philosophy .replyBtn:hover {
-background-color: #6B5030;
-color: #ffffff;
-border-color: #5a4025;
-}
 .philosophy .postBtn {
 background-color: #8B6F47;
 }
 .philosophy .postBtn:hover {
 background-color: #6B5030;
+border-color: #5a4025;
 box-shadow: 0 4px 12px rgba(139, 111, 71, 0.35);
 }
 
-/* ===================== TECH THEME ===================== */
-
+/* ── TECH (light blue) ── */
 .tech .commentSectionHeader {
 border-bottom: 2px solid #4A90E2;
 }
-.tech .commentSectionHeader h3 {
-color: #1a3a5c;
-}
+.tech .commentSectionHeader h3 { color: #1a3a5c; }
 .tech .commentBox {
 background: #D0E8FF;
 border-color: #7AB8F5;
 }
-.tech .commenterName {
-color: #0d2a45;
+.tech .commenterName { color: #0d2a45; }
+.tech .commentMeta { color: #2a5a8a; }
+.tech .commentContent p { color: #0d2a45; }
+.tech .replyBtn {
+background-color: #4A90E2;
+color: #ffffff;
+border-color: transparent;
+}
+.tech .replyBtn:hover {
+background-color: #2a6cb5;
+color: #ffffff;
+border-color: #1a5a9e;
 }
 .tech .commentFormContainer {
 background: #C2E0FF;
 border: 1px solid #7AB8F5;
 }
-.tech .commentForm h3 {
-color: #1a3a5c;
-}
+.tech .commentForm,
+.tech .formGroup,
 .tech .commentForm label {
-color: #1e4a72;
+background-color: #C2E0FF;
 }
+.tech .commentForm h3 { color: #1a3a5c; }
+.tech .commentForm label { color: #1e4a72; }
 .tech .commentForm input,
 .tech .commentForm textarea {
 background-color: #EBF5FF;
@@ -667,48 +715,48 @@ color: #0d2a45;
 border-color: #4A90E2;
 box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
 }
-.tech .replyBtn {
-background-color: #4A90E2;
-color: #ffffff;
-}
-.tech .replyBtn:hover {
-background-color: #2a6cb5;
-color: #ffffff;
-border-color: #1a5a9e;
-}
 .tech .postBtn {
 background-color: #4A90E2;
 }
 .tech .postBtn:hover {
 background-color: #2a6cb5;
+border-color: #1a5a9e;
 box-shadow: 0 4px 12px rgba(74, 144, 226, 0.35);
 }
 
-/* ===================== LEGAL & SOCIAL THEME ===================== */
-
+/* ── LEGAL & SOCIAL (light green) ── */
 .lsconcern .commentSectionHeader {
 border-bottom: 2px solid #5CB85C;
 }
-.lsconcern .commentSectionHeader h3 {
-color: #1e4d1e;
-}
+.lsconcern .commentSectionHeader h3 { color: #1e4d1e; }
 .lsconcern .commentBox {
 background: #D8F0D8;
 border-color: #8FCC8F;
 }
-.lsconcern .commenterName {
-color: #143314;
+.lsconcern .commenterName { color: #143314; }
+.lsconcern .commentMeta { color: #2e6e2e; }
+.lsconcern .commentContent p { color: #143314; }
+.lsconcern .replyBtn {
+background-color: #4a9e4a;
+color: #ffffff;
+border-color: transparent;
+}
+.lsconcern .replyBtn:hover {
+background-color: #2e7a2e;
+color: #ffffff;
+border-color: #256325;
 }
 .lsconcern .commentFormContainer {
 background: #D4F0D4;
 border: 1px solid #8FCC8F;
 }
-.lsconcern .commentForm h3 {
-color: #1e4d1e;
-}
+.lsconcern .commentForm,
+.lsconcern .formGroup,
 .lsconcern .commentForm label {
-color: #2a5e2a;
+background-color: #D4F0D4;
 }
+.lsconcern .commentForm h3 { color: #1e4d1e; }
+.lsconcern .commentForm label { color: #2a5e2a; }
 .lsconcern .commentForm input,
 .lsconcern .commentForm textarea {
 background-color: #edfaed;
@@ -720,41 +768,41 @@ color: #143314;
 border-color: #5CB85C;
 box-shadow: 0 0 0 3px rgba(92, 184, 92, 0.15);
 }
-.lsconcern .replyBtn {
-background-color: #4a9e4a;
-}
-.lsconcern .replyBtn:hover {
-background-color: #2e7a2e;
-color: #ffffff;
-border-color: #256325;
-}
 .lsconcern .postBtn {
 background-color: #4a9e4a;
 }
 .lsconcern .postBtn:hover {
 background-color: #2e7a2e;
+border-color: #256325;
 box-shadow: 0 4px 12px rgba(74, 158, 74, 0.35);
 }
 
-/* ===================== RESPONSIVE ===================== */
 
+/* Responsive */
 @media (max-width: 992px) {
-  .title { font-size: 2.8em; }
-  .contentTitle { font-size: 2.2em; }
+  .title {
+    font-size: 2.8em;
+  }
+  .contentTitle {
+    font-size: 2.2em;
+  }
   .contentBodyPlaceholder {
     min-height: 50vh;
     padding: 20px;
   }
+
   .commentLayout {
     flex-direction: column-reverse;
     gap: 30px;
   }
+  
   .commentList {
     flex: none;
     order: 2;
     padding-left: 0;
     padding-right: 0;
   }
+  
   .commentFormContainer {
     flex: none;
     position: static;
@@ -779,21 +827,25 @@ box-shadow: 0 4px 12px rgba(74, 158, 74, 0.35);
     padding: 15px 20px !important;
     z-index: 6 !important;
   }
+
   .heroContent .title {
     font-size: 2.0em !important;
     margin-bottom: 0.5em !important;
     color: white !important;
   }
+
   .heroContent .subheadingText {
     font-size: 1.2em !important;
     margin-bottom: 10px !important;
     color: rgba(255,255,255,0.97) !important;
   }
+
   .heroContent .date {
     font-size: 0.9em !important;
     margin-bottom: 0 !important;
     color: rgba(255, 255, 255, 0.9) !important;
   }
+
   .heroContent .categoryBadge {
     background: rgba(255, 255, 255, 0.2) !important;
     padding: 4px 12px !important;
@@ -803,6 +855,7 @@ box-shadow: 0 4px 12px rgba(74, 158, 74, 0.35);
     backdrop-filter: blur(5px) !important;
     -webkit-backdrop-filter: blur(5px) !important;
   }
+  
   .contentBodyPlaceholder {
     margin-left: 8%;
     margin-right: 4%;
@@ -810,24 +863,38 @@ box-shadow: 0 4px 12px rgba(74, 158, 74, 0.35);
     padding: 15px;
     font-size: 1em;
   }
+
   .commentSection {
     margin-left: 5%;
     margin-right: 5%;
     padding-top: 30px;
   }
-  .commentSectionHeader h3 { font-size: 1.8em; }
+  .commentSectionHeader h3 {
+    font-size: 1.8em;
+  }
+  
   .commentBox {
     padding: 16px 18px;
     margin-bottom: 20px;
   }
-  .commentBox strong { font-size: 0.95rem; }
-  .commentMeta, .commentBox p, .replyBtn { font-size: 0.8rem; }
+  .commentBox strong {
+    font-size: 0.95rem;
+  }
+  .commentMeta, .commentBox p, .replyBtn {
+    font-size: 0.8rem;
+  }
+  
   .commentFormContainer {
     padding: 20px;
     margin-bottom: 30px;
   }
-  .commentForm h3 { font-size: 1.6rem; }
-  .commentForm label, .commentForm input, .commentForm textarea { font-size: 0.9em; }
+  
+  .commentForm h3 {
+    font-size: 1.6rem;
+  }
+  .commentForm label, .commentForm input, .commentForm textarea {
+    font-size: 0.9em;
+  }
   .postBtn {
     padding: 10px 20px;
     font-size: 0.9em;
@@ -835,20 +902,32 @@ box-shadow: 0 4px 12px rgba(74, 158, 74, 0.35);
 }
 
 @media (max-width: 480px) {
-  .heroContent {
-    bottom: 15px !important;
-    width: 95% !important;
-    padding: 12px 16px !important;
+  @media (max-width: 480px) {
+    .heroContent {
+      bottom: 15px !important;
+      width: 95% !important;
+      padding: 12px 16px !important;
+    }
+  
+    .heroContent .title {
+      font-size: 1.6em !important;
+    }
+  
+    .heroContent .subheadingText {
+      font-size: 1.0em !important;
+    }
+  
+    .heroContent .date {
+      font-size: 0.8em !important;
+    }
   }
-  .heroContent .title { font-size: 1.6em !important; }
-  .heroContent .subheadingText { font-size: 1.0em !important; }
-  .heroContent .date { font-size: 0.8em !important; }
   .contentBodyPlaceholder {
     margin-left: 4%;
     margin-right: 2%;
     min-height: 35vh;
     padding: 12px;
   }
+
   .commentSection {
     display: block;
     width: 100vw !important;
@@ -856,12 +935,24 @@ box-shadow: 0 4px 12px rgba(74, 158, 74, 0.35);
     margin-right: calc(-50vw + 50%) !important;
     padding: 20px 15px !important;
   }
-  .commentSectionHeader h3 { font-size: 1.6em; }
-  .commentBox { padding: 14px 16px; }
-  .commentBox strong, .commentMeta, .commentBox p, .replyBtn { font-size: 0.75rem; }
+  .commentSectionHeader h3 {
+    font-size: 1.6em;
+  }
+  
+  .commentBox {
+    padding: 14px 16px;
+  }
+  .commentBox strong, .commentMeta, .commentBox p, .replyBtn {
+    font-size: 0.75rem;
+  }
+  
   .commentFormContainer {
     padding: 16px;
     margin-bottom: 25px;
   }
-  .commentForm h3 { font-size: 1.3em; }
+  
+  .commentForm h3 {
+    font-size: 1.3em;
+  }
 }
+

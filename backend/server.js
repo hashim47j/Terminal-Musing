@@ -264,20 +264,7 @@ app.use(
 
 // ------------------ UPLOAD & BLOG ENDPOINTS (PROTECTED) ------------------
 // ⚡ Higher limits only for upload routes
-app.post(
-  "/api/blogs",
-  verifyAdminSession,
-  bodyParser.json({ limit: "10mb" }),
-  async (req, res) => {
-    try {
-      const blogData = req.body;
-      return res.status(201).json({ success: true, message: "Blog published successfully", blog: blogData });
-    } catch (err) {
-      console.error("❌ Blog creation error:", err);
-      return res.status(500).json({ success: false, message: "Internal server error while publishing blog" });
-    }
-  }
-);
+
 
 app.post("/api/upload", verifyAdminSession, upload.single("image"), async (req, res) => {
   try {
@@ -356,7 +343,7 @@ app.get("/admin/*", verifyAdminSession, (req, res) => {
 });
 
 // ------------------ ENHANCED API ROUTES ------------------
-app.use("/api/blogs", blogRoutes);
+app.use("/api/blogs", verifyAdminSession, blogRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/views", viewRoutes);
 app.use("/api/dashboard", verifyAdminSession, dashboardRoutes);

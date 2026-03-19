@@ -3,27 +3,10 @@
 ═══════════════════════════════════════════ */
 
 .blogPageOuterContainer {
-  background-color: #E4E4E4;
+  background-color: #0a0a0a; /* black so rounded corners of content show */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-.blogPageOuterContainer.history   { background-color: #E4E4E4; }
-.blogPageOuterContainer.philosophy { background-color: #F5F5DC; }
-.blogPageOuterContainer.tech       { background-color: #E6F3FF; }
-.blogPageOuterContainer.lsconcern  { background-color: #F0F8E8; }
-
-/* ── Dark Mode ── */
-.darkMode.history    { background-color: #2A2A2A; }
-.darkMode.philosophy { background-color: #3A3424; }
-.darkMode.tech       { background-color: #1A2332; }
-.darkMode.lsconcern  { background-color: #243326; }
-
-.darkMode .contentBodyPlaceholder {
-  background: #333333;
-  color: #e0e0e0;
-  border-color: #555;
 }
 
 /* ═══════════════════════════════════════════
@@ -34,7 +17,26 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-radius: 0 0 24px 24px
+  border-radius: 0 0 32px 32px;
+  overflow: hidden;
+}
+
+/* Category backgrounds on mainContentWrapper */
+.blogPageOuterContainer.history    .mainContentWrapper { background-color: #E4E4E4; }
+.blogPageOuterContainer.philosophy .mainContentWrapper { background-color: #F5F5DC; }
+.blogPageOuterContainer.tech       .mainContentWrapper { background-color: #E6F3FF; }
+.blogPageOuterContainer.lsconcern  .mainContentWrapper { background-color: #F0F8E8; }
+
+/* Dark mode */
+.darkMode.history    .mainContentWrapper { background-color: #2A2A2A; }
+.darkMode.philosophy .mainContentWrapper { background-color: #3A3424; }
+.darkMode.tech       .mainContentWrapper { background-color: #1A2332; }
+.darkMode.lsconcern  .mainContentWrapper { background-color: #243326; }
+
+.darkMode .contentBodyPlaceholder {
+  background: #333333;
+  color: #e0e0e0;
+  border-color: #555;
 }
 
 .postContentSection {
@@ -394,7 +396,7 @@
 /* ── Comment Cards ── */
 .commentCard {
   background: #2a2a2a;
-  border-radius: 14px;
+  border-radius: 20px;
   padding: 20px 24px;
   border: 1px solid #3a3a3a;
   transition: border-color 0.2s ease;
@@ -510,7 +512,7 @@
 
 .replyCard {
   background: #222222;
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 14px 18px;
   border: 1px solid #333;
 }
@@ -612,7 +614,6 @@
   margin-bottom: 24px;
 }
 
-/* ── Reply Preview ── */
 .replyPreview {
   background: #111;
   border-left: 3px solid #555;
@@ -639,11 +640,9 @@
   -webkit-box-orient: vertical;
 }
 
-/* ── Form ── */
 .modalFormRow {
   display: flex;
   gap: 12px;
-  margin-bottom: 0;
 }
 
 .modalFormGroup {
@@ -765,7 +764,6 @@
 }
 
 @media (max-width: 768px) {
-  /* Hero */
   .heroContent {
     position: absolute !important;
     bottom: 20px !important;
@@ -783,7 +781,6 @@
   .heroContent .subheadingText { font-size: 1.2em !important; }
   .heroContent .date           { font-size: 0.9em !important; margin-bottom: 0 !important; }
 
-  /* Content */
   .contentBodyPlaceholder {
     margin-left: 8%;
     margin-right: 4%;
@@ -792,7 +789,6 @@
     font-size: 1em;
   }
 
-  /* Comment section */
   .commentSectionInner {
     flex-direction: column;
     padding: 0 20px;
@@ -807,7 +803,6 @@
 
   .commentSectionTitle { font-size: 2.6em; }
 
-  /* Modal → bottom sheet */
   .modalOverlay {
     align-items: flex-end;
     padding: 0;
@@ -839,6 +834,10 @@
     flex-direction: column;
     gap: 0;
   }
+
+  .mainContentWrapper {
+    border-radius: 0 0 20px 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -859,11 +858,15 @@
     padding: 12px;
   }
 
-  .commentSection       { padding: 40px 0; }
-  .commentSectionTitle  { font-size: 2.2em; }
+  .commentSectionTitle { font-size: 2.2em; }
+  .commentSection      { padding: 40px 0; }
 
   .commentCard {
     padding: 16px 18px;
-    border-radius: 10px;
+    border-radius: 14px;
+  }
+
+  .mainContentWrapper {
+    border-radius: 0 0 16px 16px;
   }
 }

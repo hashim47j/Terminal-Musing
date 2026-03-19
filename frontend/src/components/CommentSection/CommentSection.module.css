@@ -8,7 +8,7 @@
     padding: 60px 0;
     margin: 0;
     box-sizing: border-box;
-    
+    border-radius: 20px 20px 0 0; /* ✅ ADD: rounded top corners */
   }
   
   .commentSectionInner {

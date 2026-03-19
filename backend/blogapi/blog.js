@@ -34,9 +34,10 @@ const createSecureRateLimit = (windowMs, max, message) => rateLimit({
   },
   // Disable problematic validation checks
   validate: {
-    trustProxy: false,           // Disable trust proxy validation
-    xForwardedForHeader: false,  // Disable X-Forwarded-For validation
-    ip: false                    // Disable IP validation
+    trustProxy: false,
+    xForwardedForHeader: false,
+    ip: false,
+    keyGenerator: false  // ← ADD THIS
   },
   standardHeaders: true,  // Return rate limit info in RateLimit-* headers
   legacyHeaders: false,   // Disable X-RateLimit-* headers

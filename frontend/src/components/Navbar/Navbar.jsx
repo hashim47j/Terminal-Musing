@@ -7,9 +7,6 @@ import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
 
-// ✅ REMOVED: patternBg import
-// ✅ REMOVED: patternStyle injection
-
 const Navbar = () => {
   const { pageTitle } = useContext(PageContext);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -42,6 +39,9 @@ const Navbar = () => {
   const brandWrapperRef = useRef(null);
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
+
+  // ✅ Debounce ref to prevent double-fire from onClick + onTouchEnd
+  const lastToggleTime = useRef(0);
 
   const HOME_BUTTON_LEFT = 30;
   const HOME_BUTTON_WIDTH = 54;
@@ -217,11 +217,11 @@ const Navbar = () => {
       }
     }
     const legacyMappings = {
-      '/philosophy':  '/blog/philosophy',
-      '/history':     '/blog/history',
-      '/tech':        '/blog/tech',
-      '/legal-social':'/blog/lsconcern',
-      '/writings':    '/blog/writings'
+      '/philosophy':   '/blog/philosophy',
+      '/history':      '/blog/history',
+      '/tech':         '/blog/tech',
+      '/legal-social': '/blog/lsconcern',
+      '/writings':     '/blog/writings'
     };
     return legacyMappings[currentPath] || currentPath;
   };
@@ -247,8 +247,7 @@ const Navbar = () => {
   const handleNavLinkMouseMove = (e, path) => {
     const { left, width } = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - left;
-    let progress = Math.min(Math.max(x / width, 0), 1);
-    setHoverProgress((prev) => ({ ...prev, [path]: progress }));
+    setHoverProgress((prev) => ({ ...prev, [path]: Math.min(Math.max(x / width, 0), 1) }));
   };
 
   const handleNavLinkMouseLeave = (path) => {
@@ -266,17 +265,15 @@ const Navbar = () => {
       "/philosophy", "/history", "/writings", "/legal-social",
       "/tech", "/daily-thoughts", "/blog/"
     ];
-    const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path)) ||
-                               currentPath.startsWith('/blogs/');
+    const isPathDefaultLight =
+      lightBackgroundPaths.some(path => currentPath.startsWith(path)) ||
+      currentPath.startsWith('/blogs/');
     const intersectingSensors = new Set();
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            intersectingSensors.add(entry.target);
-          } else {
-            intersectingSensors.delete(entry.target);
-          }
+          if (entry.isIntersecting) intersectingSensors.add(entry.target);
+          else intersectingSensors.delete(entry.target);
         });
         setIsLightBackground(intersectingSensors.size > 0 || isPathDefaultLight);
       },
@@ -292,8 +289,7 @@ const Navbar = () => {
       for (let entry of entries) {
         const isMobileView = window.innerWidth <= 768;
         const padding = isMobileView ? 16 : 40;
-        const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
-        setLeftNavbarWidth(calculatedLeftNavbarWidth);
+        setLeftNavbarWidth(entry.contentRect.width + padding);
         const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
         setBridgeLeft(homeButtonCenter);
         setBridgeWidth(Math.max(0, NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter));
@@ -304,9 +300,7 @@ const Navbar = () => {
   }, [currentPath]);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth <= 768);
-    };
+    const handleResize = () => setIsMobileView(window.innerWidth <= 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -316,29 +310,30 @@ const Navbar = () => {
     if (tapTimeout.current) clearTimeout(tapTimeout.current);
     setTapCount((prev) => {
       const next = prev + 1;
-      if (next === 3) {
-        setShowSecretDialog(true);
-        return 0;
-      }
+      if (next === 3) { setShowSecretDialog(true); return 0; }
       tapTimeout.current = setTimeout(() => setTapCount(0), 1500);
       return next;
     });
   };
 
   const getHighlightBarActiveClass = () => {
-    const activeNavPath = getActiveNavPath();
-    switch (activeNavPath) {
-      case "/daily-thoughts":   return styles.dailyThoughtsActive;
-      case "/blog/philosophy":  return styles.philosophyActive;
-      case "/blog/history":     return styles.historyActive;
-      case "/blog/writings":    return styles.writingsActive;
-      case "/blog/lsconcern":   return styles.legalSocialActive;
-      case "/blog/tech":        return styles.techActive;
-      default:                  return "";
+    switch (getActiveNavPath()) {
+      case "/daily-thoughts":  return styles.dailyThoughtsActive;
+      case "/blog/philosophy": return styles.philosophyActive;
+      case "/blog/history":    return styles.historyActive;
+      case "/blog/writings":   return styles.writingsActive;
+      case "/blog/lsconcern":  return styles.legalSocialActive;
+      case "/blog/tech":       return styles.techActive;
+      default:                 return "";
     }
   };
 
+  // ✅ FIXED: debounced toggleMenu prevents double-fire from onClick + onTouchEnd
   const toggleMenu = () => {
+    const now = Date.now();
+    if (now - lastToggleTime.current < 300) return;
+    lastToggleTime.current = now;
+
     if (menuOpen) {
       setMenuClosing(true);
       setTimeout(() => {
@@ -388,22 +383,63 @@ const Navbar = () => {
     { to: "/admin/login",     label: "Author(s)", isAdmin: true },
   ];
 
+  // ── Shared nav links JSX ──
+  const renderNavLinks = () => (
+    <div
+      ref={navLinksRef}
+      className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle} />
+      {navLinks.map(({ to, label, isAdmin }) => {
+        const isActive = getActiveNavPath() === to;
+        return (
+          <Link
+            key={to}
+            to={to}
+            className={`
+              ${styles.navLink}
+              ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
+              ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
+              ${isAdmin ? styles.adminLink : ""}
+            `}
+            onClick={(e) => handleNavLinkClick(e, to)}
+            onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
+            onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
+            style={{ "--hover-progress": hoverProgress[to] || 0 }}
+          >
+            {label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+
+  // ── Shared secret dialog JSX ──
+  const renderSecretDialog = () => showSecretDialog && (
+    <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
+      <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>
+        <h3>Upload Admin Key</h3>
+        <input type="file" />
+        <button onClick={() => setShowSecretDialog(false)}>Close</button>
+      </div>
+    </div>
+  );
+
   // ── Mobile Blog Post Layout ──
   if (isBlogPostPage && isMobileView) {
     return (
       <>
-        {/* ✅ REMOVED: <style>{patternStyle}</style> */}
-
         <div
           ref={blogMobileHeaderRef}
           className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
           style={{
-            width:  bgWidth  ? `${bgWidth}px`  : "100%",
-            height: bgHeight ? `${bgHeight}px` : "54px",
-            left:   bgLeft   ? `${bgLeft}px`   : "0",
-            top:    bgTop    ? `${bgTop}px`    : "0",
+            width:      bgWidth  ? `${bgWidth}px`  : "100%",
+            height:     bgHeight ? `${bgHeight}px` : "54px",
+            left:       bgLeft   ? `${bgLeft}px`   : "0",
+            top:        bgTop    ? `${bgTop}px`    : "0",
             transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s",
-            position: "fixed"
+            position:   "fixed"
           }}
           data-navbar-no
         >
@@ -423,90 +459,46 @@ const Navbar = () => {
 
           <span
             ref={blogMinimalTitleRef}
-            className={[
-              styles.blogMinimalTitle,
-              slideLeft ? styles.slideLeft : ''
-            ].join(' ')}
+            className={[styles.blogMinimalTitle, slideLeft ? styles.slideLeft : ''].join(' ')}
           >
             {stripCategorySuffix(pageTitle || getCenterTitle())}
-            <div
-              className={styles.progressFillMobile}
-              style={{ width: `${scrollProgress}%` }}
-            />
+            <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
           </span>
 
+          {/* ✅ FIXED: onTouchEnd for instant response + debounced toggleMenu prevents double-fire */}
           <button
-  className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
-  aria-label="Toggle menu"
-  onClick={toggleMenu}
-  onTouchEnd={(e) => {        // ✅ ADD
-    e.preventDefault();       // ✅ prevents 300ms delay ghost click
-    e.stopPropagation();
-    toggleMenu();
-  }}
-  onKeyDown={(e) => {
-    if (e.key === 'Enter' || e.key === ' ') toggleMenu();
-  }}
->
-
-            <span className={styles.line}></span>
-            <span className={styles.line}></span>
-            <span className={styles.line}></span>
+            className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
+            aria-label="Toggle menu"
+            onClick={toggleMenu}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleMenu();
+            }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleMenu(); }}
+          >
+            <span className={styles.line} />
+            <span className={styles.line} />
+            <span className={styles.line} />
           </button>
         </div>
 
+        {/* ✅ FIXED: onTouchEnd on overlay to close menu on mobile tap */}
         <div
           className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
           onClick={toggleMenu}
+          onTouchEnd={(e) => { e.preventDefault(); toggleMenu(); }}
         />
 
-        <div
-          ref={navLinksRef}
-          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle} />
-          {navLinks.map(({ to, label, isAdmin }) => {
-            const isActive = getActiveNavPath() === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`
-                  ${styles.navLink}
-                  ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
-                  ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
-                  ${isAdmin ? styles.adminLink : ""}
-                `}
-                onClick={(e) => handleNavLinkClick(e, to)}
-                onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
-                onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
-                style={{ "--hover-progress": hoverProgress[to] || 0 }}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </div>
-
-        {showSecretDialog && (
-          <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
-            <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>
-              <h3>Upload Admin Key</h3>
-              <input type="file" />
-              <button onClick={() => setShowSecretDialog(false)}>Close</button>
-            </div>
-          </div>
-        )}
+        {renderNavLinks()}
+        {renderSecretDialog()}
       </>
     );
   }
 
-  // ── Desktop Layout ──
+  // ── Desktop / Non-blog-post Mobile Layout ──
   return (
     <>
-      {/* ✅ REMOVED: <style>{patternStyle}</style> */}
-
       {currentPath !== "/" && (
         <Link
           to="/"
@@ -521,28 +513,19 @@ const Navbar = () => {
         </Link>
       )}
 
-      <div
-        className={bridgeClass}
-        style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}
-      />
+      <div className={bridgeClass} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }} />
 
       <div
         className={navbarLeftClass}
         style={{
           width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
-          // ✅ REMOVED: backgroundImage, backgroundSize, backgroundRepeat pattern
-          ...(isBlogPostPage && {
-            transform: `translateY(0px)`
-          })
+          ...(isBlogPostPage && { transform: `translateY(0px)` })
         }}
       >
         {isBlogPostPage && (
           <div
             className={styles.progressFill}
-            style={{
-              width: `${scrollProgress}%`,
-              opacity: isScrolled ? 0.3 : 0
-            }}
+            style={{ width: `${scrollProgress}%`, opacity: isScrolled ? 0.3 : 0 }}
           />
         )}
 
@@ -555,27 +538,19 @@ const Navbar = () => {
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
               <>
-                <span style={{
-                  fontFamily: 'Abhaya Libre, serif',
-                  fontSize: isMobileView ? '30px' : '50px'
-                }}>Terminal</span>
-                <span style={{
-                  fontFamily: 'Luxurious Script, cursive',
-                  marginLeft: '-10px',
-                  position: 'relative',
-                  top: '5px',
-                  fontSize: isMobileView ? '28px' : '46px'
-                }}> Musing</span>
+                <span style={{ fontFamily: 'Abhaya Libre, serif', fontSize: isMobileView ? '30px' : '50px' }}>
+                  Terminal
+                </span>
+                <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px', fontSize: isMobileView ? '28px' : '46px' }}>
+                  {' '}Musing
+                </span>
               </>
             ) : getCenterTitle() === "Terminal Musing" ? (
               <>
                 <span style={{ fontFamily: 'Abhaya Libre, serif' }}>Terminal</span>
-                <span style={{
-                  fontFamily: 'Luxurious Script, cursive',
-                  marginLeft: '-10px',
-                  position: 'relative',
-                  top: '5px'
-                }}> Musing</span>
+                <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px' }}>
+                  {' '}Musing
+                </span>
               </>
             ) : getCenterTitle()}
           </Link>
@@ -585,10 +560,7 @@ const Navbar = () => {
       {isBlogPostPage && (
         <div
           className={styles.progressFill}
-          style={{
-            width: `${scrollProgress}%`,
-            opacity: isScrolled ? 0.3 : 0
-          }}
+          style={{ width: `${scrollProgress}%`, opacity: isScrolled ? 0.3 : 0 }}
         />
       )}
 
@@ -602,65 +574,36 @@ const Navbar = () => {
           ${isHomePage ? styles.noShadow : ""}
         `}
       >
+        {/* ✅ FIXED: onTouchEnd for instant hamburger response on mobile */}
         <div
           onClick={toggleMenu}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
+          }}
           className={`${styles.hamburger} ${menuOpen ? styles.hamburgerActive : ""}`}
           aria-label="Toggle menu"
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') toggleMenu();
-          }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleMenu(); }}
         >
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
-          <span className={styles.line}></span>
+          <span className={styles.line} />
+          <span className={styles.line} />
+          <span className={styles.line} />
         </div>
 
-        <div
-          ref={navLinksRef}
-          className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle} />
-          {navLinks.map(({ to, label, isAdmin }) => {
-            const isActive = getActiveNavPath() === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`
-                  ${styles.navLink}
-                  ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
-                  ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
-                  ${isAdmin ? styles.adminLink : ""}
-                `}
-                onClick={(e) => handleNavLinkClick(e, to)}
-                onMouseMove={(e) => !isMobileView && handleNavLinkMouseMove(e, to)}
-                onMouseLeave={() => !isMobileView && handleNavLinkMouseLeave(to)}
-                style={{ "--hover-progress": hoverProgress[to] || 0 }}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </div>
+        {renderNavLinks()}
       </div>
 
+      {/* ✅ FIXED: onTouchEnd on overlay */}
       <div
         className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
         onClick={toggleMenu}
+        onTouchEnd={(e) => { e.preventDefault(); toggleMenu(); }}
       />
 
-      {showSecretDialog && (
-        <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>
-          <div className={styles.secretBox} onClick={(e) => e.stopPropagation()}>
-            <h3>Upload Admin Key</h3>
-            <input type="file" />
-            <button onClick={() => setShowSecretDialog(false)}>Close</button>
-          </div>
-        </div>
-      )}
+      {renderSecretDialog()}
     </>
   );
 };

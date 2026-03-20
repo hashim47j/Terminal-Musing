@@ -437,6 +437,8 @@
     position: fixed;
     top: 80px;
     left: 50%;
+    right: 20px;      
+    left: auto;     
     transform: translateX(-28%) translateY(20px);
     width: 320px;
     max-height: calc(100vh - 120px);

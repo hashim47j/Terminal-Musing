@@ -47,9 +47,7 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
       return;
     }
 
-    if (isBackgroundImageCached(bgUrl)) {
-      setImageLoaded(true);
-    }
+    if (isBackgroundImageCached(bgUrl)) setImageLoaded(true);
 
     const extractColorFromImage = () => {
       if (!imgRef.current || !headerRef.current || !imageLoaded) return;
@@ -67,7 +65,6 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
         const data = imageData.data;
 
         let r = 0, g = 0, b = 0, count = 0;
-
         for (let i = 0; i < data.length; i += 4 * 10) {
           r += data[i];
           g += data[i + 1];
@@ -131,35 +128,21 @@ const HeaderSection = ({ theme, headerRef, category }) => {
 
   useEffect(() => {
     const heroUrl = theme.headerConfig.heroImage;
-
     if (heroUrl !== currentHeroUrl) {
       setShowImage(false);
       setCurrentHeroUrl(heroUrl);
-
-      if (isHeroImageCached(heroUrl)) {
-        setShowImage(true);
-      }
+      if (isHeroImageCached(heroUrl)) setShowImage(true);
     }
   }, [theme.headerConfig.heroImage, currentHeroUrl, isHeroImageCached]);
 
   const handleImageLoad = () => {
     setShowImage(true);
-    if (theme.headerConfig.heroImage) {
-      cacheHeroImage(theme.headerConfig.heroImage);
-    }
+    if (theme.headerConfig.heroImage) cacheHeroImage(theme.headerConfig.heroImage);
   };
 
-  const widthPx = isMobile
-    ? theme.headerConfig.mobileHeroWidth
-    : theme.headerConfig.heroWidth;
-
-  const positionX = isMobile
-    ? theme.headerConfig.mobileHeroPosition.x
-    : theme.headerConfig.heroPosition.x;
-
-  const positionY = isMobile
-    ? theme.headerConfig.mobileHeroPosition.y
-    : theme.headerConfig.heroPosition.y;
+  const widthPx   = isMobile ? theme.headerConfig.mobileHeroWidth     : theme.headerConfig.heroWidth;
+  const positionX = isMobile ? theme.headerConfig.mobileHeroPosition.x : theme.headerConfig.heroPosition.x;
+  const positionY = isMobile ? theme.headerConfig.mobileHeroPosition.y : theme.headerConfig.heroPosition.y;
 
   return (
     <section
@@ -222,9 +205,7 @@ const BlogCard = ({
   }, []);
 
   useEffect(() => {
-    if (post.coverImage && isImageCached(post.coverImage)) {
-      setImageLoaded(true);
-    }
+    if (post.coverImage && isImageCached(post.coverImage)) setImageLoaded(true);
   }, [post.coverImage, isImageCached]);
 
   const extractColorFromImage = () => {
@@ -243,7 +224,6 @@ const BlogCard = ({
       const data = imageData.data;
 
       let r = 0, g = 0, b = 0, count = 0;
-
       for (let i = 0; i < data.length; i += 4 * 10) {
         r += data[i];
         g += data[i + 1];
@@ -265,17 +245,16 @@ const BlogCard = ({
     if (imageLoaded) extractColorFromImage();
   }, [imageLoaded]);
 
-  // ✅ FIXED: first tap expands, second tap navigates
+  // ✅ FIXED: no preventDefault — allows native scroll to work normally
   const handleCardClick = (e) => {
-    e.preventDefault();
     e.stopPropagation();
 
     if (isMobile) {
       if (activeCardId === post.id) {
-        // Already expanded — second tap navigates
+        // Second tap — navigate
         onClick();
       } else {
-        // First tap — expand card
+        // First tap — expand
         setActiveCardId(post.id);
       }
     } else {
@@ -283,22 +262,20 @@ const BlogCard = ({
     }
   };
 
+  // ✅ FIXED: no preventDefault on read button
   const handleReadButtonClick = (e) => {
     e.stopPropagation();
-    e.preventDefault();
     onClick();
   };
 
   const handleImageLoad = () => {
     setImageLoaded(true);
-    if (post.coverImage) {
-      cacheImage(post.coverImage);
-    }
+    if (post.coverImage) cacheImage(post.coverImage);
   };
 
-  const isHovered = !isMobile && hoveredPostId === post.id;
+  const isHovered      = !isMobile && hoveredPostId === post.id;
   const isMobileActive = isMobile && activeCardId === post.id;
-  const isActive = isHovered || isMobileActive;
+  const isActive       = isHovered || isMobileActive;
 
   return (
     <article
@@ -311,6 +288,7 @@ const BlogCard = ({
       tabIndex={0}
       style={{
         cursor: 'pointer',
+        touchAction: 'manipulation', /* ✅ FIXED: prevents scroll interference */
         '--card-shadow-color': isActive ? shadowColor : 'rgba(0,0,0,0)',
         backgroundColor: theme.cardStyle.backgroundColor
       }}
@@ -340,16 +318,14 @@ const BlogCard = ({
         <h3 className={styles.blogTitle}>{post.title}</h3>
 
         <div className={styles.cardBottomFixed}>
-          <div className={styles.cardSeparatorLine}></div>
+          <div className={styles.cardSeparatorLine} />
           <div className={styles.cardMetaRow}>
             <span className={styles.cardAuthor}>
               by {post.author || currentAuthor}
             </span>
             <span className={styles.cardDate}>
               {new Date(post.date).toLocaleDateString('en-US', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
+                day: 'numeric', month: 'short', year: 'numeric'
               })}
             </span>
             <span className={styles.cardWordCount}>
@@ -369,16 +345,14 @@ const BlogCard = ({
 
           <div className={styles.bottomFixed}>
             <div className={styles.leftContent}>
-              <div className={styles.separatorLine}></div>
+              <div className={styles.separatorLine} />
               <div className={styles.authorDateContainer}>
                 <span className={styles.authorName}>
                   {post.author || currentAuthor}
                 </span>
                 <span className={styles.postDate}>
                   {new Date(post.date).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
+                    day: 'numeric', month: 'short', year: 'numeric'
                   })}
                 </span>
               </div>
@@ -408,7 +382,6 @@ const BlogCard = ({
                 </svg>
               </button>
 
-              {/* ✅ UPDATED: hint text on mobile */}
               <button
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
@@ -426,14 +399,13 @@ const BlogCard = ({
 // ── Main Page ──
 const UniformPage = () => {
   const containerRef = useRef(null);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate     = useNavigate();
+  const location     = useLocation();
   const [hoveredPostId, setHoveredPostId] = useState(null);
-  const [activeCardId, setActiveCardId] = useState(null);
+  const [activeCardId,  setActiveCardId]  = useState(null);
 
-  const category = getCategoryFromPath(location.pathname);
-  const theme = getThemeByCategory(category);
-
+  const category      = getCategoryFromPath(location.pathname);
+  const theme         = getThemeByCategory(category);
   const { state, fetchPosts } = useBlog();
   const categoryState = state.posts[category];
   const currentAuthor = state.currentAuthor;
@@ -444,7 +416,7 @@ const UniformPage = () => {
     fetchPosts(category, theme.apiEndpoint);
   }, [category, theme.apiEndpoint, fetchPosts]);
 
-  // ✅ Close expanded card on outside click/tap
+  // ✅ FIXED: mousedown only — no touchstart to avoid scroll conflicts
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -452,11 +424,7 @@ const UniformPage = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside); // ✅ also handle touch
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const getWordCount = (content) => {
@@ -468,9 +436,7 @@ const UniformPage = () => {
     return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
 
-  const handlePostClick = (post) => {
-    navigate(`${theme.routeBase}/${post.id}`);
-  };
+  const handlePostClick = (post) => navigate(`${theme.routeBase}/${post.id}`);
 
   const handleKeyDown = (e, post) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -501,7 +467,7 @@ const UniformPage = () => {
           <div className={styles.blogGrid}>
             {categoryState.loading ? (
               <div className={styles.loadingState}>
-                <div className={styles.spinner}></div>
+                <div className={styles.spinner} />
                 <p>{theme.postsSection.loadingText}</p>
               </div>
             ) : categoryState.error ? (

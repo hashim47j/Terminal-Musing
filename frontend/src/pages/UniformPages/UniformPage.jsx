@@ -5,7 +5,7 @@ import { getThemeByCategory, getCategoryFromPath } from '../../config/blogThemes
 import { useBlog } from '../../context/BlogContext';
 import SmartImage from './SmartImage';
 
-// small hook to detect mobile breakpoint
+// ── Mobile breakpoint hook ──
 const useIsMobile = (breakpoint = 480) => {
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth <= breakpoint : false
@@ -18,30 +18,29 @@ const useIsMobile = (breakpoint = 480) => {
   return isMobile;
 };
 
-// Enhanced Dynamic Background Shadow Component
+// ── Dynamic Background Shadow ──
 const DynamicBackgroundShadow = ({ theme, category }) => {
   const headerRef = useRef(null);
   const imgRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [currentBgUrl, setCurrentBgUrl] = useState(null);
-  const { 
-    getBackgroundCache, 
-    cacheBackground, 
-    isBackgroundImageCached, 
-    cacheBackgroundImage 
+  const {
+    getBackgroundCache,
+    cacheBackground,
+    isBackgroundImageCached,
+    cacheBackgroundImage
   } = useBlog();
 
-  // Reset only when background URL actually changes
   useEffect(() => {
     const bgUrl = theme.headerConfig.backgroundImage;
-    
+
     if (bgUrl !== currentBgUrl) {
       setImageLoaded(false);
       setCurrentBgUrl(bgUrl);
     }
-    
+
     if (!bgUrl) return;
-    
+
     const cachedShadowColor = getBackgroundCache(bgUrl);
     if (cachedShadowColor && headerRef.current) {
       headerRef.current.style.setProperty('--header-shadow-color', cachedShadowColor);
@@ -58,41 +57,45 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
       const img = imgRef.current;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      
+
       canvas.width = img.width;
       canvas.height = img.height;
-      
+
       try {
         ctx.drawImage(img, 0, 0);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
-        
+
         let r = 0, g = 0, b = 0, count = 0;
-        
+
         for (let i = 0; i < data.length; i += 4 * 10) {
           r += data[i];
           g += data[i + 1];
           b += data[i + 2];
           count++;
         }
-        
+
         r = Math.floor(r / count);
         g = Math.floor(g / count);
         b = Math.floor(b / count);
 
         const shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
         headerRef.current.style.setProperty('--header-shadow-color', shadowColor);
-        
         cacheBackground(bgUrl, shadowColor);
       } catch (err) {
         console.warn('Could not extract color from background image:', err);
       }
     };
 
-    if (imageLoaded) {
-      extractColorFromImage();
-    }
-  }, [theme.headerConfig.backgroundImage, currentBgUrl, imageLoaded, getBackgroundCache, cacheBackground, isBackgroundImageCached]);
+    if (imageLoaded) extractColorFromImage();
+  }, [
+    theme.headerConfig.backgroundImage,
+    currentBgUrl,
+    imageLoaded,
+    getBackgroundCache,
+    cacheBackground,
+    isBackgroundImageCached
+  ]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -111,7 +114,7 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
           style={{ display: 'none' }}
           onLoad={handleImageLoad}
           onError={() => setImageLoaded(false)}
-          key={theme.headerConfig.backgroundImage} // Reset only when URL changes
+          key={theme.headerConfig.backgroundImage}
         />
       )}
       <HeaderSection theme={theme} headerRef={headerRef} category={category} />
@@ -119,22 +122,20 @@ const DynamicBackgroundShadow = ({ theme, category }) => {
   );
 };
 
-// Enhanced Header Section Component  
+// ── Header Section ──
 const HeaderSection = ({ theme, headerRef, category }) => {
   const { cacheHeroImage, isHeroImageCached } = useBlog();
   const [currentHeroUrl, setCurrentHeroUrl] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const isMobile = useIsMobile(480);
 
-  // Hide image immediately when category changes, show when loaded
   useEffect(() => {
     const heroUrl = theme.headerConfig.heroImage;
-    
+
     if (heroUrl !== currentHeroUrl) {
-      setShowImage(false); // Hide immediately on URL change
+      setShowImage(false);
       setCurrentHeroUrl(heroUrl);
-      
-      // If image is cached, show it quickly
+
       if (isHeroImageCached(heroUrl)) {
         setShowImage(true);
       }
@@ -148,61 +149,57 @@ const HeaderSection = ({ theme, headerRef, category }) => {
     }
   };
 
-  // Use theme config values directly; mobile uses mobileHeroWidth
-// Use theme config values directly; mobile uses mobileHeroWidth
-const widthPx = isMobile
-  ? theme.headerConfig.mobileHeroWidth
-  : theme.headerConfig.heroWidth;
+  const widthPx = isMobile
+    ? theme.headerConfig.mobileHeroWidth
+    : theme.headerConfig.heroWidth;
 
-// ADD THIS - Use mobile position when on mobile
-const positionX = isMobile 
-  ? theme.headerConfig.mobileHeroPosition.x 
-  : theme.headerConfig.heroPosition.x;
+  const positionX = isMobile
+    ? theme.headerConfig.mobileHeroPosition.x
+    : theme.headerConfig.heroPosition.x;
 
-const positionY = isMobile 
-  ? theme.headerConfig.mobileHeroPosition.y 
-  : theme.headerConfig.heroPosition.y;
+  const positionY = isMobile
+    ? theme.headerConfig.mobileHeroPosition.y
+    : theme.headerConfig.heroPosition.y;
 
-return (
-  <section 
-    ref={headerRef} 
-    className={styles.headerSection}
-    style={{
-      ...(theme.headerConfig.backgroundImage && {
-        backgroundImage: `url(${theme.headerConfig.backgroundImage})`
-      })
-    }}
-  >
-    {theme.headerConfig.heroImage && (
-      <SmartImage
-        src={theme.headerConfig.heroImage}
-        alt={theme.headerConfig.altText}
-        className={styles.heroImage}
-        style={{
-          '--hero-x': `${positionX}px`,  // Use calculated position
-          '--hero-y': `${positionY}px`,  // Use calculated position
-          width: `${widthPx}px`,
-          opacity: showImage ? 1 : 0,
-          transition: 'opacity 0.3s ease'
-        }}
-        cacheCallback={handleImageLoad}
-        key={theme.headerConfig.heroImage}
-      />
-    )}
-  </section>
-);
-
+  return (
+    <section
+      ref={headerRef}
+      className={styles.headerSection}
+      style={{
+        ...(theme.headerConfig.backgroundImage && {
+          backgroundImage: `url(${theme.headerConfig.backgroundImage})`
+        })
+      }}
+    >
+      {theme.headerConfig.heroImage && (
+        <SmartImage
+          src={theme.headerConfig.heroImage}
+          alt={theme.headerConfig.altText}
+          className={styles.heroImage}
+          style={{
+            '--hero-x': `${positionX}px`,
+            '--hero-y': `${positionY}px`,
+            width: `${widthPx}px`,
+            opacity: showImage ? 1 : 0,
+            transition: 'opacity 0.3s ease'
+          }}
+          cacheCallback={handleImageLoad}
+          key={theme.headerConfig.heroImage}
+        />
+      )}
+    </section>
+  );
 };
 
-// Blog Card Component (keeping your existing BlogCard component unchanged)
-const BlogCard = ({ 
-  post, 
-  hoveredPostId, 
-  onMouseEnter, 
-  onMouseLeave, 
-  onClick, 
-  onKeyDown, 
-  currentAuthor, 
+// ── Blog Card ──
+const BlogCard = ({
+  post,
+  hoveredPostId,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  onKeyDown,
+  currentAuthor,
   getWordCount,
   activeCardId,
   setActiveCardId,
@@ -258,8 +255,7 @@ const BlogCard = ({
       g = Math.floor(g / count);
       b = Math.floor(b / count);
 
-      const shadow = `rgba(${r}, ${g}, ${b}, 0.6)`;
-      setShadowColor(shadow);
+      setShadowColor(`rgba(${r}, ${g}, ${b}, 0.6)`);
     } catch (err) {
       console.warn('Could not extract color from card image:', err);
     }
@@ -269,13 +265,19 @@ const BlogCard = ({
     if (imageLoaded) extractColorFromImage();
   }, [imageLoaded]);
 
+  // ✅ FIXED: first tap expands, second tap navigates
   const handleCardClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (isMobile) {
-      const newActiveId = post.id === activeCardId ? null : post.id;
-      setActiveCardId(newActiveId);
+      if (activeCardId === post.id) {
+        // Already expanded — second tap navigates
+        onClick();
+      } else {
+        // First tap — expand card
+        setActiveCardId(post.id);
+      }
     } else {
       onClick();
     }
@@ -309,11 +311,11 @@ const BlogCard = ({
       tabIndex={0}
       style={{
         cursor: 'pointer',
-        '--card-shadow-color': (isHovered || isMobileActive) ? shadowColor : 'rgba(0, 0, 0, 0)',
+        '--card-shadow-color': isActive ? shadowColor : 'rgba(0,0,0,0)',
         backgroundColor: theme.cardStyle.backgroundColor
       }}
       onKeyDown={onKeyDown}
-      aria-label={`${isActive ? 'Expanded' : 'Read'} article: ${post.title}`}
+      aria-label={`${isMobileActive ? 'Tap again to open' : 'Tap to expand'}: ${post.title}`}
     >
       {post.coverImage ? (
         <img
@@ -323,13 +325,11 @@ const BlogCard = ({
           className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
           loading="lazy"
           onLoad={handleImageLoad}
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
+          onError={(e) => { e.target.style.display = 'none'; }}
         />
       ) : (
         <div
-          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} 
+          className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`}
           style={{ backgroundColor: '#ccc' }}
         >
           <span className={styles.noImageText}>No Image</span>
@@ -396,7 +396,9 @@ const BlogCard = ({
                       url: `${theme.routeBase}/${post.id}`
                     });
                   } else {
-                    navigator.clipboard.writeText(`${window.location.origin}${theme.routeBase}/${post.id}`);
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}${theme.routeBase}/${post.id}`
+                    );
                     alert('Link copied to clipboard!');
                   }
                 }}
@@ -406,11 +408,12 @@ const BlogCard = ({
                 </svg>
               </button>
 
-              <button 
+              {/* ✅ UPDATED: hint text on mobile */}
+              <button
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
               >
-                Read
+                {isMobile ? 'Tap again to open' : 'Read'}
               </button>
             </div>
           </div>
@@ -420,8 +423,9 @@ const BlogCard = ({
   );
 };
 
+// ── Main Page ──
 const UniformPage = () => {
-  const containerRef = useRef(null); 
+  const containerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [hoveredPostId, setHoveredPostId] = useState(null);
@@ -429,42 +433,38 @@ const UniformPage = () => {
 
   const category = getCategoryFromPath(location.pathname);
   const theme = getThemeByCategory(category);
-  
+
   const { state, fetchPosts } = useBlog();
   const categoryState = state.posts[category];
   const currentAuthor = state.currentAuthor;
 
-  console.log('Current category:', category);
-  console.log('Category state:', categoryState);
-  console.log('Theme API endpoint:', theme.apiEndpoint);
-
-  if (!categoryState) {
-    return <div>Loading...</div>;
-  }
+  if (!categoryState) return <div>Loading...</div>;
 
   useEffect(() => {
     fetchPosts(category, theme.apiEndpoint);
   }, [category, theme.apiEndpoint, fetchPosts]);
 
+  // ✅ Close expanded card on outside click/tap
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
         setActiveCardId(null);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside); // ✅ also handle touch
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   const getWordCount = (content) => {
     if (!content || !Array.isArray(content)) return 0;
-    
     const textContent = content
       .filter(block => block.type === 'paragraph' && block.text)
       .map(block => block.text)
       .join(' ');
-    
     return textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
 
@@ -480,7 +480,7 @@ const UniformPage = () => {
   };
 
   return (
-    <div 
+    <div
       className={styles[theme.containerClass]}
       style={{ backgroundColor: theme.backgroundColor }}
     >
@@ -491,7 +491,7 @@ const UniformPage = () => {
 
       <DynamicBackgroundShadow theme={theme} category={category} />
 
-      <section 
+      <section
         className={styles.postsSection}
         style={{ backgroundColor: theme.postsSection.backgroundColor }}
       >
@@ -508,8 +508,8 @@ const UniformPage = () => {
               <div className={styles.errorState}>
                 <h3>Oops! Something went wrong</h3>
                 <p style={{ color: 'red' }}>{categoryState.error}</p>
-                <button 
-                  onClick={() => window.location.reload()} 
+                <button
+                  onClick={() => window.location.reload()}
                   className={styles.retryBtn}
                 >
                   Try Again
@@ -542,10 +542,10 @@ const UniformPage = () => {
         </div>
       </section>
 
-      <div 
+      <div
         className={styles.grayStrip}
         style={{ backgroundColor: theme.stripColor }}
-      ></div>
+      />
     </div>
   );
 };

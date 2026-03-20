@@ -436,13 +436,19 @@ const Navbar = () => {
           </span>
 
           <button
-            className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
-            aria-label="Toggle menu"
-            onClick={toggleMenu}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') toggleMenu();
-            }}
-          >
+  className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
+  aria-label="Toggle menu"
+  onClick={toggleMenu}
+  onTouchEnd={(e) => {        // ✅ ADD
+    e.preventDefault();       // ✅ prevents 300ms delay ghost click
+    e.stopPropagation();
+    toggleMenu();
+  }}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') toggleMenu();
+  }}
+>
+
             <span className={styles.line}></span>
             <span className={styles.line}></span>
             <span className={styles.line}></span>

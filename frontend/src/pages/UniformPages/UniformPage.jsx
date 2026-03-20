@@ -293,7 +293,7 @@ const BlogCard = ({
         backgroundColor: theme.cardStyle.backgroundColor
       }}
       onKeyDown={onKeyDown}
-      aria-label={`${isMobileActive ? 'Tap again to open' : 'Tap to expand'}: ${post.title}`}
+      aria-label={`${isMobileActive ? 'Read' : 'Tap to expand'}: ${post.title}`}
     >
       {post.coverImage ? (
         <img

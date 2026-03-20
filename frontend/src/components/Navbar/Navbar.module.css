@@ -404,7 +404,7 @@
     background-color: rgba(0, 0, 0, 0.3); /* Slight dimming */
     backdrop-filter: blur(0px); /* Initial blur */
     -webkit-backdrop-filter: blur(0px);
-    z-index: 999;
+    z-index: 4600;
     opacity: 0;
     visibility: hidden;
     transition:
@@ -451,7 +451,7 @@
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
     border-radius: 0;
-    z-index: 1005; /* Menu must be above the overlay, but overlay is now higher for testing */
+    z-index: 5000;/* Menu must be above the overlay, but overlay is now higher for testing */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), 
@@ -709,7 +709,7 @@
 .blogMinimalTitle,
 .blogMinimalHamburger {
   position: relative;
-  z-index: 0;
+  z-index: 5100;
 }
 
 /* Optional: small-phone tweaks (curves come from SVG r value) */

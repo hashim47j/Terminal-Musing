@@ -358,7 +358,7 @@
     width: auto;
     height: auto;
     z-index: 1000;
-    transform: translateY(0) !important;
+    transform: none !important; /* was translateY(0) !important */
     transition: none !important;
   }
 

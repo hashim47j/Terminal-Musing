@@ -6,18 +6,9 @@ import { PageContext } from "../../context/PageContext.jsx";
 import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
-import patternBg from '../../assets/pattern.png';
 
-const patternStyle = `
-  .${styles.navbarLeft}::before,
-  .${styles.navbarRight}::before,
-  .${styles.homeButton}::before,
-  .${styles.blogMobileHeader}::before,
-  .${styles.blogMinimalHomeButton}::before,
-  .${styles.blogMinimalHamburger}::before {
-    background-image: url(${patternBg}) !important;
-  }
-`;
+// ✅ REMOVED: patternBg import
+// ✅ REMOVED: patternStyle injection
 
 const Navbar = () => {
   const { pageTitle } = useContext(PageContext);
@@ -26,7 +17,7 @@ const Navbar = () => {
 
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuClosing, setMenuClosing] = useState(false);
   const [isLightBackground, setIsLightBackground] = useState(false);
@@ -40,11 +31,11 @@ const Navbar = () => {
   const [isMobileView, setIsMobileView] = useState(false);
   const [hoverProgress, setHoverProgress] = useState({});
   const [isHomePage, setIsHomePage] = useState(false);
-  
+
   const navLinksRef = useRef(null);
   const location = useLocation();
   const currentPath = location.pathname;
-  
+
   const pathParts = currentPath.split('/').filter(Boolean);
   const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
 
@@ -73,7 +64,6 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    console.log('hideNavControls:', hideNavControls, 'isMobileView:', isMobileView);
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
       const shrinkPx = 8;
@@ -81,12 +71,6 @@ const Navbar = () => {
       setBgHeight(headingRect.height);
       setBgTop(headingRect.top);
       setSlideLeft(true);
-      console.log('Set bg values:', {
-        width: headingRect.width - shrinkPx,
-        height: headingRect.height,
-        left: headingRect.left + shrinkPx / 2,
-        top: headingRect.top
-      });
     } else {
       setBgWidth(null);
       setBgHeight(null);
@@ -145,7 +129,7 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isBlogPostPage]);
-  
+
   useEffect(() => {
     const checkHomePage = () => {
       const homeElement = document.querySelector('[data-navbar-no-shadow]');
@@ -172,54 +156,48 @@ const Navbar = () => {
       if (window.innerWidth > 768 && !isBlogPostPage) {
         setHide(currentScrollY > lastScrollY && currentScrollY > 50);
       } else {
-        setHide(false); 
+        setHide(false);
       }
       setLastScrollY(currentScrollY);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [isBlogPostPage, lastScrollY]);
 
   const getCenterTitle = () => {
-    if (isBlogPostPage && pageTitle) {
-      return pageTitle;
-    }
+    if (isBlogPostPage && pageTitle) return pageTitle;
     if (currentPath.startsWith('/blog/')) {
       const pathParts = currentPath.split('/');
       if (pathParts.length >= 3) {
         const category = pathParts[2];
         switch (category) {
-          case 'history': return pageTitle || 'History';
+          case 'history':    return pageTitle || 'History';
           case 'philosophy': return pageTitle || 'Philosophy';
-          case 'tech': return pageTitle || 'Technology';
-          case 'lsconcern': return pageTitle || 'Legal & Social';
-          case 'writings': return pageTitle || 'Writings';
-          default: return pageTitle || 'Blog Post';
+          case 'tech':       return pageTitle || 'Technology';
+          case 'lsconcern':  return pageTitle || 'Legal & Social';
+          case 'writings':   return pageTitle || 'Writings';
+          default:           return pageTitle || 'Blog Post';
         }
       }
     }
     const categoryMappings = {
-      '/philosophy': 'Philosophy',
+      '/philosophy':      'Philosophy',
       '/blog/philosophy': 'Philosophy',
-      '/history': 'History', 
-      '/blog/history': 'History',
-      '/writings': 'Writings',
-      '/blog/writings': 'Writings',
-      '/legal-social': 'Legal & Social Concerns',
-      '/blog/lsconcern': 'Legal & Social Concerns',
-      '/tech': 'Tech',
-      '/blog/tech': 'Tech'
+      '/history':         'History',
+      '/blog/history':    'History',
+      '/writings':        'Writings',
+      '/blog/writings':   'Writings',
+      '/legal-social':    'Legal & Social Concerns',
+      '/blog/lsconcern':  'Legal & Social Concerns',
+      '/tech':            'Tech',
+      '/blog/tech':       'Tech'
     };
-    if (categoryMappings[currentPath]) {
-      return categoryMappings[currentPath];
-    }
+    if (categoryMappings[currentPath]) return categoryMappings[currentPath];
     switch (currentPath) {
-      case "/": return "Terminal Musing";
+      case "/":               return "Terminal Musing";
       case "/daily-thoughts": return "Daily Thoughts";
-      case "/admin/login": return "Author(s)";
-      default: return pageTitle || "";
+      case "/admin/login":    return "Author(s)";
+      default:                return pageTitle || "";
     }
   };
 
@@ -230,24 +208,24 @@ const Navbar = () => {
         const category = pathParts[2];
         switch (category) {
           case 'philosophy': return '/blog/philosophy';
-          case 'history': return '/blog/history';
-          case 'tech': return '/blog/tech';
-          case 'lsconcern': return '/blog/lsconcern';
-          case 'writings': return '/blog/writings';
-          default: return currentPath;
+          case 'history':    return '/blog/history';
+          case 'tech':       return '/blog/tech';
+          case 'lsconcern':  return '/blog/lsconcern';
+          case 'writings':   return '/blog/writings';
+          default:           return currentPath;
         }
       }
     }
     const legacyMappings = {
-      '/philosophy': '/blog/philosophy',
-      '/history': '/blog/history', 
-      '/tech': '/blog/tech',
-      '/legal-social': '/blog/lsconcern',
-      '/writings': '/blog/writings'
+      '/philosophy':  '/blog/philosophy',
+      '/history':     '/blog/history',
+      '/tech':        '/blog/tech',
+      '/legal-social':'/blog/lsconcern',
+      '/writings':    '/blog/writings'
     };
     return legacyMappings[currentPath] || currentPath;
   };
-  
+
   const updateHighlight = (element) => {
     if (element && navLinksRef.current) {
       const parentRect = navLinksRef.current.getBoundingClientRect();
@@ -269,8 +247,7 @@ const Navbar = () => {
   const handleNavLinkMouseMove = (e, path) => {
     const { left, width } = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - left;
-    let progress = x / width;
-    progress = Math.min(Math.max(progress, 0), 1);
+    let progress = Math.min(Math.max(x / width, 0), 1);
     setHoverProgress((prev) => ({ ...prev, [path]: progress }));
   };
 
@@ -301,29 +278,25 @@ const Navbar = () => {
             intersectingSensors.delete(entry.target);
           }
         });
-        const isAnyLightSensorVisible = intersectingSensors.size > 0;
-        setIsLightBackground(isAnyLightSensorVisible || isPathDefaultLight);
+        setIsLightBackground(intersectingSensors.size > 0 || isPathDefaultLight);
       },
       { threshold: 0.6 }
     );
     const targets = document.querySelectorAll("[data-navbar-bg-detect]");
     targets.forEach(target => observer.observe(target));
-    return () => {
-      targets.forEach(target => observer.unobserve(target));
-    };
+    return () => targets.forEach(target => observer.unobserve(target));
   }, [currentPath]);
 
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {   
+      for (let entry of entries) {
         const isMobileView = window.innerWidth <= 768;
         const padding = isMobileView ? 16 : 40;
         const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
         setLeftNavbarWidth(calculatedLeftNavbarWidth);
         const homeButtonCenter = HOME_BUTTON_LEFT + HOME_BUTTON_WIDTH / 2;
         setBridgeLeft(homeButtonCenter);
-        const calculatedBridgeWidth = NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter;
-        setBridgeWidth(Math.max(0, calculatedBridgeWidth));
+        setBridgeWidth(Math.max(0, NAVBAR_LEFT_INITIAL_LEFT - homeButtonCenter));
       }
     });
     if (brandWrapperRef.current) observer.observe(brandWrapperRef.current);
@@ -332,9 +305,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newIsMobileView = window.innerWidth <= 768;
-      setIsMobileView(newIsMobileView);
-      console.log('Mobile view:', newIsMobileView, 'Width:', window.innerWidth);
+      setIsMobileView(window.innerWidth <= 768);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -357,13 +328,13 @@ const Navbar = () => {
   const getHighlightBarActiveClass = () => {
     const activeNavPath = getActiveNavPath();
     switch (activeNavPath) {
-      case "/daily-thoughts": return styles.dailyThoughtsActive;
-      case "/blog/philosophy": return styles.philosophyActive;
-      case "/blog/history": return styles.historyActive;
-      case "/blog/writings": return styles.writingsActive;
-      case "/blog/lsconcern": return styles.legalSocialActive;
-      case "/blog/tech": return styles.techActive;
-      default: return "";
+      case "/daily-thoughts":   return styles.dailyThoughtsActive;
+      case "/blog/philosophy":  return styles.philosophyActive;
+      case "/blog/history":     return styles.historyActive;
+      case "/blog/writings":    return styles.writingsActive;
+      case "/blog/lsconcern":   return styles.legalSocialActive;
+      case "/blog/tech":        return styles.techActive;
+      default:                  return "";
     }
   };
 
@@ -384,12 +355,8 @@ const Navbar = () => {
     e.preventDefault();
     updateHighlight(e.currentTarget);
     setClickedPath(path);
-    if (menuOpen) {
-      toggleMenu();
-    }
-    startPageTransition(path, () => {
-      navigate(path);
-    });
+    if (menuOpen) toggleMenu();
+    startPageTransition(path, () => navigate(path));
   };
 
   const navbarLeftClass = `
@@ -404,44 +371,37 @@ const Navbar = () => {
   `;
 
   const bridgeClass = `
-    ${styles.bridgeConnector} 
-    ${hide ? styles.hide : ""} 
-    ${isLightBackground ? styles.darkText : styles.lightText} 
-    ${isHomePage ? styles.noShadow : ""} 
+    ${styles.bridgeConnector}
+    ${hide ? styles.hide : ""}
+    ${isLightBackground ? styles.darkText : styles.lightText}
+    ${isHomePage ? styles.noShadow : ""}
     ${currentPath === "/" ? styles.hideOnHome : ""}
   `;
 
   const navLinks = [
     { to: "/blog/philosophy", label: "Philosophy" },
-    { to: "/blog/history", label: "History" },
-    { to: "/blog/writings", label: "Writings" },
-    { to: "/blog/lsconcern", label: "Legal & Social Issues" },
-    { to: "/blog/tech", label: "Tech" },
-    { to: "/daily-thoughts", label: "Daily Thoughts" },
-    { to: "/admin/login", label: "Author(s)", isAdmin: true },
+    { to: "/blog/history",    label: "History" },
+    { to: "/blog/writings",   label: "Writings" },
+    { to: "/blog/lsconcern",  label: "Legal & Social Issues" },
+    { to: "/blog/tech",       label: "Tech" },
+    { to: "/daily-thoughts",  label: "Daily Thoughts" },
+    { to: "/admin/login",     label: "Author(s)", isAdmin: true },
   ];
 
+  // ── Mobile Blog Post Layout ──
   if (isBlogPostPage && isMobileView) {
-    console.log('JSX styles being applied:', {
-      width: bgWidth ? `${bgWidth}px` : "100%",
-      height: bgHeight ? `${bgHeight}px` : "54px", 
-      top: bgTop ? `${bgTop}px` : "0",
-      transform: slideLeft ? 'translateX(-20%)' : 'translateX(0)'
-    });
-
     return (
       <>
-        {/* ✅ Pattern injection for mobile blog layout */}
-        <style>{patternStyle}</style>
+        {/* ✅ REMOVED: <style>{patternStyle}</style> */}
 
         <div
           ref={blogMobileHeaderRef}
           className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
           style={{
-            width: bgWidth ? `${bgWidth}px` : "100%",
-            height: bgHeight ? `${bgHeight}px` : "54px", 
-            left: bgLeft ? `${bgLeft}px` : "0",
-            top: bgTop ? `${bgTop}px` : "0",
+            width:  bgWidth  ? `${bgWidth}px`  : "100%",
+            height: bgHeight ? `${bgHeight}px` : "54px",
+            left:   bgLeft   ? `${bgLeft}px`   : "0",
+            top:    bgTop    ? `${bgTop}px`    : "0",
             transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s",
             position: "fixed"
           }}
@@ -469,7 +429,10 @@ const Navbar = () => {
             ].join(' ')}
           >
             {stripCategorySuffix(pageTitle || getCenterTitle())}
-            <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
+            <div
+              className={styles.progressFillMobile}
+              style={{ width: `${scrollProgress}%` }}
+            />
           </span>
 
           <button
@@ -486,14 +449,17 @@ const Navbar = () => {
           </button>
         </div>
 
-        <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
+        <div
+          className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
+          onClick={toggleMenu}
+        />
 
         <div
           ref={navLinksRef}
           className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
+          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle} />
           {navLinks.map(({ to, label, isAdmin }) => {
             const isActive = getActiveNavPath() === to;
             return (
@@ -501,7 +467,7 @@ const Navbar = () => {
                 key={to}
                 to={to}
                 className={`
-                  ${styles.navLink} 
+                  ${styles.navLink}
                   ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
                   ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
                   ${isAdmin ? styles.adminLink : ""}
@@ -530,42 +496,56 @@ const Navbar = () => {
     );
   }
 
+  // ── Desktop Layout ──
   return (
     <>
-      {/* ✅ Pattern injection for desktop layout */}
-      <style>{patternStyle}</style>
+      {/* ✅ REMOVED: <style>{patternStyle}</style> */}
 
       {currentPath !== "/" && (
-        <Link to="/" className={`${styles.homeButton} ${hide ? styles.hide : ""} ${isHomePage ? styles.noShadow : ""}`} aria-label="Home">
-          <img src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} alt="Home" style={{ width: "27px", height: "27px", objectFit: "contain" }} />
+        <Link
+          to="/"
+          className={`${styles.homeButton} ${hide ? styles.hide : ""} ${isHomePage ? styles.noShadow : ""}`}
+          aria-label="Home"
+        >
+          <img
+            src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+            alt="Home"
+            style={{ width: "27px", height: "27px", objectFit: "contain" }}
+          />
         </Link>
       )}
 
-      <div className={bridgeClass} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
+      <div
+        className={bridgeClass}
+        style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}
+      />
 
       <div
         className={navbarLeftClass}
-        style={{ 
+        style={{
           width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
-          backgroundImage: `url(${patternBg})`, 
-          backgroundSize: '120px 120px',
-          backgroundRepeat: 'repeat',
-          ...(isBlogPostPage && { 
-            transform: `translateY(${isMobileView ? '0px' : '0px'})`
+          // ✅ REMOVED: backgroundImage, backgroundSize, backgroundRepeat pattern
+          ...(isBlogPostPage && {
+            transform: `translateY(0px)`
           })
         }}
       >
         {isBlogPostPage && (
-          <div 
+          <div
             className={styles.progressFill}
-            style={{ 
+            style={{
               width: `${scrollProgress}%`,
               opacity: isScrolled ? 0.3 : 0
             }}
           />
         )}
 
-        <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
+        <div
+          ref={brandWrapperRef}
+          className={styles.brandWrapper}
+          onClick={handleBrandTap}
+          style={{ cursor: "pointer" }}
+        >
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
               <>
@@ -597,9 +577,9 @@ const Navbar = () => {
       </div>
 
       {isBlogPostPage && (
-        <div 
+        <div
           className={styles.progressFill}
-          style={{ 
+          style={{
             width: `${scrollProgress}%`,
             opacity: isScrolled ? 0.3 : 0
           }}
@@ -636,7 +616,7 @@ const Navbar = () => {
           className={`${styles.navLinks} ${menuOpen ? styles.mobileOpen : ""} ${menuClosing ? styles.mobileClosing : ""}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle}></div>
+          <div className={`${styles.highlightBar} ${getHighlightBarActiveClass()}`} style={highlightStyle} />
           {navLinks.map(({ to, label, isAdmin }) => {
             const isActive = getActiveNavPath() === to;
             return (
@@ -644,7 +624,7 @@ const Navbar = () => {
                 key={to}
                 to={to}
                 className={`
-                  ${styles.navLink} 
+                  ${styles.navLink}
                   ${menuClosing && clickedPath === to ? styles.clickedLink : ""}
                   ${isActive && to === "/daily-thoughts" ? styles.dailyThoughtsActive : ""}
                   ${isAdmin ? styles.adminLink : ""}
@@ -661,7 +641,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`} onClick={toggleMenu}></div>
+      <div
+        className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
+        onClick={toggleMenu}
+      />
 
       {showSecretDialog && (
         <div className={styles.secretOverlay} onClick={() => setShowSecretDialog(false)}>

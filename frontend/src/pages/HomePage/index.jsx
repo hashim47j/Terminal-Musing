@@ -60,19 +60,14 @@ const HomePage = () => {
 
     const handleWheel = (e) => {
       if (!isAtBottom()) return;
-
       if (e.deltaY > 0) {
-        // ✅ Disable snap while peeling so translateY works freely
         e.preventDefault();
         isPeeling.current = true;
         container.style.scrollSnapType = 'none';
-
         clearTimeout(wheelTimer);
         setPeelProgress(prev => Math.min(prev + e.deltaY / 350, 1));
-
         wheelTimer = setTimeout(() => {
           springBack();
-          // ✅ Re-enable snap after spring settles
           setTimeout(() => {
             container.style.scrollSnapType = 'y mandatory';
           }, 600);
@@ -138,32 +133,37 @@ const HomePage = () => {
       <div className={styles.pageSection}><LsiHero /></div>
       <div className={styles.pageSection}><TechHero /></div>
 
-      {/* End card behind last page */}
-      <div className={styles.endCardBehind}>
-        <EndCard />
-        <p
-          className={styles.peelHint}
-          style={{ opacity: Math.min(peelProgress * 3, 1) }}
-        >
-          Release to return ↓
-        </p>
-      </div>
+      {/* ✅ Wrapper owns the snap point and contains both layers */}
+      <div className={styles.lastPageWrapper}>
 
-      {/* Last page peels up */}
-      <div
-        ref={lastSectionRef}
-        className={styles.pageSectionLast}
-        style={{
-          transform: `translateY(-${peelY}vh)`,
-          transition: peelProgress === 0
-            ? 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)'
-            : 'none',
-          boxShadow: peelProgress > 0.01
-            ? `0 ${peelProgress * 24}px ${peelProgress * 48}px rgba(0,0,0,0.55)`
-            : 'none',
-        }}
-      >
-        <WritingsHero />
+        {/* End card fixed behind, revealed as last page peels */}
+        <div className={styles.endCardBehind}>
+          <EndCard />
+          <p
+            className={styles.peelHint}
+            style={{ opacity: Math.min(peelProgress * 3, 1) }}
+          >
+            Release to return ↓
+          </p>
+        </div>
+
+        {/* Last page peels upward */}
+        <div
+          ref={lastSectionRef}
+          className={styles.pageSectionLast}
+          style={{
+            transform: `translateY(-${peelY}vh)`,
+            transition: peelProgress === 0
+              ? 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)'
+              : 'none',
+            boxShadow: peelProgress > 0.01
+              ? `0 ${peelProgress * 24}px ${peelProgress * 48}px rgba(0,0,0,0.55)`
+              : 'none',
+          }}
+        >
+          <WritingsHero />
+        </div>
+
       </div>
     </div>
   );

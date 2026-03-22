@@ -1,292 +1,298 @@
-/* ── Wrapper ── */
-.overscrollWrapper {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 9000;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .releaseHint {
-    position: absolute;
-    bottom: 30px;
-    color: rgba(255,255,255,0.4);
-    font-size: 0.85em;
-    letter-spacing: 0.1em;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
-  }
-  
-  /* ── Card 1: Abyss ── */
-  .abyssCard {
-    width: 100%;
-    height: 100%;
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-  }
-  
-  .abyssLetters {
-    display: flex;
-    gap: 2px;
-  }
-  
-  @keyframes fallAway {
-    0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
-    100% { opacity: 0; transform: translateY(120px) rotate(var(--rot, 15deg)); }
-  }
-  
-  .abyssLetter {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 6vw, 5rem);
-    color: #fff;
-    animation: fallAway 1.2s ease-in forwards;
-    display: inline-block;
-    --rot: calc((var(--i, 0) - 7) * 8deg);
-  }
-  
-  .abyssLetter:nth-child(odd)  { --rot: -12deg; }
-  .abyssLetter:nth-child(even) { --rot:  14deg; }
-  
-  .abyssSubtext {
-    color: rgba(255,255,255,0.5);
-    font-size: 1em;
-    font-style: italic;
-    letter-spacing: 0.05em;
-    animation: fadeInUp 1s ease 0.8s both;
-  }
-  
-  /* ── Card 2: Starfield ── */
-  .starfieldCard {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, #0a0a1a 0%, #000 100%);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  
-  .star {
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
-    animation: twinkle var(--dur, 3s) ease-in-out infinite;
-  }
-  
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.2; }
-    50%       { opacity: 1;   }
-  }
-  
-  .starfieldGlass {
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 20px;
-    padding: 40px 56px;
-    text-align: center;
-    animation: fadeInUp 0.8s ease both;
-  }
-  
-  .starfieldText {
-    color: #fff;
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.2rem, 3vw, 2rem);
-    margin-bottom: 12px;
-  }
-  
-  .starfieldSubtext {
-    color: rgba(255,255,255,0.55);
-    font-size: 1em;
-    font-style: italic;
-  }
-  
-  /* ── Card 3: Typewriter ── */
-  .typewriterCard {
-    width: 100%;
-    height: 100%;
-    background: #0d0d0d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-  }
-  
-  .typewriterText {
-    font-family: 'Courier New', monospace;
-    font-size: clamp(1.1rem, 2.5vw, 1.8rem);
-    color: #e8e8e8;
-    max-width: 600px;
-    text-align: center;
-    line-height: 1.7;
-  }
-  
-  .cursor {
-    display: inline-block;
-    color: #fff;
-    animation: blink 0.75s step-end infinite;
-    margin-left: 2px;
-  }
-  
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
-  }
-  
-  /* ── Card 4: Mirror ── */
-  .mirrorCard {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    filter: hue-rotate(180deg) contrast(1.1);
-  }
-  
-  .mirrorInner {
-    text-align: center;
-    animation: fadeInUp 0.7s ease both;
-    filter: hue-rotate(180deg);
-  }
-  
-  .mirrorTitle {
-    margin-bottom: 16px;
-  }
-  
-  .mirrorTerminal {
-    font-family: 'Abhaya Libre', serif;
-    font-size: clamp(2rem, 6vw, 4.5rem);
-    color: #fff;
-  }
-  
-  .mirrorMusing {
-    font-family: 'Luxurious Script', cursive;
-    font-size: clamp(1.8rem, 5.5vw, 4.2rem);
-    color: #fff;
-    position: relative;
-    top: 6px;
-    margin-left: -8px;
-  }
-  
-  .mirrorSub {
-    color: rgba(255,255,255,0.6);
-    font-size: 1em;
-    margin-bottom: 20px;
-    letter-spacing: 0.1em;
-  }
-  
-  .mirrorLine {
-    width: 60px;
-    height: 1px;
-    background: rgba(255,255,255,0.3);
-    margin: 16px auto;
-  }
-  
-  .mirrorQuote {
-    color: rgba(255,255,255,0.5);
-    font-style: italic;
-    font-size: 0.95em;
-  }
-  
-  /* ── Card 5: Archive ── */
-  .archiveCard {
-    width: 100%;
-    height: 100%;
-    background: #1a1208;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .archivePaper {
-    background: #f5ead0;
-    border-radius: 4px;
-    padding: 40px 48px;
-    max-width: 480px;
-    width: 90%;
-    text-align: center;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-    animation: fadeInUp 0.7s ease both;
-    position: relative;
-  }
-  
-  .archiveHeader {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-  
-  .archiveLine {
-    flex: 1;
-    height: 1px;
-    background: #5a4a2a;
-  }
-  
-  .archiveEdition {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.75em;
-    letter-spacing: 0.25em;
-    color: #5a4a2a;
-    white-space: nowrap;
-  }
-  
-  .archiveDate {
-    font-size: 0.7em;
-    color: #7a6a4a;
-    letter-spacing: 0.08em;
-    margin-bottom: 10px;
-  }
-  
-  .archiveRule {
-    height: 2px;
-    background: #5a4a2a;
-    margin: 10px 0;
-  }
-  
-  .archiveHeadline {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.4rem, 4vw, 2.2rem);
-    color: #2a1a08;
-    letter-spacing: 0.15em;
-    margin: 12px 0;
-  }
-  
-  .archiveBody {
-    font-size: 0.85em;
-    color: #5a4a2a;
-    line-height: 1.8;
-    font-style: italic;
-    margin-top: 10px;
-  }
-  
-  .waxSeal {
-    margin-top: 24px;
-    font-size: 2rem;
-    color: #8b2020;
-    opacity: 0.8;
-  }
-  
-  /* ── Shared animation ── */
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0);    }
-  }
-  
+/* ── Drawer ── */
+.drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  /* height is set inline via JS */
+  overflow: hidden;          /* clips the card content to drawer size */
+  z-index: 9000;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  will-change: height;
+}
+
+.drawerHandle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 12px;
+  gap: 6px;
+}
+
+.handleBar {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+}
+
+.handleHint {
+  font-size: 0.72em;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.06em;
+  transition: opacity 0.3s ease;
+}
+
+/* Card content fills full MAX_PEEK height so it's always ready to show */
+.drawerContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 52vh;   /* matches MAX_PEEK */
+  overflow: hidden;
+}
+
+/* ── Card 1: Abyss ── */
+.abyssCard {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.abyssLetters { display: flex; gap: 2px; }
+
+@keyframes fallAway {
+  0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(80px) rotate(var(--rot, 12deg)); }
+}
+
+.abyssLetter {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 4vw, 3.2rem);
+  color: #fff;
+  animation: fallAway 1.4s ease-in forwards;
+  display: inline-block;
+}
+.abyssLetter:nth-child(odd)  { --rot: -10deg; }
+.abyssLetter:nth-child(even) { --rot:  12deg; }
+
+.abyssSubtext {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.95em;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+/* ── Card 2: Starfield ── */
+.starfieldCard {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #0a0a1a 0%, #000 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 1; }
+}
+
+.starfieldGlass {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 24px 40px;
+  text-align: center;
+}
+
+.starfieldText {
+  color: #fff;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  margin-bottom: 8px;
+}
+
+.starfieldSubtext {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+/* ── Card 3: Typewriter ── */
+.typewriterCard {
+  width: 100%;
+  height: 100%;
+  background: #0d0d0d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.typewriterText {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  color: #e8e8e8;
+  max-width: 560px;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.cursor {
+  display: inline-block;
+  color: #fff;
+  animation: blink 0.75s step-end infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Card 4: Mirror ── */
+.mirrorCard {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mirrorInner { text-align: center; }
+
+.mirrorTitle { margin-bottom: 12px; }
+
+.mirrorTerminal {
+  font-family: 'Abhaya Libre', serif;
+  font-size: clamp(1.6rem, 4vw, 3.5rem);
+  color: #fff;
+}
+
+.mirrorMusing {
+  font-family: 'Luxurious Script', cursive;
+  font-size: clamp(1.5rem, 3.8vw, 3.2rem);
+  color: #fff;
+  position: relative;
+  top: 5px;
+  margin-left: -6px;
+}
+
+.mirrorSub {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.9em;
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+
+.mirrorLine {
+  width: 50px;
+  height: 1px;
+  background: rgba(255,255,255,0.25);
+  margin: 12px auto;
+}
+
+.mirrorQuote {
+  color: rgba(255,255,255,0.45);
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+/* ── Card 5: Archive ── */
+.archiveCard {
+  width: 100%;
+  height: 100%;
+  background: #1a1208;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.archivePaper {
+  background: #f5ead0;
+  border-radius: 4px;
+  padding: 28px 36px;
+  max-width: 420px;
+  width: 88%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.archiveHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.archiveLine {
+  flex: 1;
+  height: 1px;
+  background: #5a4a2a;
+}
+
+.archiveEdition {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.68em;
+  letter-spacing: 0.22em;
+  color: #5a4a2a;
+  white-space: nowrap;
+}
+
+.archiveDate {
+  font-size: 0.65em;
+  color: #7a6a4a;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.archiveRule {
+  height: 2px;
+  background: #5a4a2a;
+  margin: 8px 0;
+}
+
+.archiveHeadline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: #2a1a08;
+  letter-spacing: 0.12em;
+  margin: 10px 0;
+}
+
+.archiveBody {
+  font-size: 0.82em;
+  color: #5a4a2a;
+  line-height: 1.8;
+  font-style: italic;
+}
+
+.waxSeal {
+  margin-top: 18px;
+  font-size: 1.6rem;
+  color: #8b2020;
+  opacity: 0.8;
+}
+
+/* ── Shared ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

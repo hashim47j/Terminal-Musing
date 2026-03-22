@@ -11,18 +11,16 @@ const useTypewriter = (texts, speed = 50, pause = 2000) => {
   useEffect(() => {
     const current = texts[textIndex];
     let timeout;
-
     if (!deleting && charIndex < current.length) {
       timeout = setTimeout(() => setCharIndex(i => i + 1), speed);
     } else if (!deleting && charIndex === current.length) {
       timeout = setTimeout(() => setDeleting(true), pause);
     } else if (deleting && charIndex > 0) {
       timeout = setTimeout(() => setCharIndex(i => i - 1), speed / 2);
-    } else if (deleting && charIndex === 0) {
+    } else {
       setDeleting(false);
       setTextIndex(i => (i + 1) % texts.length);
     }
-
     setDisplayed(current.slice(0, charIndex));
     return () => clearTimeout(timeout);
   }, [charIndex, deleting, textIndex, texts, speed, pause]);
@@ -30,7 +28,7 @@ const useTypewriter = (texts, speed = 50, pause = 2000) => {
   return displayed;
 };
 
-// ── Card 1: The Abyss ──
+// ── Card 1: Abyss ──
 const AbyssCard = () => {
   const letters = "Terminal Musing".split('');
   return (
@@ -53,7 +51,7 @@ const AbyssCard = () => {
 
 // ── Card 2: Starfield ──
 const StarfieldCard = () => {
-  const stars = Array.from({ length: 80 }, (_, i) => ({
+  const stars = Array.from({ length: 60 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
@@ -61,30 +59,19 @@ const StarfieldCard = () => {
     duration: Math.random() * 4 + 2,
     delay: Math.random() * 3,
   }));
-
   return (
     <div className={styles.starfieldCard}>
       {stars.map(s => (
-        <div
-          key={s.id}
-          className={styles.star}
-          style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: `${s.size}px`,
-            height: `${s.size}px`,
-            animationDuration: `${s.duration}s`,
-            animationDelay: `${s.delay}s`,
-          }}
-        />
+        <div key={s.id} className={styles.star} style={{
+          left: `${s.x}%`, top: `${s.y}%`,
+          width: `${s.size}px`, height: `${s.size}px`,
+          animationDuration: `${s.duration}s`,
+          animationDelay: `${s.delay}s`,
+        }} />
       ))}
       <div className={styles.starfieldGlass}>
-        <p className={styles.starfieldText}>
-          There are no more pages.
-        </p>
-        <p className={styles.starfieldSubtext}>
-          Only the void — and what you write next.
-        </p>
+        <p className={styles.starfieldText}>There are no more pages.</p>
+        <p className={styles.starfieldSubtext}>Only the void — and what you write next.</p>
       </div>
     </div>
   );
@@ -99,18 +86,16 @@ const TypewriterCard = () => {
     "What lies beyond the last word?",
   ];
   const text = useTypewriter(quotes, 45, 2200);
-
   return (
     <div className={styles.typewriterCard}>
       <div className={styles.typewriterText}>
-        {text}
-        <span className={styles.cursor}>|</span>
+        {text}<span className={styles.cursor}>|</span>
       </div>
     </div>
   );
 };
 
-// ── Card 4: Inverted Mirror ──
+// ── Card 4: Mirror ──
 const MirrorCard = () => (
   <div className={styles.mirrorCard}>
     <div className={styles.mirrorInner}>
@@ -120,19 +105,16 @@ const MirrorCard = () => (
       </div>
       <p className={styles.mirrorSub}>∞ You've come full circle.</p>
       <div className={styles.mirrorLine} />
-      <p className={styles.mirrorQuote}>
-        "The beginning is always today."
-      </p>
+      <p className={styles.mirrorQuote}>"The beginning is always today."</p>
     </div>
   </div>
 );
 
-// ── Card 5: Archive / Newspaper ──
+// ── Card 5: Archive ──
 const ArchiveCard = () => {
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
-
   return (
     <div className={styles.archiveCard}>
       <div className={styles.archivePaper}>
@@ -142,7 +124,7 @@ const ArchiveCard = () => {
           <div className={styles.archiveLine} />
         </div>
         <p className={styles.archiveDate}>{today}</p>
-        <div className={styles.archiveLine} />
+        <div className={styles.archiveRule} />
         <p className={styles.archiveHeadline}>END OF EDITION</p>
         <div className={styles.archiveRule} />
         <p className={styles.archiveBody}>
@@ -157,128 +139,131 @@ const ArchiveCard = () => {
 
 const CARDS = [AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard];
 
-// ── Main OverscrollCard ──
-const OverscrollCard = ({ scrollContainerRef }) => {
-  const [revealed, setRevealed] = useState(0); // 0–1 progress
-  const [CardComponent, setCardComponent] = useState(() => CARDS[0]);
-  const [isVisible, setIsVisible] = useState(false);
-  const touchStartY = useRef(null);
-  const lastScrollTop = useRef(0);
-  const animFrameRef = useRef(null);
-  const holdingRef = useRef(false);
+// ── Max peek height as fraction of viewport ──
+const MAX_PEEK = 0.52; // 52% of screen height
 
-  // Pick a random card once per visit to bottom
-  const pickRandomCard = useCallback(() => {
-    const idx = Math.floor(Math.random() * CARDS.length);
-    setCardComponent(() => CARDS[idx]);
+const OverscrollCard = ({ scrollContainerRef }) => {
+  const [progress, setProgress] = useState(0); // 0 = hidden, 1 = full peek
+  const [CardComponent, setCardComponent] = useState(() => CARDS[0]);
+  const [active, setActive] = useState(false);
+  const touchStartY = useRef(null);
+  const pickedRef = useRef(false);
+  const springRef = useRef(null);
+
+  const pickCard = useCallback(() => {
+    if (!pickedRef.current) {
+      pickedRef.current = true;
+      setCardComponent(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
+    }
+  }, []);
+
+  // Animate progress back to 0 smoothly
+  const springBack = useCallback(() => {
+    if (springRef.current) cancelAnimationFrame(springRef.current);
+    const animate = () => {
+      setProgress(prev => {
+        if (prev <= 0.01) {
+          pickedRef.current = false;
+          setActive(false);
+          return 0;
+        }
+        springRef.current = requestAnimationFrame(animate);
+        return prev * 0.82; // spring decay
+      });
+    };
+    springRef.current = requestAnimationFrame(animate);
   }, []);
 
   useEffect(() => {
     const container = scrollContainerRef?.current;
     if (!container) return;
 
-    const isAtBottom = () => {
-      return container.scrollHeight - container.scrollTop - container.clientHeight < 2;
-    };
+    const isAtBottom = () =>
+      container.scrollHeight - container.scrollTop - container.clientHeight < 2;
 
-    // ── Desktop: wheel overscroll ──
+    // ── Desktop wheel ──
+    let wheelTimer = null;
+
     const handleWheel = (e) => {
-      if (!isAtBottom()) {
-        if (revealed > 0) setRevealed(0);
+      if (!isAtBottom() || e.deltaY <= 0) {
+        if (active) springBack();
         return;
       }
-      if (e.deltaY <= 0) {
-        // scrolling back up — snap back
-        setRevealed(0);
-        holdingRef.current = false;
-        return;
-      }
-
       e.preventDefault();
-      holdingRef.current = true;
 
-      setRevealed(prev => {
-        const next = Math.min(prev + e.deltaY / 300, 1);
-        if (next >= 0.05 && !isVisible) {
-          setIsVisible(true);
-          pickRandomCard();
-        }
-        return next;
-      });
+      setActive(true);
+      pickCard();
+
+      setProgress(prev => Math.min(prev + e.deltaY / 400, 1));
+
+      // Spring back when wheel stops
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => springBack(), 120);
     };
 
-    // Release on wheel end — snap back after short delay
-    let wheelEndTimer = null;
-    const handleWheelEnd = () => {
-      clearTimeout(wheelEndTimer);
-      wheelEndTimer = setTimeout(() => {
-        if (holdingRef.current) {
-          holdingRef.current = false;
-          setRevealed(0);
-          setTimeout(() => setIsVisible(false), 500);
-        }
-      }, 150);
-    };
-
-    // ── Mobile: touch overscroll ──
+    // ── Mobile touch ──
     const handleTouchStart = (e) => {
       touchStartY.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e) => {
       if (!isAtBottom()) return;
-      const deltaY = touchStartY.current - e.touches[0].clientY;
-      if (deltaY <= 0) return;
-
+      const dy = touchStartY.current - e.touches[0].clientY;
+      if (dy <= 0) {
+        if (active) springBack();
+        return;
+      }
       e.preventDefault();
-      setRevealed(prev => {
-        const next = Math.min(prev + deltaY / 250, 1);
-        if (next >= 0.05 && !isVisible) {
-          setIsVisible(true);
-          pickRandomCard();
-        }
-        return next;
-      });
+      setActive(true);
+      pickCard();
+      setProgress(prev => Math.min(prev + dy / 300, 1));
       touchStartY.current = e.touches[0].clientY;
     };
 
     const handleTouchEnd = () => {
-      // Snap back on finger lift
-      setRevealed(0);
-      setTimeout(() => setIsVisible(false), 500);
+      springBack();
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
-    container.addEventListener('wheel', handleWheelEnd, { passive: true });
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       container.removeEventListener('wheel', handleWheel);
-      container.removeEventListener('wheel', handleWheelEnd);
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
-      clearTimeout(wheelEndTimer);
+      clearTimeout(wheelTimer);
+      if (springRef.current) cancelAnimationFrame(springRef.current);
     };
-  }, [scrollContainerRef, revealed, isVisible, pickRandomCard]);
+  }, [scrollContainerRef, active, pickCard, springBack]);
 
-  if (!isVisible) return null;
+  if (!active && progress === 0) return null;
+
+  // Drawer height in vh — peaks at MAX_PEEK * 100vh
+  const drawerHeight = progress * MAX_PEEK * 100;
 
   return (
     <div
-      className={styles.overscrollWrapper}
-      style={{
-        opacity: Math.min(revealed * 2, 1),
-        transform: `translateY(${(1 - revealed) * 60}px)`,
-        transition: revealed === 0
-          ? 'opacity 0.4s ease, transform 0.4s ease'
-          : 'none',
-      }}
+      className={styles.drawer}
+      style={{ height: `${drawerHeight}vh` }}
     >
-      <CardComponent />
-      <p className={styles.releaseHint}>↑ Release to return</p>
+      {/* Pull indicator at top of drawer */}
+      <div className={styles.drawerHandle}>
+        <div className={styles.handleBar} />
+        <span
+          className={styles.handleHint}
+          style={{ opacity: Math.min(progress * 3, 1) }}
+        >
+          ↑ Keep scrolling to peek · Release to close
+        </span>
+      </div>
+
+      {/* Card content — always rendered at full size, drawer clips it */}
+      <div className={styles.drawerContent}>
+        <CardComponent />
+      </div>
     </div>
   );
 };

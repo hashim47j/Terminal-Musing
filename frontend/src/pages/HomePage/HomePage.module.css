@@ -30,7 +30,9 @@
   width: 100%;
   scroll-snap-align: start;
   overflow: hidden;
+  isolation: isolate; /* ✅ creates stacking context so z-index works correctly */
 }
+
 
 /* ✅ End card fills the wrapper, sits at bottom z-index */
 .endCardBehind {

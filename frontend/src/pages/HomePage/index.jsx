@@ -150,20 +150,24 @@ const HomePage = () => {
 
         {/* Last page on top — peels upward on overscroll */}
         <div
-          ref={lastSectionRef}
-          className={styles.pageSectionLast}
-          style={{
-            transform: `translateY(-${peelY}vh)`,
-            transition: peelProgress === 0
-              ? 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)'
-              : 'none',
-            boxShadow: peelProgress > 0.01
-              ? `0 ${peelProgress * 24}px ${peelProgress * 48}px rgba(0,0,0,0.55)`
-              : 'none',
-          }}
-        >
-          <WritingsHero />
-        </div>
+  ref={lastSectionRef}
+  className={styles.pageSectionLast}
+  style={{
+    transform: `translateY(-${peelY}vh)`,
+    transition: peelProgress === 0
+      ? 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)'
+      : 'none',
+    boxShadow: peelProgress > 0.01
+      ? `0 ${peelProgress * 24}px ${peelProgress * 48}px rgba(0,0,0,0.55)`
+      : 'none',
+    // ✅ This is the only change — ensures last page fully covers end card
+    isolation: 'isolate',
+    backgroundColor: '#000', // ← match whatever WritingsHero background is
+  }}
+>
+  <WritingsHero />
+</div>
+
 
       </div>
     </div>

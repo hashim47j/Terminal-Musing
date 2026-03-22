@@ -53,8 +53,9 @@ const HomePage = () => {
     const container = containerRef.current;
     if (!container) return;
 
+    // ✅ Check if the lastPageWrapper is snapped into view
     const isAtBottom = () =>
-      container.scrollHeight - container.scrollTop - container.clientHeight < 4;
+      container.scrollHeight - container.scrollTop - container.clientHeight < 10;
 
     let wheelTimer = null;
 
@@ -133,10 +134,10 @@ const HomePage = () => {
       <div className={styles.pageSection}><LsiHero /></div>
       <div className={styles.pageSection}><TechHero /></div>
 
-      {/* ✅ Wrapper owns the snap point and contains both layers */}
+      {/* ✅ Single wrapper — snap point, contains end card + last page */}
       <div className={styles.lastPageWrapper}>
 
-        {/* End card fixed behind, revealed as last page peels */}
+        {/* End card behind — visible when last page peels up */}
         <div className={styles.endCardBehind}>
           <EndCard />
           <p
@@ -147,7 +148,7 @@ const HomePage = () => {
           </p>
         </div>
 
-        {/* Last page peels upward */}
+        {/* Last page on top — peels upward on overscroll */}
         <div
           ref={lastSectionRef}
           className={styles.pageSectionLast}

@@ -5,8 +5,6 @@ import LsiHero from './LsiHero/LsiHero';
 import TechHero from './TechHero/TechHero';
 import WritingsHero from './WritingsHero/WritingsHero';
 import styles from './HomePage.module.css';
-
-// ── End cards (paste your 5 card components here or import them) ──
 import { AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard } from './OverscrollCard/OverscrollCard';
 
 const CARDS = [AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard];
@@ -16,10 +14,11 @@ const HomePage = () => {
   const containerRef = useRef();
   const lastSectionRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
-  const [peelProgress, setPeelProgress] = useState(0); // 0–1
+  const [peelProgress, setPeelProgress] = useState(0);
   const [EndCard] = useState(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
   const touchStartY = useRef(null);
   const springRef = useRef(null);
+  const isPeeling = useRef(false);
 
   useEffect(() => {
     const checkMobile = () =>
@@ -37,14 +36,14 @@ const HomePage = () => {
     }
   };
 
-  // Spring back to 0
   const springBack = useCallback(() => {
+    isPeeling.current = false;
     if (springRef.current) cancelAnimationFrame(springRef.current);
     const animate = () => {
       setPeelProgress(prev => {
         if (prev <= 0.005) return 0;
         springRef.current = requestAnimationFrame(animate);
-        return prev * 0.80;
+        return prev * 0.78;
       });
     };
     springRef.current = requestAnimationFrame(animate);
@@ -55,19 +54,30 @@ const HomePage = () => {
     if (!container) return;
 
     const isAtBottom = () =>
-      container.scrollHeight - container.scrollTop - container.clientHeight < 2;
+      container.scrollHeight - container.scrollTop - container.clientHeight < 4;
 
     let wheelTimer = null;
 
     const handleWheel = (e) => {
-      if (!isAtBottom() || e.deltaY <= 0) {
-        if (peelProgress > 0) springBack();
-        return;
+      if (!isAtBottom()) return;
+
+      if (e.deltaY > 0) {
+        // ✅ Disable snap while peeling so translateY works freely
+        e.preventDefault();
+        isPeeling.current = true;
+        container.style.scrollSnapType = 'none';
+
+        clearTimeout(wheelTimer);
+        setPeelProgress(prev => Math.min(prev + e.deltaY / 350, 1));
+
+        wheelTimer = setTimeout(() => {
+          springBack();
+          // ✅ Re-enable snap after spring settles
+          setTimeout(() => {
+            container.style.scrollSnapType = 'y mandatory';
+          }, 600);
+        }, 120);
       }
-      e.preventDefault();
-      clearTimeout(wheelTimer);
-      setPeelProgress(prev => Math.min(prev + e.deltaY / 400, 1));
-      wheelTimer = setTimeout(() => springBack(), 120);
     };
 
     const handleTouchStart = (e) => {
@@ -77,13 +87,25 @@ const HomePage = () => {
     const handleTouchMove = (e) => {
       if (!isAtBottom()) return;
       const dy = touchStartY.current - e.touches[0].clientY;
-      if (dy <= 0) { springBack(); return; }
+      if (dy <= 0) {
+        if (isPeeling.current) springBack();
+        return;
+      }
       e.preventDefault();
-      setPeelProgress(prev => Math.min(prev + dy / 280, 1));
+      isPeeling.current = true;
+      container.style.scrollSnapType = 'none';
+      setPeelProgress(prev => Math.min(prev + dy / 260, 1));
       touchStartY.current = e.touches[0].clientY;
     };
 
-    const handleTouchEnd = () => springBack();
+    const handleTouchEnd = () => {
+      if (isPeeling.current) {
+        springBack();
+        setTimeout(() => {
+          container.style.scrollSnapType = 'y mandatory';
+        }, 600);
+      }
+    };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
@@ -98,10 +120,9 @@ const HomePage = () => {
       clearTimeout(wheelTimer);
       if (springRef.current) cancelAnimationFrame(springRef.current);
     };
-  }, [peelProgress, springBack]);
+  }, [springBack]);
 
-  // Last page lifts up by up to 50vh
-  const peelY = peelProgress * 50; // vh units
+  const peelY = peelProgress * 52;
 
   return (
     <div
@@ -117,23 +138,28 @@ const HomePage = () => {
       <div className={styles.pageSection}><LsiHero /></div>
       <div className={styles.pageSection}><TechHero /></div>
 
-      {/* ── End card sits here, behind the last page ── */}
+      {/* End card behind last page */}
       <div className={styles.endCardBehind}>
         <EndCard />
-        <p className={styles.peelHint} style={{ opacity: Math.min(peelProgress * 4, 1) }}>
+        <p
+          className={styles.peelHint}
+          style={{ opacity: Math.min(peelProgress * 3, 1) }}
+        >
           Release to return ↓
         </p>
       </div>
 
-      {/* ── Last page peels up ── */}
+      {/* Last page peels up */}
       <div
         ref={lastSectionRef}
         className={styles.pageSectionLast}
         style={{
           transform: `translateY(-${peelY}vh)`,
-          transition: peelProgress === 0 ? 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
+          transition: peelProgress === 0
+            ? 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)'
+            : 'none',
           boxShadow: peelProgress > 0.01
-            ? `0 ${peelProgress * 30}px ${peelProgress * 60}px rgba(0,0,0,0.5)`
+            ? `0 ${peelProgress * 24}px ${peelProgress * 48}px rgba(0,0,0,0.55)`
             : 'none',
         }}
       >

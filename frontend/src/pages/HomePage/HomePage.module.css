@@ -4,8 +4,6 @@
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
-
-  /* Hide scrollbars */
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -25,6 +23,48 @@
   background: transparent;
 }
 
+/* Last page — peels upward, no scroll-snap so translateY works */
+.pageSectionLast {
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 2;
+  will-change: transform;
+  border-radius: 0 0 24px 24px;
+}
+
+/* End card sits in normal flow, directly behind last page */
+.endCardBehind {
+  height: 100vh;
+  width: 100%;
+  margin-top: -100vh;     /* pulls it up behind pageSectionLast */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.peelHint {
+  position: absolute;
+  bottom: 28px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 1; }
+}
+
 .cursorSquare {
   position: fixed;
   top: 0;
@@ -39,7 +79,6 @@
   overflow: hidden;
 }
 
-/* Hide cursor square on mobile and touch devices */
 @media (max-width: 768px), (hover: none) {
   .cursorSquare {
     display: none !important;
@@ -59,48 +98,4 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
   mix-blend-mode: normal;
-}
-
-/* Last page — peels upward */
-.pageSectionLast {
-  height: 100vh;
-  width: 100%;
-  scroll-snap-align: start;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  z-index: 2;           /* sits above the end card */
-  will-change: transform;
-  border-radius: 0 0 20px 20px; /* subtle rounding on bottom as it lifts */
-}
-
-/* End card lives behind the last page */
-.endCardBehind {
-  position: sticky;
-  bottom: 0;
-  height: 100vh;
-  width: 100%;
-  margin-top: -100vh;   /* overlaps exactly behind last page */
-  z-index: 1;           /* behind pageSectionLast */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.peelHint {
-  position: absolute;
-  bottom: 28px;
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 0.8em;
-  letter-spacing: 0.08em;
-  transition: opacity 0.3s ease;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 0.9; }
 }

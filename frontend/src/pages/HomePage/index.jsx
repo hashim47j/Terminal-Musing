@@ -162,7 +162,7 @@ const HomePage = () => {
       : 'none',
     // ✅ This is the only change — ensures last page fully covers end card
     isolation: 'isolate',
-    backgroundColor: '#000', // ← match whatever WritingsHero background is
+    backgroundColor: '##ffffff', // ← match whatever WritingsHero background is
   }}
 >
   <WritingsHero />

@@ -20,60 +20,6 @@
   overflow: hidden;
   margin: 0;
   padding: 0;
-  background: transparent;
-}
-
-/* ✅ Wrapper is the snap target — holds both layers */
-.lastPageWrapper {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  scroll-snap-align: start;
-  overflow: hidden;
-  isolation: isolate; /* ✅ creates stacking context so z-index works correctly */
-}
-
-
-/* ✅ End card fills the wrapper, sits at bottom z-index */
-.endCardBehind {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-/* ✅ Last page sits on top, peels upward */
-.pageSectionLast {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 2;
-  will-change: transform;
-  border-radius: 0 0 24px 24px;
-}
-
-.peelHint {
-  position: absolute;
-  bottom: 28px;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.8em;
-  letter-spacing: 0.08em;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.35; }
-  50%       { opacity: 1; }
 }
 
 .cursorSquare {

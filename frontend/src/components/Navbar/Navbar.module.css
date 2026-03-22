@@ -436,7 +436,7 @@
   .navLinks {
     position: fixed;
     top: 95px;
-    right: -270px;      
+    right: -260px;      
     left: auto;     
     transform: translateX(-28%) translateY(20px);
     width: 320px;

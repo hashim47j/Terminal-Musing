@@ -8,9 +8,7 @@
   scrollbar-width: none;
 }
 
-.fullPageContainer::-webkit-scrollbar {
-  display: none;
-}
+.fullPageContainer::-webkit-scrollbar { display: none; }
 
 .pageSection {
   height: 100vh;
@@ -20,6 +18,17 @@
   overflow: hidden;
   margin: 0;
   padding: 0;
+}
+
+/* ✅ End page — no snap-align so it never locks in place */
+.pageSectionEnd {
+  height: 100vh;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  /* deliberately NO scroll-snap-align */
 }
 
 .cursorSquare {
@@ -37,9 +46,7 @@
 }
 
 @media (max-width: 768px), (hover: none) {
-  .cursorSquare {
-    display: none !important;
-  }
+  .cursorSquare { display: none !important; }
 }
 
 .cursorSquare::before {

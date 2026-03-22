@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import PhilosophyHero from './PhilosophyHero/PhilosophyHero';
 import HistoryHero from './HistoryHero/HistoryHero';
 import LsiHero from './LsiHero/LsiHero';
@@ -14,6 +14,8 @@ const HomePage = () => {
   const containerRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
   const [EndCard] = useState(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
+  const touchStartY = useRef(null);
+  const isOnEndCard = useRef(false);
 
   useEffect(() => {
     const checkMobile = () =>
@@ -31,6 +33,68 @@ const HomePage = () => {
     }
   };
 
+  // Snap back to WritingsHero (5th page = index 4, so scrollTop = 4 * 100vh)
+  const snapBackToWritings = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    container.style.scrollSnapType = 'none';
+    container.scrollTo({
+      top: container.clientHeight * 4, // 4 * 100vh = WritingsHero
+      behavior: 'smooth',
+    });
+    setTimeout(() => {
+      container.style.scrollSnapType = 'y mandatory';
+      isOnEndCard.current = false;
+    }, 600);
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Detect when user scrolls onto the end card page
+    const handleScroll = () => {
+      const onLast = container.scrollTop >= container.clientHeight * 4.9;
+      if (onLast && !isOnEndCard.current) {
+        isOnEndCard.current = true;
+      }
+    };
+
+    // ── Desktop: snap back on wheel release ──
+    let wheelTimer = null;
+    const handleWheel = () => {
+      if (!isOnEndCard.current) return;
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => {
+        snapBackToWritings();
+      }, 180); // snap back shortly after wheel stops
+    };
+
+    // ── Mobile: snap back on finger lift ──
+    const handleTouchStart = (e) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = () => {
+      if (isOnEndCard.current) {
+        snapBackToWritings();
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    container.addEventListener('wheel', handleWheel, { passive: true });
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
+      clearTimeout(wheelTimer);
+    };
+  }, [snapBackToWritings]);
+
   return (
     <div
       ref={containerRef}
@@ -46,8 +110,8 @@ const HomePage = () => {
       <div className={styles.pageSection}><TechHero /></div>
       <div className={styles.pageSection}><WritingsHero /></div>
 
-      {/* ✅ 6th page — snaps in like all others */}
-      <div className={styles.pageSection}>
+      {/* 6th page — visible while scrolling, springs back on release */}
+      <div className={styles.pageSectionEnd}>
         <EndCard />
       </div>
 

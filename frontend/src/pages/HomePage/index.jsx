@@ -39,7 +39,7 @@ const HomePage = () => {
     if (!container) return;
     container.style.scrollSnapType = 'none';
     container.scrollTo({
-      top: container.clientHeight * 4, // 4 * 100vh = WritingsHero
+      top: container.clientHeight * 4.5, // 4 * 100vh = WritingsHero
       behavior: 'smooth',
     });
     setTimeout(() => {

@@ -21,15 +21,17 @@
 }
 
 /* ✅ End page — no snap-align so it never locks in place */
+/* ✅ End page — only 50vh tall, no snap, bounces back */
 .pageSectionEnd {
-  height: 100vh;
+  height: 50vh;
   width: 100%;
   display: block;
   overflow: hidden;
   margin: 0;
   padding: 0;
-  /* deliberately NO scroll-snap-align */
+  /* no scroll-snap-align — never locks */
 }
+
 
 .cursorSquare {
   position: fixed;

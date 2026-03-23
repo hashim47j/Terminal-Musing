@@ -399,7 +399,7 @@ const Navbar = () => {
     ${isBlogPostPage ? styles.blogPostActive : ''}
     ${isLightBackground ? styles.darkText : styles.lightText}
     ${!isBlogPostPage && hide ? styles.hide : ''}
-    ${isBlogPostPage && !isScrolled ? styles.hide : ''}
+    ${isBlogPostPage && !isScrolled && !desktopMinimal ? styles.hide : ''}
     ${isHomePage ? styles.noShadow : ""}
     ${currentPath === "/" ? styles.homePagePosition : ""}
   `;
@@ -572,7 +572,10 @@ const Navbar = () => {
         style={
           isBlogPostPage && desktopMinimal
             ? { width: "100%", left: 0, borderRadius: "0 0 16px 16px", top: 0 }
-            : { width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto" }
+            : {
+                width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+                maxWidth: `calc(100vw - 105px - 20px)`
+              }
         }
       >
         {isBlogPostPage && (

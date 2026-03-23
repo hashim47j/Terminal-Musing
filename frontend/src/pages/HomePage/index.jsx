@@ -13,7 +13,8 @@ const HomePage = () => {
   const squareRef = useRef();
   const containerRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
-  const [EndCard] = useState(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
+  const [EndCard, setEndCard] = useState(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
+
   const touchStartY = useRef(null);
   const isOnEndCard = useRef(false);
 
@@ -53,12 +54,16 @@ const HomePage = () => {
     if (!container) return;
 
     // Detect when user scrolls onto the end card page
-    const handleScroll = () => {
-      const onLast = container.scrollTop >= container.clientHeight * 4.9;
-      if (onLast && !isOnEndCard.current) {
-        isOnEndCard.current = true;
-      }
-    };
+// ✅ CHANGE 2: pick a new card each time isOnEndCard becomes true
+const handleScroll = () => {
+  const onLast = container.scrollTop >= container.clientHeight * 4.5;
+  if (onLast && !isOnEndCard.current) {
+    isOnEndCard.current = true;
+    // Pick a fresh random card every visit
+    setEndCard(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
+  }
+};
+
 
     // ── Desktop: snap back on wheel release ──
     let wheelTimer = null;

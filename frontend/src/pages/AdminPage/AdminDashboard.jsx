@@ -17,49 +17,27 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading, logout } = useAuth();
 
-  const [totalPosts, setTotalPosts] = useState(0);
-  const [totalViews, setTotalViews] = useState(0);
-  const [postsByCategory, setPostsByCategory] = useState({});
-  const [viewsByCategory, setViewsByCategory] = useState({});
-  const [viewsPerPost, setViewsPerPost] = useState({});
-  const [dailyRequests, setDailyRequests] = useState([]);
-  const [postsByAuthor, setPostsByAuthor] = useState({});
-  const [totalAuthors, setTotalAuthors] = useState(0);
-  const [recentPosts, setRecentPosts] = useState([]);
-  const [visitorStats, setVisitorStats] = useState({
-    totalVisits: 0,
-    uniqueIPs: 0,
-    osCounts: {},
-    browserCounts: {},
-  });
+  const [totalPosts, setTotalPosts]           = useState(0);
+  const [totalAuthors, setTotalAuthors]       = useState(0);
+  const [dailyRequests, setDailyRequests]     = useState([]);
+  const [visitorStats, setVisitorStats]       = useState({ totalVisits: 0, uniqueIPs: 0 });
   const [showAllBlogsModal, setShowAllBlogsModal] = useState(false);
-  const [allBlogs, setAllBlogs] = useState({});
-  const [isLoadingBlogs, setIsLoadingBlogs] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [allBlogs, setAllBlogs]               = useState({});
+  const [viewsPerPost, setViewsPerPost]       = useState({});
+  const [isLoadingBlogs, setIsLoadingBlogs]   = useState(false);
+  const [showPopup, setShowPopup]             = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
-
-  const categories = ["Philosophy", "History", "Writings", "Legal & Social Issues", "Tech"];
-
-  const categoryMapping = {
-    Philosophy: "philosophy",
-    History: "history",
-    Writings: "writings",
-    "Legal & Social Issues": "lsconcern",
-    Tech: "tech",
-  };
 
   const displayCategoryMapping = {
     philosophy: "Philosophy",
-    history: "History",
-    writings: "Writings",
-    lsconcern: "Legal & Social Issues",
-    tech: "Tech",
+    history:    "History",
+    writings:   "Writings",
+    lsconcern:  "Legal & Social Issues",
+    tech:       "Tech",
   };
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate("/admin/login");
-    }
+    if (!loading && !isAuthenticated) navigate("/admin/login");
   }, [isAuthenticated, loading, navigate]);
 
   const handleLogout = async () => {
@@ -72,55 +50,35 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    // Dashboard stats — post count only
     const fetchStats = async () => {
       try {
         const res = await fetch("/api/dashboard/stats", { credentials: "include" });
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const data = await res.json();
         setTotalPosts(data.totalPosts || 0);
-        setTotalViews(data.totalViews || 0);
-        setPostsByCategory(data.postsByCategory || {});
-        setViewsByCategory(data.viewsByCategory || {});
         setViewsPerPost(data.viewsPerPost || {});
       } catch (err) {
         console.error("Failed to load dashboard stats:", err);
       }
     };
 
+    // Author count
     const fetchBlogStats = async () => {
       try {
         const res = await fetch("/api/blogs", { credentials: "include" });
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
         const blogs = await res.json();
-
         if (Array.isArray(blogs)) {
-          const authorCounts = {};
-          const uniqueAuthors = new Set();
-          blogs.forEach((blog) => {
-            const author = blog.author || "Terminal Musing";
-            authorCounts[author] = (authorCounts[author] || 0) + 1;
-            uniqueAuthors.add(author);
-          });
-          setPostsByAuthor(authorCounts);
+          const uniqueAuthors = new Set(blogs.map(b => b.author || "Terminal Musing"));
           setTotalAuthors(uniqueAuthors.size);
-
-          const sortedBlogs = blogs
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 5)
-            .map((blog) => ({
-              id: blog.id,
-              title: blog.title,
-              category: blog.category,
-              author: blog.author || "Terminal Musing",
-              date: new Date(blog.date).toLocaleDateString(),
-            }));
-          setRecentPosts(sortedBlogs);
         }
       } catch (err) {
         console.error("Failed to fetch blog stats:", err);
       }
     };
 
+    // Pending daily thoughts
     const fetchDailyRequests = async () => {
       try {
         const res = await fetch("/api/dailythoughts/manage/pending", { credentials: "include" });
@@ -131,6 +89,7 @@ const AdminDashboard = () => {
       }
     };
 
+    // Visitor stats — website visits only
     const fetchVisitorStats = async () => {
       try {
         const res = await fetch("/api/visitorstats", { credentials: "include" });
@@ -138,9 +97,7 @@ const AdminDashboard = () => {
         const data = await res.json();
         setVisitorStats({
           totalVisits: data.totalVisits || 0,
-          uniqueIPs: data.uniqueIPs || 0,
-          osCounts: data.osDistribution || {},
-          browserCounts: data.browserDistribution || {},
+          uniqueIPs:   data.uniqueIPs   || 0,
         });
       } catch (err) {
         console.error("Failed to fetch visitor stats:", err);
@@ -166,18 +123,16 @@ const AdminDashboard = () => {
           const cat = blog.category || "uncategorized";
           grouped[cat] = grouped[cat] || [];
           grouped[cat].push({
-            id: blog.id,
-            title: blog.title,
-            author: blog.author || "Terminal Musing",
-            date: new Date(blog.date || blog.updatedAt).toLocaleDateString(),
+            id:       blog.id,
+            title:    blog.title,
+            author:   blog.author || "Terminal Musing",
+            date:     new Date(blog.date || blog.updatedAt).toLocaleDateString(),
             category: blog.category,
           });
         });
-
         Object.keys(grouped).forEach((cat) =>
           grouped[cat].sort((a, b) => new Date(b.date) - new Date(a.date))
         );
-
         setAllBlogs(grouped);
       }
     } catch {
@@ -221,11 +176,28 @@ const AdminDashboard = () => {
     }
   };
 
-  if (loading) return <div className={styles.loading}><h2>Loading...</h2></div>;
+  const handleReject = async (id) => {
+    if (!window.confirm("Reject this thought?")) return;
+    try {
+      const res = await fetch(`/api/dailythoughts/process/reject/${id}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        setDailyRequests((prev) => prev.filter((req) => req.id !== id));
+        setShowPopup(false);
+      }
+    } catch {
+      console.error("Rejection failed");
+    }
+  };
+
+  if (loading)         return <div className={styles.loading}><h2>Loading...</h2></div>;
   if (!isAuthenticated) return <div className={styles.loading}><h2>Redirecting...</h2></div>;
 
   return (
     <div className={styles.dashboardContainer}>
+
       {/* HEADER */}
       <div className={styles.header}>
         <h1>Admin Dashboard</h1>
@@ -244,10 +216,22 @@ const AdminDashboard = () => {
 
       {/* TOP STATS */}
       <div className={styles.topRow}>
-        <div className={styles.box}><h2><FaFileAlt /> Posts</h2><p>{totalPosts}</p></div>
-        <div className={styles.box}><h2><FaEye /> Views</h2><p>{totalViews}</p></div>
-        <div className={styles.box}><h2><FaUsers /> Authors</h2><p>{totalAuthors}</p></div>
-        <div className={styles.box}><h2><FaGlobe /> Visitors</h2><p>{visitorStats.uniqueIPs}</p></div>
+        <div className={styles.box}>
+          <h2><FaFileAlt /> Posts</h2>
+          <p className={styles.bigNumber}>{totalPosts}</p>
+        </div>
+        <div className={styles.box}>
+          <h2><FaUsers /> Authors</h2>
+          <p className={styles.bigNumber}>{totalAuthors}</p>
+        </div>
+        <div className={styles.box}>
+          <h2><FaGlobe /> Unique Visitors</h2>
+          <p className={styles.bigNumber}>{visitorStats.uniqueIPs}</p>
+        </div>
+        <div className={styles.box}>
+          <h2><FaEye /> Total Visits</h2>
+          <p className={styles.bigNumber}>{visitorStats.totalVisits}</p>
+        </div>
       </div>
 
       {/* DAILY THOUGHTS APPROVAL */}
@@ -255,9 +239,9 @@ const AdminDashboard = () => {
         <h2>Pending Daily Thoughts</h2>
         <div className={styles.requestsList}>
           {dailyRequests.length ? dailyRequests.map(req => (
-            <div 
-              key={req.id} 
-              className={styles.requestItem} 
+            <div
+              key={req.id}
+              className={styles.requestItem}
               onClick={() => { setSelectedRequest(req); setShowPopup(true); }}
             >
               <p className={styles.requestName}>{req.author}</p>
@@ -279,6 +263,9 @@ const AdminDashboard = () => {
               <p>{selectedRequest.content}</p>
             </div>
             <div className={styles.popupActions}>
+              <button className={styles.rejectBtn} onClick={() => handleReject(selectedRequest.id)}>
+                <FaTimes /> Reject
+              </button>
               <button className={styles.approveBtn} onClick={() => handleApprove(selectedRequest.id)}>
                 <FaCheckCircle /> Approve
               </button>
@@ -310,7 +297,15 @@ const AdminDashboard = () => {
                               <span>{blog.date}</span>
                             </div>
                           </div>
-                          <button className={styles.deleteBtn} onClick={() => handleDeleteBlog(cat, blog.id, blog.title)}>
+                          {/* Views count badge */}
+                          <div className={styles.viewsBadge}>
+                            <FaEye />
+                            <span>{viewsPerPost[blog.id] || 0}</span>
+                          </div>
+                          <button
+                            className={styles.deleteBtn}
+                            onClick={() => handleDeleteBlog(cat, blog.id, blog.title)}
+                          >
                             <FaTrashAlt /> Delete
                           </button>
                         </div>

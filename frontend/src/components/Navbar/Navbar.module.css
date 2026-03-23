@@ -977,3 +977,60 @@
   opacity: 0.3;
   z-index: -1;
 }
+/* ── Desktop Blog Post Minimal Morph ── */
+
+.desktopMinimalHideButton {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-140%) !important;
+  transition: opacity 0.35s ease, transform 0.35s ease !important;
+}
+
+.desktopMinimalLeft {
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  border-radius: 0 0 16px 16px !important;
+  justify-content: center !important;
+  transition:
+    left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+    top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+    width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+    border-radius 0.4s ease !important;
+}
+
+.desktopMinimalBrand {
+  padding: 10px 20px !important;
+}
+
+.desktopMinimalLeft .brandWrapper .brand {
+  font-size: 1.1em !important;
+  transition: font-size 0.3s ease;
+}
+
+.desktopInlineHomeBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  margin-right: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.7);
+  transition: opacity 0.3s ease 0s, transform 0.3s ease 0s;
+}
+
+.desktopInlineHomeBtnVisible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+}

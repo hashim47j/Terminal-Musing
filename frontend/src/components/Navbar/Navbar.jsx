@@ -394,15 +394,15 @@ const Navbar = () => {
   };
 
   const navbarLeftClass = `
-    ${styles.navbarLeft}
-    ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
-    ${isBlogPostPage ? styles.blogPostActive : ''}
-    ${isLightBackground ? styles.darkText : styles.lightText}
-    ${!isBlogPostPage && hide ? styles.hide : ''}
-    ${isBlogPostPage && !isScrolled && !desktopMinimal ? styles.hide : ''}
-    ${isHomePage ? styles.noShadow : ""}
-    ${currentPath === "/" ? styles.homePagePosition : ""}
-  `;
+  ${styles.navbarLeft}
+  ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
+  ${isBlogPostPage ? styles.blogPostActive : ''}
+  ${isLightBackground ? styles.darkText : styles.lightText}
+  ${!isBlogPostPage && hide ? styles.hide : ''}
+  ${isBlogPostPage && !isScrolled && isMobileView ? styles.hide : ''}
+  ${isHomePage ? styles.noShadow : ""}
+  ${currentPath === "/" ? styles.homePagePosition : ""}
+`;
 
   const bridgeClass = `
     ${styles.bridgeConnector}

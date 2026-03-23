@@ -891,5 +891,89 @@
   display: none;
 }
 
+/* ── Desktop Minimal Blog Bar ── */
+.desktopMinimalBar {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 
+  height: 54px;
+  padding: 0 16px 0 10px;
 
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 16px 16px;
+
+  z-index: 4600;
+
+  /* Slide down in, slide up out */
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+              opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.desktopMinimalVisible {
+  transform: translateX(-50%) translateY(0%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.desktopMinimalHomeBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.desktopMinimalHomeBtn:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.desktopMinimalTitle {
+  position: relative;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05em;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 55vw;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.desktopMinimalTitle .progressFillMobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg,
+    rgba(96, 104, 121, 0.8) 0%,
+    rgba(99, 109, 129, 0.6) 100%
+  );
+  border-radius: 10px;
+  transition: width 0.1s ease-out;
+  pointer-events: none;
+  opacity: 0.3;
+  z-index: -1;
+}

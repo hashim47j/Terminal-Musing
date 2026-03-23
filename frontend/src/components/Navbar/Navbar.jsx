@@ -7,8 +7,6 @@ import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
 
-// ✅ REMOVED: patternBg import + patternStyle
-
 const Navbar = () => {
   const { pageTitle } = useContext(PageContext);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,7 +14,7 @@ const Navbar = () => {
 
   const [hide, setHide] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuClosing, setMenuClosing] = useState(false);
   const [isLightBackground, setIsLightBackground] = useState(false);
@@ -30,11 +28,14 @@ const Navbar = () => {
   const [isMobileView, setIsMobileView] = useState(false);
   const [hoverProgress, setHoverProgress] = useState({});
   const [isHomePage, setIsHomePage] = useState(false);
-  
+
+  // ✅ NEW: desktop minimal bar state
+  const [desktopMinimal, setDesktopMinimal] = useState(false);
+
   const navLinksRef = useRef(null);
   const location = useLocation();
   const currentPath = location.pathname;
-  
+
   const pathParts = currentPath.split('/').filter(Boolean);
   const isBlogPostPage = pathParts.length >= 3 && pathParts[0] === 'blog';
 
@@ -42,7 +43,6 @@ const Navbar = () => {
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
 
-  // ✅ Debounce ref — prevents onClick + onTouchEnd double-fire
   const lastToggleTime = useRef(0);
 
   const HOME_BUTTON_LEFT = 30;
@@ -65,6 +65,7 @@ const Navbar = () => {
     return text.replace(catPattern, "").trim();
   };
 
+  // Mobile shrink effect
   useEffect(() => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
@@ -102,6 +103,7 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [hideNavControls, isMobileView]);
 
+  // Mobile hideNavControls scroll
   useEffect(() => {
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
@@ -131,7 +133,7 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isBlogPostPage]);
-  
+
   useEffect(() => {
     const checkHomePage = () => {
       const homeElement = document.querySelector('[data-navbar-no-shadow]');
@@ -143,28 +145,49 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
+  // ✅ Main scroll handler — now also drives desktopMinimal
   useEffect(() => {
+    let lastY = window.scrollY;
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+
       if (isBlogPostPage) {
         const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
         const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
         setScrollProgress(Math.min(progress, 100));
         setIsScrolled(currentScrollY > 50);
+
+        // ✅ Desktop minimal: activate when scrolling DOWN past 120px, deactivate on scroll UP
+        if (!isMobileView) {
+          if (currentScrollY > 120 && currentScrollY > lastY) {
+            setDesktopMinimal(true);
+          } else if (currentScrollY < lastY) {
+            setDesktopMinimal(false);
+          }
+        }
       } else {
         setScrollProgress(0);
         setIsScrolled(false);
+        setDesktopMinimal(false);
       }
+
       if (window.innerWidth > 768 && !isBlogPostPage) {
         setHide(currentScrollY > lastScrollY && currentScrollY > 50);
       } else {
-        setHide(false); 
+        setHide(false);
       }
+
+      lastY = currentScrollY;
       setLastScrollY(currentScrollY);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isBlogPostPage, lastScrollY]);
+  }, [isBlogPostPage, lastScrollY, isMobileView]);
+
+  // Reset desktopMinimal when leaving blog post
+  useEffect(() => {
+    if (!isBlogPostPage) setDesktopMinimal(false);
+  }, [isBlogPostPage]);
 
   const getCenterTitle = () => {
     if (isBlogPostPage && pageTitle) return pageTitle;
@@ -185,7 +208,7 @@ const Navbar = () => {
     const categoryMappings = {
       '/philosophy': 'Philosophy',
       '/blog/philosophy': 'Philosophy',
-      '/history': 'History', 
+      '/history': 'History',
       '/blog/history': 'History',
       '/writings': 'Writings',
       '/blog/writings': 'Writings',
@@ -220,14 +243,14 @@ const Navbar = () => {
     }
     const legacyMappings = {
       '/philosophy': '/blog/philosophy',
-      '/history': '/blog/history', 
+      '/history': '/blog/history',
       '/tech': '/blog/tech',
       '/legal-social': '/blog/lsconcern',
       '/writings': '/blog/writings'
     };
     return legacyMappings[currentPath] || currentPath;
   };
-  
+
   const updateHighlight = (element) => {
     if (element && navLinksRef.current) {
       const parentRect = navLinksRef.current.getBoundingClientRect();
@@ -293,7 +316,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {   
+      for (let entry of entries) {
         const isMobileView = window.innerWidth <= 768;
         const padding = isMobileView ? 16 : 40;
         const calculatedLeftNavbarWidth = entry.contentRect.width + padding;
@@ -312,6 +335,8 @@ const Navbar = () => {
     const handleResize = () => {
       const newIsMobileView = window.innerWidth <= 768;
       setIsMobileView(newIsMobileView);
+      // If resized to desktop, reset mobile minimal
+      if (newIsMobileView === false) setDesktopMinimal(false);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -344,7 +369,6 @@ const Navbar = () => {
     }
   };
 
-  // ✅ FIXED: debounced to prevent onClick + onTouchEnd double-fire
   const toggleMenu = () => {
     const now = Date.now();
     if (now - lastToggleTime.current < 300) return;
@@ -408,7 +432,7 @@ const Navbar = () => {
           className={`${styles.blogMobileHeader} ${bgWidth ? styles.shrunk : ''}`}
           style={{
             width: bgWidth ? `${bgWidth}px` : "100%",
-            height: bgHeight ? `${bgHeight}px` : "54px", 
+            height: bgHeight ? `${bgHeight}px` : "54px",
             left: bgLeft ? `${bgLeft}px` : "0",
             top: bgTop ? `${bgTop}px` : "0",
             transition: "width 0.4s, left 0.4s, height 0.4s, top 0.4s, border-radius 0.4s",
@@ -441,7 +465,6 @@ const Navbar = () => {
             <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
           </span>
 
-          {/* ✅ FIXED: onTouchEnd for instant tap response */}
           <button
             className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
             aria-label="Toggle menu"
@@ -461,7 +484,6 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* ✅ FIXED: onTouchEnd on overlay too */}
         <div
           className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
           onClick={toggleMenu}
@@ -513,10 +535,33 @@ const Navbar = () => {
   // ── Desktop Layout ──
   return (
     <>
+      {/* ✅ NEW: Desktop Minimal Bar — shown on blog post pages when scrolling down */}
+      {isBlogPostPage && !isMobileView && (
+        <div className={`${styles.desktopMinimalBar} ${desktopMinimal ? styles.desktopMinimalVisible : ""}`}>
+          <Link to="/" className={styles.desktopMinimalHomeBtn} aria-label="Home">
+            <img
+              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+              alt="Home"
+              style={{ width: "22px", height: "22px", objectFit: "contain" }}
+            />
+          </Link>
+          <span className={styles.desktopMinimalTitle}>
+            {stripCategorySuffix(pageTitle || getCenterTitle())}
+            <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
+          </span>
+        </div>
+      )}
+
+      {/* ✅ Full navbar elements — hidden when desktopMinimal is active on blog post */}
       {currentPath !== "/" && (
         <Link
           to="/"
-          className={`${styles.homeButton} ${hide ? styles.hide : ""} ${isHomePage ? styles.noShadow : ""}`}
+          className={`
+            ${styles.homeButton} 
+            ${hide ? styles.hide : ""} 
+            ${isHomePage ? styles.noShadow : ""}
+            ${isBlogPostPage && desktopMinimal ? styles.hide : ""}
+          `}
           aria-label="Home"
         >
           <img
@@ -527,53 +572,46 @@ const Navbar = () => {
         </Link>
       )}
 
-      <div className={bridgeClass} style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}></div>
+      <div
+        className={`
+          ${bridgeClass}
+          ${isBlogPostPage && desktopMinimal ? styles.hide : ""}
+        `}
+        style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}
+      ></div>
 
       <div
-        className={navbarLeftClass}
-        style={{ 
+        className={`
+          ${navbarLeftClass}
+          ${isBlogPostPage && desktopMinimal ? styles.hide : ""}
+        `}
+        style={{
           width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
-          // ✅ REMOVED: backgroundImage, backgroundSize, backgroundRepeat
-          ...(isBlogPostPage && { 
+          ...(isBlogPostPage && {
             transform: `translateY(0px)`
           })
         }}
       >
         {isBlogPostPage && (
-          <div 
+          <div
             className={styles.progressFill}
-            style={{ 
+            style={{
               width: `${scrollProgress}%`,
               opacity: isScrolled ? 0.3 : 0
             }}
           />
         )}
-
         <div ref={brandWrapperRef} className={styles.brandWrapper} onClick={handleBrandTap} style={{ cursor: "pointer" }}>
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
               <>
-                <span style={{
-                  fontFamily: 'Abhaya Libre, serif',
-                  fontSize: isMobileView ? '30px' : '50px'
-                }}>Terminal</span>
-                <span style={{
-                  fontFamily: 'Luxurious Script, cursive',
-                  marginLeft: '-10px',
-                  position: 'relative',
-                  top: '5px',
-                  fontSize: isMobileView ? '28px' : '46px'
-                }}> Musing</span>
+                <span style={{ fontFamily: 'Abhaya Libre, serif', fontSize: isMobileView ? '30px' : '50px' }}>Terminal</span>
+                <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px', fontSize: isMobileView ? '28px' : '46px' }}> Musing</span>
               </>
             ) : getCenterTitle() === "Terminal Musing" ? (
               <>
                 <span style={{ fontFamily: 'Abhaya Libre, serif' }}>Terminal</span>
-                <span style={{
-                  fontFamily: 'Luxurious Script, cursive',
-                  marginLeft: '-10px',
-                  position: 'relative',
-                  top: '5px'
-                }}> Musing</span>
+                <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px' }}> Musing</span>
               </>
             ) : getCenterTitle()}
           </Link>
@@ -581,9 +619,9 @@ const Navbar = () => {
       </div>
 
       {isBlogPostPage && (
-        <div 
+        <div
           className={styles.progressFill}
-          style={{ 
+          style={{
             width: `${scrollProgress}%`,
             opacity: isScrolled ? 0.3 : 0
           }}
@@ -598,9 +636,9 @@ const Navbar = () => {
           ${menuOpen ? styles.menuOpen : ""}
           ${menuClosing ? styles.menuClosing : ""}
           ${isHomePage ? styles.noShadow : ""}
+          ${isBlogPostPage && desktopMinimal ? styles.hide : ""}
         `}
       >
-        {/* ✅ FIXED: onTouchEnd for instant tap response */}
         <div
           onClick={toggleMenu}
           onTouchEnd={(e) => {
@@ -651,7 +689,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ✅ FIXED: onTouchEnd on overlay too */}
       <div
         className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
         onClick={toggleMenu}

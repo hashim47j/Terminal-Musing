@@ -1034,3 +1034,16 @@
   transform: scale(1);
   transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
 }
+/* Prevent navbarLeft from overflowing viewport on desktop */
+@media (min-width: 769px) {
+  .navbarLeft {
+    max-width: calc(100vw - 105px - 20px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* During morph, remove the max-width constraint so it can go full width */
+  .desktopMinimalLeft {
+    max-width: 100vw !important;
+  }
+}

@@ -28,15 +28,16 @@
   white-space: nowrap;
   transition: width 0.4s ease, transform 0.3s ease, left 0.3s ease;
   transform: translateY(0);
-
-  /* Back to simple inline-flex centered — no row flex that breaks with siblings */
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Single merged brandWrapper — no duplicates */
 .brandWrapper {
-  padding: 0px 16px;
+  position: relative;
+  z-index: 1;
+  padding: 8px 16px;
   display: inline-block;
   transition: all 0.4s ease;
   vertical-align: middle;
@@ -57,9 +58,8 @@
     transform: translateY(-120%);
   }
   
-  /* For blog pages when hidden */
   .blogPostActive.hide {
-    transform: translateY(-120%) translateY(90px); /* Combines both transforms */
+    transform: translateY(-120%) translateY(90px);
   }
   
   @media (max-width: 768px) {
@@ -73,7 +73,6 @@
       transform: translateY(-120%) translateY(70px);
     }
   }
-
 }
 
 .navbarRight {
@@ -127,12 +126,10 @@
   transition: background 0.18s cubic-bezier(0.4,0,0.2,1);
 }
 .navLink:hover {
-  background: rgba(186,133,134,0.10); /* Subtle accent or darker color for dark mode */
-  /* border-radius, etc., as needed */
+  background: rgba(186,133,134,0.10);
 }
-/* ---- Hamburger/Cross Icon Styles (Mobile) ---- */
 
-/* The hamburger area (32x22 pixels) is flex-centered inside the button */
+/* ---- Hamburger/Cross Icon Styles (Mobile) ---- */
 .hamburger {
   z-index: 4600;
   position: relative;
@@ -140,19 +137,18 @@
   height: 22px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Spaces out the lines */
+  justify-content: space-between;
   padding: 0cm;
   margin: 0%;
   background: none;
   border: none;
   cursor: pointer;
-  /* The shape morph is handled by the parent (circle to square) */
 }
 
 .line {
   width: 35%;
   height: 2px;
-  background: currentColor;      /* Matches your theme/text */
+  background: currentColor;
   border-radius: 2px;
   display: block;
   transition: all 0.32s cubic-bezier(.4,0,.2,1);
@@ -160,19 +156,17 @@
   margin: 3.6%;
 }
 
-/* Animate hamburger to cross (×) when menuOpen=true */
 .hamburgerActive .line:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
 }
 .hamburgerActive .line:nth-child(2) {
   opacity: 0;
-  transform: translateX(-16px); /* hides middle line left */
+  transform: translateX(-16px);
 }
 .hamburgerActive .line:nth-child(3) {
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* --- For the circular button itself (your existing .homeButton or .hamburger container) --- */
 .homeButton, .navbarRight .hamburger {
   width: 54px;
   height: 54px;
@@ -180,10 +174,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  /* other existing styles for blur, backdrop, background, box-shadow */
 }
 
-/* When menu is open, keep your existing circle-to-square transitions here */
 .navbarRight.menuOpen .hamburger {
   border-radius: 14px;
   transition: border-radius 0.3s;
@@ -193,8 +185,6 @@
   transition: border-radius 0.3s;
 }
 
-
-/* Modern hamburger menu styles for mobile */
 @media (max-width: 768px) {
 }
 
@@ -311,42 +301,34 @@
       left: 85px;
       z-index: 1001;
       top: 25px;
-      /* FIX: Only animate width, not position */
       transition: width 0.4s ease;
       width: auto;
       min-width: fit-content;
-      /* ADD: Prevent position shifts */
-      transform-origin: left center; /* Expand from left edge */
+      transform-origin: left center;
     }
   
     .navbarLeft .brandWrapper {
       padding: 4px 6px;
-      /* FIX: Only animate padding/background, not positioning */
       transition: padding 0.4s ease, background-color 0.3s ease;
     }
   
-   
-      .navbarLeft .brand {
-        font-size: 1.4em;
-        transition: font-size 0.3s ease, color 0.3s ease;
-      }
-    
-      /* ADD: Smaller font for long page names */
-      .navbarLeft.legalSocialPage .brand {
-        font-size: 1.0em; /* You already have this, but let's make it even smaller */
-      }
-    
-      /* ADD: Create classes for other long page names */
-      .navbarLeft.longPageName .brand {
-        font-size: 1.1em; /* Slightly smaller for moderately long names */
-      }
-    
-      .navbarLeft.veryLongPageName .brand {
-        font-size: 0.9em; /* Even smaller for very long names */
-      }
+    .navbarLeft .brand {
+      font-size: 1.4em;
+      transition: font-size 0.3s ease, color 0.3s ease;
     }
-  
-  
+    
+    .navbarLeft.legalSocialPage .brand {
+      font-size: 1.0em;
+    }
+    
+    .navbarLeft.longPageName .brand {
+      font-size: 1.1em;
+    }
+    
+    .navbarLeft.veryLongPageName .brand {
+      font-size: 0.9em;
+    }
+  }
 
   .homeButton {
     top: 25px;
@@ -367,12 +349,12 @@
     width: auto;
     height: auto;
     z-index: 1000;
-    transform: none !important; /* was translateY(0) !important */
+    transform: none !important;
     transition: none !important;
   }
 
   .hamburger {
-    display: flex; /* Show only in mobile */
+    display: flex;
     width: 54px;
     height: 54px;
     border-radius: 50%;
@@ -391,12 +373,10 @@
     border: none;
   }
 
-  /* When menu is open - transforms to square */
   .navbarRight.menuOpen .hamburger {
     border-radius: 14px;
   }
 
-  /* When menu is closing - back to circle */
   .navbarRight.menuClosing .hamburger {
     border-radius: 50%;
   }
@@ -404,14 +384,15 @@
   .hamburger:active {
     transform: scale(0.95);
   }
+
   .mobileOverlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.3); /* Slight dimming */
-    backdrop-filter: blur(0px); /* Initial blur */
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
     z-index: 999;
     opacity: 0;
@@ -426,20 +407,8 @@
   .mobileOverlay.active {
     opacity: 1;
     visibility: visible;
-    backdrop-filter: blur(8px); /* Animate to 8px blur */
+    backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-  }
-  
-  
-  .mobileOverlay.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  
-
-  .mobileOverlay.active {
-    opacity: 1;
-    visibility: visible;
   }
 
   .navLinks {
@@ -461,7 +430,7 @@
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
     border-radius: 0;
-    z-index: 9999; /* Menu must be above the overlay, but overlay is now higher for testing */
+    z-index: 9999;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), 
@@ -472,13 +441,12 @@
     opacity: 1;
     pointer-events: auto;
     transform: translateX(-28%) translateY(0);
-    /* Optional: smooth the opening a bit more */
     transition: opacity 0.45s cubic-bezier(0.17, 0.67, 0.52, 1.17),
                 transform 0.5s cubic-bezier(0.17, 0.67, 0.52, 1.17);
   }
 
   .navLinks.mobileClosing {
-    opacity: 1; /* Keep visible during child animations */
+    opacity: 1;
     pointer-events: none;
     transform: translateX(-28%) translateY(20px);
     transition: opacity 0.3s ease-out 0.45s, transform 0.3s ease-out;
@@ -498,31 +466,18 @@
     opacity: 0;
     transform: translateX(60px);
     transition:
-    background-color 0.35s cubic-bezier(0.17, 0.67, 0.52, 1.17),
-    box-shadow 0.35s,
-    color 0.28s,
-    opacity 0.42s cubic-bezier(0.17, 0.67, 0.52, 1.17),
-    transform 0.48s cubic-bezier(0.17, 0.67, 0.52, 1.17);
+      background-color 0.35s cubic-bezier(0.17, 0.67, 0.52, 1.17),
+      box-shadow 0.35s,
+      color 0.28s,
+      opacity 0.42s cubic-bezier(0.17, 0.67, 0.52, 1.17),
+      transform 0.48s cubic-bezier(0.17, 0.67, 0.52, 1.17);
   }
 
-  /* Opening animations - normal staggered timing */
-
   @keyframes bouncySlideInSoftest {
-    0% {
-      opacity: 0;
-      transform: translateX(20px) scale(0.98);
-    }
-    60% {
-      opacity: 1;
-      transform: translateX(-2px) scale(1.025);
-    }
-    80% {
-      transform: translateX(1px) scale(0.99);
-    }
-    100% {
-      opacity: 1;
-      transform: translateX(0) scale(1);
-    }
+    0% { opacity: 0; transform: translateX(20px) scale(0.98); }
+    60% { opacity: 1; transform: translateX(-2px) scale(1.025); }
+    80% { transform: translateX(1px) scale(0.99); }
+    100% { opacity: 1; transform: translateX(0) scale(1); }
   }
   
   .navLinks.mobileOpen .navLink {
@@ -536,30 +491,16 @@
   .navLinks.mobileOpen .navLink:nth-child(5) { animation-delay: 0.16s; }
   .navLinks.mobileOpen .navLink:nth-child(6) { animation-delay: 0.19s; }
   .navLinks.mobileOpen .navLink:nth-child(7) { animation-delay: 0.22s; }
-  
 
-
-  /* The clicked link gets a longer delay so it goes last */
   .navLinks.mobileClosing .navLink.clickedLink {
-    animation-delay: 0.15s !important; /* Make it disappear last */
+    animation-delay: 0.15s !important;
   }
 
   @keyframes bouncySlideIn {
-    0% {
-      opacity: 0;
-      transform: translateX(60px) scale(0.88);
-    }
-    60% {
-      opacity: 1;
-      transform: translateX(-8px) scale(1.09);
-    }
-    80% {
-      transform: translateX(2px) scale(0.97);
-    }
-    100% {
-      opacity: 1;
-      transform: translateX(0) scale(1);
-    }
+    0% { opacity: 0; transform: translateX(60px) scale(0.88); }
+    60% { opacity: 1; transform: translateX(-8px) scale(1.09); }
+    80% { transform: translateX(2px) scale(0.97); }
+    100% { opacity: 1; transform: translateX(0) scale(1); }
   }
   
   .navLinks.mobileOpen .navLink {
@@ -567,34 +508,25 @@
   }
   
   @keyframes slideOutAll {
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateX(60px);
-    }
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(60px); }
   }
   
-/* All links slide out together */
-.navLinks.mobileClosing .navLink {
-  animation: slideOutAll 0.33s cubic-bezier(0.6, 0.03, 0.7, 0.92) forwards;
-  animation-delay: 0s !important;
-  transition: none !important;
-  opacity: 1;
-  transform: translateX(0);
-}
+  .navLinks.mobileClosing .navLink {
+    animation: slideOutAll 0.33s cubic-bezier(0.6, 0.03, 0.7, 0.92) forwards;
+    animation-delay: 0s !important;
+    transition: none !important;
+    opacity: 1;
+    transform: translateX(0);
+  }
   
   .navLinks.mobileClosing .navLink.clickedLink {
     opacity: 1;
     transform: translateX(0);
-    /* Stay visible during delay */
     animation: slideOutAll 0.33s cubic-bezier(0.6, 0.03, 0.7, 0.92) forwards;
     animation-delay: 1.5s !important;
     transition: none !important;
   }
-  
   
   .navLinks .navLink:hover {
     background-color: rgba(255, 255, 255, 0.4);
@@ -619,7 +551,7 @@
 }
 
 .navbarLeft.blogPostActive .brand {
-  max-width: 300px; /* Adjust as needed */
+  max-width: 300px;
   white-space: nowrap;
   overflow: hidden;
   top: 100px !important;
@@ -629,15 +561,14 @@
 @media (max-width: 768px) {
   .navbarLeft.blogPostActive .brand {
     top: 100px !important;
-    max-width: 150px; /* Shorter width for mobile */
+    max-width: 150px;
   }
 }
 
-/* In your Navbar.module.css */
 .noShadow {
   box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15) !important;
 }
-/* ADD: Progress fill styles */
+
 .progressFill {
   position: absolute;
   top: 0;
@@ -651,20 +582,9 @@
   transition: width 0.1s ease-out, opacity 0.3s ease;
   pointer-events: none;
   z-index: 0;
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.6); /* Add glow */
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
 }
 
-/* Ensure the brand text stays above the progress fill */
-.brandWrapper {
-  position: relative;
-  z-index: 1;
-  padding: 13px 20px;
-  display: inline-block;
-  transition: all 0.4s ease;
-  vertical-align: middle;
-}
-
-/* ADD: Different progress colors for light/dark backgrounds */
 .darkText .progressFill {
   background: linear-gradient(90deg, 
     rgba(0, 0, 0, 0.15) 0%, 
@@ -680,41 +600,30 @@
 }
 
 /* Minimal mobile blog header bar */
-/* Mobile blog header with inverted bottom corners (SVG mask) */
 .blogMobileHeader {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 54px;
-  
   display: flex;
   align-items: center;
   justify-content: center;
-  
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
-  
   z-index: 4500;
   overflow: hidden;
-  
-  /* Main navbar transition with NO delay */
-  transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease;
-  
-  /* Transform has a DELAY - it waits for buttons to disappear first */
   transition: width 0.4s ease, left 0.4s ease, height 0.4s ease, top 0.4s ease, border-radius 0.4s ease, transform 0.4s ease 0.3s;
 }
 
 .blogMobileHeader.shrunk {
   border-radius: 13px;
-  transform: translateX(-3%); /* This will animate AFTER 0.3s delay */
+  transform: translateX(-3%);
 }
 
-
-/* Ensure children render above the masked surface */
 .blogMinimalHomeButton,
 .blogMinimalTitle,
 .blogMinimalHamburger {
@@ -722,18 +631,14 @@
   z-index: 0;
 }
 
-/* Optional: small-phone tweaks (curves come from SVG r value) */
 @media (max-width: 380px) {
-  .blogMobileHeader {
-    /* keep for related spacing if you adjust layout on tiny screens */
-  }
+  .blogMobileHeader {}
 }
-
 
 .blogMinimalHomeButton {
   position: fixed;
   top: 8px;
-  left: 4px; /* Increased from 10px to 20px */
+  left: 4px;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -748,8 +653,6 @@
   z-index: 4501;
 }
 
-/* Center title with rounded background */
-/* Heading slide left animation */
 .blogMinimalTitle {
   position: relative;
   z-index: 1;
@@ -767,23 +670,19 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
   max-width: 80vw;
-  
-  /* Heading slide animation with SAME delay as navbar */
   transition: transform 0.4s ease 0.3s;
 }
 
-/* Disable ellipsis while slid and let the title size to content */
 .blogMinimalTitle.noEllipsis {
-  text-overflow: clip;     /* no dots */ 
-  overflow: visible;       /* reveal full text */
-  white-space: nowrap;     /* stay one line */
-  min-width: max-content;  /* grow to fit full text width */
-  max-width: none;         /* no cap in slid mode */
-  display: inline-block;   /* ensure a measurable inline box */
-  padding-right: 22px;     /* breathing space at end (tweak value) */
+  text-overflow: clip;
+  overflow: visible;
+  white-space: nowrap;
+  min-width: max-content;
+  max-width: none;
+  display: inline-block;
+  padding-right: 22px;
 }
 
-/* Minimal: disable ellipsis + give breath only when slid */
 .blogMinimalTitle.slideLeft {
   text-overflow: clip;
   overflow: visible;
@@ -791,9 +690,8 @@
   min-width: max-content;
   max-width: none;
   display: inline-block;
-  padding-right: 22px; /* tweak space */
+  padding-right: 22px;
 }
-
 
 .blogMinimalTitle.noEllipsis.padRight {
   padding-right: 26px; 
@@ -803,31 +701,27 @@
   transform: translateX(5%); 
 }
 
-
-
-
 .blogMinimalTitle .progressFillMobile {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   background: linear-gradient(90deg, 
-  rgba(96, 104, 121, 0.8) 0%,  /* Stronger blue */
-  rgba(99, 109, 129, 0.6) 100%
+    rgba(96, 104, 121, 0.8) 0%,
+    rgba(99, 109, 129, 0.6) 100%
   );
   border-radius: 13px;
   transition: width 0.1s ease-out, opacity 0.3s ease;
   pointer-events: none;
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.6); /* subtle glow */
-  opacity: 0.3; /* match desktop visibility */
-  z-index: -1; /* behind the text */
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
+  opacity: 0.3;
+  z-index: -1;
 }
 
-/* Hamburger button */
 .blogMinimalHamburger {
   position: fixed;
   top: 8px;
-  right: 4px; /* Increased from 10px to 20px */
+  right: 4px;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -845,7 +739,6 @@
   z-index: 4501;
 }
 
-
 .blogMinimalHamburger .line {
   width: 18px;
   height: 2px;
@@ -856,7 +749,6 @@
   pointer-events: none;
 }
 
-/* Animate hamburger to cross (×) when menuOpen=true */
 .blogMinimalHamburger.hamburgerActive .line:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
 }
@@ -867,6 +759,7 @@
 .blogMinimalHamburger.hamburgerActive .line:nth-child(3) {
   transform: rotate(-45deg) translate(5px, -5px);
 }
+
 .hideNavButton {
   opacity: 0;
   pointer-events: none;
@@ -878,54 +771,34 @@
   justify-content: flex-start;
 }
 
-.blogMinimalTitle {
-  background: rgba(255,255,255,0.21);  /* stays visible */
-  /* keep all other heading background styles */
-}
-
 .homePagePosition {
   left: 30px !important;
   transition: left 0.3s ease-in-out;
 }
 
 .hideOnHome {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-.homePagePosition {
-  left: 30px !important;
-}
-
-.hideOnHome {
   display: none;
 }
 
-/* ── Desktop Minimal Blog Bar ── */
+/* ── Desktop Minimal Blog Bar (legacy — unused) ── */
 .desktopMinimalBar {
   position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
-  
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-
   height: 54px;
   padding: 0 16px 0 10px;
-
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   border-radius: 0 0 16px 16px;
-
   z-index: 4600;
-
-  /* Slide down in, slide up out */
-  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
-              opacity 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease;
   opacity: 0;
   pointer-events: none;
 }
@@ -936,58 +809,7 @@
   pointer-events: auto;
 }
 
-.desktopMinimalHomeBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  flex-shrink: 0;
-  transition: background 0.2s ease;
-}
-
-.desktopMinimalHomeBtn:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.desktopMinimalTitle {
-  position: relative;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.05em;
-  font-weight: 600;
-  color: #111;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 55vw;
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-
-.desktopMinimalTitle .progressFillMobile {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: linear-gradient(90deg,
-    rgba(96, 104, 121, 0.8) 0%,
-    rgba(99, 109, 129, 0.6) 100%
-  );
-  border-radius: 10px;
-  transition: width 0.1s ease-out;
-  pointer-events: none;
-  opacity: 0.3;
-  z-index: -1;
-}
 /* ── Desktop Blog Post Minimal Morph ── */
-
 .desktopMinimalHideButton {
   opacity: 0 !important;
   pointer-events: none !important;
@@ -1003,9 +825,8 @@
   display: flex !important;
   flex-direction: row !important;
   justify-content: space-between !important;
-  
   align-items: center !important;
-  padding: 0 16px !important;
+  padding: 0 16px !important;  /* ← tweak top/bottom (currently 0) for bar height */
   transition:
     left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
     top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
@@ -1014,7 +835,7 @@
 }
 
 .desktopMinimalBrand {
-  padding: 4px 16px !important;
+  padding: 4px 16px !important;  /* ← tweak 4px for title pill height */
   background: rgba(255, 255, 255, 0.35) !important;
   border-radius: 10px !important;
   backdrop-filter: blur(8px) !important;
@@ -1036,7 +857,7 @@
   justify-content: center;
   text-decoration: none;
   flex-shrink: 0;
-  overflow: hidden;        /* ← collapses to zero, takes no space */
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   transform: scale(0.7);
@@ -1044,12 +865,13 @@
 }
 
 .desktopInlineHomeBtnVisible {
-  width: 36px;             /* ← expands back into flow */
+  width: 36px;
   opacity: 1;
   pointer-events: auto;
   transform: scale(1);
   transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s, width 0.3s ease 0.1s;
 }
+
 /* Prevent navbarLeft from overflowing viewport on desktop */
 @media (min-width: 769px) {
   .navbarLeft {
@@ -1058,7 +880,6 @@
     text-overflow: ellipsis;
   }
 
-  /* During morph, remove the max-width constraint so it can go full width */
   .desktopMinimalLeft {
     max-width: 100vw !important;
   }

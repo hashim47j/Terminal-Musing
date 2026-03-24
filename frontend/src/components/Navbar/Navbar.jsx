@@ -29,7 +29,6 @@ const Navbar = () => {
   const [hoverProgress, setHoverProgress] = useState({});
   const [isHomePage, setIsHomePage] = useState(false);
 
-  // ✅ NEW: desktop minimal morph state
   const [desktopMinimal, setDesktopMinimal] = useState(false);
 
   const navLinksRef = useRef(null);
@@ -43,7 +42,6 @@ const Navbar = () => {
   const tapTimeout = useRef(null);
   const navigate = useNavigate();
 
-  // ✅ Debounce ref — prevents onClick + onTouchEnd double-fire
   const lastToggleTime = useRef(0);
 
   const HOME_BUTTON_LEFT = 30;
@@ -144,7 +142,6 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
-  // ✅ Main scroll handler — drives scrollProgress, hide, AND desktopMinimal
   useEffect(() => {
     let lastY = window.scrollY;
     const handleScroll = () => {
@@ -156,7 +153,6 @@ const Navbar = () => {
         setScrollProgress(Math.min(progress, 100));
         setIsScrolled(currentScrollY > 50);
 
-        // Desktop minimal: morph on scroll down, restore on scroll up
         if (!isMobileView) {
           if (currentScrollY > 120 && currentScrollY > lastY) {
             setDesktopMinimal(true);
@@ -183,7 +179,6 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isBlogPostPage, lastScrollY, isMobileView]);
 
-  // Reset desktopMinimal when navigating away from blog post
   useEffect(() => {
     if (!isBlogPostPage) setDesktopMinimal(false);
   }, [isBlogPostPage]);
@@ -367,7 +362,6 @@ const Navbar = () => {
     }
   };
 
-  // ✅ FIXED: debounced to prevent onClick + onTouchEnd double-fire
   const toggleMenu = () => {
     const now = Date.now();
     if (now - lastToggleTime.current < 300) return;
@@ -393,16 +387,16 @@ const Navbar = () => {
     startPageTransition(path, () => navigate(path));
   };
 
-const navbarLeftClass = `
-  ${styles.navbarLeft}
-  ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
-  ${isBlogPostPage ? styles.blogPostActive : ''}
-  ${isLightBackground ? styles.darkText : styles.lightText}
-  ${!isBlogPostPage && hide ? styles.hide : ''}
-  ${isBlogPostPage && !isScrolled && isMobileView ? styles.hide : ''}
-  ${isHomePage ? styles.noShadow : ""}
-  ${currentPath === "/" ? styles.homePagePosition : ""}
-`;
+  const navbarLeftClass = `
+    ${styles.navbarLeft}
+    ${getActiveNavPath() === "/blog/lsconcern" ? styles.legalSocialPage : ""}
+    ${isBlogPostPage ? styles.blogPostActive : ''}
+    ${isLightBackground ? styles.darkText : styles.lightText}
+    ${!isBlogPostPage && hide ? styles.hide : ''}
+    ${isBlogPostPage && !isScrolled && isMobileView ? styles.hide : ''}
+    ${isHomePage ? styles.noShadow : ""}
+    ${currentPath === "/" ? styles.homePagePosition : ""}
+  `;
 
   const bridgeClass = `
     ${styles.bridgeConnector}
@@ -464,7 +458,6 @@ const navbarLeftClass = `
             <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
           </span>
 
-          {/* ✅ FIXED: onTouchEnd for instant tap response */}
           <button
             className={`${styles.blogMinimalHamburger} ${menuOpen ? styles.hamburgerActive : ""} ${hideNavControls ? styles.hideNavButton : ""}`}
             aria-label="Toggle menu"
@@ -484,7 +477,6 @@ const navbarLeftClass = `
           </button>
         </div>
 
-        {/* ✅ FIXED: onTouchEnd on overlay too */}
         <div
           className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
           onClick={toggleMenu}
@@ -581,37 +573,17 @@ const navbarLeftClass = `
         {isBlogPostPage && (
           <div
             className={styles.progressFill}
-            style={{
-              width: `${scrollProgress}%`,
-              opacity: isScrolled ? 0.3 : 0
-            }}
+            style={{ width: `${scrollProgress}%`, opacity: isScrolled ? 0.3 : 0 }}
           />
         )}
 
-        {/* Inline home button — hidden normally, fades in during minimal mode */}
-        {isBlogPostPage && (
-          <Link
-            to="/"
-            className={`
-              ${styles.desktopInlineHomeBtn}
-              ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}
-            `}
-            aria-label="Home"
-          >
-            <img
-              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
-              alt="Home"
-              style={{ width: "22px", height: "22px", objectFit: "contain" }}
-            />
-          </Link>
-        )}
-
-<div
-  ref={brandWrapperRef}
-  className={`${styles.brandWrapper} ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalBrand : ""}`}
-  onClick={handleBrandTap}
-  style={{ cursor: "pointer" }}
->
+        {/* ✅ Title FIRST — lands on the LEFT in minimal mode */}
+        <div
+          ref={brandWrapperRef}
+          className={`${styles.brandWrapper} ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalBrand : ""}`}
+          onClick={handleBrandTap}
+          style={{ cursor: "pointer" }}
+        >
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
               <>
@@ -630,21 +602,25 @@ const navbarLeftClass = `
             )}
           </Link>
         </div>
-      </div>
 
-      {isBlogPostPage && (
-  <Link
-  to="/"
-  className={`${styles.desktopInlineHomeBtn} ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}`}
-  aria-label="Home"
->
-<img
-      src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
-      alt="Home"
-      style={{ width: "22px", height: "22px", objectFit: "contain" }}
-    />
-  </Link>
-)}
+        {/* ✅ Home button AFTER title — lands on the RIGHT via space-between */}
+        {isBlogPostPage && (
+          <Link
+            to="/"
+            className={`
+              ${styles.desktopInlineHomeBtn}
+              ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}
+            `}
+            aria-label="Home"
+          >
+            <img
+              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+              alt="Home"
+              style={{ width: "22px", height: "22px", objectFit: "contain" }}
+            />
+          </Link>
+        )}
+      </div>
 
       <div
         className={`
@@ -657,7 +633,6 @@ const navbarLeftClass = `
           ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalHideButton : ""}
         `}
       >
-        {/* ✅ FIXED: onTouchEnd for instant tap response */}
         <div
           onClick={toggleMenu}
           onTouchEnd={(e) => {
@@ -708,7 +683,6 @@ const navbarLeftClass = `
         </div>
       </div>
 
-      {/* ✅ FIXED: onTouchEnd on overlay too */}
       <div
         className={`${styles.mobileOverlay} ${menuOpen ? styles.active : ""}`}
         onClick={toggleMenu}

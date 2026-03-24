@@ -606,40 +606,39 @@ const navbarLeftClass = `
           </Link>
         )}
 
-{/* SWAP: Title FIRST (goes left) */}
 <div
   ref={brandWrapperRef}
   className={`${styles.brandWrapper} ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalBrand : ""}`}
   onClick={handleBrandTap}
   style={{ cursor: "pointer" }}
 >
-  <Link to={currentPath} className={styles.brand}>
-    {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
-      <>
-        <span style={{ fontFamily: 'Abhaya Libre, serif', fontSize: isMobileView ? '30px' : '50px' }}>Terminal</span>
-        <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px', fontSize: isMobileView ? '28px' : '46px' }}> Musing</span>
-      </>
-    ) : getCenterTitle() === "Terminal Musing" ? (
-      <>
-        <span style={{ fontFamily: 'Abhaya Libre, serif' }}>Terminal</span>
-        <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px' }}> Musing</span>
-      </>
-    ) : (
-      isBlogPostPage && desktopMinimal
-        ? stripCategorySuffix(getCenterTitle())
-        : getCenterTitle()
-    )}
-  </Link>
-</div>
+          <Link to={currentPath} className={styles.brand}>
+            {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
+              <>
+                <span style={{ fontFamily: 'Abhaya Libre, serif', fontSize: isMobileView ? '30px' : '50px' }}>Terminal</span>
+                <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px', fontSize: isMobileView ? '28px' : '46px' }}> Musing</span>
+              </>
+            ) : getCenterTitle() === "Terminal Musing" ? (
+              <>
+                <span style={{ fontFamily: 'Abhaya Libre, serif' }}>Terminal</span>
+                <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px' }}> Musing</span>
+              </>
+            ) : (
+              isBlogPostPage && desktopMinimal
+                ? stripCategorySuffix(getCenterTitle())
+                : getCenterTitle()
+            )}
+          </Link>
+        </div>
+      </div>
 
-{/* Home button AFTER (goes right via space-between) */}
-{isBlogPostPage && (
+      {isBlogPostPage && (
   <Link
-    to="/"
-    className={`${styles.desktopInlineHomeBtn} ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}`}
-    aria-label="Home"
-  >
-    <img
+  to="/"
+  className={`${styles.desktopInlineHomeBtn} ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}`}
+  aria-label="Home"
+>
+<img
       src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
       alt="Home"
       style={{ width: "22px", height: "22px", objectFit: "contain" }}

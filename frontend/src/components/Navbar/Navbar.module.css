@@ -991,7 +991,9 @@
   top: 0 !important;
   width: 100% !important;
   border-radius: 0 0 16px 16px !important;
-  justify-content: center !important;
+  justify-content: space-between !important;  /* title left, home right */
+  align-items: center !important;
+  padding: 0 16px !important;
   transition:
     left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
     top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
@@ -1000,14 +1002,33 @@
 }
 
 .desktopMinimalBrand {
-  padding: 10px 20px !important;
+  padding: 6px 16px !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-radius: 10px !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: background 0.3s ease, padding 0.3s ease, border-radius 0.3s ease !important;
 }
 
-.desktopMinimalLeft .brandWrapper .brand {
-  font-size: 1.1em !important;
-  transition: font-size 0.3s ease;
+.desktopInlineHomeBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.7);
+  transition: opacity 0.3s ease 0s, transform 0.3s ease 0s;
 }
-
 .desktopInlineHomeBtn {
   width: 36px;
   height: 36px;

@@ -565,45 +565,79 @@ const Navbar = () => {
 
       {/* navbarLeft morphs into full-width minimal bar */}
       <div
-        className={`
-          ${navbarLeftClass}
-          ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalLeft : ""}
-        `}
-        style={
-          isBlogPostPage && desktopMinimal
-            ? { width: "100%", left: 0, borderRadius: "0 0 16px 16px", top: 0 }
-            : {
-                width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
-                maxWidth: `calc(100vw - 105px - 20px)`
-              }
+  className={`
+    ${navbarLeftClass}
+    ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalLeft : ""}
+  `}
+  style={
+    isBlogPostPage && desktopMinimal
+      ? { width: "100%", left: 0, borderRadius: "0 0 16px 16px", top: 0 }
+      : {
+          width: leftNavbarWidth ? `${leftNavbarWidth}px` : "auto",
+          maxWidth: `calc(100vw - 105px - 20px)`
         }
-      >
-        {isBlogPostPage && (
-          <div
-            className={styles.progressFill}
-            style={{
-              width: `${scrollProgress}%`,
-              opacity: isScrolled ? 0.3 : 0
-            }}
-          />
-        )}
+  }
+>
+  {isBlogPostPage && (
+    <div
+      className={styles.progressFill}
+      style={{
+        width: `${scrollProgress}%`,
+        opacity: isScrolled ? 0.3 : 0
+      }}
+    />
+  )}
 
-        {/* Inline home button — hidden normally, fades in during minimal mode */}
-        {isBlogPostPage && (
-          <Link
-            to="/"
-            className={`
-              ${styles.desktopInlineHomeBtn}
-              ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}
-            `}
-            aria-label="Home"
-          >
-            <img
-              src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
-              alt="Home"
-              style={{ width: "22px", height: "22px", objectFit: "contain" }}
-            />
-          </Link>
+  {/* Title pill — left aligned in minimal mode */}
+  <div
+    ref={brandWrapperRef}
+    className={`
+      ${styles.brandWrapper}
+      ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalBrand : ""}
+    `}
+    onClick={handleBrandTap}
+    style={{ cursor: "pointer" }}
+  >
+    <Link to={currentPath} className={styles.brand}>
+      {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
+        <>
+          <span style={{ fontFamily: 'Abhaya Libre, serif', fontSize: isMobileView ? '30px' : '50px' }}>Terminal</span>
+          <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px', fontSize: isMobileView ? '28px' : '46px' }}> Musing</span>
+        </>
+      ) : getCenterTitle() === "Terminal Musing" ? (
+        <>
+          <span style={{ fontFamily: 'Abhaya Libre, serif' }}>Terminal</span>
+          <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px' }}> Musing</span>
+        </>
+      ) : (
+        isBlogPostPage && desktopMinimal
+          ? stripCategorySuffix(getCenterTitle())
+          : getCenterTitle()
+      )}
+    </Link>
+  </div>
+
+  {/* Spacer — pushes home button to far right */}
+  {isBlogPostPage && desktopMinimal && (
+    <div style={{ flex: 1 }} />
+  )}
+
+  {/* Home button — right end, only in minimal mode */}
+  {isBlogPostPage && (
+    <Link
+      to="/"
+      className={`
+        ${styles.desktopInlineHomeBtn}
+        ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}
+      `}
+      aria-label="Home"
+    >
+      <img
+        src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark}
+        alt="Home"
+        style={{ width: "22px", height: "22px", objectFit: "contain" }}
+      />
+    </Link>
         )}
 
         <div

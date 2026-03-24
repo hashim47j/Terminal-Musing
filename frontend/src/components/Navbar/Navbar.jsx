@@ -606,15 +606,12 @@ const navbarLeftClass = `
           </Link>
         )}
 
-        <div
-          ref={brandWrapperRef}
-          className={`
-            ${styles.brandWrapper}
-            ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalBrand : ""}
-          `}
-          onClick={handleBrandTap}
-          style={{ cursor: "pointer" }}
-        >
+<div
+  ref={brandWrapperRef}
+  className={`${styles.brandWrapper} ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalBrand : ""}`}
+  onClick={handleBrandTap}
+  style={{ cursor: "pointer" }}
+>
           <Link to={currentPath} className={styles.brand}>
             {getCenterTitle() === "Terminal Musing" && currentPath === "/" ? (
               <>
@@ -636,14 +633,14 @@ const navbarLeftClass = `
       </div>
 
       {isBlogPostPage && (
-        <div
-          className={styles.progressFill}
-          style={{
-            width: `${scrollProgress}%`,
-            opacity: isScrolled ? 0.3 : 0
-          }}
-        />
-      )}
+  <Link
+    to="/"
+    className={`${styles.desktopInlineHomeBtn} ${desktopMinimal ? styles.desktopInlineHomeBtnVisible : ""}`}
+    aria-label="Home"
+  >
+    <img src={isLightBackground ? jerusalemHomeLight : jerusalemHomeDark} alt="Home" style={{ width: "22px", height: "22px", objectFit: "contain" }} />
+  </Link>
+)}
 
       <div
         className={`

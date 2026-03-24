@@ -14,16 +14,25 @@
 }
 
 .navbarLeft {
+  position: fixed;
   left: 105px;
-  height: auto; 
+  top: 20px;
+  height: auto;
+  z-index: 4500;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 14px;
   overflow: hidden;
   white-space: nowrap;
   transition: width 0.4s ease, transform 0.3s ease, left 0.3s ease;
   transform: translateY(0);
-  display: flex;
-  align-items: center;
-  justify-content: center; 
 
+  /* Back to simple inline-flex centered — no row flex that breaks with siblings */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .brandWrapper {
@@ -991,7 +1000,9 @@
   top: 0 !important;
   width: 100% !important;
   border-radius: 0 0 16px 16px !important;
-  justify-content: space-between !important;  /* title left, home right */
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
   align-items: center !important;
   padding: 0 16px !important;
   transition:

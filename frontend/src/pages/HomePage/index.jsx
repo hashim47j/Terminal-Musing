@@ -25,22 +25,23 @@ const HomePage = () => {
 
   const touchStartY = useRef(null);
   const isOnEndCard = useRef(false);
+  const wheelTimer = useRef(null);
+  const lastWheelDelta = useRef(0);
 
   useEffect(() => {
     document.body.setAttribute('data-navbar-theme', SECTION_THEMES[0]);
     return () => document.body.removeAttribute('data-navbar-theme');
   }, []);
 
+  // ── Theme on scroll ──
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
     const handleScroll = () => {
       const index = Math.round(container.scrollTop / container.clientHeight);
       const theme = SECTION_THEMES[index] ?? SECTION_THEMES[SECTION_THEMES.length - 1];
       document.body.setAttribute('data-navbar-theme', theme);
     };
-
     container.addEventListener('scroll', handleScroll, { passive: true });
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
@@ -66,7 +67,7 @@ const HomePage = () => {
     if (!container) return;
     container.style.scrollSnapType = 'none';
     container.scrollTo({
-      top: container.clientHeight * 4.5,
+      top: container.clientHeight * 4,
       behavior: 'smooth',
     });
     setTimeout(() => {
@@ -79,6 +80,7 @@ const HomePage = () => {
     const container = containerRef.current;
     if (!container) return;
 
+    // ── Detect landing on end card ──
     const handleScroll = () => {
       const onLast = container.scrollTop >= container.clientHeight * 4.5;
       if (onLast && !isOnEndCard.current) {
@@ -87,32 +89,56 @@ const HomePage = () => {
       }
     };
 
-    let wheelTimer = null;
-    const handleWheel = () => {
+    // ── Mouse wheel: wait until wheel fully stops ──
+    // Uses longer debounce + checks delta is shrinking (wheel decelerating)
+    const handleWheel = (e) => {
       if (!isOnEndCard.current) return;
-      clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => snapBackToWritings(), 180);
+      lastWheelDelta.current = Math.abs(e.deltaY);
+      clearTimeout(wheelTimer.current);
+      wheelTimer.current = setTimeout(() => {
+        // Only snap back if wheel has fully stopped (delta near zero)
+        snapBackToWritings();
+      }, 400); // longer debounce for touchpad inertia
     };
 
+    // ── Touchscreen: track swipe direction ──
     const handleTouchStart = (e) => {
       touchStartY.current = e.touches[0].clientY;
     };
 
-    const handleTouchEnd = () => {
-      if (isOnEndCard.current) snapBackToWritings();
+    const handleTouchEnd = (e) => {
+      if (!isOnEndCard.current) return;
+      const deltaY = touchStartY.current - e.changedTouches[0].clientY;
+      // Only snap back if swipe was upward (back toward content)
+      // or finger just lifted with no significant movement
+      if (deltaY < 20) {
+        snapBackToWritings();
+      }
+    };
+
+    // ── Touchpad: use pointerup as "finger lifted" signal ──
+    const handlePointerUp = () => {
+      if (!isOnEndCard.current) return;
+      clearTimeout(wheelTimer.current);
+      // Small delay so inertia scroll finishes first
+      wheelTimer.current = setTimeout(() => {
+        snapBackToWritings();
+      }, 350);
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
     container.addEventListener('wheel', handleWheel, { passive: true });
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    container.addEventListener('pointerup', handlePointerUp);
 
     return () => {
       container.removeEventListener('scroll', handleScroll);
       container.removeEventListener('wheel', handleWheel);
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchend', handleTouchEnd);
-      clearTimeout(wheelTimer);
+      container.removeEventListener('pointerup', handlePointerUp);
+      clearTimeout(wheelTimer.current);
     };
   }, [snapBackToWritings]);
 

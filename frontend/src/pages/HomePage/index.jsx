@@ -8,28 +8,22 @@ import WritingsHero from './WritingsHero/WritingsHero';
 import styles from './HomePage.module.css';
 import { AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard } from './OverscrollCard/OverscrollCard';
 
-
 const CARDS = [AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard];
 
-// Each entry: { light: true } means that section has a light background
-// Set light: false for dark background sections — adjust to match your designs
 const SECTIONS = [
-  { Component: PhilosophyHero, light: true  },
+  { Component: PhilosophyHero, light: false },  // ← adjust true/false per your actual bg
   { Component: HistoryHero,    light: false },
-  { Component: LsiHero,        light: true  },
+  { Component: LsiHero,        light: false },
   { Component: TechHero,       light: false },
-  { Component: WritingsHero,   light: true  },
+  { Component: WritingsHero,   light: false },
 ];
 
-
-// Thin sentinel div at the TOP of each section.
-// When it enters the top 10% of the viewport, we know that section
-// is behind the navbar.
-const SectionWithSentinel = ({ Component, light }) => {
+// Each section watches itself — when it occupies the top of the scroll container, it sets the theme
+const SectionWithSentinel = ({ Component, light, scrollRoot }) => {
   const { ref, inView } = useInView({
+    root: scrollRoot,           // ✅ inner snap container, not viewport
     threshold: 0,
-    // Only trigger when element is in the top 10% of the viewport
-    rootMargin: '0px 0px -90% 0px',
+    rootMargin: '0px 0px -90% 0px', // trigger when top 10% of root is covered
   });
 
   useEffect(() => {
@@ -39,25 +33,31 @@ const SectionWithSentinel = ({ Component, light }) => {
   }, [inView, light]);
 
   return (
-    <div className={styles.pageSection}>
-      {/* Sentinel sits at the very top of the section */}
-      <div ref={ref} style={{ position: 'absolute', top: 0, height: '1px', width: '100%' }} />
+    <div className={styles.pageSection} style={{ position: 'relative' }}>
+      <div ref={ref} style={{ position: 'absolute', top: 0, left: 0, height: '1px', width: '100%' }} />
       <Component />
     </div>
   );
 };
-
 
 const HomePage = () => {
   const squareRef = useRef();
   const containerRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
   const [EndCard, setEndCard] = useState(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
+  const [scrollRoot, setScrollRoot] = useState(null); // ✅ state so children re-render with root
 
   const touchStartY = useRef(null);
   const isOnEndCard = useRef(false);
 
-  // Set dark as default on mount, clean up on unmount
+  // ✅ Set scrollRoot once container mounts
+  useEffect(() => {
+    if (containerRef.current) {
+      setScrollRoot(containerRef.current);
+    }
+  }, []);
+
+  // Set dark as default, clean up on unmount
   useEffect(() => {
     document.body.setAttribute('data-navbar-theme', 'dark');
     return () => document.body.removeAttribute('data-navbar-theme');
@@ -143,8 +143,14 @@ const HomePage = () => {
     >
       {!isMobile && <div ref={squareRef} className={styles.cursorSquare} />}
 
-      {SECTIONS.map(({ Component, light }, i) => (
-        <SectionWithSentinel key={i} Component={Component} light={light} />
+      {/* Only render sections once scrollRoot is known so useInView gets correct root */}
+      {scrollRoot && SECTIONS.map(({ Component, light }, i) => (
+        <SectionWithSentinel
+          key={i}
+          Component={Component}
+          light={light}
+          scrollRoot={scrollRoot}  // ✅ pass inner container as root
+        />
       ))}
 
       <div className={styles.pageSectionEnd}>

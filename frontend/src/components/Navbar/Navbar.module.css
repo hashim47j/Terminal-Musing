@@ -835,6 +835,7 @@
 }
 
 .desktopMinimalBrand {
+
   transition: background 0.3s ease, padding 0.3s ease, border-radius 0.3s ease !important;
 }
 
@@ -877,4 +878,33 @@
   .desktopMinimalLeft {
     max-width: 100vw !important;
   }
+}
+/* ── Inward concave corners for desktop minimal bar ── */
+.desktopMinimalLeft {
+  overflow: visible !important; /* allow pseudo-elements to show outside */
+}
+
+.desktopMinimalLeft::before,
+.desktopMinimalLeft::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* Bottom-left concave corner */
+.desktopMinimalLeft::before {
+  left: 0;
+  border-top-left-radius: 20px;
+  box-shadow: -8px -8px 0 0 rgba(255, 255, 255, 0.25); /* match your navbar bg */
+}
+
+/* Bottom-right concave corner */
+.desktopMinimalLeft::after {
+  right: 0;
+  border-top-right-radius: 20px;
+  box-shadow: 8px -8px 0 0 rgba(255, 255, 255, 0.25); /* match your navbar bg */
 }

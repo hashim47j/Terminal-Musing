@@ -9,13 +9,12 @@ import { AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard } fro
 
 const CARDS = [AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard];
 
-// ✅ Just set light: true or false per section — no library needed
 const SECTION_THEMES = [
-  'dark',   // PhilosophyHero  ← change to 'light' if it has a light background
+  'light',  // PhilosophyHero
   'dark',   // HistoryHero
-  'dark',   // LsiHero
+  'light',  // LsiHero
   'dark',   // TechHero
-  'dark',   // WritingsHero
+  'light',  // WritingsHero
 ];
 
 const HomePage = () => {
@@ -27,15 +26,11 @@ const HomePage = () => {
   const touchStartY = useRef(null);
   const isOnEndCard = useRef(false);
 
-  // ✅ Set initial theme
   useEffect(() => {
     document.body.setAttribute('data-navbar-theme', SECTION_THEMES[0]);
     return () => document.body.removeAttribute('data-navbar-theme');
   }, []);
 
-  // ✅ Pure scroll math — no observers, no library
-  // Each section is exactly 1 * container height tall (snap scroll)
-  // So section index = Math.round(scrollTop / containerHeight)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

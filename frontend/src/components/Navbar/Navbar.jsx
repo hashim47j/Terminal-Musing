@@ -611,9 +611,9 @@ const Navbar = () => {
                 <span style={{ fontFamily: 'Luxurious Script, cursive', marginLeft: '-10px', position: 'relative', top: '5px' }}> Musing</span>
               </>
             ) : (
-              isBlogPostPage && desktopMinimal
-                ? stripCategorySuffix(getCenterTitle())
-                : getCenterTitle()
+              isBlogPostPage
+              ? stripCategorySuffix(getCenterTitle())
+              : getCenterTitle()
             )}
           </Link>
         </div>

@@ -835,10 +835,6 @@
 }
 
 .desktopMinimalBrand {
-  padding: 2px 4px !important;  /* ← tweak 4px for title pill height */
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
   transition: background 0.3s ease, padding 0.3s ease, border-radius 0.3s ease !important;
 }
 

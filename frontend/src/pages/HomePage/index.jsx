@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useInView } from 'react-intersection-observer';
 import PhilosophyHero from './PhilosophyHero/PhilosophyHero';
 import HistoryHero from './HistoryHero/HistoryHero';
 import LsiHero from './LsiHero/LsiHero';
@@ -10,57 +9,45 @@ import { AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard } fro
 
 const CARDS = [AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard];
 
-const SECTIONS = [
-  { Component: PhilosophyHero, light: false },  // ← adjust true/false per your actual bg
-  { Component: HistoryHero,    light: false },
-  { Component: LsiHero,        light: false },
-  { Component: TechHero,       light: false },
-  { Component: WritingsHero,   light: false },
+// ✅ Just set light: true or false per section — no library needed
+const SECTION_THEMES = [
+  'dark',   // PhilosophyHero  ← change to 'light' if it has a light background
+  'dark',   // HistoryHero
+  'dark',   // LsiHero
+  'dark',   // TechHero
+  'dark',   // WritingsHero
 ];
-
-// Each section watches itself — when it occupies the top of the scroll container, it sets the theme
-const SectionWithSentinel = ({ Component, light, scrollRoot }) => {
-  const { ref, inView } = useInView({
-    root: scrollRoot,           // ✅ inner snap container, not viewport
-    threshold: 0,
-    rootMargin: '0px 0px -90% 0px', // trigger when top 10% of root is covered
-  });
-
-  useEffect(() => {
-    if (inView) {
-      document.body.setAttribute('data-navbar-theme', light ? 'light' : 'dark');
-    }
-  }, [inView, light]);
-
-  return (
-    <div className={styles.pageSection} style={{ position: 'relative' }}>
-      <div ref={ref} style={{ position: 'absolute', top: 0, left: 0, height: '1px', width: '100%' }} />
-      <Component />
-    </div>
-  );
-};
 
 const HomePage = () => {
   const squareRef = useRef();
   const containerRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
   const [EndCard, setEndCard] = useState(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
-  const [scrollRoot, setScrollRoot] = useState(null); // ✅ state so children re-render with root
 
   const touchStartY = useRef(null);
   const isOnEndCard = useRef(false);
 
-  // ✅ Set scrollRoot once container mounts
+  // ✅ Set initial theme
   useEffect(() => {
-    if (containerRef.current) {
-      setScrollRoot(containerRef.current);
-    }
+    document.body.setAttribute('data-navbar-theme', SECTION_THEMES[0]);
+    return () => document.body.removeAttribute('data-navbar-theme');
   }, []);
 
-  // Set dark as default, clean up on unmount
+  // ✅ Pure scroll math — no observers, no library
+  // Each section is exactly 1 * container height tall (snap scroll)
+  // So section index = Math.round(scrollTop / containerHeight)
   useEffect(() => {
-    document.body.setAttribute('data-navbar-theme', 'dark');
-    return () => document.body.removeAttribute('data-navbar-theme');
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const index = Math.round(container.scrollTop / container.clientHeight);
+      const theme = SECTION_THEMES[index] ?? SECTION_THEMES[SECTION_THEMES.length - 1];
+      document.body.setAttribute('data-navbar-theme', theme);
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -143,15 +130,11 @@ const HomePage = () => {
     >
       {!isMobile && <div ref={squareRef} className={styles.cursorSquare} />}
 
-      {/* Only render sections once scrollRoot is known so useInView gets correct root */}
-      {scrollRoot && SECTIONS.map(({ Component, light }, i) => (
-        <SectionWithSentinel
-          key={i}
-          Component={Component}
-          light={light}
-          scrollRoot={scrollRoot}  // ✅ pass inner container as root
-        />
-      ))}
+      <div className={styles.pageSection}><PhilosophyHero /></div>
+      <div className={styles.pageSection}><HistoryHero /></div>
+      <div className={styles.pageSection}><LsiHero /></div>
+      <div className={styles.pageSection}><TechHero /></div>
+      <div className={styles.pageSection}><WritingsHero /></div>
 
       <div className={styles.pageSectionEnd}>
         <EndCard />

@@ -224,18 +224,20 @@ const Navbar = () => {
   }, [isBlogPostPage]);
 
   const getCenterTitle = () => {
-    if (isBlogPostPage && pageTitle) return pageTitle;
+    // On a blog POST page, only show the article title — never the category name
+    if (isBlogPostPage) return pageTitle || '';
+  
     if (currentPath.startsWith('/blog/')) {
       const pathParts = currentPath.split('/');
       if (pathParts.length >= 3) {
         const category = pathParts[2];
         switch (category) {
-          case 'history': return pageTitle || 'History';
-          case 'philosophy': return pageTitle || 'Philosophy';
-          case 'tech': return pageTitle || 'Technology';
-          case 'lsconcern': return pageTitle || 'Legal & Social';
-          case 'writings': return pageTitle || 'Writings';
-          default: return pageTitle || 'Blog Post';
+          case 'history': return 'History';
+          case 'philosophy': return 'Philosophy';
+          case 'tech': return 'Technology';
+          case 'lsconcern': return 'Legal & Social';
+          case 'writings': return 'Writings';
+          default: return pageTitle || '';
         }
       }
     }

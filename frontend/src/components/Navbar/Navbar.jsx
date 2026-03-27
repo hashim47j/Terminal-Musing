@@ -71,7 +71,11 @@ const Navbar = () => {
   };
 
 
-  // ── isLightBackground: watches data-navbar-theme on <body> ──
+  // ── isLightBackground ──
+  // Watches data-navbar-theme on <body>.
+  // HomePage drives it per-section via react-intersection-observer (useInView).
+  // All other pages set it explicitly in their own component useEffect.
+  // Falls back to path-based guess if no attribute is set.
   useEffect(() => {
     const isPathDefaultLight =
       lightBackgroundPaths.some((p) => currentPath.startsWith(p)) ||
@@ -97,61 +101,6 @@ const Navbar = () => {
     });
 
     return () => observer.disconnect();
-  }, [currentPath]);
-
-
-  // ── Homepage multi-section scroll detection ──
-  // Listens on the inner snap-scroll container (data-homepage-scroller),
-  // not window — because window never receives scroll events from it.
-  useEffect(() => {
-    if (currentPath !== "/") return;
-
-    document.body.setAttribute("data-navbar-theme", "dark");
-
-    let scroller = null;
-    let observer = null;
-
-    const checkVisible = () => {
-      const allTargets = document.querySelectorAll("[data-navbar-bg-detect]");
-      const anyInNavbarZone = Array.from(allTargets).some((el) => {
-        const rect = el.getBoundingClientRect();
-        // Element is behind the navbar when its top edge is at or above 60px
-        // and its bottom edge is still on screen
-        return rect.top <= 60 && rect.bottom >= 0;
-      });
-      document.body.setAttribute(
-        "data-navbar-theme",
-        anyInNavbarZone ? "light" : "dark"
-      );
-    };
-
-    const raf = requestAnimationFrame(() => {
-      scroller = document.querySelector("[data-homepage-scroller]");
-
-      // IntersectionObserver with inner container as root
-      observer = new IntersectionObserver(checkVisible, {
-        root: scroller,
-        threshold: 0,
-        rootMargin: "-0px 0px -85% 0px",
-      });
-
-      document
-        .querySelectorAll("[data-navbar-bg-detect]")
-        .forEach((el) => observer.observe(el));
-
-      // Also listen to scroll on inner container for real-time accuracy
-      scroller?.addEventListener("scroll", checkVisible, { passive: true });
-
-      // Run once immediately to set correct state on mount
-      checkVisible();
-    });
-
-    return () => {
-      cancelAnimationFrame(raf);
-      observer?.disconnect();
-      scroller?.removeEventListener("scroll", checkVisible);
-      document.body.removeAttribute("data-navbar-theme");
-    };
   }, [currentPath]);
 
 

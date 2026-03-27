@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useInView } from 'react-intersection-observer';
 import PhilosophyHero from './PhilosophyHero/PhilosophyHero';
 import HistoryHero from './HistoryHero/HistoryHero';
 import LsiHero from './LsiHero/LsiHero';
@@ -7,7 +8,45 @@ import WritingsHero from './WritingsHero/WritingsHero';
 import styles from './HomePage.module.css';
 import { AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard } from './OverscrollCard/OverscrollCard';
 
+
 const CARDS = [AbyssCard, StarfieldCard, TypewriterCard, MirrorCard, ArchiveCard];
+
+// Each entry: { light: true } means that section has a light background
+// Set light: false for dark background sections — adjust to match your designs
+const SECTIONS = [
+  { Component: PhilosophyHero, light: true  },
+  { Component: HistoryHero,    light: false },
+  { Component: LsiHero,        light: true  },
+  { Component: TechHero,       light: false },
+  { Component: WritingsHero,   light: true  },
+];
+
+
+// Thin sentinel div at the TOP of each section.
+// When it enters the top 10% of the viewport, we know that section
+// is behind the navbar.
+const SectionWithSentinel = ({ Component, light }) => {
+  const { ref, inView } = useInView({
+    threshold: 0,
+    // Only trigger when element is in the top 10% of the viewport
+    rootMargin: '0px 0px -90% 0px',
+  });
+
+  useEffect(() => {
+    if (inView) {
+      document.body.setAttribute('data-navbar-theme', light ? 'light' : 'dark');
+    }
+  }, [inView, light]);
+
+  return (
+    <div className={styles.pageSection}>
+      {/* Sentinel sits at the very top of the section */}
+      <div ref={ref} style={{ position: 'absolute', top: 0, height: '1px', width: '100%' }} />
+      <Component />
+    </div>
+  );
+};
+
 
 const HomePage = () => {
   const squareRef = useRef();
@@ -17,6 +56,12 @@ const HomePage = () => {
 
   const touchStartY = useRef(null);
   const isOnEndCard = useRef(false);
+
+  // Set dark as default on mount, clean up on unmount
+  useEffect(() => {
+    document.body.setAttribute('data-navbar-theme', 'dark');
+    return () => document.body.removeAttribute('data-navbar-theme');
+  }, []);
 
   useEffect(() => {
     const checkMobile = () =>
@@ -34,13 +79,12 @@ const HomePage = () => {
     }
   };
 
-  // Snap back to WritingsHero (5th page = index 4, so scrollTop = 4 * 100vh)
   const snapBackToWritings = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
     container.style.scrollSnapType = 'none';
     container.scrollTo({
-      top: container.clientHeight * 4.5, // 4 * 100vh = WritingsHero
+      top: container.clientHeight * 4.5,
       behavior: 'smooth',
     });
     setTimeout(() => {
@@ -53,37 +97,27 @@ const HomePage = () => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Detect when user scrolls onto the end card page
-// ✅ CHANGE 2: pick a new card each time isOnEndCard becomes true
-const handleScroll = () => {
-  const onLast = container.scrollTop >= container.clientHeight * 4.5;
-  if (onLast && !isOnEndCard.current) {
-    isOnEndCard.current = true;
-    // Pick a fresh random card every visit
-    setEndCard(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
-  }
-};
+    const handleScroll = () => {
+      const onLast = container.scrollTop >= container.clientHeight * 4.5;
+      if (onLast && !isOnEndCard.current) {
+        isOnEndCard.current = true;
+        setEndCard(() => CARDS[Math.floor(Math.random() * CARDS.length)]);
+      }
+    };
 
-
-    // ── Desktop: snap back on wheel release ──
     let wheelTimer = null;
     const handleWheel = () => {
       if (!isOnEndCard.current) return;
       clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => {
-        snapBackToWritings();
-      }, 180); // snap back shortly after wheel stops
+      wheelTimer = setTimeout(() => snapBackToWritings(), 180);
     };
 
-    // ── Mobile: snap back on finger lift ──
     const handleTouchStart = (e) => {
       touchStartY.current = e.touches[0].clientY;
     };
 
     const handleTouchEnd = () => {
-      if (isOnEndCard.current) {
-        snapBackToWritings();
-      }
+      if (isOnEndCard.current) snapBackToWritings();
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
@@ -109,17 +143,13 @@ const handleScroll = () => {
     >
       {!isMobile && <div ref={squareRef} className={styles.cursorSquare} />}
 
-      <div className={styles.pageSection}><PhilosophyHero /></div>
-      <div className={styles.pageSection}><HistoryHero /></div>
-      <div className={styles.pageSection}><LsiHero /></div>
-      <div className={styles.pageSection}><TechHero /></div>
-      <div className={styles.pageSection}><WritingsHero /></div>
+      {SECTIONS.map(({ Component, light }, i) => (
+        <SectionWithSentinel key={i} Component={Component} light={light} />
+      ))}
 
-      {/* 6th page — visible while scrolling, springs back on release */}
       <div className={styles.pageSectionEnd}>
         <EndCard />
       </div>
-
     </div>
   );
 };

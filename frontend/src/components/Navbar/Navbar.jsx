@@ -72,8 +72,6 @@ const Navbar = () => {
 
 
   // ── isLightBackground: watches data-navbar-theme on <body> ──
-  // Non-homepage pages set this attribute explicitly in their own component.
-  // Homepage uses the IntersectionObserver below to set it dynamically.
   useEffect(() => {
     const isPathDefaultLight =
       lightBackgroundPaths.some((p) => currentPath.startsWith(p)) ||
@@ -103,41 +101,55 @@ const Navbar = () => {
 
 
   // ── Homepage multi-section scroll detection ──
-  // Observes [data-navbar-bg-detect] elements on the homepage only.
-  // Sets data-navbar-theme on <body> so the above effect picks it up.
+  // Listens on the inner snap-scroll container (data-homepage-scroller),
+  // not window — because window never receives scroll events from it.
   useEffect(() => {
     if (currentPath !== "/") return;
 
-    // Default to dark on mount
     document.body.setAttribute("data-navbar-theme", "dark");
+
+    let scroller = null;
+    let observer = null;
 
     const checkVisible = () => {
       const allTargets = document.querySelectorAll("[data-navbar-bg-detect]");
       const anyInNavbarZone = Array.from(allTargets).some((el) => {
         const rect = el.getBoundingClientRect();
-        // Light section is behind the navbar if its top is above 60px and bottom is still on screen
+        // Element is behind the navbar when its top edge is at or above 60px
+        // and its bottom edge is still on screen
         return rect.top <= 60 && rect.bottom >= 0;
       });
-      document.body.setAttribute("data-navbar-theme", anyInNavbarZone ? "light" : "dark");
+      document.body.setAttribute(
+        "data-navbar-theme",
+        anyInNavbarZone ? "light" : "dark"
+      );
     };
 
-    let observer;
     const raf = requestAnimationFrame(() => {
+      scroller = document.querySelector("[data-homepage-scroller]");
+
+      // IntersectionObserver with inner container as root
       observer = new IntersectionObserver(checkVisible, {
+        root: scroller,
         threshold: 0,
         rootMargin: "-0px 0px -85% 0px",
       });
-      document.querySelectorAll("[data-navbar-bg-detect]")
-        .forEach((el) => observer.observe(el));
-    });
 
-    // Also run on scroll for smooth real-time accuracy
-    window.addEventListener("scroll", checkVisible, { passive: true });
+      document
+        .querySelectorAll("[data-navbar-bg-detect]")
+        .forEach((el) => observer.observe(el));
+
+      // Also listen to scroll on inner container for real-time accuracy
+      scroller?.addEventListener("scroll", checkVisible, { passive: true });
+
+      // Run once immediately to set correct state on mount
+      checkVisible();
+    });
 
     return () => {
       cancelAnimationFrame(raf);
       observer?.disconnect();
-      window.removeEventListener("scroll", checkVisible);
+      scroller?.removeEventListener("scroll", checkVisible);
       document.body.removeAttribute("data-navbar-theme");
     };
   }, [currentPath]);

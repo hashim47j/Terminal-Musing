@@ -835,7 +835,7 @@
 }
 
 .desktopMinimalBrand {
-  padding: 4px 16px !important;  /* ← tweak 4px for title pill height */
+  padding: 2px 4px !important;  /* ← tweak 4px for title pill height */
   background: rgba(255, 255, 255, 0.35) !important;
   border-radius: 10px !important;
   backdrop-filter: blur(8px) !important;

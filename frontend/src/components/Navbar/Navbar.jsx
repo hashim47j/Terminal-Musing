@@ -7,6 +7,7 @@ import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
 
+
 const Navbar = () => {
   const { pageTitle } = useContext(PageContext);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -58,11 +59,49 @@ const Navbar = () => {
   const [bgTop, setBgTop] = useState(null);
   const [slideLeft, setSlideLeft] = useState(false);
 
+  const lightBackgroundPaths = [
+    "/philosophy", "/history", "/writings", "/legal-social",
+    "/tech", "/daily-thoughts", "/blog/"
+  ];
+
   const stripCategorySuffix = (text) => {
     if (!text) return "";
     const catPattern = /\s*[-–—]\s*(Philosophy|History|Technology|Tech|Writings|Legal\s*&\s*Social)\s*$/i;
     return text.replace(catPattern, "").trim();
   };
+
+
+  // ── isLightBackground: explicit data-navbar-theme + MutationObserver (no race) ──
+  useEffect(() => {
+    const isPathDefaultLight =
+      lightBackgroundPaths.some((p) => currentPath.startsWith(p)) ||
+      currentPath.startsWith("/blogs/");
+
+    const update = () => {
+      const theme = document.body.getAttribute("data-navbar-theme");
+      if (theme === "light") {
+        setIsLightBackground(true);
+      } else if (theme === "dark") {
+        setIsLightBackground(false);
+      } else {
+        // No explicit attribute — fall back to path-based guess
+        setIsLightBackground(isPathDefaultLight);
+      }
+    };
+
+    // Run immediately (synchronous with current DOM state)
+    update();
+
+    // Also watch for attribute changes (e.g. theme toggled mid-page)
+    const observer = new MutationObserver(update);
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["data-navbar-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, [currentPath]);
+
 
   useEffect(() => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
@@ -282,33 +321,6 @@ const Navbar = () => {
   }, [currentPath]);
 
   useEffect(() => {
-    const lightBackgroundPaths = [
-      "/philosophy", "/history", "/writings", "/legal-social",
-      "/tech", "/daily-thoughts", "/blog/"
-    ];
-    const isPathDefaultLight = lightBackgroundPaths.some(path => currentPath.startsWith(path)) ||
-                               currentPath.startsWith('/blogs/');
-    const intersectingSensors = new Set();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            intersectingSensors.add(entry.target);
-          } else {
-            intersectingSensors.delete(entry.target);
-          }
-        });
-        const isAnyLightSensorVisible = intersectingSensors.size > 0;
-        setIsLightBackground(isAnyLightSensorVisible || isPathDefaultLight);
-      },
-      { threshold: 0.6 }
-    );
-    const targets = document.querySelectorAll("[data-navbar-bg-detect]");
-    targets.forEach(target => observer.observe(target));
-    return () => targets.forEach(target => observer.unobserve(target));
-  }, [currentPath]);
-
-  useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const isMobileView = window.innerWidth <= 768;
@@ -415,6 +427,7 @@ const Navbar = () => {
     { to: "/daily-thoughts", label: "Daily Thoughts" },
     { to: "/admin/login", label: "Author(s)", isAdmin: true },
   ];
+
 
   // ── Mobile Blog Post Layout ──
   if (isBlogPostPage && isMobileView) {
@@ -525,6 +538,7 @@ const Navbar = () => {
     );
   }
 
+
   // ── Desktop Layout ──
   return (
     <>
@@ -555,7 +569,6 @@ const Navbar = () => {
         style={{ width: `${bridgeWidth}px`, left: `${bridgeLeft}px` }}
       ></div>
 
-      {/* navbarLeft morphs into full-width minimal bar */}
       <div
         className={`
           ${navbarLeftClass}
@@ -577,7 +590,6 @@ const Navbar = () => {
           />
         )}
 
-        {/* ✅ Title FIRST — lands on the LEFT in minimal mode */}
         <div
           ref={brandWrapperRef}
           className={`${styles.brandWrapper} ${isBlogPostPage && desktopMinimal ? styles.desktopMinimalBrand : ""}`}
@@ -603,7 +615,6 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* ✅ Home button AFTER title — lands on the RIGHT via space-between */}
         {isBlogPostPage && (
           <Link
             to="/"

@@ -71,7 +71,9 @@ const Navbar = () => {
   };
 
 
-  // ── isLightBackground: explicit data-navbar-theme + MutationObserver (no race) ──
+  // ── isLightBackground: watches data-navbar-theme on <body> ──
+  // Non-homepage pages set this attribute explicitly in their own component.
+  // Homepage uses the IntersectionObserver below to set it dynamically.
   useEffect(() => {
     const isPathDefaultLight =
       lightBackgroundPaths.some((p) => currentPath.startsWith(p)) ||
@@ -84,15 +86,12 @@ const Navbar = () => {
       } else if (theme === "dark") {
         setIsLightBackground(false);
       } else {
-        // No explicit attribute — fall back to path-based guess
         setIsLightBackground(isPathDefaultLight);
       }
     };
 
-    // Run immediately (synchronous with current DOM state)
     update();
 
-    // Also watch for attribute changes (e.g. theme toggled mid-page)
     const observer = new MutationObserver(update);
     observer.observe(document.body, {
       attributes: true,
@@ -100,6 +99,47 @@ const Navbar = () => {
     });
 
     return () => observer.disconnect();
+  }, [currentPath]);
+
+
+  // ── Homepage multi-section scroll detection ──
+  // Observes [data-navbar-bg-detect] elements on the homepage only.
+  // Sets data-navbar-theme on <body> so the above effect picks it up.
+  useEffect(() => {
+    if (currentPath !== "/") return;
+
+    // Default to dark on mount
+    document.body.setAttribute("data-navbar-theme", "dark");
+
+    const checkVisible = () => {
+      const allTargets = document.querySelectorAll("[data-navbar-bg-detect]");
+      const anyInNavbarZone = Array.from(allTargets).some((el) => {
+        const rect = el.getBoundingClientRect();
+        // Light section is behind the navbar if its top is above 60px and bottom is still on screen
+        return rect.top <= 60 && rect.bottom >= 0;
+      });
+      document.body.setAttribute("data-navbar-theme", anyInNavbarZone ? "light" : "dark");
+    };
+
+    let observer;
+    const raf = requestAnimationFrame(() => {
+      observer = new IntersectionObserver(checkVisible, {
+        threshold: 0,
+        rootMargin: "-0px 0px -85% 0px",
+      });
+      document.querySelectorAll("[data-navbar-bg-detect]")
+        .forEach((el) => observer.observe(el));
+    });
+
+    // Also run on scroll for smooth real-time accuracy
+    window.addEventListener("scroll", checkVisible, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer?.disconnect();
+      window.removeEventListener("scroll", checkVisible);
+      document.body.removeAttribute("data-navbar-theme");
+    };
   }, [currentPath]);
 
 

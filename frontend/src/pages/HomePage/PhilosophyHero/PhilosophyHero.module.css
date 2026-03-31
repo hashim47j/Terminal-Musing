@@ -101,7 +101,7 @@
     min-height: 100vh;              /* ✅ safety net */
     padding: 90px 5% 40px;
     overflow-y: auto;       
-             /
+             
   }
   .contentWrapper {
     max-width: 100%;

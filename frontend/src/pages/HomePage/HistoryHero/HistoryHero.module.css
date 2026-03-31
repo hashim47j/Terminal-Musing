@@ -106,7 +106,7 @@
   padding: 14px 30px;
   font-size: 1em;
   font-weight: bold;
-  border-radius: 0px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;

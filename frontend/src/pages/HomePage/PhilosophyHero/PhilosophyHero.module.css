@@ -97,12 +97,12 @@
   .philosophyHero {
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    height: auto;
-    /* --- FIX: Increased top padding to make space for the mobile navbar --- */
-    padding: 90px 5% 40px; 
+    justify-content: center;        /* center vertically since we have full height */
+    height: 100vh;                  /* ✅ fix: was `auto`, must match other sections */
+    min-height: 100vh;              /* ✅ safety net */
+    padding: 90px 5% 40px;
+    overflow-y: auto;               /* ✅ allow internal scroll if content is tall */
   }
-
   .contentWrapper {
     max-width: 100%;
     padding: 0 25px;

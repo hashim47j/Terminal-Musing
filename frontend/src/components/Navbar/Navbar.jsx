@@ -7,14 +7,14 @@ import jerusalemHomeLight from "../../assets/jerusalemhomelight.png";
 import jerusalemHomeDark from "../../assets/jerusalemhomedark.png";
 import { PageTransitionContext } from '../pageanim/PageTransitionContext';
 
-
 const Navbar = () => {
   const { pageTitle } = useContext(PageContext);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0); // kept for DESKTOP progress bar only
 
   const [hide, setHide] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  // ✅ FIX 1: lastScrollY as ref — no longer triggers re-renders or re-registers scroll effect
+  const lastScrollY = useRef(0);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuClosing, setMenuClosing] = useState(false);
@@ -59,6 +59,9 @@ const Navbar = () => {
   const [bgTop, setBgTop] = useState(null);
   const [slideLeft, setSlideLeft] = useState(false);
 
+  // ✅ FIX 3: Direct DOM ref for mobile progress bar — no setState on every scroll frame
+  const mobileProgressRef = useRef(null);
+
   const lightBackgroundPaths = [
     "/philosophy", "/history", "/writings", "/legal-social",
     "/tech", "/daily-thoughts", "/blog/"
@@ -70,12 +73,7 @@ const Navbar = () => {
     return text.replace(catPattern, "").trim();
   };
 
-
-  // ── isLightBackground ──
-  // Watches data-navbar-theme on <body>.
-  // HomePage drives it per-section via react-intersection-observer (useInView).
-  // All other pages set it explicitly in their own component useEffect.
-  // Falls back to path-based guess if no attribute is set.
+  // isLightBackground — unchanged
   useEffect(() => {
     const isPathDefaultLight =
       lightBackgroundPaths.some((p) => currentPath.startsWith(p)) ||
@@ -103,7 +101,7 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, [currentPath]);
 
-
+  // bgWidth/bgHeight for mobile title shrink — unchanged
   useEffect(() => {
     if (hideNavControls && isMobileView && blogMinimalTitleRef.current && blogMobileHeaderRef.current) {
       const headingRect = blogMinimalTitleRef.current.getBoundingClientRect();
@@ -141,92 +139,87 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [hideNavControls, isMobileView]);
 
+  // ✅ FIX 4: isHomePage — simple attribute check, no subtree MutationObserver
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
-        setHideNavControls(true);
-      } else {
-        setHideNavControls(false);
-      }
-      lastScrollY = currentScrollY;
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isMobileView]);
-
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
-        setHideNavControls(true);
-      } else {
-        setHideNavControls(false);
-      }
-      lastScrollY = currentScrollY;
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isBlogPostPage]);
-
-  useEffect(() => {
-    const checkHomePage = () => {
-      const homeElement = document.querySelector('[data-navbar-no-shadow]');
-      setIsHomePage(!!homeElement);
-    };
-    checkHomePage();
-    const observer = new MutationObserver(checkHomePage);
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    const homeElement = document.querySelector('[data-navbar-no-shadow]');
+    setIsHomePage(!!homeElement);
   }, [currentPath]);
 
+  // ✅ FIX 2 & 5: Single unified scroll handler with RAF throttle
+  // Replaces 3 separate scroll useEffects (including the duplicate hideNavControls one)
   useEffect(() => {
-    let lastY = window.scrollY;
+    let rafId = null;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      if (rafId) return; // RAF gate — skip if a frame is already queued
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const currentScrollY = window.scrollY;
+        const prevScrollY = lastScrollY.current;
 
-      if (isBlogPostPage) {
-        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
-        setScrollProgress(Math.min(progress, 100));
-        setIsScrolled(currentScrollY > 50);
-
-        if (!isMobileView) {
-          if (currentScrollY > 120 && currentScrollY > lastY) {
-            setDesktopMinimal(true);
-          } else if (currentScrollY < lastY) {
-            setDesktopMinimal(false);
-          }
+        // --- hideNavControls (mobile blog header hide/show) ---
+        if (currentScrollY > 100 && currentScrollY > prevScrollY) {
+          setHideNavControls(true);
+        } else {
+          setHideNavControls(false);
         }
-      } else {
-        setScrollProgress(0);
-        setIsScrolled(false);
-        setDesktopMinimal(false);
-      }
 
-      if (window.innerWidth > 768 && !isBlogPostPage) {
-        setHide(currentScrollY > lastScrollY && currentScrollY > 50);
-      } else {
-        setHide(false);
-      }
+        // --- blog post page logic ---
+        if (isBlogPostPage) {
+          const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = documentHeight > 0 ? (currentScrollY / documentHeight) * 100 : 0;
+          const clampedProgress = Math.min(progress, 100);
 
-      lastY = currentScrollY;
-      setLastScrollY(currentScrollY);
+          // ✅ FIX 3: Mobile — update DOM directly, skip setState entirely
+          if (isMobileView) {
+            if (mobileProgressRef.current) {
+              mobileProgressRef.current.style.width = `${clampedProgress}%`;
+            }
+          } else {
+            // Desktop — keep using React state (desktop bar is not laggy)
+            setScrollProgress(clampedProgress);
+          }
+
+          setIsScrolled(currentScrollY > 50);
+
+          if (!isMobileView) {
+            if (currentScrollY > 120 && currentScrollY > prevScrollY) {
+              setDesktopMinimal(true);
+            } else if (currentScrollY < prevScrollY) {
+              setDesktopMinimal(false);
+            }
+          }
+        } else {
+          setScrollProgress(0);
+          setIsScrolled(false);
+          setDesktopMinimal(false);
+        }
+
+        // --- desktop navbar hide on scroll down ---
+        if (window.innerWidth > 768 && !isBlogPostPage) {
+          setHide(currentScrollY > prevScrollY && currentScrollY > 50);
+        } else {
+          setHide(false);
+        }
+
+        lastScrollY.current = currentScrollY;
+      });
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isBlogPostPage, lastScrollY, isMobileView]);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [isBlogPostPage, isMobileView]); // ✅ lastScrollY removed from deps — it's a ref now
 
   useEffect(() => {
     if (!isBlogPostPage) setDesktopMinimal(false);
   }, [isBlogPostPage]);
 
   const getCenterTitle = () => {
-    // On a blog POST page, only show the article title — never the category name
     if (isBlogPostPage) return pageTitle || '';
-  
+
     if (currentPath.startsWith('/blog/')) {
       const pathParts = currentPath.split('/');
       if (pathParts.length >= 3) {
@@ -431,7 +424,6 @@ const Navbar = () => {
     { to: "/admin/login", label: "Author(s)", isAdmin: true },
   ];
 
-
   // ── Mobile Blog Post Layout ──
   if (isBlogPostPage && isMobileView) {
     return (
@@ -471,7 +463,8 @@ const Navbar = () => {
             ].join(' ')}
           >
             {stripCategorySuffix(pageTitle || getCenterTitle())}
-            <div className={styles.progressFillMobile} style={{ width: `${scrollProgress}%` }} />
+            {/* ✅ FIX 3: ref added here — width set directly via DOM, no React state */}
+            <div ref={mobileProgressRef} className={styles.progressFillMobile} style={{ width: '0%' }} />
           </span>
 
           <button
@@ -541,8 +534,7 @@ const Navbar = () => {
     );
   }
 
-
-  // ── Desktop Layout ──
+  // ── Desktop Layout — UNTOUCHED ──
   return (
     <>
       {currentPath !== "/" && (

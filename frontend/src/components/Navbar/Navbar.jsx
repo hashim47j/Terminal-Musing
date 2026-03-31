@@ -420,8 +420,8 @@ const Navbar = () => {
     { to: "/blog/writings", label: "Writings" },
     { to: "/blog/lsconcern", label: "Legal & Social Issues" },
     { to: "/blog/tech", label: "Tech" },
-    { to: "/daily-thoughts", label: "Daily Thoughts" },
-    { to: "/admin/login", label: "Author(s)", isAdmin: true },
+   // { to: "/daily-thoughts", label: "Daily Thoughts" },
+    //{ to: "/admin/login", label: "Author(s)", isAdmin: true },
   ];
 
   // ── Mobile Blog Post Layout ──

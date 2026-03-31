@@ -100,7 +100,8 @@
     height: 100vh;                  /* ✅ fix: was `auto`, must match other sections */
     min-height: 100vh;              /* ✅ safety net */
     padding: 90px 5% 40px;
-    overflow-y: auto;               /* ✅ allow internal scroll if content is tall */
+    overflow-y: auto;       
+    margin-top: 20px;         /* ✅ allow internal scroll if content is tall */
   }
   .contentWrapper {
     max-width: 100%;

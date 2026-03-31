@@ -101,7 +101,7 @@
     min-height: 100vh;              /* ✅ safety net */
     padding: 90px 5% 40px;
     overflow-y: auto;       
-    margin-top: 20px;         /* ✅ allow internal scroll if content is tall */
+             /
   }
   .contentWrapper {
     max-width: 100%;
@@ -113,6 +113,7 @@
     max-width: 100%;
     order: -1;
     margin-bottom: 30px;
+    margin-top: 20px;
   }
 
   .mainHeading {

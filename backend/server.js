@@ -45,21 +45,35 @@ const rootDir = path.resolve(__dirname, "..");
 const DIST_DIR = path.join(rootDir, "dist");
 const DIST_INDEX = path.join(DIST_DIR, "index.html");
 
-// ─────────────── REDIS ───────────────
-const redisClient = createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6379",
-  socket: {
-    keepAlive: true,
-    reconnectStrategy: (retries) => Math.min(retries * 50, 500),
-  },
-});
-redisClient.on("error", (err) => console.error("Redis Client Error", err));
+// ─────────────── SESSION & REDIS ───────────────
+let sessionStore = undefined; // defaults to in-memory MemoryStore if Redis is unavailable
 
-try {
-  await redisClient.connect();
-  console.log("✅ Connected to Redis");
-} catch (err) {
-  console.error("❌ Redis connection failed:", err);
+if (process.env.REDIS_URL) {
+  try {
+    const redisClient = createClient({
+      url: process.env.REDIS_URL,
+      socket: {
+        keepAlive: true,
+        reconnectStrategy: (retries) => {
+          if (retries > 5) {
+            console.warn("⚠️ Max Redis reconnect attempts reached. Halting reconnect attempts.");
+            return false;
+          }
+          return Math.min(retries * 200, 2000);
+        },
+      },
+    });
+
+    redisClient.on("error", (err) => console.error("Redis Client Error:", err.message));
+
+    await redisClient.connect();
+    sessionStore = new RedisStore({ client: redisClient });
+    console.log("✅ Connected to Redis");
+  } catch (err) {
+    console.warn("⚠️ Redis connection failed. Falling back to MemoryStore for sessions:", err.message);
+  }
+} else {
+  console.log("ℹ️ No REDIS_URL provided. Using in-memory session store (MemoryStore).");
 }
 
 // ─────────────── SECURITY ───────────────
@@ -114,7 +128,7 @@ app.use(cookieParser());
 
 // ─────────────── SESSION ───────────────
 const sessionMiddleware = session({
-  store: new RedisStore({ client: redisClient }),
+  store: sessionStore,
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,

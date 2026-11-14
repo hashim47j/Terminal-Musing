@@ -16,9 +16,26 @@ const BLOGS_ROOT = path.join(__dirname, '..', 'blogs');
 
 
 // Configuration constants
-const VALID_CATEGORIES = ['history', 'philosophy', 'tech', 'lsconcern', 'writings'];
+const VALID_CATEGORIES = ['history', 'philosophy', 'tech', 'lsconcern', 'writings', 'poems'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB max blog size
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+
+// Helper to resolve directories for categories that map to multiple or legacy folders
+const getCategoryDirs = (cat) => {
+  if (cat === 'writings' || cat === 'poems') {
+    return [
+      path.join(BLOGS_ROOT, 'writings'),
+      path.join(BLOGS_ROOT, 'poems'),
+    ];
+  }
+  if (cat === 'tech') {
+    return [
+      path.join(BLOGS_ROOT, 'tech'),
+      path.join(BLOGS_ROOT, 'android & linux'),
+    ];
+  }
+  return [path.join(BLOGS_ROOT, cat)];
+};
 
 
 // Secure rate limiting configuration
@@ -386,8 +403,19 @@ router.get('/:category/:id', readRateLimit, async (req, res) => {
       return res.json({ ...cached, cached: true });
     }
 
-    const categoryDir = path.join(BLOGS_ROOT, category);
-    const blogPath = path.join(categoryDir, `${id}.json`);
+    const candidateDirs = getCategoryDirs(category);
+    let blogPath = null;
+    for (const dir of candidateDirs) {
+      const candidate = path.join(dir, `${id}.json`);
+      if (await fileExists(candidate)) {
+        blogPath = candidate;
+        break;
+      }
+    }
+
+    if (!blogPath) {
+      throw new Error('FILE_NOT_FOUND');
+    }
 
     const blog = await readJsonFile(blogPath);
     blog.category = category;
@@ -452,43 +480,43 @@ router.get('/:category', readRateLimit, async (req, res) => {
     let blogs = getFromCache(cacheKey);
 
     if (!blogs) {
-      const categoryDir = path.join(BLOGS_ROOT, category);
-      
-      if (!(await dirExists(categoryDir))) {
-        return res.json([]);
-      }
-
-      const files = await fs.readdir(categoryDir);
+      const candidateDirs = getCategoryDirs(category);
       blogs = [];
 
-      // Process files concurrently
-      const jsonFiles = files.filter(f => f.endsWith('.json'));
-      const processFile = async (fileName) => {
-        try {
-          const blogPath = path.join(categoryDir, fileName);
-          const blog = await readJsonFile(blogPath);
-          blog.category = category;
-          blog.id = path.basename(fileName, '.json');
-          
-          // Ensure author field exists with fallback
-          if (!blog.author) {
-            blog.author = 'Terminal Musing';
-          }
-          
-          return blog;
-        } catch (error) {
-          console.warn(`⚠️ Skipping corrupted blog file: ${fileName}`, error.message);
-          return null;
-        }
-      };
+      for (const categoryDir of candidateDirs) {
+        if (!(await dirExists(categoryDir))) continue;
 
-      const results = await Promise.allSettled(
-        jsonFiles.map(processFile)
-      );
-      
-      blogs = results
-        .filter(r => r.status === 'fulfilled' && r.value)
-        .map(r => r.value);
+        const files = await fs.readdir(categoryDir);
+        const jsonFiles = files.filter(f => f.endsWith('.json'));
+
+        const processFile = async (fileName) => {
+          try {
+            const blogPath = path.join(categoryDir, fileName);
+            const blog = await readJsonFile(blogPath);
+            blog.category = category;
+            blog.id = path.basename(fileName, '.json');
+
+            if (!blog.author) {
+              blog.author = 'Terminal Musing';
+            }
+
+            if (!blog.type) {
+              blog.type = path.basename(categoryDir) === 'poems' ? 'poem' : 'writing';
+            }
+
+            return blog;
+          } catch (error) {
+            console.warn(`⚠️ Skipping corrupted blog file: ${fileName}`, error.message);
+            return null;
+          }
+        };
+
+        const results = await Promise.allSettled(jsonFiles.map(processFile));
+        const loaded = results
+          .filter(r => r.status === 'fulfilled' && r.value)
+          .map(r => r.value);
+        blogs.push(...loaded);
+      }
 
       // Cache the results
       setCache(cacheKey, blogs);

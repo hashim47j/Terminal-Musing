@@ -13,6 +13,7 @@ import DailythoughtsReader from "./pages/DailythoughtsPage/DailythoughtsReader";
 import DailythoughtsUI from "./pages/DailythoughtsPage/DailythoughtsUI";
 import Uniblog from "./pages/UniblogPage/Uniblog";
 import UniformPage from "./pages/UniformPages/UniformPage";
+import WritingsPage from "./pages/WritingsPage/WritingsPage";
 
 import { BlogProvider } from "./context/BlogContext";
 import { PageProvider } from "./context/PageContext";
@@ -23,6 +24,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Dynamic Uniform Page Loader
 function UniformPageWrapper() {
   const { category } = useParams();
+  if (category === "writings" || category === "poems") {
+    return <WritingsPage key={category} />;
+  }
   return <UniformPage key={category} />;
 }
 

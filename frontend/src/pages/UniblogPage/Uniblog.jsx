@@ -10,7 +10,9 @@ const THEMES = {
   history:    { name: 'history',    display: 'History' },
   philosophy: { name: 'philosophy', display: 'Philosophy' },
   tech:       { name: 'tech',       display: 'Technology' },
-  lsconcern:  { name: 'lsconcern',  display: 'Legal & Social' }
+  lsconcern:  { name: 'lsconcern',  display: 'Legal & Social' },
+  writings:   { name: 'writings',   display: 'Writings' },
+  poems:      { name: 'poems',      display: 'Poems' }
 };
 
 const Uniblog = () => {

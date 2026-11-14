@@ -1,8 +1,35 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './WritingsPage.module.css';
 import writingsHero from '../../assets/writings-hero.png';
 import writingsBackground from '../../assets/Wrting-background.png';
+
+const DEFAULT_CONVERSATIONS_STORIES = [
+  {
+    id: 'conversations-the-midnight-train',
+    title: 'Episode I: The Midnight Train',
+    subtitle: 'Two strangers in a dimly lit carriage discover they share the same memory.',
+    series: 'Conversations',
+    episode: 'Episode I',
+    date: '2026-11-15T00:00:00.000Z',
+    author: 'Terminal Musing',
+    setting: 'A second-class passenger coach on the night train departing Warsaw for Vienna.',
+    characters: 'Julian & Elena',
+    wordCount: 380,
+  },
+  {
+    id: 'conversations-the-third-chair',
+    title: 'Episode II: The Third Chair',
+    subtitle: 'Two siblings clearing an estate must decide who keeps an empty chair.',
+    series: 'Conversations',
+    episode: 'Episode II',
+    date: '2026-11-15T00:00:00.000Z',
+    author: 'Terminal Musing',
+    setting: 'The dining room of a century-old stone farmhouse filled with cardboard boxes.',
+    characters: 'Tariq & Amira',
+    wordCount: 350,
+  }
+];
 
 const DynamicBackgroundShadow = () => {
   const headerRef = useRef(null);
@@ -76,6 +103,7 @@ const DynamicBackgroundShadow = () => {
   );
 };
 
+// ── Standard Blog Card ──
 const BlogCard = ({ 
   post, 
   hoveredPostId, 
@@ -103,7 +131,6 @@ const BlogCard = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Function to extract average color for shadows
   const extractColorFromImage = () => {
     if (!imgRef.current || !cardRef.current || !imageLoaded) return;
 
@@ -196,9 +223,11 @@ const BlogCard = ({
       ) : (
         <div
           className={`${styles.coverImage} ${isActive ? styles.expanded : ''}`} 
-          style={{ backgroundColor: '#ccc' }}
+          style={{ backgroundColor: '#e2d7c5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <span className={styles.noImageText}>No Image</span>
+          <span style={{ fontSize: '0.75rem', color: '#666', fontStyle: 'italic', letterSpacing: '1px' }}>
+            {post.type === 'poem' || post.category === 'poems' ? 'POETRY' : 'WRITING'}
+          </span>
         </div>
       )}
 
@@ -212,7 +241,7 @@ const BlogCard = ({
               by {post.author || currentAuthor}
             </span>
             <span className={styles.cardDate}>
-              {new Date(post.date).toLocaleDateString('en-US', {
+              {new Date(post.date || Date.now()).toLocaleDateString('en-US', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -229,7 +258,7 @@ const BlogCard = ({
         <div className={styles.hoverOverlay}>
           <div className={styles.subheadingContainer}>
             <p className={styles.hoverSubheading}>
-              {post.subheading || post.title}
+              {post.subheading || post.subtitle || post.title}
             </p>
           </div>
 
@@ -241,7 +270,7 @@ const BlogCard = ({
                   {post.author || currentAuthor}
                 </span>
                 <span className={styles.postDate}>
-                  {new Date(post.date).toLocaleDateString('en-US', {
+                  {new Date(post.date || Date.now()).toLocaleDateString('en-US', {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',
@@ -251,27 +280,6 @@ const BlogCard = ({
             </div>
 
             <div className={styles.rightContent}>
-              <button
-                className={styles.shareIcon}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (navigator.share) {
-                    navigator.share({
-                      title: post.title,
-                      text: post.subheading,
-                      url: `/blog/writings/${post.id}`
-                    });
-                  } else {
-                    navigator.clipboard.writeText(`${window.location.origin}/blog/writings/${post.id}`);
-                    alert('Link copied to clipboard!');
-                  }
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
-                </svg>
-              </button>
-
               <button 
                 className={styles.readBtn}
                 onClick={handleReadButtonClick}
@@ -286,15 +294,214 @@ const BlogCard = ({
   );
 };
 
+// ── Featured "Conversations" Series Card ──
+const ConversationsCard = ({ 
+  storiesCount, 
+  onClick, 
+  isHovered, 
+  onMouseEnter, 
+  onMouseLeave 
+}) => {
+  return (
+    <article
+      className={`${styles.blogCard} ${styles.seriesCard}`}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      aria-label="Open Conversations Drama Series"
+    >
+      <div className={styles.seriesIllustration}>
+        <svg 
+          className={styles.seriesIllustrationSvg} 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="1.5"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+        </svg>
+        <span className={styles.seriesEpisodesCount}>
+          {storiesCount} Episodes
+        </span>
+      </div>
+
+      <div className={`${styles.blogContent} ${isHovered ? styles.hiddenContent : ''}`}>
+        <span className={styles.seriesBadge}>Original Series</span>
+        <h3 className={styles.blogTitle} style={{ fontSize: '1.35rem', color: '#1a1714' }}>
+          Conversations
+        </h3>
+        <p style={{ fontSize: '0.82rem', color: '#6a6256', margin: '4px 0 0 0', lineHeight: 1.35 }}>
+          A series of short drama-type stories exploring human dialogue and unspoken tensions.
+        </p>
+
+        <div className={styles.cardBottomFixed}>
+          <div className={styles.cardSeparatorLine}></div>
+          <div className={styles.cardMetaRow}>
+            <span className={styles.cardAuthor}>by Terminal Musing</span>
+            <span className={styles.cardWordCount} style={{ color: '#8b6834', fontWeight: 600 }}>
+              Click to Open Series ➔
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {isHovered && (
+        <div className={styles.hoverOverlay} style={{ background: 'linear-gradient(135deg, rgba(247,238,219,0.96), rgba(240,226,200,0.98))' }}>
+          <div className={styles.subheadingContainer}>
+            <span className={styles.seriesHoverTag}>DRAMA SERIES</span>
+            <p className={styles.seriesPrompt}>
+              "Dialogue is not the order of words—it is the room where two souls meet."
+            </p>
+          </div>
+
+          <div className={styles.bottomFixed}>
+            <div className={styles.leftContent}>
+              <div className={styles.separatorLine}></div>
+              <div className={styles.authorDateContainer}>
+                <span className={styles.authorName}>Terminal Musing</span>
+                <span className={styles.postDate}>{storiesCount} Episodes</span>
+              </div>
+            </div>
+
+            <div className={styles.rightContent}>
+              <button 
+                className={`${styles.readBtn} ${styles.openSeriesBtn}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClick();
+                }}
+              >
+                Explore Series
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </article>
+  );
+};
+
+// ── Series Modal / Reader Drawer ──
+const ConversationsModal = ({ stories, onClose, onReadStory }) => {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div 
+      className={styles.seriesModalBackdrop}
+      onClick={onClose}
+    >
+      <div 
+        className={styles.seriesModal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="series-title"
+      >
+        <div className={styles.modalHeader}>
+          <button 
+            className={styles.modalCloseBtn}
+            onClick={onClose}
+            aria-label="Close series view"
+          >
+            ×
+          </button>
+          <span className={styles.modalSeriesBadge}>Original Series • Short Drama</span>
+          <h2 id="series-title" className={styles.modalSeriesTitle}>Conversations</h2>
+          <p className={styles.modalSeriesSubtitle}>A series of short drama-type stories by Terminal Musing</p>
+          <p className={styles.modalSeriesSynopsis}>
+            Dialogue is not merely an exchange of speech—it is the theater of human vulnerability, power, and memory. Each episode is a self-contained drama unfolding between characters in a single room, carriage, or moment.
+          </p>
+        </div>
+
+        <div className={styles.modalContentList}>
+          {stories.map((story, index) => (
+            <div key={story.id || index} className={styles.storyItemCard}>
+              <div className={styles.storyTopRow}>
+                <span className={styles.storyEpisodeLabel}>
+                  {story.episode || `Episode ${index + 1}`}
+                </span>
+                <span className={styles.storyMetaTime}>
+                  {story.characters || 'Drama'} • {story.wordCount || 350} words
+                </span>
+              </div>
+
+              <h3 className={styles.storyItemTitle}>{story.title}</h3>
+              {story.subtitle && (
+                <p className={styles.storyItemSubtitle}>{story.subtitle}</p>
+              )}
+
+              {story.setting && (
+                <div className={styles.storyItemExcerpt}>
+                  Setting: {story.setting}
+                </div>
+              )}
+
+              <div className={styles.storyItemBottom}>
+                <span className={styles.storyAuthorTag}>
+                  by {story.author || 'Terminal Musing'}
+                </span>
+                <button 
+                  className={styles.readEpisodeBtn}
+                  onClick={() => onReadStory(story)}
+                >
+                  Read Episode
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Main Writings & Poems Page ──
 const WritingsPage = () => {
   const containerRef = useRef(null); 
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hoveredPostId, setHoveredPostId] = useState(null);
   const [currentAuthor, setCurrentAuthor] = useState('Terminal Musing');
   const [activeCardId, setActiveCardId] = useState(null);
+
+  // Determine initial tab from query param ?tab=poems or URL path
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('tab') === 'poems' || location.pathname.includes('/poems')) {
+      return 'poems';
+    }
+    return 'writings';
+  });
+
+  const [isConversationsOpen, setIsConversationsOpen] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('tab') === 'poems') {
+      setActiveTab('poems');
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -319,48 +526,6 @@ const WritingsPage = () => {
   };
 
   useEffect(() => {
-    const fetchCurrentAuthor = async () => {
-      try {
-        const endpoints = [
-          '/api/user/me',
-          '/api/admin/profile', 
-          '/api/auth/user',
-          '/api/current-user'
-        ];
-        
-        for (const endpoint of endpoints) {
-          try {
-            const res = await fetch(endpoint);
-            if (res.ok) {
-              const userData = await res.json();
-              const authorName = userData.name || 
-                               userData.username || 
-                               userData.displayName || 
-                               userData.fullName ||
-                               'Terminal Musing';
-              setCurrentAuthor(authorName);
-              return;
-            }
-          } catch (err) {
-            continue;
-          }
-        }
-        
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          setCurrentAuthor(user.name || user.username || 'Terminal Musing');
-        }
-        
-      } catch (err) {
-        setCurrentAuthor('Terminal Musing');
-      }
-    };
-
-    fetchCurrentAuthor();
-  }, []);
-
-  useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       setError('');
@@ -376,8 +541,6 @@ const WritingsPage = () => {
           postsArray = data;
         } else if (data && Array.isArray(data.blogs)) {
           postsArray = data.blogs;
-        } else {
-          postsArray = [];
         }
 
         const sorted = postsArray
@@ -389,7 +552,6 @@ const WritingsPage = () => {
           });
           
         setPosts(sorted);
-        
       } catch (err) {
         setError(`Failed to load writings posts: ${err.message}`);
         setPosts([]);
@@ -401,15 +563,55 @@ const WritingsPage = () => {
     fetchPosts();
   }, []);
 
+  // Separate posts into Poems, Conversations stories, and Standalone Writings
+  const { poemPosts, conversationsStories, standaloneWritings } = useMemo(() => {
+    const poems = [];
+    const convos = [...DEFAULT_CONVERSATIONS_STORIES];
+    const standalone = [];
+
+    posts.forEach((post) => {
+      const isPoem = post.type === 'poem' || post.category === 'poems' || post.id?.includes('poem') || post.title?.toLowerCase().includes('poem');
+      const isConversation = post.series?.toLowerCase() === 'conversations' || post.id?.startsWith('conversations') || post.title?.toLowerCase().includes('conversations');
+
+      if (isPoem) {
+        poems.push(post);
+      } else if (isConversation) {
+        // If not already in default stories, add it
+        const exists = convos.some(c => c.id === post.id);
+        if (!exists) {
+          convos.push({
+            id: post.id,
+            title: post.title,
+            subtitle: post.subtitle || post.subheading || '',
+            series: 'Conversations',
+            episode: post.episode || `Episode ${convos.length + 1}`,
+            date: post.date,
+            author: post.author || 'Terminal Musing',
+            setting: post.setting || 'Drama dialogue piece.',
+            characters: post.characters || 'Characters',
+            wordCount: getWordCount(post.content) || 350,
+          });
+        }
+      } else {
+        standalone.push(post);
+      }
+    });
+
+    return {
+      poemPosts: poems,
+      conversationsStories: convos,
+      standaloneWritings: standalone,
+    };
+  }, [posts]);
+
   const handlePostClick = (post) => {
-    navigate(`/blog/writings/${post.id}`);
+    const targetCategory = post.category === 'poems' || post.type === 'poem' ? 'writings' : 'writings';
+    navigate(`/blog/${targetCategory}/${post.id}`);
   };
 
-  const handleKeyDown = (e, post) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handlePostClick(post);
-    }
+  const handleReadStory = (story) => {
+    setIsConversationsOpen(false);
+    navigate(`/blog/writings/${story.id}`);
   };
 
   return (
@@ -422,51 +624,130 @@ const WritingsPage = () => {
       <DynamicBackgroundShadow />
 
       <section className={styles.postsSection}>
-        <h2 className={styles.postsHeading}>Writings</h2>
+        <h2 className={styles.postsHeading}>Writings & Poetry</h2>
+
+        {/* ── Sub-section Division Tabs ── */}
+        <div className={styles.tabContainer} role="tablist" aria-label="Writings category tabs">
+          <button
+            role="tab"
+            aria-selected={activeTab === 'writings'}
+            className={`${styles.tabButton} ${activeTab === 'writings' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('writings')}
+          >
+            Writings & Drama
+            <span className={styles.tabBadge}>
+              {standaloneWritings.length + 1}
+            </span>
+          </button>
+
+          <button
+            role="tab"
+            aria-selected={activeTab === 'poems'}
+            className={`${styles.tabButton} ${activeTab === 'poems' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('poems')}
+          >
+            Poems
+            <span className={styles.tabBadge}>
+              {poemPosts.length}
+            </span>
+          </button>
+        </div>
 
         <div ref={containerRef} className={styles.blogGridContainer}>
-          <div className={styles.blogGrid}>
-            {loading ? (
-              <div className={styles.loadingState}>
-                <div className={styles.spinner}></div>
-                <p>Loading writings...</p>
-              </div>
-            ) : error ? (
-              <div className={styles.errorState}>
-                <h3>Oops! Something went wrong</h3>
-                <p style={{ color: 'red' }}>{error}</p>
-                <button 
-                  onClick={() => window.location.reload()} 
-                  className={styles.retryBtn}
-                >
-                  Try Again
-                </button>
-              </div>
-            ) : !Array.isArray(posts) || posts.length === 0 ? (
-              <div className={styles.emptyState}>
-                <h3>No Writings Available</h3>
-                <p>Check back soon for new poems, stories, and creative works.</p>
-              </div>
-            ) : (
-              posts.map((post) => (
-                <BlogCard
-                  key={post.id}
-                  post={post}
-                  hoveredPostId={hoveredPostId}
-                  onMouseEnter={() => setHoveredPostId(post.id)}
-                  onMouseLeave={() => setHoveredPostId(null)}
-                  onClick={() => handlePostClick(post)}
-                  onKeyDown={(e) => handleKeyDown(e, post)}
-                  currentAuthor={currentAuthor}
-                  getWordCount={getWordCount}
-                  activeCardId={activeCardId}
-                  setActiveCardId={setActiveCardId}
-                />
-              ))
-            )}
-          </div>
+          {loading ? (
+            <div className={styles.loadingState}>
+              <div className={styles.spinner}></div>
+              <p>Loading {activeTab === 'poems' ? 'poems' : 'writings'}...</p>
+            </div>
+          ) : error && posts.length === 0 ? (
+            <div className={styles.errorState}>
+              <h3>Oops! Something went wrong</h3>
+              <p style={{ color: 'red' }}>{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className={styles.retryBtn}
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <div className={styles.blogGrid}>
+              {activeTab === 'writings' ? (
+                <>
+                  {/* Featured Conversations Series Card */}
+                  <ConversationsCard
+                    storiesCount={conversationsStories.length}
+                    onClick={() => setIsConversationsOpen(true)}
+                    isHovered={hoveredPostId === 'conversations-series'}
+                    onMouseEnter={() => setHoveredPostId('conversations-series')}
+                    onMouseLeave={() => setHoveredPostId(null)}
+                  />
+
+                  {/* Other standalone writings */}
+                  {standaloneWritings.map((post) => (
+                    <BlogCard
+                      key={post.id}
+                      post={post}
+                      hoveredPostId={hoveredPostId}
+                      onMouseEnter={() => setHoveredPostId(post.id)}
+                      onMouseLeave={() => setHoveredPostId(null)}
+                      onClick={() => handlePostClick(post)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handlePostClick(post);
+                        }
+                      }}
+                      currentAuthor={currentAuthor}
+                      getWordCount={getWordCount}
+                      activeCardId={activeCardId}
+                      setActiveCardId={setActiveCardId}
+                    />
+                  ))}
+                </>
+              ) : (
+                /* Poems View */
+                poemPosts.length === 0 ? (
+                  <div className={styles.emptyState} style={{ gridColumn: '1 / -1' }}>
+                    <h3>No Poems Available</h3>
+                    <p>New poetic compositions will appear here soon.</p>
+                  </div>
+                ) : (
+                  poemPosts.map((post) => (
+                    <BlogCard
+                      key={post.id}
+                      post={post}
+                      hoveredPostId={hoveredPostId}
+                      onMouseEnter={() => setHoveredPostId(post.id)}
+                      onMouseLeave={() => setHoveredPostId(null)}
+                      onClick={() => handlePostClick(post)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handlePostClick(post);
+                        }
+                      }}
+                      currentAuthor={currentAuthor}
+                      getWordCount={getWordCount}
+                      activeCardId={activeCardId}
+                      setActiveCardId={setActiveCardId}
+                    />
+                  ))
+                )
+              )}
+            </div>
+          )}
         </div>
       </section>
+
+      {/* ── Conversations Series Modal / Drawer ── */}
+      {isConversationsOpen && (
+        <ConversationsModal
+          stories={conversationsStories}
+          onClose={() => setIsConversationsOpen(false)}
+          onReadStory={handleReadStory}
+        />
+      )}
 
       <div className={styles.grayStrip}></div>
     </div>

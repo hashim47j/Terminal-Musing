@@ -19,7 +19,8 @@ dotenv.config();
 
 // ─────────────── VALIDATE ENV ───────────────
 if (!process.env.SESSION_SECRET) {
-  throw new Error("❌ SESSION_SECRET must be set in .env");
+  console.warn("⚠️ SESSION_SECRET is not set in environment. Using a fallback secret. Please set SESSION_SECRET on production!");
+  process.env.SESSION_SECRET = "terminal_musing_default_secret_key_please_change";
 }
 
 // ─────────────── API ROUTERS ───────────────
@@ -79,15 +80,22 @@ app.use(
 
 // ─────────────── CORS ───────────────
 const ALLOWED_ORIGINS = [
-  process.env.FRONTEND_URL || "http://localhost:5173",
+  process.env.FRONTEND_URL,
+  process.env.RENDER_EXTERNAL_URL,
   "https://terminalmusing.space",
   "https://www.terminalmusing.space",
-];
+  "http://localhost:5173",
+  "http://localhost:5000",
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      if (
+        !origin ||
+        ALLOWED_ORIGINS.includes(origin) ||
+        origin.endsWith(".onrender.com")
+      ) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -244,11 +252,15 @@ app.post("/api/admin/login", adminLoginLimiter, async (req, res) => {
   if (!key) return res.status(400).json({ success: false, message: "Authentication key is required" });
 
   try {
-    if (!fs.existsSync(ADMIN_KEY_PATH)) {
+    let storedHash = process.env.ADMIN_KEY_HASH ? process.env.ADMIN_KEY_HASH.trim() : null;
+    if (!storedHash && fs.existsSync(ADMIN_KEY_PATH)) {
+      storedHash = (await fs.readFile(ADMIN_KEY_PATH, "utf8")).trim();
+    }
+
+    if (!storedHash) {
       return res.status(500).json({ success: false, message: "Admin authentication not configured." });
     }
 
-    const storedHash = (await fs.readFile(ADMIN_KEY_PATH, "utf8")).trim();
     const isMatch = await bcrypt.compare(key, storedHash);
 
     if (isMatch) {

@@ -19,11 +19,14 @@ export const adminAuth = async (req, res, next) => {
     }
 
     // Read hashed key
-    if (!fs.existsSync(ADMIN_KEY_PATH)) {
-      return res.status(500).json({ message: 'Admin key not found on server' });
+    let storedHash = process.env.ADMIN_KEY_HASH ? process.env.ADMIN_KEY_HASH.trim() : null;
+    if (!storedHash && fs.existsSync(ADMIN_KEY_PATH)) {
+      storedHash = fs.readFileSync(ADMIN_KEY_PATH, 'utf8').trim();
     }
 
-    const storedHash = fs.readFileSync(ADMIN_KEY_PATH, 'utf8');
+    if (!storedHash) {
+      return res.status(500).json({ message: 'Admin key not found on server' });
+    }
 
     // Compare provided key with stored hash
     const isMatch = await bcrypt.compare(clientKey, storedHash);
